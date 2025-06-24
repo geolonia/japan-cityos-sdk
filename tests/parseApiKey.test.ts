@@ -11,20 +11,20 @@ describe('parseApiKey', () => {
     document.head.innerHTML = ''; // テスト後にscriptタグをクリア
   });
 
-  test('should parse the api-key from the current script tag', () => {
-    const script = createScriptTag('https://city.geolonia.com/v1/kagawa/takamatsu/api.js?api-key=12345');
+  test('現在のスクリプトタグから api-key をパースできるべき', () => {
+    const script = createScriptTag('https://city.geolonia.com/v1/japan/api.js?api-key=12345');
     const apiKey = parseApiKey(script);
     expect(apiKey).toBe('12345');
   });
 
-  test('should return null if there is no api-key in the script tag', () => {
-    const script = createScriptTag('https://city.geolonia.com/v1/kagawa/takamatsu/api.js');
+  test('スクリプトタグに api-key がない場合は null を返すべき', () => {
+    const script = createScriptTag('https://city.geolonia.com/v1/japan/api.js');
     const apiKey = parseApiKey(script);
     expect(apiKey).toBeNull();
   });
 
-  test('should handle relative script sources correctly', () => {
-    const script = createScriptTag('/v1/kagawa/takamatsu/api.js?api-key=abcde');
+  test('相対パスのスクリプトソースも正しく処理できるべき', () => {
+    const script = createScriptTag('/v1/japan/api.js?api-key=abcde');
     const apiKey = parseApiKey(script);
     expect(apiKey).toBe('abcde');
   });
