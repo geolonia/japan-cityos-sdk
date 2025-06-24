@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "maplibre-gl": "^2.4.0",
+    "maplibre-gl": "^5.6.0",
     "papaparse": "^5.4.0"
   },
   "devDependencies": {

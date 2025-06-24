@@ -49,4 +49,4 @@ jobs:
 
       - name: Upload SDK to CDN
         run: |
-          aws s3 cp --content-type="application/javascript" --cache-control="public, max-age=300" docs/index.js s3://gl-cityos-sdk-v1-ap-northeast-1/v1/kagawa/takamatsu/api.js
+          aws s3 cp --content-type="application/javascript" --cache-control="public, max-age=300" docs/index.js s3://gl-cityos-sdk-v1-ap-northeast-1/v1/japan/api.js
