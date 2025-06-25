@@ -43,36 +43,59 @@
   <div id="map"></div>
   <script src="./index.js"></script>
   <script type="application/javascript">
-    const myCity = new city.Takamatsu.Map();
+    const japan = new geolonia.japan.Map({ address: '沖縄県那覇市', zoom: 12 });
+    // const japan = new geolonia.japan.Map({ center: [139.6917, 35.6895], zoom: 10 });
 
-    myCity.on('load', () => {
-      myCity.loadData('商業地域', {
-        'fill-color': '#FFFF00',
-      })
-      myCity.loadData('第一種低層住居専用地域')
-      myCity.loadData('第二種低層住居専用地域')
+    japan.on('load', () => {
 
-      const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRpQCIbBDkpOTxE0GvGZ6n-L6cp20tqSv-2bz_tcFMa1H42s8RITKcwk-aDs3T1pAipzxI4fXG9klZ5/pub?gid=1842161479&single=true&output=csv'
-      myCity.loadCSV(url)
-
-      myCity.on('click', url, (e) => {
-        const coordinates = e.features[0].geometry.coordinates.slice();
-        const properties = e.features[0].properties;
-
-        let tableHTML = "<table class='popup-table'>";
-        tableHTML += "<tr><th>属性</th><th>値</th></tr>"; // ヘッダー行を追加
-        for (let key in properties) {
-          tableHTML += `<tr><td>${key}</td><td>${properties[key]}</td></tr>`;
-        }
-        tableHTML += "</table>";
-
-        new city.Takamatsu.Popup({
-          maxWidth: '300px'
-        })
-          .setLngLat(coordinates)
-          .setHTML(tableHTML)
-          .addTo(myCity);
+      // データを読み込む
+      // 例:沖縄県那覇市の避難所データを読み込む
+      // 　 → 『沖縄県那覇市の避難所データ』のように、地域を限定してデータ連携基盤（オープンデータ）を利用して読み込む例（symbol）
+      japan.loadData('okinawa/naha/shelter', {
+        'marker-symbol': 'shelter',
+        'marker-size': 'large',
       });
+      // 例：お店のデータを読み込む
+      // 　→ 『osmのお店データ』のように、地域に依存しないデータを利用して読み込む例（OSMやMapFunなど）
+      japan.loadPoiData('osm:shop', {
+        'marker-size': 'small'
+      });
+      // 例：広島県尾道市の用途地域のデータを読み込む
+      // 　→ 『広島県尾道市のオープンデータの用途地域』のように、データ連携基盤（オープンデータ）を利用して読み込む例（fill）
+      japan.position('広島県尾道市').loadData('用途地域', {
+        'fill': 'rgba(78, 163, 130, 0.6)',
+        'stroke': '#4ea382',
+        'stroke-width': 1,
+      });
+      // 例：津波警報区域のデータを読み込む
+      // 　→ 『津波警報区域』のように、地域やデータの出所を指定せず読み込む例（fill or dataPNG）
+      japan.loadData('津波警報区域', {
+        'fill': 'rgba(78, 163, 130, 0.6)',
+        'stroke': '#4ea382',
+        'stroke-width': 1,
+      });
+
+      // レイヤー情報の更新
+      // 例：お店のレイヤー情報を更新する
+      japan.updateLayer('shop', {
+        'fill': 'shop',
+        'marker-size': 'small',
+      });
+
+
+      // 特定の緯度経度に地物が存在するか
+      const isFeaturePresent = japan.position([139.6917, 35.6895]).hasFeature();
+      const features = japan.position([139.6917, 35.6895]).getFeature();
+      
+      // 特定の緯度経度に地物を追加する
+      japan.position([135.7788, 33.4671]).addFeature('restaurant', {
+        'marker-symbol': 'restaurant',
+        'marker-size': 'small'
+      });
+
+      // レイヤーの特定の地物の属性情報を更新する
+      // 考え中。。。
+      
     })
   </script>
 </body>
