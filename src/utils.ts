@@ -123,6 +123,7 @@ export const createLayer = (
   // Point or Symbol layer
   if (simpleStyle['marker-symbol'] || simpleStyle['title']) {
     const iconSizeKey = simpleStyle['marker-size'];
+    const customIconSize = simpleStyle['custom-marker-size'];
     const iconSize = MARKER_SIZE_MAP[iconSizeKey] ?? MARKER_SIZE_MAP.medium;
 
     layers.push({
@@ -130,7 +131,7 @@ export const createLayer = (
       type: 'symbol',
       layout: {
         'icon-image': simpleStyle['marker-symbol'] ?? DEFAULT_MARKER_NAME,
-        'icon-size': iconSize,
+        'icon-size': customIconSize ? customIconSize : iconSize,
         ...(simpleStyle['title'] ? { 
           'text-field': simpleStyle['title'],
           'text-font': simpleStyle['text-font'] ?? ["Noto Sans Regular"],
