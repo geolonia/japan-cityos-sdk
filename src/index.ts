@@ -1,6 +1,8 @@
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { parseApiKey } from './utils';
+import { createLayer, createSourceByType, csvToGeoJSON, parseApiKey } from './utils';
+import Papa from 'papaparse';
+
 
 import style from './style.json'
 
@@ -9,14 +11,14 @@ declare global {
     geolonia: any;
   }
 }
-
+	
 class GeoloniaMap extends maplibregl.Map {
 
   constructor(params: any) {
     const defaults = {
-      container: 'map',
-      style: style,
-      center: params.lngLat ?? [134.04654783784918, 34.34283588989655],
+      container: params.container ?? 'map',
+      style: params.style ?? style,
+      center: params.lngLat ?? [139.692, 35.689],
       zoom: params.zoom ?? 12,
       transformRequest: (url: string, resourceType: string) => {
         if (!window.geolonia.apiKey) { return { url }; }
@@ -39,27 +41,56 @@ class GeoloniaMap extends maplibregl.Map {
    * @description
    *   指定したクラス名のレイヤーを追加します。
    * ****************/
-  loadData(className: string, paint: any | undefined | null, layout: any | undefined | null) {
-    const paintDefault = {
-      'fill-color': '#FF0000',
-      'fill-opacity': 0.2
-    }
+  loadData(className: string, simpleStyle: { [key: string]: any } | undefined | null) {
+    const layers = createLayer(className, {
+      simpleStyle: simpleStyle,
+      filter: ['==', 'class', className]
+    });
+    layers.forEach(layer => { this.addLayer(layer, 'poi'); });
+  }
 
-    this.addLayer({
-      id: className,
-      type: 'fill',
-      source: 'Geolonia',
-      'source-layer': 'main',
-      paint: {...paintDefault, ...paint},
-      "filter": [
-        "all",
-        [
-          "==",
-          "class",
-          className
-        ],
-      ],
-    }, 'poi');
+  /* ****************
+   * csvを読み込んでレイヤーを追加する
+   * @param csv CSV文字列
+   * @param className クラス名
+   * @param paint layerのpaintプロパティ
+   * @param layout layerのlayoutプロパティ
+   * @description
+   *   指定したクラス名のレイヤーを追加します。
+   * ****************/
+  async loadCSV (url: string, className: string, simpleStyle: { [key: string]: any } | undefined | null) {
+
+    const res = await fetch(url);
+    const csv = await res.text();
+    const data = Papa.parse(csv, {header: true}).data
+
+    const geojson = csvToGeoJSON(data);
+    this.addSource(className, createSourceByType('geojson', geojson));
+    const layers = createLayer(className, {
+      simpleStyle: simpleStyle
+    });
+    layers.forEach(layer => { 
+      this.addLayer(layer); 
+    });
+  }
+
+  /* ****************
+   * geojsonを読み込んでレイヤーを追加する
+   * @param csv CSV文字列
+   * @param className クラス名
+   * @param paint layerのpaintプロパティ
+   * @param layout layerのlayoutプロパティ
+   * @description
+   *   指定したクラス名のレイヤーを追加します。
+   * ****************/
+  async loadGeojson (geojson: string | GeoJSON.FeatureCollection, className: string, simpleStyle: { [key: string]: any } | undefined | null) {
+
+    this.addSource(className, createSourceByType('geojson', geojson));
+
+    const layers = createLayer(className, {
+      simpleStyle: simpleStyle
+    });
+    layers.forEach(layer => { this.addLayer(layer); });
   }
 
 }

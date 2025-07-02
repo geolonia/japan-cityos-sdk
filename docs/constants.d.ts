@@ -1,0 +1,16 @@
+export declare const DEFAULT_CIRCLE_COLOR = "#FF0000";
+export declare const DEFAULT_LINE_COLOR = "#0000FF";
+export declare const DEFAULT_FILL_COLOR = "#00FF00";
+export declare const DEFAULT_MARKER_NAME = "default-marker";
+export declare const DEFAULT_TEXT_COLOR = "#000000";
+export declare const LARGE_MARKER_SIZE = 1;
+export declare const MEDIUM_MARKER_SIZE = 0.6;
+export declare const SMALL_MARKER_SIZE = 0.3;
+export declare const LARGE_CIRCLE_RADIUS = 10;
+export declare const MEDIUM_CIRCLE_RADIUS = 6;
+export declare const SMALL_CIRCLE_RADIUS = 3;
+export declare const DEFAULT_FILL_OPACITY = 0.5;
+export declare const DEFAULT_LINE_WIDTH = 2;
+export declare const BOLD_LINE_WIDTH = 4;
+export declare const MARKER_SIZE_MAP: Record<string, number>;
+export declare const CIRCLE_SIZE_MAP: Record<string, number>;

@@ -24,7 +24,16 @@
       "url": "https://tileserver.geolonia.com/takamatsu_main_v0/tiles.json?key=YOUR-API-KEY"
     }
   },
-  "sprite": "https://geoloniamaps.github.io/gsi/gsi",
+  "sprite": [
+    {
+      "id": "default",
+      "url":"https://geoloniamaps.github.io/gsi/gsi"
+    },
+    {
+      "id": "marker",
+      "url":"https://geolonia.github.io/custom-smartmap-sprite/sprite"
+    }
+  ],
   "glyphs": "https://glyphs.geolonia.com/{fontstack}/{range}.pbf",
   "layers": [
     {
