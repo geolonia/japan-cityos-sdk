@@ -18,6 +18,33 @@ describe('createLayer', () => {
     );
   });
 
+  it('custom-marker-sizeがある場合はicon-sizeにその値が使われる', () => {
+    const layers = createLayer('test', {
+      simpleStyle: {
+        'marker-symbol': 'marker:custom',
+        'marker-size': 'large',
+        'custom-marker-size': 2.5
+      }
+    });
+    const symbolLayer = layers.find(l => l.type === 'symbol');
+    expect(symbolLayer).toBeDefined();
+    expect((symbolLayer?.layout as any)['icon-size']).toBe(2.5);
+  });
+
+  it('custom-marker-sizeが無い場合はmarker-sizeに対応したicon-sizeが使われる', () => {
+    const layers = createLayer('test', {
+      simpleStyle: {
+        'marker-symbol': 'marker:custom',
+        'marker-size': 'large'
+      }
+    });
+    const symbolLayer = layers.find(l => l.type === 'symbol');
+    expect(symbolLayer).toBeDefined();
+    expect((symbolLayer?.layout as any)['icon-size']).toBeDefined();
+    // largeの場合はMARKER_SIZE_MAP.large（1）になる想定
+    expect((symbolLayer?.layout as any)['icon-size']).toBe(1);
+  });
+
   it('titleがある場合はtext-font, text-size, text-offset, text-anchor, text-colorが含まれる', () => {
     const layers = createLayer('test', {
       simpleStyle: {
