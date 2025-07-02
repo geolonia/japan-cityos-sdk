@@ -6,7 +6,7 @@ export const DEFAULT_MARKER_NAME = 'default-marker';
 export const DEFAULT_TEXT_COLOR = '#000000';
 
 export const LARGE_MARKER_SIZE = 1;
-export const MEDIUM_MARKER_SIZE = 0.6;
+export const MEDIUM_MARKER_SIZE = 0.5;
 export const SMALL_MARKER_SIZE = 0.3;
 
 export const LARGE_CIRCLE_RADIUS = 10;

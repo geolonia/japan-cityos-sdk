@@ -121,7 +121,7 @@
     const DEFAULT_MARKER_NAME = 'default-marker';
     const DEFAULT_TEXT_COLOR = '#000000';
     const LARGE_MARKER_SIZE = 1;
-    const MEDIUM_MARKER_SIZE = 0.6;
+    const MEDIUM_MARKER_SIZE = 0.5;
     const SMALL_MARKER_SIZE = 0.3;
     const LARGE_CIRCLE_RADIUS = 10;
     const MEDIUM_CIRCLE_RADIUS = 6;
@@ -233,14 +233,19 @@
         // Point or Symbol layer
         if (simpleStyle['marker-symbol'] || simpleStyle['title']) {
             const iconSizeKey = simpleStyle['marker-size'];
+            const customIconSize = simpleStyle['custom-marker-size'];
             const iconSize = (_a = MARKER_SIZE_MAP[iconSizeKey]) !== null && _a !== void 0 ? _a : MARKER_SIZE_MAP.medium;
-            layers.push(Object.assign(Object.assign({}, base), { type: 'symbol', layout: Object.assign({ 'icon-image': (_b = simpleStyle['marker-symbol']) !== null && _b !== void 0 ? _b : DEFAULT_MARKER_NAME, 'icon-size': iconSize }, (simpleStyle['title'] ? {
+            layers.push(Object.assign(Object.assign({}, base), { type: 'symbol', layout: Object.assign({ 'icon-image': (_b = simpleStyle['marker-symbol']) !== null && _b !== void 0 ? _b : DEFAULT_MARKER_NAME, 'icon-size': customIconSize ? customIconSize : iconSize }, (simpleStyle['title'] ? {
                     'text-field': simpleStyle['title'],
                     'text-font': (_c = simpleStyle['text-font']) !== null && _c !== void 0 ? _c : ["Noto Sans Regular"],
                     'text-size': (_d = simpleStyle['text-size']) !== null && _d !== void 0 ? _d : 12,
                     'text-offset': (_e = simpleStyle['text-offset']) !== null && _e !== void 0 ? _e : [0, 1.5],
                     'text-anchor': (_f = simpleStyle['text-anchor']) !== null && _f !== void 0 ? _f : 'top'
-                } : {})), paint: Object.assign(Object.assign({}, (simpleStyle.paint || {})), (simpleStyle['title'] && { 'text-color': (_g = simpleStyle['text-color']) !== null && _g !== void 0 ? _g : DEFAULT_TEXT_COLOR })), filter: [
+                } : {})), paint: Object.assign(Object.assign({}, (simpleStyle.paint || {})), (simpleStyle['title'] && {
+                    'text-color': (_g = simpleStyle['text-color']) !== null && _g !== void 0 ? _g : DEFAULT_TEXT_COLOR,
+                    'text-halo-color': '#fff',
+                    'text-halo-width': 2
+                })), filter: [
                     'all',
                     ...(base.filter ? [base.filter] : []),
                     ['==', '$type', 'Point']
