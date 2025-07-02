@@ -55,7 +55,9 @@ export const csvToGeoJSON = (data: any[]): FeatureCollection => {
 }
 
 
-export const createSourceByType = (type: 'geojson' | 'vector' | 'raster', data: any): maplibregl.SourceSpecification => {
+export const createSourceByType = (type: 'geojson' | 'vector' | 'raster', data: any | undefined): maplibregl.SourceSpecification | undefined => {
+  if (!data) { return undefined; }
+
   if (type === 'geojson') {
     return {
       type: 'geojson',
@@ -64,17 +66,27 @@ export const createSourceByType = (type: 'geojson' | 'vector' | 'raster', data: 
       clusterMaxZoom: 14,
       clusterRadius: 50
     };
+
   } else if (type === 'vector') {
+    if (Array.isArray(data)) {
+      return {
+        type: 'vector',
+        tiles: data
+      };
+    }
+
     return {
       type: 'vector',
       url: data
     };
+
   } else if (type === 'raster') {
     return {
       type: 'raster',
       tiles: Array.isArray(data) ? data : [data],
       tileSize: 256
     };
+
   } else {
     throw new Error('Unsupported source type');
   }
