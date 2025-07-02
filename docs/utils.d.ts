@@ -1,6 +1,31 @@
+import type { FeatureCollection } from "geojson";
 /**
  * Parses the API key from the URL of the current script tag.
  *
  * @param {HTMLScriptElement} script - The current script tag.
  */
 export declare const parseApiKey: (script: HTMLScriptElement) => string;
+export declare const csvToGeoJSON: (data: any[]) => FeatureCollection;
+export declare const createSourceByType: (type: 'geojson' | 'vector' | 'raster', data: any) => maplibregl.SourceSpecification;
+/**
+ * 指定された情報からpoint/symbol, line, polygonレイヤーのLayer定義を返す
+ * @param className クラス名（レイヤーIDにも利用）
+ * @param options.simpleStyle シンボルや色などのスタイル指定
+ * @param options.sourceLayer 任意のsource-layer名
+ * @param options.filter 任意のfilter
+ * @returns maplibregl.LayerSpecification[]
+ */
+export declare const createLayer: (className: string, options?: {
+    simpleStyle?: {
+        [key: string]: any;
+    };
+    sourceLayer?: string;
+    filter?: maplibregl.FilterSpecification;
+}) => maplibregl.LayerSpecification[];
+/**
+ * includeObj, notIncludeObj から maplibregl の filter expressions を生成する
+ * @param {Record<string, string | number>} includeObj - 含めたい値のオブジェクト（key: プロパティ名, value: 含めたい値）
+ * @param {Record<string, string | number>} notIncludeObj - 除外したい値のオブジェクト（key: プロパティ名, value: 除外したい値）
+ * @returns {any[]} filter expression
+ */
+export declare function createFilterExpressions(includeObj?: Record<string, string | number>, notIncludeObj?: Record<string, string | number>): any[];

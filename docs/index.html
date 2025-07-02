@@ -43,19 +43,57 @@
   <div id="map"></div>
   <script src="./index.js"></script>
   <script type="application/javascript">
-    const myCity = new city.Takamatsu.Map();
 
-    myCity.on('load', () => {
-      myCity.loadData('商業地域', {
-        'fill-color': '#FFFF00',
-      })
-      myCity.loadData('第一種低層住居専用地域')
-      myCity.loadData('第二種低層住居専用地域')
+    const geojson = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: {
+            name: 'やんばるHotCafe',
+            price: '¥1,000〜2,000',
+            category: 'レストラン'
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: [127.98946107360247, 26.67593043421343]
+          }
+        },
+        {
+          type: 'Feature',
+          properties: {
+            name: '森の巣箱',
+            price: '¥1,000〜2,000',
+            category: 'カフェ・喫茶'
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: [127.98748696778947, 26.661740999954894]
+          }
+        }
+      ]
+    }
 
-      const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRpQCIbBDkpOTxE0GvGZ6n-L6cp20tqSv-2bz_tcFMa1H42s8RITKcwk-aDs3T1pAipzxI4fXG9klZ5/pub?gid=1842161479&single=true&output=csv'
-      myCity.loadCSV(url)
+    const japan = new geolonia.japan.Map({
+      lngLat: [127.41, 26.13]
+    });
 
-      myCity.on('click', url, (e) => {
+    japan.on('load', () => {
+      // csvデータの読み込み
+      const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSv5OOG_biAGX5Q2XXrBPEtfthDNmFFtwPd50wCRON4aphbQMPHUWXtvzZ7UUjOFGhmNSv3h_jE-tyu/pub?gid=2058114753&single=true&output=csv'
+      japan.loadCSV(url, '選挙時投票所一覧', {
+        'marker-color': '#eba037'
+      });
+
+      // geojsonの読み込み
+      japan.loadGeojson(geojson, 'restaurant', {
+        'marker-symbol': 'marker:restaurant',
+        'marker-size': 'large',
+      });
+
+      console.log(japan.getSource('選挙時投票所一覧'));
+
+      japan.on('click', url, (e) => {
         const coordinates = e.features[0].geometry.coordinates.slice();
         const properties = e.features[0].properties;
 
