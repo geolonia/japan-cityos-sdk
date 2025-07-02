@@ -156,24 +156,32 @@
     const csvToGeoJSON = (data) => {
         return {
             type: 'FeatureCollection',
-            features: data.map((d) => {
+            features: data
+                .map((d) => {
                 let latKey = Object.keys(d).find(k => k.toLowerCase().includes('lat') || k.includes('緯度'));
                 let lngKey = Object.keys(d).find(k => k.toLowerCase().includes('lng') || k.toLowerCase().includes('lon') || k.includes('経度'));
+                // 緯度経度が見つからない場合はundefinedを返す
+                if (!latKey || !lngKey || !d[latKey] || !d[lngKey])
+                    return undefined;
                 return {
                     type: 'Feature',
                     geometry: {
                         type: 'Point',
                         coordinates: [
-                            lngKey ? Number(d[lngKey]) : 0,
-                            latKey ? Number(d[latKey]) : 0
+                            Number(d[lngKey]),
+                            Number(d[latKey])
                         ]
                     },
                     properties: d
                 };
             })
+                .filter((f) => !!f) // undefinedを除外
         };
     };
     const createSourceByType = (type, data) => {
+        if (!data) {
+            return undefined;
+        }
         if (type === 'geojson') {
             return {
                 type: 'geojson',
@@ -184,6 +192,12 @@
             };
         }
         else if (type === 'vector') {
+            if (Array.isArray(data)) {
+                return {
+                    type: 'vector',
+                    tiles: data
+                };
+            }
             return {
                 type: 'vector',
                 url: data
@@ -209,7 +223,7 @@
      * @returns maplibregl.LayerSpecification[]
      */
     const createLayer = (className, options) => {
-        var _a, _b;
+        var _a, _b, _c, _d, _e, _f, _g, _h;
         if (!className) {
             return [];
         }
@@ -220,12 +234,13 @@
         if (simpleStyle['marker-symbol'] || simpleStyle['title']) {
             const iconSizeKey = simpleStyle['marker-size'];
             const iconSize = (_a = MARKER_SIZE_MAP[iconSizeKey]) !== null && _a !== void 0 ? _a : MARKER_SIZE_MAP.medium;
-            layers.push(Object.assign(Object.assign({}, base), { type: 'symbol', layout: Object.assign({ 'icon-image': simpleStyle['marker-symbol'] || DEFAULT_MARKER_NAME, 'icon-size': iconSize }, (simpleStyle['title'] ? {
+            layers.push(Object.assign(Object.assign({}, base), { type: 'symbol', layout: Object.assign({ 'icon-image': (_b = simpleStyle['marker-symbol']) !== null && _b !== void 0 ? _b : DEFAULT_MARKER_NAME, 'icon-size': iconSize }, (simpleStyle['title'] ? {
                     'text-field': simpleStyle['title'],
-                    'text-font': simpleStyle['text-font'] || ['Noto Sans JP Regular'],
-                    'text-size': simpleStyle['text-size'] || 12,
-                    'text-color': simpleStyle['text-color'] || DEFAULT_TEXT_COLOR,
-                } : {})), paint: simpleStyle.paint || {}, filter: [
+                    'text-font': (_c = simpleStyle['text-font']) !== null && _c !== void 0 ? _c : ["Noto Sans Regular"],
+                    'text-size': (_d = simpleStyle['text-size']) !== null && _d !== void 0 ? _d : 12,
+                    'text-offset': (_e = simpleStyle['text-offset']) !== null && _e !== void 0 ? _e : [0, 1.5],
+                    'text-anchor': (_f = simpleStyle['text-anchor']) !== null && _f !== void 0 ? _f : 'top'
+                } : {})), paint: Object.assign(Object.assign({}, (simpleStyle.paint || {})), (simpleStyle['title'] && { 'text-color': (_g = simpleStyle['text-color']) !== null && _g !== void 0 ? _g : DEFAULT_TEXT_COLOR })), filter: [
                     'all',
                     ...(base.filter ? [base.filter] : []),
                     ['==', '$type', 'Point']
@@ -233,7 +248,7 @@
         }
         else {
             const circleSizeKey = simpleStyle['circle-radius'];
-            const circleSize = (_b = CIRCLE_SIZE_MAP[circleSizeKey]) !== null && _b !== void 0 ? _b : CIRCLE_SIZE_MAP.medium;
+            const circleSize = (_h = CIRCLE_SIZE_MAP[circleSizeKey]) !== null && _h !== void 0 ? _h : CIRCLE_SIZE_MAP.medium;
             layers.push(Object.assign(Object.assign({}, base), { type: 'circle', paint: Object.assign({ 'circle-radius': circleSize, 'circle-color': simpleStyle['marker-color'] || DEFAULT_CIRCLE_COLOR }, simpleStyle.paint), filter: [
                     'all',
                     ...(base.filter ? [base.filter] : []),

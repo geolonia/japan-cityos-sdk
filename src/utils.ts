@@ -129,16 +129,20 @@ export const createLayer = (
       ...base,
       type: 'symbol',
       layout: {
-        'icon-image': simpleStyle['marker-symbol'] || DEFAULT_MARKER_NAME,
+        'icon-image': simpleStyle['marker-symbol'] ?? DEFAULT_MARKER_NAME,
         'icon-size': iconSize,
         ...(simpleStyle['title'] ? { 
           'text-field': simpleStyle['title'],
-          'text-font': simpleStyle['text-font'] || ['Noto Sans JP Regular'],
-          'text-size': simpleStyle['text-size'] || 12,
-          'text-color': simpleStyle['text-color'] || DEFAULT_TEXT_COLOR,
+          'text-font': simpleStyle['text-font'] ?? ["Noto Sans Regular"],
+          'text-size': simpleStyle['text-size'] ?? 12,
+          'text-offset': simpleStyle['text-offset'] ?? [0, 1.5],
+          'text-anchor': simpleStyle['text-anchor'] ?? 'top'
         } : {}),
       },
-      paint: simpleStyle.paint || {},
+      paint: {
+        ...(simpleStyle.paint || {}),
+        ...(simpleStyle['title'] && { 'text-color': simpleStyle['text-color'] ?? DEFAULT_TEXT_COLOR }),
+      },
       filter: [
         'all',
         ...(base.filter ? [base.filter] : []),

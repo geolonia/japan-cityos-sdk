@@ -88,12 +88,8 @@
 
       // geojsonの読み込み
       japan.loadGeojson(geojson, 'restaurant', {
-        'marker-symbol': 'marker:restaurant'
-      });
-
-      japan.on('moveend', () => {
-        const center = japan.getCenter();
-        console.log(`Map center: ${center.lng}, ${center.lat}, Zoom: ${japan.getZoom()}`);
+        'marker-symbol': 'marker:restaurant',
+        'title': ['get', 'name'],
       });
 
       japan.on('click', url, (e) => {

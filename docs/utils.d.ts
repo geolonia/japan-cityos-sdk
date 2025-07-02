@@ -6,7 +6,7 @@ import type { FeatureCollection } from "geojson";
  */
 export declare const parseApiKey: (script: HTMLScriptElement) => string;
 export declare const csvToGeoJSON: (data: any[]) => FeatureCollection;
-export declare const createSourceByType: (type: 'geojson' | 'vector' | 'raster', data: any) => maplibregl.SourceSpecification;
+export declare const createSourceByType: (type: 'geojson' | 'vector' | 'raster', data: any | undefined) => maplibregl.SourceSpecification | undefined;
 /**
  * 指定された情報からpoint/symbol, line, polygonレイヤーのLayer定義を返す
  * @param className クラス名（レイヤーIDにも利用）
