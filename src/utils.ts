@@ -30,22 +30,27 @@ export const parseApiKey = (script: HTMLScriptElement) => {
 export const csvToGeoJSON = (data: any[]): FeatureCollection => {
   return {
     type: 'FeatureCollection',
-    features: data.map((d: any) => {
-      let latKey = Object.keys(d).find(k => k.toLowerCase().includes('lat') || k.includes('緯度'));
-      let lngKey = Object.keys(d).find(k => k.toLowerCase().includes('lng') || k.toLowerCase().includes('lon') || k.includes('経度'));
+    features: data
+      .map((d: any) => {
+        let latKey = Object.keys(d).find(k => k.toLowerCase().includes('lat') || k.includes('緯度'));
+        let lngKey = Object.keys(d).find(k => k.toLowerCase().includes('lng') || k.toLowerCase().includes('lon') || k.includes('経度'));
 
-      return {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [
-            lngKey ? Number(d[lngKey]) : 0,
-            latKey ? Number(d[latKey]) : 0
-          ]
-        },
-        properties: d
-      } as Feature;
-    })
+        // 緯度経度が見つからない場合はundefinedを返す
+        if (!latKey || !lngKey || !d[latKey] || !d[lngKey]) return undefined;
+
+        return {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [
+              Number(d[lngKey]),
+              Number(d[latKey])
+            ]
+          },
+          properties: d
+        } as Feature;
+      })
+      .filter((f): f is Feature => !!f) // undefinedを除外
   };
 }
 
