@@ -143,6 +143,8 @@ export const createLayer = (
       paint: {
         ...(simpleStyle.paint || {}),
         ...(simpleStyle['title'] && { 'text-color': simpleStyle['text-color'] ?? DEFAULT_TEXT_COLOR }),
+        'text-halo-color': '#fff',
+        'text-halo-width': 2
       },
       filter: [
         'all',
