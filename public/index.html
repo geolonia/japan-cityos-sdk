@@ -75,7 +75,8 @@
     }
 
     const japan = new geolonia.japan.Map({
-      lngLat: [127.41, 26.13]
+      lngLat: [127.99866582363768, 26.47678028796848],
+      zoom: 9.587623189139185
     });
 
     japan.on('load', () => {
@@ -87,8 +88,7 @@
 
       // geojsonの読み込み
       japan.loadGeojson(geojson, 'restaurant', {
-        'marker-symbol': 'marker:restaurant',
-        'marker-size': 'large',
+        'marker-symbol': 'marker:restaurant'
       });
 
       japan.on('click', url, (e) => {

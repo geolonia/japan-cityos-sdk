@@ -75,7 +75,8 @@
     }
 
     const japan = new geolonia.japan.Map({
-      lngLat: [127.41, 26.13]
+      lngLat: [127.99866582363768, 26.47678028796848],
+      zoom: 9.587623189139185
     });
 
     japan.on('load', () => {
@@ -87,11 +88,13 @@
 
       // geojsonの読み込み
       japan.loadGeojson(geojson, 'restaurant', {
-        'marker-symbol': 'marker:restaurant',
-        'marker-size': 'large',
+        'marker-symbol': 'marker:restaurant'
       });
 
-      console.log(japan.getSource('選挙時投票所一覧'));
+      japan.on('moveend', () => {
+        const center = japan.getCenter();
+        console.log(`Map center: ${center.lng}, ${center.lat}, Zoom: ${japan.getZoom()}`);
+      });
 
       japan.on('click', url, (e) => {
         const coordinates = e.features[0].geometry.coordinates.slice();

@@ -10258,13 +10258,11 @@
                 const data = Papa.parse(csv, { header: true }).data;
                 const geojson = csvToGeoJSON(data);
                 this.addSource(className, createSourceByType('geojson', geojson));
-                console.log('geojson', geojson, this.getSource(className), data);
                 const layers = createLayer(className, {
                     simpleStyle: simpleStyle
                 });
                 layers.forEach(layer => {
                     this.addLayer(layer);
-                    console.log(this.getLayer(layer.id), layer);
                 });
             });
         }
