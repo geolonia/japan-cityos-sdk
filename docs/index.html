@@ -106,8 +106,8 @@
       });
 
       japan.on('click', (e) => {
-        const hasFeature = japan.hasFeature(e.lngLat, ['restaurant', '選挙時投票所一覧']);
-        const features = japan.getFeatures(e.lngLat, ['restaurant', '選挙時投票所一覧']);
+        const hasFeature = japan.hasFeature([e.point.x, e.point.y], ['restaurant', '選挙時投票所一覧']);
+        const features = japan.getFeatures([e.point.x, e.point.y], ['restaurant', '選挙時投票所一覧']);
 
         const x = e.point.x;
         const y = e.point.y;
