@@ -10254,6 +10254,34 @@
     	layers: layers
     };
 
+    /**
+     * 任意のtarget（[lng,lat] | {lng,lat} | bbox）をピクセルクエリボックスに変換する
+     * @param map maplibregl.Mapインスタンス
+     * @param target [lng,lat] | {lng,lat} | [[minLng,minLat],[maxLng,maxLat]]
+     * @returns [[x1, y1], [x2, y2]] | null
+     */
+    function toQueryBox(xy) {
+        if (!xy || xy.length < 2 || !Array.isArray(xy)) {
+            return null;
+        }
+        let queryBox;
+        if (Array.isArray(xy) && xy.length === 2 && typeof xy[0] === 'number' && typeof xy[1] === 'number') {
+            // [x, y]
+            if (Number.isNaN(xy[0]) || Number.isNaN(xy[1])) {
+                return null;
+            }
+            queryBox = [
+                [xy[0] - 1, xy[1] - 1],
+                [xy[0] + 1, xy[1] + 1]
+            ];
+        }
+        else if (Array.isArray(xy) && xy.length === 2 && Array.isArray(xy[0]) && Array.isArray(xy[1])) {
+            // bbox: [[minX, minY], [maxX, maxY]]
+            queryBox = xy;
+        }
+        return queryBox;
+    }
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d;
@@ -10349,23 +10377,23 @@
             });
         }
         /**
-         * 指定した座標のFeatureが存在するか判定する
-         * @param lngLat [経度, 緯度]の配列
+         * 指定した座標またはbboxのFeatureが存在するか判定する
+         * @param xy [lng,lat] | {lng,lat} | [[minLng,minLat],[maxLng,maxLat]]
+         * @param layerIds レイヤーIDまたは配列
          * @returns 存在すればtrue、なければfalse
          */
-        hasFeature(lngLat, layerIds) {
-            if (!lngLat
-                || (Array.isArray(lngLat) && (Number.isNaN(lngLat[0]) || Number.isNaN(lngLat[1])))) {
+        hasFeature(xy, layerIds) {
+            if (!xy) {
                 return false;
             }
-            const point = this.project(Array.isArray(lngLat) ? { lng: lngLat[0], lat: lngLat[1] } : lngLat);
+            const queryBox = toQueryBox(xy);
+            if (!queryBox) {
+                return false;
+            }
             const layers = layerIds
                 ? Array.isArray(layerIds) ? layerIds : [layerIds]
                 : undefined;
-            const features = this.queryRenderedFeatures([
-                [point.x - 1, point.y - 1],
-                [point.x + 1, point.y + 1]
-            ], layers ? { layers } : undefined);
+            const features = this.queryRenderedFeatures(queryBox, layers ? { layers } : undefined);
             return features.length > 0;
         }
         /**
