@@ -215,6 +215,48 @@ export const createLayer = (
 
 
 /**
+ * previousStyle.sourcesから、loadedSourceIdsに含まれるsourceのみを抽出し、nextStyle.sourcesをマージして返す
+ * @param previousSources - 前のスタイルのsources
+ * @param nextSources - 次のスタイルのsources
+ * @param loadedSourceIds - 読み込まれたsourceのIDのセット
+ * @returns マージされたsources
+ */
+export function mergeSourcesByLoadedIds(
+  previousSources: Record<string, any>,
+  nextSources: Record<string, any>,
+  loadedSourceIds: Set<string>
+): Record<string, any> {
+  const filteredSources = Object.keys(previousSources).reduce((acc, id) => {
+    if (loadedSourceIds.has(id)) {
+      acc[id] = previousSources[id];
+    }
+    return acc;
+  }, {} as Record<string, any>);
+  Object.assign(filteredSources, nextSources);
+  
+  return filteredSources;
+}
+
+/**
+ * previousStyle.layersから、loadedSourceIdsに含まれるsourceを持つlayerのみ抽出し、nextStyle.layersを先頭にマージして返す
+ * @param previousLayers - 前のスタイルのlayers
+ * @param nextLayers - 次のスタイルのlayers
+ * @param loadedSourceIds - 読み込まれたsourceのIDのセット
+ * @returns マージされたlayers
+ */
+export function mergeLayersByLoadedIds(
+  previousLayers: any[],
+  nextLayers: any[],
+  loadedSourceIds: Set<string>
+): any[] {
+  const filteredPrevLayers = previousLayers.filter(
+    layer => 'source' in layer && loadedSourceIds.has((layer as { source: string }).source)
+  );
+  return [...nextLayers, ...filteredPrevLayers];
+}
+
+
+/**
  * includeObj, notIncludeObj から maplibregl の filter expressions を生成する
  * @param {Record<string, string | number>} includeObj - 含めたい値のオブジェクト（key: プロパティ名, value: 含めたい値）
  * @param {Record<string, string | number>} notIncludeObj - 除外したい値のオブジェクト（key: プロパティ名, value: 除外したい値）

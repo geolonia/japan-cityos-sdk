@@ -274,6 +274,34 @@
             ] }));
         return layers;
     };
+    /**
+     * previousStyle.sourcesから、loadedSourceIdsに含まれるsourceのみを抽出し、nextStyle.sourcesをマージして返す
+     * @param previousSources - 前のスタイルのsources
+     * @param nextSources - 次のスタイルのsources
+     * @param loadedSourceIds - 読み込まれたsourceのIDのセット
+     * @returns マージされたsources
+     */
+    function mergeSourcesByLoadedIds(previousSources, nextSources, loadedSourceIds) {
+        const filteredSources = Object.keys(previousSources).reduce((acc, id) => {
+            if (loadedSourceIds.has(id)) {
+                acc[id] = previousSources[id];
+            }
+            return acc;
+        }, {});
+        Object.assign(filteredSources, nextSources);
+        return filteredSources;
+    }
+    /**
+     * previousStyle.layersから、loadedSourceIdsに含まれるsourceを持つlayerのみ抽出し、nextStyle.layersを先頭にマージして返す
+     * @param previousLayers - 前のスタイルのlayers
+     * @param nextLayers - 次のスタイルのlayers
+     * @param loadedSourceIds - 読み込まれたsourceのIDのセット
+     * @returns マージされたlayers
+     */
+    function mergeLayersByLoadedIds(previousLayers, nextLayers, loadedSourceIds) {
+        const filteredPrevLayers = previousLayers.filter(layer => 'source' in layer && loadedSourceIds.has(layer.source));
+        return [...nextLayers, ...filteredPrevLayers];
+    }
 
     var papaparse = {exports: {}};
 
@@ -10314,19 +10342,9 @@
         setBaseMapStyle(styleUrlOrObject) {
             this.setStyle(styleUrlOrObject, {
                 transformStyle: (previousStyle, nextStyle) => {
-                    const filteredSources = Object.keys(previousStyle.sources).reduce((acc, id) => {
-                        if (this.loadedSourceIds.has(id)) {
-                            acc[id] = previousStyle.sources[id];
-                        }
-                        return acc;
-                    }, {});
-                    Object.assign(filteredSources, nextStyle.sources);
-                    // loadedSourceIdsに含まれるlayerのみ残す
-                    const filteredLayers = [
-                        ...nextStyle.layers,
-                        ...previousStyle.layers.filter(layer => 'source' in layer && this.loadedSourceIds.has(layer.source)),
-                    ];
-                    return Object.assign(Object.assign(Object.assign({}, previousStyle), nextStyle), { sources: filteredSources, layers: filteredLayers });
+                    const newSources = mergeSourcesByLoadedIds(previousStyle.sources, nextStyle.sources, this.loadedSourceIds);
+                    const newLayers = mergeLayersByLoadedIds(previousStyle.layers, nextStyle.layers, this.loadedSourceIds);
+                    return Object.assign(Object.assign(Object.assign({}, previousStyle), nextStyle), { sources: newSources, layers: newLayers });
                 }
             });
         }

@@ -1,6 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { createLayer, createSourceByType, csvToGeoJSON, parseApiKey } from './utils';
+import { createLayer, createSourceByType, csvToGeoJSON, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey } from './utils';
 import Papa from 'papaparse';
 
 
@@ -106,26 +106,13 @@ class GeoloniaMap extends maplibregl.Map {
   setBaseMapStyle(styleUrlOrObject: string | maplibregl.StyleSpecification) {
     this.setStyle(styleUrlOrObject, {
       transformStyle: (previousStyle, nextStyle) => {
-        const filteredSources = Object.keys(previousStyle.sources).reduce((acc, id) => {
-          if (this.loadedSourceIds.has(id)) {
-            acc[id] = previousStyle.sources[id];
-          }
-          return acc;
-        }, {} as Record<string, any>);
-
-        Object.assign(filteredSources, nextStyle.sources);
-
-        // loadedSourceIdsに含まれるlayerのみ残す
-        const filteredLayers = [
-          ...nextStyle.layers,
-          ...previousStyle.layers.filter(layer => 'source' in layer && this.loadedSourceIds.has((layer as { source: string }).source)),
-        ];
-
+        const newSources = mergeSourcesByLoadedIds(previousStyle.sources, nextStyle.sources, this.loadedSourceIds);
+        const newLayers = mergeLayersByLoadedIds(previousStyle.layers, nextStyle.layers, this.loadedSourceIds);
         return {
           ...previousStyle,
           ...nextStyle,
-          sources: filteredSources,
-          layers: filteredLayers
+          sources: newSources,
+          layers: newLayers
         };
       }
     });
