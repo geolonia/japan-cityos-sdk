@@ -1,4 +1,4 @@
-import maplibregl from 'maplibre-gl';
+import maplibregl, { LngLatLike } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { createLayer, createSourceByType, csvToGeoJSON, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey } from './utils';
 import Papa from 'papaparse';
@@ -116,6 +116,34 @@ class GeoloniaMap extends maplibregl.Map {
         };
       }
     });
+  }
+
+  /**
+   * 指定した座標のFeatureが存在するか判定する
+   * @param lngLat [経度, 緯度]の配列
+   * @returns 存在すればtrue、なければfalse
+   */
+  hasFeature(lngLat: LngLatLike | undefined, layerIds?: string | string[]): boolean {
+    if (
+      !lngLat 
+      || (Array.isArray(lngLat) && ( Number.isNaN(lngLat[0]) ||  Number.isNaN(lngLat[1]) ))
+    ) { return false; }
+
+    const point = this.project(
+      Array.isArray(lngLat) ? { lng: lngLat[0], lat: lngLat[1] } : lngLat
+    );
+    const layers = layerIds
+      ? Array.isArray(layerIds) ? layerIds : [layerIds]
+      : undefined;
+
+    const features = this.queryRenderedFeatures(
+      [
+        [point.x - 1, point.y - 1],
+        [point.x + 1, point.y + 1]
+      ],
+      layers ? { layers } : undefined
+    );
+    return features.length > 0;
   }
 
 }
