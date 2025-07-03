@@ -106,21 +106,26 @@
       });
 
       japan.on('click', (e) => {
-        console.log(japan.hasFeature(e.lngLat, ['restaurant', '選挙時投票所一覧']));
+        const hasFeature = japan.hasFeature(e.lngLat, ['restaurant', '選挙時投票所一覧']);
+        const features = japan.getFeatures(e.lngLat, ['restaurant', '選挙時投票所一覧']);
 
-        // let tableHTML = "<table class='popup-table'>";
-        // tableHTML += "<tr><th>属性</th><th>値</th></tr>"; // ヘッダー行を追加
-        // for (let key in properties) {
-        //   tableHTML += `<tr><td>${key}</td><td>${properties[key]}</td></tr>`;
-        // }
-        // tableHTML += "</table>";
+        if(!hasFeature) { return; }
 
-        // new city.Takamatsu.Popup({
-        //   maxWidth: '300px'
-        // })
-        //   .setLngLat(coordinates)
-        //   .setHTML(tableHTML)
-        //   .addTo(myCity);
+        const properties = features[0].properties;
+
+        let tableHTML = "<table class='popup-table'>";
+        tableHTML += "<tr><th>属性</th><th>値</th></tr>"; // ヘッダー行を追加
+        for (let key in properties) {
+          tableHTML += `<tr><td>${key}</td><td>${properties[key]}</td></tr>`;
+        }
+        tableHTML += "</table>";
+
+        new geolonia.japan.Popup({
+          maxWidth: '300px'
+        })
+          .setLngLat(e.lngLat)
+          .setHTML(tableHTML)
+          .addTo(japan);
       });
     })
   </script>
