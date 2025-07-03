@@ -10246,6 +10246,7 @@
                 }
             };
             super(Object.assign(Object.assign({}, defaults), params));
+            this.loadedSourceIds = new Set();
         }
         /* ****************
          * レイヤーを追加する
@@ -10284,6 +10285,7 @@
                 layers.forEach(layer => {
                     this.addLayer(layer);
                 });
+                this.loadedSourceIds.add(className);
             });
         }
         /* ****************
@@ -10302,6 +10304,30 @@
                     simpleStyle: simpleStyle
                 });
                 layers.forEach(layer => { this.addLayer(layer); });
+                this.loadedSourceIds.add(className);
+            });
+        }
+        /****************
+         * 背景地図のスタイルを切り替える
+         * @param styleUrlOrObject スタイルのURLまたはオブジェクト
+         ****************/
+        setBaseMapStyle(styleUrlOrObject) {
+            this.setStyle(styleUrlOrObject, {
+                transformStyle: (previousStyle, nextStyle) => {
+                    const filteredSources = Object.keys(previousStyle.sources).reduce((acc, id) => {
+                        if (this.loadedSourceIds.has(id)) {
+                            acc[id] = previousStyle.sources[id];
+                        }
+                        return acc;
+                    }, {});
+                    Object.assign(filteredSources, nextStyle.sources);
+                    // loadedSourceIdsに含まれるlayerのみ残す
+                    const filteredLayers = [
+                        ...nextStyle.layers,
+                        ...previousStyle.layers.filter(layer => 'source' in layer && this.loadedSourceIds.has(layer.source)),
+                    ];
+                    return Object.assign(Object.assign(Object.assign({}, previousStyle), nextStyle), { sources: filteredSources, layers: filteredLayers });
+                }
             });
         }
     }

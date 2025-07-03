@@ -14,6 +14,8 @@ declare global {
 	
 class GeoloniaMap extends maplibregl.Map {
 
+  private loadedSourceIds: Set<string> = new Set();
+
   constructor(params: any) {
     const defaults = {
       container: params.container ?? 'map',
@@ -72,6 +74,8 @@ class GeoloniaMap extends maplibregl.Map {
     layers.forEach(layer => { 
       this.addLayer(layer); 
     });
+
+    this.loadedSourceIds.add(className);
   }
 
   /* ****************
@@ -91,6 +95,40 @@ class GeoloniaMap extends maplibregl.Map {
       simpleStyle: simpleStyle
     });
     layers.forEach(layer => { this.addLayer(layer); });
+
+    this.loadedSourceIds.add(className);
+  }
+
+  /****************
+   * 背景地図のスタイルを切り替える
+   * @param styleUrlOrObject スタイルのURLまたはオブジェクト
+   ****************/
+  setBaseMapStyle(styleUrlOrObject: string | maplibregl.StyleSpecification) {
+    this.setStyle(styleUrlOrObject, {
+      transformStyle: (previousStyle, nextStyle) => {
+        const filteredSources = Object.keys(previousStyle.sources).reduce((acc, id) => {
+          if (this.loadedSourceIds.has(id)) {
+            acc[id] = previousStyle.sources[id];
+          }
+          return acc;
+        }, {} as Record<string, any>);
+
+        Object.assign(filteredSources, nextStyle.sources);
+
+        // loadedSourceIdsに含まれるlayerのみ残す
+        const filteredLayers = [
+          ...nextStyle.layers,
+          ...previousStyle.layers.filter(layer => 'source' in layer && this.loadedSourceIds.has((layer as { source: string }).source)),
+        ];
+
+        return {
+          ...previousStyle,
+          ...nextStyle,
+          sources: filteredSources,
+          layers: filteredLayers
+        };
+      }
+    });
   }
 
 }
