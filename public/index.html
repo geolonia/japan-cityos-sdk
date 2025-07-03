@@ -109,6 +109,16 @@
         const hasFeature = japan.hasFeature(e.lngLat, ['restaurant', '選挙時投票所一覧']);
         const features = japan.getFeatures(e.lngLat, ['restaurant', '選挙時投票所一覧']);
 
+        const x = e.point.x;
+        const y = e.point.y;
+        const bbox = [
+          [x - 10, y - 10],
+          [x + 10, y + 10]
+        ];
+        const hasBboxFeature = japan.hasFeature(bbox, ['restaurant', '選挙時投票所一覧']);
+        // bboxの範囲を検索
+        console.log(hasBboxFeature);
+
         if(!hasFeature) { return; }
 
         const properties = features[0].properties;
