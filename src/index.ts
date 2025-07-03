@@ -1,6 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { createLayer, createSourceByType, csvToGeoJSON, parseApiKey } from './utils';
+import { createLayer, createSourceByType, csvToGeoJSON, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey } from './utils';
 import Papa from 'papaparse';
 
 
@@ -13,6 +13,8 @@ declare global {
 }
 	
 class GeoloniaMap extends maplibregl.Map {
+
+  private loadedSourceIds: Set<string> = new Set();
 
   constructor(params: any) {
     const defaults = {
@@ -72,6 +74,8 @@ class GeoloniaMap extends maplibregl.Map {
     layers.forEach(layer => { 
       this.addLayer(layer); 
     });
+
+    this.loadedSourceIds.add(className);
   }
 
   /* ****************
@@ -91,6 +95,27 @@ class GeoloniaMap extends maplibregl.Map {
       simpleStyle: simpleStyle
     });
     layers.forEach(layer => { this.addLayer(layer); });
+
+    this.loadedSourceIds.add(className);
+  }
+
+  /****************
+   * 背景地図のスタイルを切り替える
+   * @param styleUrlOrObject スタイルのURLまたはオブジェクト
+   ****************/
+  setBaseMapStyle(styleUrlOrObject: string | maplibregl.StyleSpecification) {
+    this.setStyle(styleUrlOrObject, {
+      transformStyle: (previousStyle, nextStyle) => {
+        const newSources = mergeSourcesByLoadedIds(previousStyle.sources, nextStyle.sources, this.loadedSourceIds);
+        const newLayers = mergeLayersByLoadedIds(previousStyle.layers, nextStyle.layers, this.loadedSourceIds);
+        return {
+          ...previousStyle,
+          ...nextStyle,
+          sources: newSources,
+          layers: newLayers
+        };
+      }
+    });
   }
 
 }

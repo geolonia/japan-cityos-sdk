@@ -40,6 +40,14 @@
 </head>
 
 <body>
+  <div style="position:absolute;z-index:10;top:10px;left:10px;">
+    <select id="style-select">
+      <option value="https://geoloniamaps.github.io/gsi/style.json">標準</option>
+      <option value="https://smartmap.styles.geoloniamaps.com/style.json">GSI</option>
+      <option value="https://smartcity-satellite.styles.geoloniamaps.com/style.json">衛星写真</option>
+      <option value="https://chizubouken-lab.pages.dev/rpg-style.json">ゲーム風</option>
+    </select>
+  </div>
   <div id="map"></div>
   <script src="./index.js"></script>
   <script type="application/javascript">
@@ -77,6 +85,11 @@
     const japan = new geolonia.japan.Map({
       lngLat: [127.99866582363768, 26.47678028796848],
       zoom: 9.587623189139185
+    });
+
+    // スタイル切り替え
+    document.getElementById('style-select').addEventListener('change', function (e) {
+      japan.setBaseMapStyle(e.target.value);
     });
 
     japan.on('load', () => {
