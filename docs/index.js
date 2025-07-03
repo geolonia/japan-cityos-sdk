@@ -10397,23 +10397,23 @@
             return features.length > 0;
         }
         /**
-         * 指定した座標のFeatureが存在するか判定する
-         * @param lngLat [経度, 緯度]の配列
-         * @returns 存在すればtrue、なければfalse
+         * 指定した座標またはbboxのFeatureを取得する
+         * @param xy [lng,lat] | {lng,lat} | [[minLng,minLat],[maxLng,maxLat]]
+         * @param layerIds レイヤーIDまたは配列
+         * @returns Feature配列
          */
-        getFeatures(lngLat, layerIds) {
-            if (!lngLat
-                || (Array.isArray(lngLat) && (Number.isNaN(lngLat[0]) || Number.isNaN(lngLat[1])))) {
+        getFeatures(xy, layerIds) {
+            if (!xy) {
                 return [];
             }
-            const point = this.project(Array.isArray(lngLat) ? { lng: lngLat[0], lat: lngLat[1] } : lngLat);
+            const queryBox = toQueryBox(xy);
+            if (!queryBox) {
+                return [];
+            }
             const layers = layerIds
                 ? Array.isArray(layerIds) ? layerIds : [layerIds]
                 : undefined;
-            const features = this.queryRenderedFeatures([
-                [point.x - 1, point.y - 1],
-                [point.x + 1, point.y + 1]
-            ], layers ? { layers } : undefined);
+            const features = this.queryRenderedFeatures(queryBox, layers ? { layers } : undefined);
             return features;
         }
     }

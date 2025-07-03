@@ -116,8 +116,9 @@
           [x + 10, y + 10]
         ];
         const hasBboxFeature = japan.hasFeature(bbox, ['restaurant', '選挙時投票所一覧']);
+        const bboxFeatures = japan.getFeatures(bbox, ['restaurant', '選挙時投票所一覧']);
         // bboxの範囲を検索
-        console.log(hasBboxFeature);
+        console.log(hasBboxFeature, bboxFeatures);
 
         if(!hasFeature) { return; }
 
