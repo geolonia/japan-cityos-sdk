@@ -132,6 +132,7 @@ export const createLayer = (
       layout: {
         'icon-image': simpleStyle['marker-symbol'] ?? DEFAULT_MARKER_NAME,
         'icon-size': customIconSize ? customIconSize : iconSize,
+        'icon-allow-overlap': true,
         ...(simpleStyle['title'] ? { 
           'text-field': simpleStyle['title'],
           'text-font': simpleStyle['text-font'] ?? ["Noto Sans Regular"],
