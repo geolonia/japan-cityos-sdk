@@ -61,14 +61,25 @@ class GeoloniaMap extends maplibregl.Map {
    * @description
    *   指定したクラス名のレイヤーを追加します。
    * ****************/
-  async loadCSV (url: string, className: string, simpleStyle: { [key: string]: any } | undefined | null) {
-
+  async loadCSV (
+    url: string, 
+    className: string, 
+    simpleStyle: { [key: string]: any } | undefined | null
+  ) {
     const res = await fetch(url);
     const csv = await res.text();
     const data = Papa.parse(csv, {header: true}).data
 
     const geojson = csvToGeoJSON(data);
-    this.addSource(className, createSourceByType('geojson', geojson));
+
+    // すでにSourceが存在する場合はデータを更新
+    const existingSource = this.getSource(className) as maplibregl.GeoJSONSource | undefined;
+    if (existingSource && 'setData' in existingSource) {
+      existingSource.setData(geojson as any);
+    } else {
+      this.addSource(className, createSourceByType('geojson', geojson));
+    }
+
     const layers = createLayer(className, {
       simpleStyle: simpleStyle
     });
@@ -88,9 +99,19 @@ class GeoloniaMap extends maplibregl.Map {
    * @description
    *   指定したクラス名のレイヤーを追加します。
    * ****************/
-  async loadGeojson (geojson: string | GeoJSON.FeatureCollection, className: string, simpleStyle: { [key: string]: any } | undefined | null) {
+  async loadGeojson(
+    geojson: string | GeoJSON.FeatureCollection,
+    className: string,
+    simpleStyle: { [key: string]: any } | undefined | null
+  ) {
+    // すでにSourceが存在する場合はデータを更新
+    const existingSource = this.getSource(className) as maplibregl.GeoJSONSource | undefined;
 
-    this.addSource(className, createSourceByType('geojson', geojson));
+    if (existingSource && 'setData' in existingSource) {
+      existingSource.setData(geojson as any);
+    } else {
+      this.addSource(className, createSourceByType('geojson', geojson));
+    }
 
     const layers = createLayer(className, {
       simpleStyle: simpleStyle
