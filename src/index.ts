@@ -1,6 +1,6 @@
 import maplibregl, { LngLatLike } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { createLayer, createSourceByType, csvToGeoJSON, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey } from './utils';
+import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey, updateLayer } from './utils';
 import Papa from 'papaparse';
 
 
@@ -116,7 +116,14 @@ class GeoloniaMap extends maplibregl.Map {
     const layers = createLayer(className, {
       simpleStyle: simpleStyle
     });
-    layers.forEach(layer => { this.addLayer(layer); });
+    const hasLayerFlg = hasLayer(this, className);
+    layers.forEach(layer => {
+      if (hasLayerFlg) { 
+        updateLayer(this, layer); 
+      } else {
+        this.addLayer(layer); 
+      }
+    });
 
     this.loadedSourceIds.add(className);
   }

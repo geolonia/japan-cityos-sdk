@@ -93,6 +93,28 @@ export const createSourceByType = (type: 'geojson' | 'vector' | 'raster', data: 
 }
 
 /**
+ * 指定したレイヤーIDまたはその派生（-line, -polygonなど）がマップに追加されているかチェックする
+ * @param map maplibregl.Mapインスタンス
+ * @param layerId レイヤーID
+ * @returns 存在すればtrue、なければfalse
+ */
+const LAYER_PATTERN = [
+  'line',
+  'polygon'
+]
+export function hasLayer(map: maplibregl.Map, layerId: string): boolean {
+  // ベースIDとLAYER_PATTERNの派生IDもチェック
+  const idsToCheck = [layerId, ...LAYER_PATTERN.map(type => `${layerId}-${type}`)];
+  return idsToCheck.some(id => {
+    try {
+      return !!map.getLayer(id);
+    } catch {
+      return false;
+    }
+  });
+}
+
+/**
  * 指定された情報からpoint/symbol, line, polygonレイヤーのLayer定義を返す
  * @param className クラス名（レイヤーIDにも利用）
  * @param options.simpleStyle シンボルや色などのスタイル指定
@@ -214,6 +236,36 @@ export const createLayer = (
   return layers;
 };
 
+/**
+ * 既存のレイヤーのlayoutやpaintプロパティを更新する
+ * @param map maplibregl.Mapインスタンス
+ * @param layer maplibregl.LayerSpecification
+ */
+export function updateLayer(map: maplibregl.Map, layer: maplibregl.LayerSpecification) {
+  const existingLayer = map.getLayer(layer.id);
+  if (!existingLayer) return;
+
+  // layoutの更新
+  if (layer.layout) {
+    Object.keys(layer.layout).forEach(key => {
+      try {
+        map.setLayoutProperty(layer.id, key, (layer.layout as any)[key]);
+      } catch (e) {
+        // プロパティが存在しない場合は無視
+      }
+    });
+  }
+  // paintの更新
+  if (layer.paint) {
+    Object.keys(layer.paint).forEach(key => {
+      try {
+        map.setPaintProperty(layer.id, key, (layer.paint as any)[key]);
+      } catch (e) {
+        // プロパティが存在しない場合は無視
+      }
+    });
+  }
+}
 
 /**
  * previousStyle.sourcesから、loadedSourceIdsに含まれるsourceのみを抽出し、nextStyle.sourcesをマージして返す
