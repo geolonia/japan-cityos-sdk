@@ -1,11 +1,13 @@
-import maplibregl, { LngLatLike } from 'maplibre-gl';
+import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey, updateLayer } from './utils';
+import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey, updateLayer } from './utils/mapUtils';
 import Papa from 'papaparse';
 
 
 import style from './style.json'
 import { toQueryBox } from './toQueryBox';
+import { OsmLayerNameType } from './types';
+import { addOsmLayer, addOsmSource, addOsmSprite, removeOsmLayer, toOsmLayerNameType } from './utils/osmPoiUtils';
 
 declare global {
   interface Window {
@@ -193,6 +195,52 @@ class GeoloniaMap extends maplibregl.Map {
 
     const features = this.queryRenderedFeatures(queryBox, layers ? { layers } : undefined);
     return features;
+  }
+
+  /**
+   * 指定した種類のpoiを表示する
+   * @param osmLayerName 表示するレイヤー名
+   */
+  loadOsmPoi(osmLayerName: string) {
+    if (!osmLayerName) { return; }
+    const layerId = toOsmLayerNameType(osmLayerName);
+    if (!layerId) { return; }
+    addOsmSource(this);
+    addOsmSprite(this, layerId);
+    addOsmLayer(this, layerId);
+  }
+
+  /**
+   * 指定した種類のpoiを非表示にする
+   * @param osmLayerName 非表示にするレイヤー名
+   */
+  removeOsmPoi(osmLayerName: string) {
+    if (!osmLayerName) { return; }
+    const layerId = toOsmLayerNameType(osmLayerName);
+    if (!layerId) { return; }
+    removeOsmLayer(this, layerId);
+  }
+
+  getOsmPoiLayers(): Record<OsmLayerNameType, string> {
+    return {
+      restaurant: 'レストラン',
+      railway: '鉄道',
+      mountain: '山',
+      airport: '空港',
+      school: '学校',
+      college: '大学',
+      convenience: 'コンビニ',
+      bank: '銀行',
+      hospital: '病院',
+      cafe: 'カフェ',
+      'fast-food': 'ファストフード',
+      zoo: '動物園',
+      parking: '駐車場',
+      castle: '城',
+      museum: '博物館',
+      park: '公園'
+    };
+
   }
 
 }

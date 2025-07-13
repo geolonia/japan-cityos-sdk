@@ -7,6 +7,7 @@ import type { FeatureCollection } from "geojson";
 export declare const parseApiKey: (script: HTMLScriptElement) => string;
 export declare const csvToGeoJSON: (data: any[]) => FeatureCollection;
 export declare const createSourceByType: (type: 'geojson' | 'vector' | 'raster', data: any | undefined) => maplibregl.SourceSpecification | undefined;
+export declare function hasLayer(map: maplibregl.Map, layerId: string): boolean;
 /**
  * 指定された情報からpoint/symbol, line, polygonレイヤーのLayer定義を返す
  * @param className クラス名（レイヤーIDにも利用）
@@ -22,6 +23,12 @@ export declare const createLayer: (className: string, options?: {
     sourceLayer?: string;
     filter?: maplibregl.FilterSpecification;
 }) => maplibregl.LayerSpecification[];
+/**
+ * 既存のレイヤーのlayoutやpaintプロパティを更新する
+ * @param map maplibregl.Mapインスタンス
+ * @param layer maplibregl.LayerSpecification
+ */
+export declare function updateLayer(map: maplibregl.Map, layer: maplibregl.LayerSpecification): void;
 /**
  * previousStyle.sourcesから、loadedSourceIdsに含まれるsourceのみを抽出し、nextStyle.sourcesをマージして返す
  * @param previousSources - 前のスタイルのsources

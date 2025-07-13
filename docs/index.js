@@ -215,6 +215,28 @@
         }
     };
     /**
+     * 指定したレイヤーIDまたはその派生（-line, -polygonなど）がマップに追加されているかチェックする
+     * @param map maplibregl.Mapインスタンス
+     * @param layerId レイヤーID
+     * @returns 存在すればtrue、なければfalse
+     */
+    const LAYER_PATTERN = [
+        'line',
+        'polygon'
+    ];
+    function hasLayer(map, layerId) {
+        // ベースIDとLAYER_PATTERNの派生IDもチェック
+        const idsToCheck = [layerId, ...LAYER_PATTERN.map(type => `${layerId}-${type}`)];
+        return idsToCheck.some(id => {
+            try {
+                return !!map.getLayer(id);
+            }
+            catch (_a) {
+                return false;
+            }
+        });
+    }
+    /**
      * 指定された情報からpoint/symbol, line, polygonレイヤーのLayer定義を返す
      * @param className クラス名（レイヤーIDにも利用）
      * @param options.simpleStyle シンボルや色などのスタイル指定
@@ -235,7 +257,7 @@
             const iconSizeKey = simpleStyle['marker-size'];
             const customIconSize = simpleStyle['custom-marker-size'];
             const iconSize = (_a = MARKER_SIZE_MAP[iconSizeKey]) !== null && _a !== void 0 ? _a : MARKER_SIZE_MAP.medium;
-            layers.push(Object.assign(Object.assign({}, base), { type: 'symbol', layout: Object.assign({ 'icon-image': (_b = simpleStyle['marker-symbol']) !== null && _b !== void 0 ? _b : DEFAULT_MARKER_NAME, 'icon-size': customIconSize ? customIconSize : iconSize }, (simpleStyle['title'] ? {
+            layers.push(Object.assign(Object.assign({}, base), { type: 'symbol', layout: Object.assign({ 'icon-image': (_b = simpleStyle['marker-symbol']) !== null && _b !== void 0 ? _b : DEFAULT_MARKER_NAME, 'icon-size': customIconSize ? customIconSize : iconSize, 'icon-allow-overlap': true }, (simpleStyle['title'] ? {
                     'text-field': simpleStyle['title'],
                     'text-font': (_c = simpleStyle['text-font']) !== null && _c !== void 0 ? _c : ["Noto Sans Regular"],
                     'text-size': (_d = simpleStyle['text-size']) !== null && _d !== void 0 ? _d : 12,
@@ -274,6 +296,38 @@
             ] }));
         return layers;
     };
+    /**
+     * 既存のレイヤーのlayoutやpaintプロパティを更新する
+     * @param map maplibregl.Mapインスタンス
+     * @param layer maplibregl.LayerSpecification
+     */
+    function updateLayer(map, layer) {
+        const existingLayer = map.getLayer(layer.id);
+        if (!existingLayer)
+            return;
+        // layoutの更新
+        if (layer.layout) {
+            Object.keys(layer.layout).forEach(key => {
+                try {
+                    map.setLayoutProperty(layer.id, key, layer.layout[key]);
+                }
+                catch (e) {
+                    // プロパティが存在しない場合は無視
+                }
+            });
+        }
+        // paintの更新
+        if (layer.paint) {
+            Object.keys(layer.paint).forEach(key => {
+                try {
+                    map.setPaintProperty(layer.id, key, layer.paint[key]);
+                }
+                catch (e) {
+                    // プロパティが存在しない場合は無視
+                }
+            });
+        }
+    }
     /**
      * previousStyle.sourcesから、loadedSourceIdsに含まれるsourceのみを抽出し、nextStyle.sourcesをマージして返す
      * @param previousSources - 前のスタイルのsources
@@ -2237,10 +2291,6 @@
     	"geolonia-gsi-custom": {
     		type: "vector",
     		url: "https://tileserver.geolonia.com/gsi-extra-v2/tiles.json?key=YOUR-API-KEY"
-    	},
-    	takamatsu: {
-    		type: "vector",
-    		url: "https://tileserver.geolonia.com/takamatsu_main_v0/tiles.json?key=YOUR-API-KEY"
     	}
     };
     var sprite = [
@@ -7497,73 +7547,6 @@
     		}
     	},
     	{
-    		id: "poi",
-    		type: "symbol",
-    		source: "geolonia-gsi-custom",
-    		"source-layer": "poi",
-    		minzoom: 16,
-    		filter: [
-    			"all",
-    			[
-    				"==",
-    				"$type",
-    				"Point"
-    			],
-    			[
-    				">",
-    				"rank",
-    				25
-    			],
-    			[
-    				"has",
-    				"name"
-    			],
-    			[
-    				"!=",
-    				"disputed",
-    				"japan_northern_territories"
-    			]
-    		],
-    		layout: {
-    			"text-padding": 2,
-    			"text-font": [
-    				"Noto Sans Regular"
-    			],
-    			"icon-image": [
-    				"coalesce",
-    				[
-    					"image",
-    					[
-    						"get",
-    						"class"
-    					]
-    				],
-    				[
-    					"image",
-    					"circle"
-    				]
-    			],
-    			"text-field": "{name}",
-    			"text-size": 12,
-    			"text-max-width": 9,
-    			"text-variable-anchor": [
-    				"top",
-    				"bottom",
-    				"left",
-    				"right"
-    			],
-    			"text-radial-offset": 0.7,
-    			"text-justify": "center",
-    			"text-anchor": "center"
-    		},
-    		paint: {
-    			"text-halo-blur": 0.5,
-    			"text-color": "#666",
-    			"text-halo-width": 1,
-    			"text-halo-color": "#ffffff"
-    		}
-    	},
-    	{
     		id: "oc-label-town",
     		type: "symbol",
     		source: "oceanus",
@@ -8090,866 +8073,6 @@
     			"text-color": "rgba(68, 68, 68, 1)",
     			"text-halo-width": 1.2,
     			"text-halo-color": "rgba(255,255,255,0.8)"
-    		}
-    	},
-    	{
-    		id: "poi-z16",
-    		type: "symbol",
-    		source: "geolonia-gsi-custom",
-    		"source-layer": "poi",
-    		minzoom: 16,
-    		filter: [
-    			"all",
-    			[
-    				"==",
-    				"$type",
-    				"Point"
-    			],
-    			[
-    				"has",
-    				"name"
-    			],
-    			[
-    				"!=",
-    				"disputed",
-    				"japan_northern_territories"
-    			]
-    		],
-    		layout: {
-    			"text-padding": 2,
-    			"text-font": [
-    				"Noto Sans Regular"
-    			],
-    			"text-anchor": "top",
-    			"icon-anchor": "bottom",
-    			"icon-image": "circle-stroked",
-    			"icon-size": 0.6,
-    			"text-field": "{name}",
-    			"text-offset": [
-    				0,
-    				0.3
-    			],
-    			"text-size": 12,
-    			"text-max-width": 9
-    		},
-    		paint: {
-    			"text-halo-blur": 0.5,
-    			"text-color": "#666",
-    			"text-halo-width": 1,
-    			"text-halo-color": "#ffffff"
-    		}
-    	},
-    	{
-    		id: "poi-z16-primary",
-    		type: "symbol",
-    		source: "geolonia-gsi-custom",
-    		"source-layer": "poi",
-    		minzoom: 16,
-    		filter: [
-    			"any",
-    			[
-    				"all",
-    				[
-    					"==",
-    					"$type",
-    					"Point"
-    				],
-    				[
-    					"has",
-    					"name"
-    				],
-    				[
-    					"in",
-    					"class",
-    					"cemetery",
-    					"restaurant",
-    					"bar",
-    					"cafe",
-    					"sushi",
-    					"restaurant_noodle",
-    					"fast_food",
-    					"ice_cream",
-    					"restaurant_pizza",
-    					"restaurant_seafood",
-    					"beer",
-    					"library",
-    					"fuel",
-    					"post",
-    					"police",
-    					"fire_station",
-    					"entrance",
-    					"bus",
-    					"attraction",
-    					"art_gallery"
-    				],
-    				[
-    					"!=",
-    					"disputed",
-    					"japan_northern_territories"
-    				]
-    			],
-    			[
-    				"all",
-    				[
-    					"in",
-    					"subclass",
-    					"community_centre"
-    				],
-    				[
-    					"!=",
-    					"disputed",
-    					"japan_northern_territories"
-    				]
-    			]
-    		],
-    		layout: {
-    			"text-padding": 2,
-    			"text-font": [
-    				"Noto Sans Regular"
-    			],
-    			"text-anchor": "top",
-    			"icon-anchor": "bottom",
-    			"icon-image": [
-    				"coalesce",
-    				[
-    					"image",
-    					[
-    						"get",
-    						"class"
-    					]
-    				],
-    				[
-    					"image",
-    					"circle-stroked"
-    				]
-    			],
-    			"text-field": "{name}",
-    			"text-offset": [
-    				0,
-    				0.3
-    			],
-    			"text-size": 12,
-    			"text-max-width": 9
-    		},
-    		paint: {
-    			"text-halo-blur": 0.5,
-    			"text-color": "#666",
-    			"text-halo-width": 1,
-    			"text-halo-color": "#ffffff"
-    		}
-    	},
-    	{
-    		id: "poi-z15",
-    		type: "symbol",
-    		source: "geolonia-gsi-custom",
-    		"source-layer": "poi",
-    		minzoom: 15,
-    		filter: [
-    			"all",
-    			[
-    				"==",
-    				"$type",
-    				"Point"
-    			],
-    			[
-    				"has",
-    				"name"
-    			],
-    			[
-    				"in",
-    				"class",
-    				"bank",
-    				"parking",
-    				"grocery",
-    				"shop",
-    				"school",
-    				"hospital"
-    			],
-    			[
-    				"!=",
-    				"disputed",
-    				"japan_northern_territories"
-    			]
-    		],
-    		layout: {
-    			"text-padding": 2,
-    			"text-font": [
-    				"Noto Sans Regular"
-    			],
-    			"text-anchor": "top",
-    			"icon-anchor": "bottom",
-    			"icon-image": [
-    				"coalesce",
-    				[
-    					"image",
-    					[
-    						"get",
-    						"class"
-    					]
-    				],
-    				[
-    					"image",
-    					"circle-stroked"
-    				]
-    			],
-    			"text-field": "{name}",
-    			"text-offset": [
-    				0,
-    				0.3
-    			],
-    			"text-size": 12,
-    			"text-max-width": 9
-    		},
-    		paint: {
-    			"text-halo-blur": 0.5,
-    			"text-color": "#666",
-    			"text-halo-width": 1,
-    			"text-halo-color": "#ffffff"
-    		}
-    	},
-    	{
-    		id: "poi-z14",
-    		type: "symbol",
-    		source: "geolonia-gsi-custom",
-    		"source-layer": "poi",
-    		minzoom: 14,
-    		filter: [
-    			"all",
-    			[
-    				"==",
-    				"$type",
-    				"Point"
-    			],
-    			[
-    				"has",
-    				"name"
-    			],
-    			[
-    				"in",
-    				"class",
-    				"college",
-    				"castle",
-    				"aquarium",
-    				"cinema",
-    				"theatre",
-    				"zoo",
-    				"convenience",
-    				"lodging"
-    			],
-    			[
-    				"!=",
-    				"disputed",
-    				"japan_northern_territories"
-    			]
-    		],
-    		layout: {
-    			"text-padding": 2,
-    			"text-font": [
-    				"Noto Sans Regular"
-    			],
-    			"text-anchor": "top",
-    			"icon-anchor": "bottom",
-    			"icon-image": [
-    				"coalesce",
-    				[
-    					"image",
-    					[
-    						"get",
-    						"class"
-    					]
-    				],
-    				[
-    					"image",
-    					"circle-stroked"
-    				]
-    			],
-    			"text-field": "{name}",
-    			"text-offset": [
-    				0,
-    				0.3
-    			],
-    			"text-size": 12,
-    			"text-max-width": 9
-    		},
-    		paint: {
-    			"text-halo-blur": 0.5,
-    			"text-color": "#666",
-    			"text-halo-width": 1,
-    			"text-halo-color": "#ffffff"
-    		}
-    	},
-    	{
-    		id: "poi-z13",
-    		type: "symbol",
-    		source: "geolonia-gsi-custom",
-    		"source-layer": "poi",
-    		minzoom: 13,
-    		filter: [
-    			"all",
-    			[
-    				"==",
-    				"$type",
-    				"Point"
-    			],
-    			[
-    				"has",
-    				"name"
-    			],
-    			[
-    				"in",
-    				"class",
-    				"stadium",
-    				"landmark",
-    				"monument",
-    				"museum",
-    				"town_hall",
-    				"golf"
-    			],
-    			[
-    				"!in",
-    				"subclass",
-    				"community_centre"
-    			],
-    			[
-    				"!=",
-    				"disputed",
-    				"japan_northern_territories"
-    			]
-    		],
-    		layout: {
-    			"text-padding": 2,
-    			"text-font": [
-    				"Noto Sans Regular"
-    			],
-    			"text-anchor": "top",
-    			"icon-anchor": "bottom",
-    			"icon-image": [
-    				"coalesce",
-    				[
-    					"image",
-    					[
-    						"get",
-    						"class"
-    					]
-    				],
-    				[
-    					"image",
-    					"circle-stroked"
-    				]
-    			],
-    			"text-field": "{name}",
-    			"text-offset": [
-    				0,
-    				0.3
-    			],
-    			"text-size": 12,
-    			"text-max-width": 9
-    		},
-    		paint: {
-    			"text-halo-blur": 0.5,
-    			"text-color": "#666",
-    			"text-halo-width": 1,
-    			"text-halo-color": "#ffffff"
-    		}
-    	},
-    	{
-    		id: "poi-worship",
-    		type: "symbol",
-    		source: "geolonia-gsi-custom",
-    		"source-layer": "poi",
-    		minzoom: 16,
-    		filter: [
-    			"all",
-    			[
-    				"==",
-    				"$type",
-    				"Point"
-    			],
-    			[
-    				"has",
-    				"name"
-    			],
-    			[
-    				"!has",
-    				"wikidata"
-    			],
-    			[
-    				"in",
-    				"class",
-    				"place_of_worship"
-    			],
-    			[
-    				"!=",
-    				"disputed",
-    				"japan_northern_territories"
-    			]
-    		],
-    		layout: {
-    			"text-padding": 2,
-    			"text-font": [
-    				"Noto Sans Regular"
-    			],
-    			"text-anchor": "top",
-    			"icon-anchor": "bottom",
-    			"icon-image": [
-    				"coalesce",
-    				[
-    					"image",
-    					[
-    						"get",
-    						"class"
-    					]
-    				],
-    				[
-    					"image",
-    					"circle-stroked"
-    				]
-    			],
-    			"text-field": "{name}",
-    			"text-offset": [
-    				0,
-    				0.3
-    			],
-    			"text-size": 12,
-    			"text-max-width": 9
-    		},
-    		paint: {
-    			"text-halo-blur": 0.5,
-    			"text-color": "#666",
-    			"text-halo-width": 1,
-    			"text-halo-color": "#ffffff"
-    		}
-    	},
-    	{
-    		id: "poi-worship-primary",
-    		type: "symbol",
-    		source: "geolonia-gsi-custom",
-    		"source-layer": "poi",
-    		minzoom: 14,
-    		filter: [
-    			"all",
-    			[
-    				"==",
-    				"$type",
-    				"Point"
-    			],
-    			[
-    				"has",
-    				"name"
-    			],
-    			[
-    				"has",
-    				"wikidata"
-    			],
-    			[
-    				"in",
-    				"class",
-    				"place_of_worship"
-    			],
-    			[
-    				"!=",
-    				"disputed",
-    				"japan_northern_territories"
-    			]
-    		],
-    		layout: {
-    			"text-padding": 2,
-    			"text-font": [
-    				"Noto Sans Regular"
-    			],
-    			"text-anchor": "top",
-    			"icon-anchor": "bottom",
-    			"icon-image": [
-    				"coalesce",
-    				[
-    					"image",
-    					[
-    						"get",
-    						"class"
-    					]
-    				],
-    				[
-    					"image",
-    					"circle-stroked"
-    				]
-    			],
-    			"text-field": "{name}",
-    			"icon-padding": [
-    				"interpolate",
-    				[
-    					"linear"
-    				],
-    				[
-    					"zoom"
-    				],
-    				11,
-    				30,
-    				15,
-    				2
-    			],
-    			"text-offset": [
-    				0,
-    				0.3
-    			],
-    			"text-size": 12,
-    			"text-max-width": 9
-    		},
-    		paint: {
-    			"text-halo-blur": 0.5,
-    			"text-color": "#666",
-    			"text-halo-width": 1,
-    			"text-halo-color": "#ffffff"
-    		}
-    	},
-    	{
-    		id: "poi-park",
-    		type: "symbol",
-    		source: "geolonia-gsi-custom",
-    		"source-layer": "poi",
-    		minzoom: 16,
-    		filter: [
-    			"all",
-    			[
-    				"==",
-    				"$type",
-    				"Point"
-    			],
-    			[
-    				"has",
-    				"name"
-    			],
-    			[
-    				"!has",
-    				"wikidata"
-    			],
-    			[
-    				"in",
-    				"class",
-    				"park"
-    			],
-    			[
-    				"!=",
-    				"disputed",
-    				"japan_northern_territories"
-    			]
-    		],
-    		layout: {
-    			"text-padding": 2,
-    			"text-font": [
-    				"Noto Sans Regular"
-    			],
-    			"text-anchor": "top",
-    			"icon-anchor": "bottom",
-    			"icon-image": [
-    				"coalesce",
-    				[
-    					"image",
-    					[
-    						"get",
-    						"class"
-    					]
-    				],
-    				[
-    					"image",
-    					"circle-stroked"
-    				]
-    			],
-    			"text-field": "{name}",
-    			"text-offset": [
-    				0,
-    				0.3
-    			],
-    			"text-size": 12,
-    			"text-max-width": 9
-    		},
-    		paint: {
-    			"text-halo-blur": 0.5,
-    			"text-color": "#666",
-    			"text-halo-width": 1,
-    			"text-halo-color": "#ffffff"
-    		}
-    	},
-    	{
-    		id: "poi-park-primary",
-    		type: "symbol",
-    		source: "geolonia-gsi-custom",
-    		"source-layer": "poi",
-    		minzoom: 13,
-    		filter: [
-    			"all",
-    			[
-    				"==",
-    				"$type",
-    				"Point"
-    			],
-    			[
-    				"has",
-    				"name"
-    			],
-    			[
-    				"has",
-    				"wikidata"
-    			],
-    			[
-    				"in",
-    				"class",
-    				"park"
-    			],
-    			[
-    				"!=",
-    				"disputed",
-    				"japan_northern_territories"
-    			]
-    		],
-    		layout: {
-    			"text-padding": 2,
-    			"text-font": [
-    				"Noto Sans Regular"
-    			],
-    			"text-anchor": "top",
-    			"icon-anchor": "bottom",
-    			"icon-image": [
-    				"coalesce",
-    				[
-    					"image",
-    					[
-    						"get",
-    						"class"
-    					]
-    				],
-    				[
-    					"image",
-    					"circle-stroked"
-    				]
-    			],
-    			"icon-padding": [
-    				"interpolate",
-    				[
-    					"linear"
-    				],
-    				[
-    					"zoom"
-    				],
-    				11,
-    				15,
-    				15,
-    				2
-    			],
-    			"text-field": "{name}",
-    			"text-offset": [
-    				0,
-    				0.3
-    			],
-    			"text-size": 12,
-    			"text-max-width": 9
-    		},
-    		paint: {
-    			"text-halo-blur": 0.5,
-    			"text-color": "#666",
-    			"text-halo-width": 1,
-    			"text-halo-color": "#ffffff"
-    		}
-    	},
-    	{
-    		id: "poi-railway",
-    		type: "symbol",
-    		source: "geolonia-gsi-custom",
-    		"source-layer": "poi",
-    		minzoom: 11,
-    		filter: [
-    			"all",
-    			[
-    				"==",
-    				"$type",
-    				"Point"
-    			],
-    			[
-    				"has",
-    				"name"
-    			],
-    			[
-    				"==",
-    				"class",
-    				"railway"
-    			],
-    			[
-    				"==",
-    				"subclass",
-    				"station"
-    			],
-    			[
-    				"!=",
-    				"disputed",
-    				"japan_northern_territories"
-    			]
-    		],
-    		layout: {
-    			"text-padding": 2,
-    			"text-font": [
-    				"Noto Sans CJK JP Bold"
-    			],
-    			"text-anchor": "top",
-    			"icon-anchor": "bottom",
-    			"icon-image": [
-    				"coalesce",
-    				[
-    					"image",
-    					"railway"
-    				],
-    				[
-    					"image",
-    					"circle-stroked"
-    				]
-    			],
-    			"icon-padding": [
-    				"interpolate",
-    				[
-    					"linear"
-    				],
-    				[
-    					"zoom"
-    				],
-    				11,
-    				50,
-    				13,
-    				30,
-    				15,
-    				2
-    			],
-    			"text-field": "{name}",
-    			"text-offset": [
-    				0,
-    				0.3
-    			],
-    			"text-size": 12,
-    			"text-max-width": 9,
-    			"icon-optional": false,
-    			"icon-ignore-placement": false,
-    			"icon-allow-overlap": false,
-    			"text-ignore-placement": false,
-    			"text-allow-overlap": false,
-    			"text-optional": true
-    		},
-    		paint: {
-    			"text-halo-blur": 0.5,
-    			"text-color": "#415CBD",
-    			"text-halo-width": 2,
-    			"text-halo-color": "#ffffff"
-    		}
-    	},
-    	{
-    		id: "poi-airport-primary",
-    		type: "symbol",
-    		source: "geolonia-gsi-custom",
-    		"source-layer": "aerodrome_label",
-    		minzoom: 10,
-    		filter: [
-    			"all",
-    			[
-    				"has",
-    				"iata"
-    			],
-    			[
-    				"!=",
-    				"disputed",
-    				"japan_northern_territories"
-    			]
-    		],
-    		layout: {
-    			"text-padding": 2,
-    			"text-font": [
-    				"Noto Sans Regular"
-    			],
-    			"text-anchor": "top",
-    			"icon-image": "airport",
-    			"text-field": "{name}",
-    			"text-offset": [
-    				0,
-    				0.6
-    			],
-    			"text-size": 12,
-    			"text-max-width": 9,
-    			visibility: "visible",
-    			"icon-size": 1,
-    			"text-optional": true
-    		},
-    		paint: {
-    			"text-halo-blur": 0.5,
-    			"text-color": "#666",
-    			"text-halo-width": 1,
-    			"text-halo-color": "#ffffff"
-    		}
-    	},
-    	{
-    		id: "label-gsi",
-    		type: "symbol",
-    		source: "gsi-japan",
-    		"source-layer": "label",
-    		minzoom: 10,
-    		maxzoom: 15,
-    		filter: [
-    			"all",
-    			[
-    				"in",
-    				"ftCode",
-    				100,
-    				50100
-    			],
-    			[
-    				"in",
-    				"annoCtg",
-    				311,
-    				314,
-    				315
-    			]
-    		],
-    		layout: {
-    			"text-padding": 2,
-    			"text-font": [
-    				"Noto Sans Regular"
-    			],
-    			"text-anchor": "top",
-    			"icon-anchor": "bottom",
-    			"icon-image": [
-    				"coalesce",
-    				[
-    					"image",
-    					"mountain"
-    				],
-    				[
-    					"image",
-    					"circle-stroked"
-    				]
-    			],
-    			"icon-padding": [
-    				"interpolate",
-    				[
-    					"linear"
-    				],
-    				[
-    					"zoom"
-    				],
-    				8,
-    				50,
-    				11,
-    				100,
-    				20,
-    				2
-    			],
-    			"text-field": "{knj}",
-    			"text-offset": [
-    				0,
-    				0.3
-    			],
-    			"text-size": 12,
-    			"text-max-width": 9,
-    			visibility: "visible"
-    		},
-    		paint: {
-    			"text-halo-blur": 0.5,
-    			"text-color": "#666",
-    			"text-halo-width": 1,
-    			"text-halo-color": "#ffffff"
     		}
     	},
     	{
@@ -10282,6 +9405,1211 @@
         return queryBox;
     }
 
+    const getOSMLayerConfig = (layerName) => {
+        return ({
+            'railway': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "poi",
+                    "minzoom": 12,
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "==",
+                            "class",
+                            "railway"
+                        ],
+                        [
+                            "==",
+                            "subclass",
+                            "station"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            [
+                                "get",
+                                "class"
+                            ],
+                            "circle-stroked"
+                        ],
+                        "icon-padding": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            11,
+                            30,
+                            15,
+                            2
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9,
+                        "icon-optional": false,
+                        "icon-ignore-placement": false,
+                        "icon-allow-overlap": false,
+                        "text-ignore-placement": false,
+                        "text-allow-overlap": false,
+                        "text-optional": true
+                    },
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#415CBD",
+                        "text-halo-width": 2,
+                        "text-halo-color": "#ffffff"
+                    }
+                }],
+            'mountain': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "mountain_peak",
+                    "minzoom": 6,
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            "mountain",
+                            "circle-stroked"
+                        ],
+                        "icon-padding": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            8,
+                            50,
+                            11,
+                            100,
+                            20,
+                            2
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9,
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#666",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                }],
+            'airport': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "oc-airport",
+                    "minzoom": 5,
+                    "maxzoom": 6,
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "class",
+                            "airport"
+                        ]
+                    ],
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-image": "airport",
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.6
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9
+                    },
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#666",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                },
+                {
+                    "id": "poi-airport",
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "aerodrome_label",
+                    "minzoom": 8,
+                    "filter": [
+                        "all",
+                        [
+                            "has",
+                            "iata"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-image": "circle-stroked",
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.6
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9,
+                        "icon-size": 0.6,
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#666",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                },
+                {
+                    "id": "poi-airport-primary",
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "aerodrome_label",
+                    "minzoom": 8,
+                    "filter": [
+                        "all",
+                        [
+                            "has",
+                            "iata"
+                        ],
+                        [
+                            "!=",
+                            "class",
+                            "military"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-image": "airport",
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.6
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9,
+                        "icon-size": 1,
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#666",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                }],
+            'convenience': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "poi",
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            [
+                                "get",
+                                "class"
+                            ],
+                            "circle-stroked"
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "==",
+                            "class",
+                            "convenience"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#666",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                }],
+            'restaurant': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "poi",
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            [
+                                "get",
+                                "class"
+                            ],
+                            "circle-stroked"
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "==",
+                            "class",
+                            "restaurant"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#333",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                }],
+            'bank': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "poi",
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            [
+                                "get",
+                                "class"
+                            ],
+                            "circle-stroked"
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "==",
+                            "class",
+                            "bank"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#333",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                }],
+            'hospital': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "poi",
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            [
+                                "get",
+                                "class"
+                            ],
+                            "circle-stroked"
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "==",
+                            "class",
+                            "hospital"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#333",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                }],
+            'college': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "poi",
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            [
+                                "get",
+                                "class"
+                            ],
+                            "circle-stroked"
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "==",
+                            "class",
+                            "college"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#333",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                }],
+            'fast-food': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "poi",
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            [
+                                "get",
+                                "class"
+                            ],
+                            "circle-stroked"
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "==",
+                            "class",
+                            "fast_food"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#333",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                }],
+            'school': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "poi",
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            [
+                                "get",
+                                "class"
+                            ],
+                            "circle-stroked"
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "==",
+                            "class",
+                            "school"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#333",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                }],
+            'cafe': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "poi",
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            [
+                                "get",
+                                "class"
+                            ],
+                            "circle-stroked"
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "==",
+                            "class",
+                            "cafe"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#333",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                }],
+            'zoo': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "poi",
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            [
+                                "get",
+                                "class"
+                            ],
+                            "circle-stroked"
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "==",
+                            "class",
+                            "zoo"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#333",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                }],
+            'parking': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "poi",
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            [
+                                "get",
+                                "class"
+                            ],
+                            "circle-stroked"
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "==",
+                            "class",
+                            "parking"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#333",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                }],
+            'museum': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "poi",
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            [
+                                "get",
+                                "class"
+                            ],
+                            "circle-stroked"
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "==",
+                            "class",
+                            "museum"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#333",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                }],
+            'castle': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": OSM_SOURCE_ID,
+                    "source-layer": "poi",
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Universal Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            [
+                                "get",
+                                "class"
+                            ],
+                            "circle-stroked"
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9
+                    },
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "==",
+                            "class",
+                            "castle"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#333",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                }],
+            'park': [{
+                    "id": `osm-${layerName}`,
+                    "type": "symbol",
+                    "source": "geolonia-gsi-custom",
+                    "source-layer": "poi",
+                    "minzoom": 16,
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "!has",
+                            "wikidata"
+                        ],
+                        [
+                            "in",
+                            "class",
+                            "park"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            [
+                                "image",
+                                [
+                                    "get",
+                                    "class"
+                                ]
+                            ],
+                            [
+                                "image",
+                                "circle-stroked"
+                            ]
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9
+                    },
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#666",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                },
+                {
+                    "id": `osm-${layerName}2`,
+                    "type": "symbol",
+                    "source": "geolonia-gsi-custom",
+                    "source-layer": "poi",
+                    "minzoom": 13,
+                    "filter": [
+                        "all",
+                        [
+                            "==",
+                            "$type",
+                            "Point"
+                        ],
+                        [
+                            "has",
+                            "name"
+                        ],
+                        [
+                            "has",
+                            "wikidata"
+                        ],
+                        [
+                            "in",
+                            "class",
+                            "park"
+                        ],
+                        [
+                            "!=",
+                            "disputed",
+                            "japan_northern_territories"
+                        ]
+                    ],
+                    "layout": {
+                        "text-padding": 2,
+                        "text-font": [
+                            "Noto Sans Regular"
+                        ],
+                        "text-anchor": "top",
+                        "icon-anchor": "bottom",
+                        "icon-image": [
+                            "coalesce",
+                            [
+                                "image",
+                                [
+                                    "get",
+                                    "class"
+                                ]
+                            ],
+                            [
+                                "image",
+                                "circle-stroked"
+                            ]
+                        ],
+                        "icon-padding": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            11,
+                            15,
+                            15,
+                            2
+                        ],
+                        "text-field": "{name}",
+                        "text-offset": [
+                            0,
+                            0.3
+                        ],
+                        "text-size": 12,
+                        "text-max-width": 9
+                    },
+                    "paint": {
+                        "text-halo-blur": 0.5,
+                        "text-color": "#666",
+                        "text-halo-width": 1,
+                        "text-halo-color": "#ffffff"
+                    }
+                }]
+        }[layerName] || []);
+    };
+
+    const OSM_SOURCE_ID = 'osm';
+    const addOsmSource = (map) => {
+        if (!map.getSource(OSM_SOURCE_ID)) {
+            map.addSource(OSM_SOURCE_ID, {
+                type: 'vector',
+                url: 'https://tileserver.geolonia.com/v3/tiles.json?key=YOUR-API-KEY'
+            });
+        }
+    };
+    const addOsmLayer = (map, layerName) => {
+        const layerId = `osm-${layerName}`;
+        console.log('Adding OSM layer:', map.getLayer(layerId), getOSMLayerConfig(layerName));
+        if (!map.getLayer(layerId)) {
+            getOSMLayerConfig(layerName).forEach(layerConfig => {
+                console.log('Adding OSM layer:', layerId, layerConfig);
+                map.addLayer(layerConfig);
+            });
+        }
+    };
+    /**
+     * 任意の文字列をOsmLayerNameTypeに変換する
+     * @param name 任意のレイヤー名（日本語・英語どちらも可）
+     * @returns OsmLayerNameType | undefined
+     */
+    function toOsmLayerNameType(name) {
+        const map = {
+            'restaurant': 'restaurant',
+            'レストラン': 'restaurant',
+            'railway': 'railway',
+            '鉄道': 'railway',
+            'mountain': 'mountain',
+            '山': 'mountain',
+            'airport': 'airport',
+            '空港': 'airport',
+            'school': 'school',
+            '学校': 'school',
+            'college': 'college',
+            '大学': 'college',
+            'convenience': 'convenience',
+            'コンビニ': 'convenience',
+            'bank': 'bank',
+            '銀行': 'bank',
+            'hospital': 'hospital',
+            '病院': 'hospital',
+            'cafe': 'cafe',
+            'カフェ': 'cafe',
+            'fast-food': 'fast-food',
+            'ファストフード': 'fast-food',
+            'zoo': 'zoo',
+            '動物園': 'zoo',
+            'parking': 'parking',
+            '駐車場': 'parking',
+            'castle': 'castle',
+            '城': 'castle',
+            'museum': 'museum',
+            '博物館': 'museum'
+        };
+        return map[name];
+    }
+    /**
+     * スタイルに該当のスプライトがなければ追加する
+     * @param map maplibregl.Mapインスタンス
+     * @param layerName OsmLayerNameType
+     */
+    const addOsmSprite = (map, layerName) => {
+        const style = map.getStyle();
+        // spriteが未設定ならosmのみ追加
+        if (!style || !style.sprite) {
+            map.setStyle(Object.assign(Object.assign({}, style), { sprite: [{ id: "osm", url: "https://geoloniamaps.github.io/basic-v1/basic-v1" }] }));
+            return;
+        }
+        // spriteがオブジェクトなら、osmスプライトがなければ追加
+        if (typeof style.sprite === "object" && style.sprite !== null) {
+            const sprites = Array.isArray(style.sprite) ? style.sprite : [style.sprite];
+            const hasOsm = sprites.some(s => s.id === "osm");
+            if (!hasOsm) {
+                const newSprites = [...sprites, { id: "osm", url: "https://geoloniamaps.github.io/basic-v1/basic-v1" }];
+                map.setStyle(Object.assign(Object.assign({}, style), { sprite: newSprites }));
+            }
+            return;
+        }
+        // spriteがstringだった場合、defaultとosmを配列で設定
+        if (typeof style.sprite === "string") {
+            const newSprites = [
+                { id: "default", url: style.sprite },
+                { id: "osm", url: "https://geoloniamaps.github.io/basic-v1/basic-v1" }
+            ];
+            map.setStyle(Object.assign(Object.assign({}, style), { sprite: newSprites }));
+            return;
+        }
+        // それ以外は何もしない
+    };
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d;
@@ -10334,7 +10662,14 @@
                 const csv = yield res.text();
                 const data = Papa.parse(csv, { header: true }).data;
                 const geojson = csvToGeoJSON(data);
-                this.addSource(className, createSourceByType('geojson', geojson));
+                // すでにSourceが存在する場合はデータを更新
+                const existingSource = this.getSource(className);
+                if (existingSource && 'setData' in existingSource) {
+                    existingSource.setData(geojson);
+                }
+                else {
+                    this.addSource(className, createSourceByType('geojson', geojson));
+                }
                 const layers = createLayer(className, {
                     simpleStyle: simpleStyle
                 });
@@ -10355,11 +10690,26 @@
          * ****************/
         loadGeojson(geojson, className, simpleStyle) {
             return __awaiter(this, void 0, void 0, function* () {
-                this.addSource(className, createSourceByType('geojson', geojson));
+                // すでにSourceが存在する場合はデータを更新
+                const existingSource = this.getSource(className);
+                if (existingSource && 'setData' in existingSource) {
+                    existingSource.setData(geojson);
+                }
+                else {
+                    this.addSource(className, createSourceByType('geojson', geojson));
+                }
                 const layers = createLayer(className, {
                     simpleStyle: simpleStyle
                 });
-                layers.forEach(layer => { this.addLayer(layer); });
+                const hasLayerFlg = hasLayer(this, className);
+                layers.forEach(layer => {
+                    if (hasLayerFlg) {
+                        updateLayer(this, layer);
+                    }
+                    else {
+                        this.addLayer(layer);
+                    }
+                });
                 this.loadedSourceIds.add(className);
             });
         }
@@ -10415,6 +10765,22 @@
                 : undefined;
             const features = this.queryRenderedFeatures(queryBox, layers ? { layers } : undefined);
             return features;
+        }
+        /**
+         * 指定した種類のpoiを表示する
+         * @param osmLayerName 表示するレイヤー名
+         */
+        loadOsmPoi(osmLayerName) {
+            if (!osmLayerName) {
+                return;
+            }
+            const layerId = toOsmLayerNameType(osmLayerName);
+            if (!layerId) {
+                return;
+            }
+            addOsmSource(this);
+            addOsmSprite(this);
+            addOsmLayer(this, layerId);
         }
     }
     const currentScript = document.currentScript;

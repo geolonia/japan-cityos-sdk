@@ -1,5 +1,5 @@
-import type { Feature, FeatureCollection, Point } from "geojson";
-import { CIRCLE_SIZE_MAP, DEFAULT_CIRCLE_COLOR, DEFAULT_MARKER_NAME, DEFAULT_TEXT_COLOR, MARKER_SIZE_MAP } from "./constants";
+import type { Feature, FeatureCollection } from "geojson";
+import { CIRCLE_SIZE_MAP, DEFAULT_CIRCLE_COLOR, DEFAULT_MARKER_NAME, DEFAULT_TEXT_COLOR, MARKER_SIZE_MAP } from "../constants";
 
 /**
  * Parses the API key from the URL of the current script tag.
