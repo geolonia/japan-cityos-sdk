@@ -221,6 +221,28 @@ class GeoloniaMap extends maplibregl.Map {
     removeOsmLayer(this, layerId);
   }
 
+  getOsmPoiLayers(): Record<OsmLayerNameType, string> {
+    return {
+      restaurant: 'レストラン',
+      railway: '鉄道',
+      mountain: '山',
+      airport: '空港',
+      school: '学校',
+      college: '大学',
+      convenience: 'コンビニ',
+      bank: '銀行',
+      hospital: '病院',
+      cafe: 'カフェ',
+      'fast-food': 'ファストフード',
+      zoo: '動物園',
+      parking: '駐車場',
+      castle: '城',
+      museum: '博物館',
+      park: '公園'
+    };
+
+  }
+
 }
 
 const currentScript = document.currentScript as HTMLScriptElement;
