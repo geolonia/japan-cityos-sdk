@@ -7,7 +7,7 @@ import Papa from 'papaparse';
 import style from './style.json'
 import { toQueryBox } from './toQueryBox';
 import { OsmLayerNameType } from './types';
-import { addOsmLayer, addOsmSource, addOsmSprite, toOsmLayerNameType } from './utils/osmPoiUtils';
+import { addOsmLayer, addOsmSource, addOsmSprite, removeOsmLayer, toOsmLayerNameType } from './utils/osmPoiUtils';
 
 declare global {
   interface Window {
@@ -208,6 +208,17 @@ class GeoloniaMap extends maplibregl.Map {
     addOsmSource(this);
     addOsmSprite(this, layerId);
     addOsmLayer(this, layerId);
+  }
+
+  /**
+   * 指定した種類のpoiを非表示にする
+   * @param osmLayerName 非表示にするレイヤー名
+   */
+  removeOsmPoi(osmLayerName: string) {
+    if (!osmLayerName) { return; }
+    const layerId = toOsmLayerNameType(osmLayerName);
+    if (!layerId) { return; }
+    removeOsmLayer(this, layerId);
   }
 
 }
