@@ -1,0 +1,1 @@
+export type OsmLayerNameType = 'restaurant' | 'railway' | 'mountain' | 'airport' | 'school' | 'college' | 'convenience' | 'bank' | 'hospital' | 'cafe' | 'fast-food' | 'zoo' | 'parking' | 'castle' | 'museum' | 'park';
