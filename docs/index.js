@@ -8518,46 +8518,6 @@
     		}
     	},
     	{
-    		id: "airport-label-major",
-    		type: "symbol",
-    		source: "geolonia-gsi-custom",
-    		"source-layer": "aerodrome_label",
-    		minzoom: 5,
-    		filter: [
-    			"all",
-    			[
-    				"has",
-    				"iata"
-    			],
-    			[
-    				"!=",
-    				"disputed",
-    				"japan_northern_territories"
-    			]
-    		],
-    		layout: {
-    			"text-padding": 2,
-    			"text-font": [
-    				"Noto Sans Regular"
-    			],
-    			"text-anchor": "top",
-    			"icon-image": "airport",
-    			"text-field": "{name}",
-    			"text-offset": [
-    				0,
-    				0.6
-    			],
-    			"text-size": 12,
-    			"text-max-width": 9
-    		},
-    		paint: {
-    			"text-halo-blur": 0.5,
-    			"text-color": "#666",
-    			"text-halo-width": 1,
-    			"text-halo-color": "#ffffff"
-    		}
-    	},
-    	{
     		id: "place-village",
     		type: "symbol",
     		source: "geolonia-gsi-custom",
@@ -10528,12 +10488,15 @@
     };
     const addOsmLayer = (map, layerName) => {
         const layerId = `osm-${layerName}`;
-        console.log('Adding OSM layer:', map.getLayer(layerId), getOSMLayerConfig(layerName));
         if (!map.getLayer(layerId)) {
             getOSMLayerConfig(layerName).forEach(layerConfig => {
-                console.log('Adding OSM layer:', layerId, layerConfig);
                 map.addLayer(layerConfig);
             });
+        }
+    };
+    const removeOsmLayer = (map, layerName) => {
+        if (map.getLayer(layerName)) {
+            map.removeLayer(layerName);
         }
     };
     /**
@@ -10781,6 +10744,40 @@
             addOsmSource(this);
             addOsmSprite(this);
             addOsmLayer(this, layerId);
+        }
+        /**
+         * 指定した種類のpoiを非表示にする
+         * @param osmLayerName 非表示にするレイヤー名
+         */
+        removeOsmPoi(osmLayerName) {
+            if (!osmLayerName) {
+                return;
+            }
+            const layerId = toOsmLayerNameType(osmLayerName);
+            if (!layerId) {
+                return;
+            }
+            removeOsmLayer(this, layerId);
+        }
+        getOsmPoiLayers() {
+            return {
+                restaurant: 'レストラン',
+                railway: '鉄道',
+                mountain: '山',
+                airport: '空港',
+                school: '学校',
+                college: '大学',
+                convenience: 'コンビニ',
+                bank: '銀行',
+                hospital: '病院',
+                cafe: 'カフェ',
+                'fast-food': 'ファストフード',
+                zoo: '動物園',
+                parking: '駐車場',
+                castle: '城',
+                museum: '博物館',
+                park: '公園'
+            };
         }
     }
     const currentScript = document.currentScript;

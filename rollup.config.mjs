@@ -32,6 +32,7 @@ const config = {
     copy({
       targets: [
         { src: 'public/index.html', dest: 'docs' },
+        { src: 'src/style.json', dest: 'docs' }
       ]
     }),
     json(),
