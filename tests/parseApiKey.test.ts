@@ -1,4 +1,4 @@
-import { parseApiKey } from '../src/utils';
+import { parseApiKey } from '../src/utils/mapUtils';
 
 describe('parseApiKey', () => {
   const createScriptTag = (src: string) => {

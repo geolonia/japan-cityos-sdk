@@ -1,5 +1,5 @@
 import { LayerSpecification } from 'maplibre-gl';
-import { mergeLayersByLoadedIds } from '../src/utils';
+import { mergeLayersByLoadedIds } from '../src/utils/mapUtils';
 
 describe('mergeLayersByLoadedIds', () => {
   it('loadedSourceIdsに含まれるsourceを持つlayerのみ抽出し、nextLayersを先頭にマージする', () => {
