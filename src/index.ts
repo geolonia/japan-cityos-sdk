@@ -2,9 +2,6 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey, updateLayer } from './utils/mapUtils';
 import Papa from 'papaparse';
-
-
-import style from './style.json'
 import { toQueryBox } from './toQueryBox';
 import { OsmLayerNameType } from './types';
 import { addOsmLayer, addOsmSource, addOsmSprite, removeOsmLayer, toOsmLayerNameType } from './utils/osmPoiUtils';
@@ -22,7 +19,7 @@ class GeoloniaMap extends maplibregl.Map {
   constructor(params: any) {
     const defaults = {
       container: params.container ?? 'map',
-      style: params.style ?? style,
+      style: params.style ?? 'https://basic-v1-background-only.pages.dev/style.json',
       center: params.lngLat ?? [139.692, 35.689],
       zoom: params.zoom ?? 12,
       transformRequest: (url: string, resourceType: string) => {
