@@ -3430,7 +3430,6 @@
         }
     };
     const removeOsmLayer = (map, layerName) => {
-        console.log(`Removing OSM layer: ${layerName}`);
         if (map.getLayer(layerName)) {
             getOSMLayerConfig(layerName).forEach(layerConfig => {
                 map.removeLayer(layerConfig.id);

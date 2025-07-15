@@ -53,6 +53,10 @@
     <input type="checkbox" id="poi-checkbox" checked>
     <label for="poi-checkbox">OSM：レストラン</label>
   </div>
+  <div style="position:absolute;z-index:10;top:72px;left:10px;">
+    <input type="checkbox" id="poi-checkbox2" checked>
+    <label for="poi-checkbox2">OSM：鉄道</label>
+  </div>
   <div id="map"></div>
   <script src="./index.js"></script>
   <script type="application/javascript">
@@ -117,6 +121,15 @@
           japan.loadOsmPoi('restaurant');
         } else {
           japan.removeOsmPoi('restaurant');
+        }
+      });
+
+      japan.loadOsmPoi('鉄道');
+      document.getElementById('poi-checkbox2').addEventListener('change', function (e) {
+        if (e.target.checked) {
+          japan.loadOsmPoi('鉄道');
+        } else {
+          japan.removeOsmPoi('鉄道');
         }
       });
 
