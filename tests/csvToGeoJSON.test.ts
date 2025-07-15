@@ -1,4 +1,4 @@
-import { csvToGeoJSON } from '../src/utils';
+import { csvToGeoJSON } from '../src/utils/mapUtils';
 
 describe('csvToGeoJSON', () => {
   it('lat/lng カラムがある場合に正しく変換できる', () => {

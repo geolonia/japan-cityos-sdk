@@ -1,4 +1,4 @@
-import { createLayer } from '../src/utils';
+import { createLayer } from '../src/utils/mapUtils';
 
 describe('createLayer', () => {
   it('marker-symbolまたはtitleがある場合はsymbolレイヤーが含まれる', () => {
