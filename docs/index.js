@@ -3430,8 +3430,11 @@
         }
     };
     const removeOsmLayer = (map, layerName) => {
+        console.log(`Removing OSM layer: ${layerName}`);
         if (map.getLayer(layerName)) {
-            map.removeLayer(layerName);
+            getOSMLayerConfig(layerName).forEach(layerConfig => {
+                map.removeLayer(layerConfig.id);
+            });
         }
     };
     /**
@@ -3481,9 +3484,10 @@
      */
     const addOsmSprite = (map, layerName) => {
         const style = map.getStyle();
+        const osmSpriteUrl = "https://geoloniamaps.github.io/basic-v1/basic-v1";
         // spriteが未設定ならosmのみ追加
         if (!style || !style.sprite) {
-            map.setStyle(Object.assign(Object.assign({}, style), { sprite: [{ id: "osm", url: "https://geoloniamaps.github.io/basic-v1/basic-v1" }] }));
+            map.setStyle(Object.assign(Object.assign({}, style), { sprite: [{ id: "osm", url: osmSpriteUrl }] }));
             return;
         }
         // spriteがオブジェクトなら、osmスプライトがなければ追加
@@ -3491,16 +3495,16 @@
             const sprites = Array.isArray(style.sprite) ? style.sprite : [style.sprite];
             const hasOsm = sprites.some(s => s.id === "osm");
             if (!hasOsm) {
-                const newSprites = [...sprites, { id: "osm", url: "https://geoloniamaps.github.io/basic-v1/basic-v1" }];
+                const newSprites = [...sprites, { id: "osm", url: osmSpriteUrl }];
                 map.setStyle(Object.assign(Object.assign({}, style), { sprite: newSprites }));
             }
             return;
         }
         // spriteがstringだった場合、defaultとosmを配列で設定
-        if (typeof style.sprite === "string") {
+        if (typeof style.sprite === "string" && style.sprite !== osmSpriteUrl) {
             const newSprites = [
                 { id: "default", url: style.sprite },
-                { id: "osm", url: "https://geoloniamaps.github.io/basic-v1/basic-v1" }
+                { id: "osm", url: osmSpriteUrl }
             ];
             map.setStyle(Object.assign(Object.assign({}, style), { sprite: newSprites }));
             return;

@@ -49,6 +49,10 @@
       <option value="https://chizubouken-lab.pages.dev/rpg-style.json">ゲーム風</option>
     </select>
   </div>
+  <div style="position:absolute;z-index:10;top:40px;left:10px;">
+    <input type="checkbox" id="poi-checkbox" checked>
+    <label for="poi-checkbox">OSM：レストラン</label>
+  </div>
   <div id="map"></div>
   <script src="./index.js"></script>
   <script type="application/javascript">
@@ -108,6 +112,13 @@
 
       // osmのpoiを表示
       japan.loadOsmPoi('restaurant');
+      document.getElementById('poi-checkbox').addEventListener('change', function (e) {
+        if (e.target.checked) {
+          japan.loadOsmPoi('restaurant');
+        } else {
+          japan.removeOsmPoi('restaurant');
+        }
+      });
 
       japan.on('click', (e) => {
         const hasFeature = japan.hasFeature([e.point.x, e.point.y], ['restaurant', '選挙時投票所一覧']);
