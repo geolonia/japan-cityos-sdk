@@ -22,8 +22,11 @@ export const addOsmLayer = (map: maplibregl.Map, layerName: OsmLayerNameType) =>
 }
 
 export const removeOsmLayer = (map: maplibregl.Map, layerName: OsmLayerNameType) => {
+    console.log(`Removing OSM layer: ${layerName}`);
     if (map.getLayer(layerName)) {
-        map.removeLayer(layerName);
+        getOSMLayerConfig(layerName).forEach(layerConfig => {
+            map.removeLayer(layerConfig.id);
+        });
     }
 }
 
