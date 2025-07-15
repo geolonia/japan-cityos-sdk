@@ -1,4 +1,4 @@
-import { createSourceByType } from '../src/utils';
+import { createSourceByType } from '../src/utils/mapUtils';
 
 describe('createSourceByType', () => {
   it('geojsonタイプのsourceを正しく生成できる', () => {

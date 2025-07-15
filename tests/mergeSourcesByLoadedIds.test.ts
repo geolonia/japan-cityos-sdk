@@ -1,4 +1,4 @@
-import { mergeSourcesByLoadedIds } from '../src/utils';
+import { mergeSourcesByLoadedIds } from '../src/utils/mapUtils';
 
 describe('mergeSourcesByLoadedIds', () => {
   it('loadedSourceIdsに含まれるsourceのみ抽出し、nextSourcesをマージする', () => {
