@@ -114,7 +114,7 @@ class GeoloniaMap extends maplibregl.Map {
   ) {
     // すでにSourceが存在する場合はデータを更新
     const existingSource = this.getSource(className) as maplibregl.GeoJSONSource | undefined;
-    const spriteSheet = simpleStyle?.spriteSheet;
+    const spriteSheet = simpleStyle?.['sprite-sheet'];
 
     if (existingSource && 'setData' in existingSource) {
       existingSource.setData(geojson as any);
