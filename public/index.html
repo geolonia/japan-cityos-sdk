@@ -67,6 +67,16 @@
       <option value="chizubouken-lab">学校を'chizubouken-lab'スプライトで表示</option>
     </select>
   </div>
+  <div style="position:absolute;z-index:10;top:168px;left:10px;">
+    <input type="checkbox" id="poi-checkbox4" checked>
+    <label for="poi-checkbox4">OSM：zoo</label>
+  </div>
+  <div style="position:absolute;z-index:10;top:200px;left:10px;">
+    <select id="zoo-icon-select">
+      <option value="zoo" default>動物園を'動物園'アイコンで表示</option>
+      <option value="castle">動物園を'城'アイコンで表示</option>
+    </select>
+  </div>
   <div id="map"></div>
   <script src="./index.js"></script>
   <script type="application/javascript">
@@ -103,7 +113,8 @@
 
     const japan = new geolonia.japan.Map({
       lngLat: [127.99866582363768, 26.47678028796848],
-      zoom: 9.587623189139185
+      zoom: 9.587623189139185,
+      hash: true,
     });
 
     // スタイル切り替え
@@ -152,6 +163,15 @@
         }
       });
 
+      japan.loadOsmPoi('動物園', 'chizubouken-lab');
+      document.getElementById('poi-checkbox4').addEventListener('change', function (e) {
+        if (e.target.checked) {
+          japan.loadOsmPoi('動物園', 'chizubouken-lab');
+        } else {
+          japan.removeOsmPoi('動物園');
+        }
+      });
+
 
       // スタイル切り替え
       document.getElementById('school-sprite-select').addEventListener('change', function (e) {
@@ -159,6 +179,17 @@
         if(schoolLayerIds.length > 0) {
           schoolLayerIds.forEach(layerId => {
             japan.changeSpriteSheet(layerId, e.target.value);
+          });
+        }
+      });
+
+
+      // スタイル切り替え
+      document.getElementById('zoo-icon-select').addEventListener('change', function (e) {
+        const zooLayerIds = japan.hasLayer('動物園');
+        if(zooLayerIds.length > 0) {
+          zooLayerIds.forEach(layerId => {
+            japan.changeLayerIcon(layerId, e.target.value, 'chizubouken-lab');
           });
         }
       });

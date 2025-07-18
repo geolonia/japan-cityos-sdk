@@ -30,6 +30,7 @@ class GeoloniaMap extends maplibregl.Map {
       style: params.style ?? 'https://basic-v1-background-only.pages.dev/style.json',
       center: params.lngLat ?? [139.692, 35.689],
       zoom: params.zoom ?? 12,
+      hash: params.hash ?? true,
       transformRequest: (url: string, resourceType: string) => {
         if (!window.geolonia.apiKey) { return { url }; }
         if ((resourceType === 'Tile' || resourceType === 'Source') && url.startsWith('https://tileserver.geolonia.com')) {
@@ -276,6 +277,18 @@ class GeoloniaMap extends maplibregl.Map {
     addOsmSprite(this, { [spriteKey]: this.spriteSheetUrl[spriteKey] }, this.spriteSheetUrl);
     // レイヤーを再描画（icon-image式にspriteKeyを渡す）
     updateSpriteSheet(this, layerName, spriteKey as string);
+  }
+
+  /**
+   * 指定レイヤーのicon-imageをスプライトシート名付きで変更する
+   * @param layerId レイヤーID
+   * @param iconName アイコン名（例: "school"）
+   * @param spriteKey スプライトシート名（例: "chizubouken-lab"）
+   */
+  changeLayerIcon(layerId: string, iconName: string, spriteKey: string) {
+    // icon-image式 ["concat", spriteKey, ":", iconName] で更新
+    const iconImageExpr = ["concat", spriteKey, ":", iconName];
+    this.setLayoutProperty(layerId, "icon-image", iconImageExpr);
   }
 
 }
