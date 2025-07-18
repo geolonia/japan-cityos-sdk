@@ -3465,7 +3465,6 @@
     function updateSpriteSheet(map, layerId, spriteKey) {
         // レイヤーIDに一致するレイヤーを取得
         const layers = map.getStyle().layers;
-        console.log(`Updating icon images for layer: ${layerId} with spriteKey: ${spriteKey}`, layers);
         layers.forEach(layer => {
             if (layer.id === `osm-${layerId}` || layer.id === layerId) {
                 // icon-imageがexpressionの場合
@@ -3494,12 +3493,13 @@
 
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
-            var _a, _b, _c, _d;
+            var _a, _b, _c, _d, _e;
             const defaults = {
                 container: (_a = params.container) !== null && _a !== void 0 ? _a : 'map',
                 style: (_b = params.style) !== null && _b !== void 0 ? _b : 'https://basic-v1-background-only.pages.dev/style.json',
                 center: (_c = params.lngLat) !== null && _c !== void 0 ? _c : [139.692, 35.689],
                 zoom: (_d = params.zoom) !== null && _d !== void 0 ? _d : 12,
+                hash: (_e = params.hash) !== null && _e !== void 0 ? _e : true,
                 transformRequest: (url, resourceType) => {
                     if (!window.geolonia.apiKey) {
                         return { url };
@@ -3734,6 +3734,17 @@
             addOsmSprite(this, { [spriteKey]: this.spriteSheetUrl[spriteKey] }, this.spriteSheetUrl);
             // レイヤーを再描画（icon-image式にspriteKeyを渡す）
             updateSpriteSheet(this, layerName, spriteKey);
+        }
+        /**
+         * 指定レイヤーのicon-imageをスプライトシート名付きで変更する
+         * @param layerId レイヤーID
+         * @param iconName アイコン名（例: "school"）
+         * @param spriteKey スプライトシート名（例: "chizubouken-lab"）
+         */
+        changeLayerIcon(layerId, iconName, spriteKey) {
+            // icon-image式 ["concat", spriteKey, ":", iconName] で更新
+            const iconImageExpr = ["concat", spriteKey, ":", iconName];
+            this.setLayoutProperty(layerId, "icon-image", iconImageExpr);
         }
     }
     const currentScript = document.currentScript;
