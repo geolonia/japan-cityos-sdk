@@ -30,7 +30,7 @@ class GeoloniaMap extends maplibregl.Map {
       style: params.style ?? 'https://basic-v1-background-only.pages.dev/style.json',
       center: params.lngLat ?? [139.692, 35.689],
       zoom: params.zoom ?? 12,
-      hash: params.hash ?? true,
+      hash: params.hash ?? false,
       transformRequest: (url: string, resourceType: string) => {
         if (!window.geolonia.apiKey) { return { url }; }
         if ((resourceType === 'Tile' || resourceType === 'Source') && url.startsWith('https://tileserver.geolonia.com')) {
