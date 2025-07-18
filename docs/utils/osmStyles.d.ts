@@ -1,3 +1,3 @@
 import { AddLayerObject } from "maplibre-gl";
 import { OsmLayerNameType } from "../types";
-export declare const getOSMLayerConfig: (layerName: OsmLayerNameType) => AddLayerObject[];
+export declare const getOSMLayerConfig: (layerName: OsmLayerNameType, spriteName: string) => AddLayerObject[];

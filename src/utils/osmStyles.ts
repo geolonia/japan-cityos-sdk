@@ -2,7 +2,7 @@ import { AddLayerObject } from "maplibre-gl";
 import { OsmLayerNameType } from "../types";
 import { OSM_SOURCE_ID } from "./osmPoiUtils";
 
-export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[] => {
+export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: string): AddLayerObject[] => {
     return ({
         'railway': [{
             "id": `osm-${layerName}`,
@@ -45,12 +45,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    [
-                        "get",
-                        "class"
-                    ],
-                    "circle-stroked"
+                    "concat",
+                    spriteName, ":", "railway"
                 ],
                 "icon-padding": [
                     "interpolate",
@@ -117,9 +113,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    "mountain",
-                    "circle-stroked"
+                    "concat",
+                    spriteName, ":", "mountain"
                 ],
                 "icon-padding": [
                     "interpolate",
@@ -173,7 +168,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                     "Noto Sans Universal Regular"
                 ],
                 "text-anchor": "top",
-                "icon-image": "airport",
+                "icon-image": [
+                    "concat",
+                    spriteName, ":", "airport"
+                ],
                 "text-field": "{name}",
                 "text-offset": [
                     0,
@@ -213,7 +211,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                     "Noto Sans Universal Regular"
                 ],
                 "text-anchor": "top",
-                "icon-image": "circle-stroked",
+                "icon-image": [
+                    "concat",
+                    spriteName, ":", "airport"
+                ],
                 "text-field": "{name}",
                 "text-offset": [
                     0,
@@ -260,7 +261,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                     "Noto Sans Universal Regular"
                 ],
                 "text-anchor": "top",
-                "icon-image": "airport",
+                "icon-image": [
+                    "concat",
+                    spriteName, ":", "airport"
+                ],
                 "text-field": "{name}",
                 "text-offset": [
                     0,
@@ -291,12 +295,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    [
-                        "get",
-                        "class"
-                    ],
-                    "circle-stroked"
+                    "concat",
+                    spriteName, ":", "convenience"
                 ],
                 "text-field": "{name}",
                 "text-offset": [
@@ -348,12 +348,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    [
-                        "get",
-                        "class"
-                    ],
-                    "circle-stroked"
+                    "concat",
+                    spriteName, ":", "restaurant"
                 ],
                 "text-field": "{name}",
                 "text-offset": [
@@ -405,12 +401,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    [
-                        "get",
-                        "class"
-                    ],
-                    "circle-stroked"
+                    "concat",
+                    spriteName, ":", "bank"
                 ],
                 "text-field": "{name}",
                 "text-offset": [
@@ -462,12 +454,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    [
-                        "get",
-                        "class"
-                    ],
-                    "circle-stroked"
+                    "concat",
+                    spriteName, ":", "hospital"
                 ],
                 "text-field": "{name}",
                 "text-offset": [
@@ -519,12 +507,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    [
-                        "get",
-                        "class"
-                    ],
-                    "circle-stroked"
+                    "concat",
+                    spriteName, ":", "college"
                 ],
                 "text-field": "{name}",
                 "text-offset": [
@@ -576,12 +560,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    [
-                        "get",
-                        "class"
-                    ],
-                    "circle-stroked"
+                    "concat",
+                    spriteName, ":", "fast-food"
                 ],
                 "text-field": "{name}",
                 "text-offset": [
@@ -633,12 +613,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    [
-                        "get",
-                        "class"
-                    ],
-                    "circle-stroked"
+                    "concat",
+                    spriteName, ":", "school"
                 ],
                 "text-field": "{name}",
                 "text-offset": [
@@ -690,12 +666,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    [
-                        "get",
-                        "class"
-                    ],
-                    "circle-stroked"
+                    "concat",
+                    spriteName, ":", "cafe"
                 ],
                 "text-field": "{name}",
                 "text-offset": [
@@ -747,12 +719,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    [
-                        "get",
-                        "class"
-                    ],
-                    "circle-stroked"
+                    "concat",
+                    spriteName, ":", "zoo"
                 ],
                 "text-field": "{name}",
                 "text-offset": [
@@ -804,12 +772,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    [
-                        "get",
-                        "class"
-                    ],
-                    "circle-stroked"
+                    "concat",
+                    spriteName, ":", "parking"
                 ],
                 "text-field": "{name}",
                 "text-offset": [
@@ -861,12 +825,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    [
-                        "get",
-                        "class"
-                    ],
-                    "circle-stroked"
+                    "concat",
+                    spriteName, ":", "museum"
                 ],
                 "text-field": "{name}",
                 "text-offset": [
@@ -918,12 +878,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    [
-                        "get",
-                        "class"
-                    ],
-                    "circle-stroked"
+                    "concat",
+                    spriteName, ":", "castle"
                 ],
                 "text-field": "{name}",
                 "text-offset": [
@@ -1002,18 +958,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    [
-                        "image",
-                        [
-                            "get",
-                            "class"
-                        ]
-                    ],
-                    [
-                        "image",
-                        "circle-stroked"
-                    ]
+                    "concat",
+                    spriteName, ":", "park"
                 ],
                 "text-field": "{name}",
                 "text-offset": [
@@ -1070,18 +1016,8 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType): AddLayerObject[]
                 "text-anchor": "top",
                 "icon-anchor": "bottom",
                 "icon-image": [
-                    "coalesce",
-                    [
-                        "image",
-                        [
-                            "get",
-                            "class"
-                        ]
-                    ],
-                    [
-                        "image",
-                        "circle-stroked"
-                    ]
+                    "concat",
+                    spriteName, ":", "park"
                 ],
                 "icon-padding": [
                     "interpolate",

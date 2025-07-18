@@ -3,6 +3,12 @@ import { addOsmSprite } from '../src/utils/osmPoiUtils';
 
 describe('addOsmSprite', () => {
   let map: any;
+  const spriteSheetUrl: {[key: string]: string} = {
+    'chizubouken-lab': 'https://geolonia.github.io/chizubouken-lab-sprite/sprite',
+    'mapfan': 'https://geolonia.github.io/mapfandb-sprite/sprite',
+    'smartmap': 'https://geolonia.github.io/custom-smartmap-sprite/sprite',
+    'basic': 'https://geoloniamaps.github.io/basic-v1/basic-v1',
+  };
 
   beforeEach(() => {
     map = {
@@ -11,38 +17,50 @@ describe('addOsmSprite', () => {
     };
   });
 
-  it('spriteが未設定ならosmのみ追加', () => {
+  it('spriteが未設定なら、渡したspriteのみ追加', () => {
     map.getStyle.mockReturnValue({});
-    addOsmSprite(map, 'railway');
+    addOsmSprite(map, { 'basic': spriteSheetUrl['basic'] }, spriteSheetUrl);
     expect(map.setStyle).toHaveBeenCalledWith({
-      sprite: [{ id: "osm", url: "https://geoloniamaps.github.io/basic-v1/basic-v1" }]
+      sprite: [{ id: "basic", url: "https://geoloniamaps.github.io/basic-v1/basic-v1" }]
     });
   });
 
-  it('spriteがオブジェクトでosmがなければ追加', () => {
+  it('spriteがオブジェクトで、渡したspriteがなければ追加', () => {
     map.getStyle.mockReturnValue({ sprite: [{ id: "default", url: "foo" }] });
-    addOsmSprite(map, 'railway');
+    addOsmSprite(map, { 'smartmap': spriteSheetUrl['smartmap'] }, spriteSheetUrl);
     expect(map.setStyle).toHaveBeenCalledWith({
       sprite: [
         { id: "default", url: "foo" },
-        { id: "osm", url: "https://geoloniamaps.github.io/basic-v1/basic-v1" }
+        { id: "smartmap", url: "https://geolonia.github.io/custom-smartmap-sprite/sprite" }
       ]
     });
   });
 
-  it('spriteがオブジェクトでosmが既にあれば何もしない', () => {
-    map.getStyle.mockReturnValue({ sprite: [{ id: "osm", url: "bar" }] });
-    addOsmSprite(map, 'railway');
+  it('spriteがオブジェクトで、渡したspriteが既にあれば何もしない', () => {
+    map.getStyle.mockReturnValue({ sprite: [{ id: "basic", url: spriteSheetUrl['basic'] }] });
+    addOsmSprite(map, { 'basic': spriteSheetUrl['basic'] }, spriteSheetUrl);
     expect(map.setStyle).not.toHaveBeenCalled();
   });
 
-  it('spriteがstringならdefaultとosmを配列で設定', () => {
+  it('spriteがstringで、spriteSheetUrlにURLが存在する場合はspriteSheetUrlのkey名でspriteに追加', () => {
+    map.getStyle.mockReturnValue({ sprite: spriteSheetUrl['mapfan'] });
+    addOsmSprite(map, { 'basic': spriteSheetUrl['basic'] }, spriteSheetUrl);
+
+    expect(map.setStyle).toHaveBeenCalledWith({
+      sprite: [
+        { id: "mapfan", url: spriteSheetUrl['mapfan'] },
+        { id: "basic", url: spriteSheetUrl['basic'] }
+      ]
+    });
+  });
+
+  it('spriteがstringで、spriteListにスプライトがなかったら、既存のspriteをdefaultで、渡したspriteを配列で設定', () => {
     map.getStyle.mockReturnValue({ sprite: "https://example.com/sprite.json" });
-    addOsmSprite(map, 'railway');
+    addOsmSprite(map, { 'chizubouken-lab': spriteSheetUrl['chizubouken-lab'] }, spriteSheetUrl);
     expect(map.setStyle).toHaveBeenCalledWith({
       sprite: [
         { id: "default", url: "https://example.com/sprite.json" },
-        { id: "osm", url: "https://geoloniamaps.github.io/basic-v1/basic-v1" }
+        { id: "chizubouken-lab", url: spriteSheetUrl['chizubouken-lab'] }
       ]
     });
   });
