@@ -12,13 +12,16 @@ export const addOsmSource = (map: maplibregl.Map) => {
     }
 }
 
-export const addOsmLayer = (map: maplibregl.Map, layerName: OsmLayerNameType, spriteName: string) => {
+export const addOsmLayer = (map: maplibregl.Map, layerName: OsmLayerNameType, spriteName: string): string[] => {
     const layerId = `osm-${layerName}`;
+    const layerNames: string[] = [];
     if (!map.getLayer(layerId)) {
         getOSMLayerConfig(layerName, spriteName).forEach(layerConfig => {
             map.addLayer(layerConfig);
+            layerNames.push(layerConfig.id);
         });
     }
+    return layerNames;
 }
 
 export const removeOsmLayer = (map: maplibregl.Map, layerName: OsmLayerNameType) => {
@@ -130,3 +133,40 @@ export const addOsmSprite = (map: maplibregl.Map, spriteName: { [key: string]: s
         });
     }
 };
+
+/**
+ * 指定レイヤーのicon-imageプロパティだけを更新する
+ * @param map GeoloniaMapインスタンス
+ * @param layerId OsmLayerNameType（またはレイヤーID）
+ * @param spriteKey スプライトシート名（prefixとして使う）
+ */
+export function updateSpriteSheet(map: maplibregl.Map, layerId: string, spriteKey: string) {
+  // レイヤーIDに一致するレイヤーを取得
+  const layers = map.getStyle().layers;
+  layers.forEach(layer => {
+    if (layer.id === `osm-${layerId}` || layer.id === layerId) {
+      // icon-imageがexpressionの場合
+      if (
+        layer.layout &&
+        typeof layer.layout === "object" &&
+        "icon-image" in layer.layout &&
+        layer.layout["icon-image"] !== undefined
+      ) {
+        const iconImage = (layer.layout as {["icon-image"]?: unknown})["icon-image"];
+        // ["concat", oldSpriteKey, ":", iconName] の場合
+        if (Array.isArray(iconImage) && iconImage[0] === "concat") {
+          // spriteKeyを新しいものに置き換え
+          iconImage[1] = spriteKey;
+          map.setLayoutProperty(layer.id, 'icon-image', iconImage);
+        }
+        // 文字列の場合（"oldSpriteKey:iconName"）
+        if (typeof iconImage === "string") {
+          const parts = iconImage.split(':');
+          if (parts.length === 2) {
+            map.setLayoutProperty(layer.id, 'icon-image', `${spriteKey}:${parts[1]}`);
+          }
+        }
+      }
+    }
+  });
+}
