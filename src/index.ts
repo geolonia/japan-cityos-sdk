@@ -114,11 +114,16 @@ class GeoloniaMap extends maplibregl.Map {
   ) {
     // すでにSourceが存在する場合はデータを更新
     const existingSource = this.getSource(className) as maplibregl.GeoJSONSource | undefined;
+    const spriteSheet = simpleStyle?.spriteSheet;
 
     if (existingSource && 'setData' in existingSource) {
       existingSource.setData(geojson as any);
     } else {
       this.addSource(className, createSourceByType('geojson', geojson));
+    }
+
+    if (spriteSheet) {
+      addOsmSprite(this, { [spriteSheet]: this.spriteSheetUrl[spriteSheet] }, this.spriteSheetUrl);
     }
 
     const layers = createLayer(className, {
