@@ -3742,6 +3742,10 @@
          * @param spriteKey スプライトシート名（例: "chizubouken-lab"）
          */
         changeLayerIcon(layerId, iconName, spriteKey) {
+            if (!this.getLayer(layerId)) {
+                console.warn(`Layer ${layerId} does not exist.`);
+                return;
+            }
             // icon-image式 ["concat", spriteKey, ":", iconName] で更新
             const iconImageExpr = ["concat", spriteKey, ":", iconName];
             this.setLayoutProperty(layerId, "icon-image", iconImageExpr);
