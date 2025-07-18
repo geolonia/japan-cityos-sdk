@@ -3499,7 +3499,7 @@
                 style: (_b = params.style) !== null && _b !== void 0 ? _b : 'https://basic-v1-background-only.pages.dev/style.json',
                 center: (_c = params.lngLat) !== null && _c !== void 0 ? _c : [139.692, 35.689],
                 zoom: (_d = params.zoom) !== null && _d !== void 0 ? _d : 12,
-                hash: (_e = params.hash) !== null && _e !== void 0 ? _e : true,
+                hash: (_e = params.hash) !== null && _e !== void 0 ? _e : false,
                 transformRequest: (url, resourceType) => {
                     if (!window.geolonia.apiKey) {
                         return { url };
@@ -3580,11 +3580,15 @@
             return __awaiter(this, void 0, void 0, function* () {
                 // すでにSourceが存在する場合はデータを更新
                 const existingSource = this.getSource(className);
+                const spriteSheet = simpleStyle === null || simpleStyle === void 0 ? void 0 : simpleStyle.spriteSheet;
                 if (existingSource && 'setData' in existingSource) {
                     existingSource.setData(geojson);
                 }
                 else {
                     this.addSource(className, createSourceByType('geojson', geojson));
+                }
+                if (spriteSheet) {
+                    addOsmSprite(this, { [spriteSheet]: this.spriteSheetUrl[spriteSheet] }, this.spriteSheetUrl);
                 }
                 const layers = createLayer(className, {
                     simpleStyle: simpleStyle

@@ -135,6 +135,31 @@
         'title': ['get', 'name']
       });
 
+      japan.loadGeojson(
+        {
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "properties": {
+                "name": "那覇市役所",
+                "category": "公共施設"
+              },
+              "geometry": {
+                "type": "Point",
+                "coordinates": [127.6792, 26.2124]
+              }
+            }
+          ]
+        },
+        "役所",
+        {
+          "marker-symbol": "chizubouken-lab:castle",
+          "title": ["get", "name"],
+          "sprite-sheet": "chizubouken-lab"
+        }
+      )
+
       // osmのpoiを表示
       japan.loadOsmPoi('restaurant', 'chizubouken-lab');
       document.getElementById('poi-checkbox').addEventListener('change', function (e) {
