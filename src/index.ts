@@ -16,6 +16,13 @@ class GeoloniaMap extends maplibregl.Map {
 
   private loadedSourceIds: Set<string> = new Set();
 
+  spriteSheetUrl: {[key: string]: string} = {
+    'chizubouken-lab': 'https://geolonia.github.io/chizubouken-lab-sprite/sprite',
+    'mapfan': 'https://geolonia.github.io/mapfandb-sprite/sprite',
+    'smartmap': 'https://geolonia.github.io/custom-smartmap-sprite/sprite',
+    'basic': 'https://geoloniamaps.github.io/basic-v1/basic-v1',
+  };
+
   constructor(params: any) {
     const defaults = {
       container: params.container ?? 'map',
@@ -198,13 +205,14 @@ class GeoloniaMap extends maplibregl.Map {
    * 指定した種類のpoiを表示する
    * @param osmLayerName 表示するレイヤー名
    */
-  loadOsmPoi(osmLayerName: string) {
+  loadOsmPoi(osmLayerName: string, spriteName?: keyof typeof this.spriteSheetUrl) {
     if (!osmLayerName) { return; }
     const layerId = toOsmLayerNameType(osmLayerName);
+    console.log('loadOsmPoi', layerId, osmLayerName, spriteName);
     if (!layerId) { return; }
     addOsmSource(this);
-    addOsmSprite(this, layerId);
-    addOsmLayer(this, layerId);
+    addOsmSprite(this, { [spriteName ?? 'basic']: this.spriteSheetUrl[spriteName ?? 'basic'] }, this.spriteSheetUrl);
+    addOsmLayer(this, layerId, spriteName as string);
   }
 
   /**
@@ -237,7 +245,6 @@ class GeoloniaMap extends maplibregl.Map {
       museum: '博物館',
       park: '公園'
     };
-
   }
 
 }

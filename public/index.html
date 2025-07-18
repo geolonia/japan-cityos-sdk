@@ -115,19 +115,19 @@
       });
 
       // osmのpoiを表示
-      japan.loadOsmPoi('restaurant');
+      japan.loadOsmPoi('restaurant', 'chizubouken-lab');
       document.getElementById('poi-checkbox').addEventListener('change', function (e) {
         if (e.target.checked) {
-          japan.loadOsmPoi('restaurant');
+          japan.loadOsmPoi('restaurant', 'chizubouken-lab');
         } else {
           japan.removeOsmPoi('restaurant');
         }
       });
 
-      japan.loadOsmPoi('鉄道');
+      japan.loadOsmPoi('鉄道', 'basic');
       document.getElementById('poi-checkbox2').addEventListener('change', function (e) {
         if (e.target.checked) {
-          japan.loadOsmPoi('鉄道');
+          japan.loadOsmPoi('鉄道', 'basic');
         } else {
           japan.removeOsmPoi('鉄道');
         }

@@ -2300,7 +2300,7 @@
         return queryBox;
     }
 
-    const getOSMLayerConfig = (layerName) => {
+    const getOSMLayerConfig = (layerName, spriteName) => {
         return ({
             'railway': [{
                     "id": `osm-${layerName}`,
@@ -2343,12 +2343,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            [
-                                "get",
-                                "class"
-                            ],
-                            "circle-stroked"
+                            "concat",
+                            spriteName, ":", "railway"
                         ],
                         "icon-padding": [
                             "interpolate",
@@ -2415,9 +2411,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            "mountain",
-                            "circle-stroked"
+                            "concat",
+                            spriteName, ":", "mountain"
                         ],
                         "icon-padding": [
                             "interpolate",
@@ -2471,7 +2466,10 @@
                             "Noto Sans Universal Regular"
                         ],
                         "text-anchor": "top",
-                        "icon-image": "airport",
+                        "icon-image": [
+                            "concat",
+                            spriteName, ":", "airport"
+                        ],
                         "text-field": "{name}",
                         "text-offset": [
                             0,
@@ -2511,7 +2509,10 @@
                             "Noto Sans Universal Regular"
                         ],
                         "text-anchor": "top",
-                        "icon-image": "circle-stroked",
+                        "icon-image": [
+                            "concat",
+                            spriteName, ":", "airport"
+                        ],
                         "text-field": "{name}",
                         "text-offset": [
                             0,
@@ -2558,7 +2559,10 @@
                             "Noto Sans Universal Regular"
                         ],
                         "text-anchor": "top",
-                        "icon-image": "airport",
+                        "icon-image": [
+                            "concat",
+                            spriteName, ":", "airport"
+                        ],
                         "text-field": "{name}",
                         "text-offset": [
                             0,
@@ -2589,12 +2593,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            [
-                                "get",
-                                "class"
-                            ],
-                            "circle-stroked"
+                            "concat",
+                            spriteName, ":", "convenience"
                         ],
                         "text-field": "{name}",
                         "text-offset": [
@@ -2646,12 +2646,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            [
-                                "get",
-                                "class"
-                            ],
-                            "circle-stroked"
+                            "concat",
+                            spriteName, ":", "restaurant"
                         ],
                         "text-field": "{name}",
                         "text-offset": [
@@ -2703,12 +2699,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            [
-                                "get",
-                                "class"
-                            ],
-                            "circle-stroked"
+                            "concat",
+                            spriteName, ":", "bank"
                         ],
                         "text-field": "{name}",
                         "text-offset": [
@@ -2760,12 +2752,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            [
-                                "get",
-                                "class"
-                            ],
-                            "circle-stroked"
+                            "concat",
+                            spriteName, ":", "hospital"
                         ],
                         "text-field": "{name}",
                         "text-offset": [
@@ -2817,12 +2805,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            [
-                                "get",
-                                "class"
-                            ],
-                            "circle-stroked"
+                            "concat",
+                            spriteName, ":", "college"
                         ],
                         "text-field": "{name}",
                         "text-offset": [
@@ -2874,12 +2858,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            [
-                                "get",
-                                "class"
-                            ],
-                            "circle-stroked"
+                            "concat",
+                            spriteName, ":", "fast-food"
                         ],
                         "text-field": "{name}",
                         "text-offset": [
@@ -2931,12 +2911,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            [
-                                "get",
-                                "class"
-                            ],
-                            "circle-stroked"
+                            "concat",
+                            spriteName, ":", "school"
                         ],
                         "text-field": "{name}",
                         "text-offset": [
@@ -2988,12 +2964,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            [
-                                "get",
-                                "class"
-                            ],
-                            "circle-stroked"
+                            "concat",
+                            spriteName, ":", "cafe"
                         ],
                         "text-field": "{name}",
                         "text-offset": [
@@ -3045,12 +3017,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            [
-                                "get",
-                                "class"
-                            ],
-                            "circle-stroked"
+                            "concat",
+                            spriteName, ":", "zoo"
                         ],
                         "text-field": "{name}",
                         "text-offset": [
@@ -3102,12 +3070,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            [
-                                "get",
-                                "class"
-                            ],
-                            "circle-stroked"
+                            "concat",
+                            spriteName, ":", "parking"
                         ],
                         "text-field": "{name}",
                         "text-offset": [
@@ -3159,12 +3123,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            [
-                                "get",
-                                "class"
-                            ],
-                            "circle-stroked"
+                            "concat",
+                            spriteName, ":", "museum"
                         ],
                         "text-field": "{name}",
                         "text-offset": [
@@ -3216,12 +3176,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            [
-                                "get",
-                                "class"
-                            ],
-                            "circle-stroked"
+                            "concat",
+                            spriteName, ":", "castle"
                         ],
                         "text-field": "{name}",
                         "text-offset": [
@@ -3300,18 +3256,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            [
-                                "image",
-                                [
-                                    "get",
-                                    "class"
-                                ]
-                            ],
-                            [
-                                "image",
-                                "circle-stroked"
-                            ]
+                            "concat",
+                            spriteName, ":", "park"
                         ],
                         "text-field": "{name}",
                         "text-offset": [
@@ -3368,18 +3314,8 @@
                         "text-anchor": "top",
                         "icon-anchor": "bottom",
                         "icon-image": [
-                            "coalesce",
-                            [
-                                "image",
-                                [
-                                    "get",
-                                    "class"
-                                ]
-                            ],
-                            [
-                                "image",
-                                "circle-stroked"
-                            ]
+                            "concat",
+                            spriteName, ":", "park"
                         ],
                         "icon-padding": [
                             "interpolate",
@@ -3421,17 +3357,17 @@
             });
         }
     };
-    const addOsmLayer = (map, layerName) => {
+    const addOsmLayer = (map, layerName, spriteName) => {
         const layerId = `osm-${layerName}`;
         if (!map.getLayer(layerId)) {
-            getOSMLayerConfig(layerName).forEach(layerConfig => {
+            getOSMLayerConfig(layerName, spriteName).forEach(layerConfig => {
                 map.addLayer(layerConfig);
             });
         }
     };
     const removeOsmLayer = (map, layerName) => {
         if (map.getLayer(layerName)) {
-            getOSMLayerConfig(layerName).forEach(layerConfig => {
+            getOSMLayerConfig(layerName, '').forEach(layerConfig => {
                 map.removeLayer(layerConfig.id);
             });
         }
@@ -3481,34 +3417,41 @@
      * @param map maplibregl.Mapインスタンス
      * @param layerName OsmLayerNameType
      */
-    const addOsmSprite = (map, layerName) => {
+    const addOsmSprite = (map, spriteName, spriteList) => {
         const style = map.getStyle();
-        const osmSpriteUrl = "https://geoloniamaps.github.io/basic-v1/basic-v1";
+        const spriteKey = Object.keys(spriteName)[0];
+        const spriteUrl = Object.values(spriteName)[0];
         // spriteが未設定ならosmのみ追加
         if (!style || !style.sprite) {
-            map.setStyle(Object.assign(Object.assign({}, style), { sprite: [{ id: "osm", url: osmSpriteUrl }] }));
+            map.setStyle(Object.assign(Object.assign({}, style), { sprite: [{ id: spriteKey, url: spriteUrl }] }));
             return;
         }
-        // spriteがオブジェクトなら、osmスプライトがなければ追加
+        // spriteがオブジェクトで、指定したスプライトシートがなければ追加
         if (typeof style.sprite === "object" && style.sprite !== null) {
             const sprites = Array.isArray(style.sprite) ? style.sprite : [style.sprite];
-            const hasOsm = sprites.some(s => s.id === "osm");
+            const hasOsm = sprites.some(s => s.url === spriteUrl);
             if (!hasOsm) {
-                const newSprites = [...sprites, { id: "osm", url: osmSpriteUrl }];
+                const newSprites = [...sprites, { id: spriteKey, url: spriteUrl }];
                 map.setStyle(Object.assign(Object.assign({}, style), { sprite: newSprites }));
             }
             return;
         }
-        // spriteがstringだった場合、defaultとosmを配列で設定
-        if (typeof style.sprite === "string" && style.sprite !== osmSpriteUrl) {
-            const newSprites = [
-                { id: "default", url: style.sprite },
-                { id: "osm", url: osmSpriteUrl }
-            ];
+        // spriteがstringだった場合、defaultと渡された spriteを配列で設定
+        if (typeof style.sprite === "string" && style.sprite !== spriteUrl) {
+            const currentSpriteIndex = Object.values(spriteList).findIndex(url => url === style.sprite);
+            const currentSpriteKey = currentSpriteIndex === -1 ? "default" : Object.keys(spriteList)[currentSpriteIndex];
+            const newSprites = [{ id: currentSpriteKey, url: style.sprite }];
+            // currentSpriteKeyとspriteKeyが違う場合のみ追加
+            if (currentSpriteKey !== spriteKey) {
+                newSprites.push({ id: spriteKey, url: spriteUrl });
+            }
             map.setStyle(Object.assign(Object.assign({}, style), { sprite: newSprites }));
             return;
         }
-        // それ以外は何もしない
+        // spriteがstringだった場合、URLが同じだったら、指定のspriteシート名で更新
+        if (typeof style.sprite === "string" && style.sprite === spriteUrl) {
+            map.setStyle(Object.assign(Object.assign({}, style), { sprite: [{ id: spriteKey, url: spriteUrl }] }));
+        }
     };
 
     class GeoloniaMap extends maplibregl.Map {
@@ -3532,6 +3475,12 @@
             };
             super(Object.assign(Object.assign({}, defaults), params));
             this.loadedSourceIds = new Set();
+            this.spriteSheetUrl = {
+                'chizubouken-lab': 'https://geolonia.github.io/chizubouken-lab-sprite/sprite',
+                'mapfan': 'https://geolonia.github.io/mapfandb-sprite/sprite',
+                'smartmap': 'https://geolonia.github.io/custom-smartmap-sprite/sprite',
+                'basic': 'https://geoloniamaps.github.io/basic-v1/basic-v1',
+            };
         }
         /* ****************
          * レイヤーを追加する
@@ -3671,17 +3620,18 @@
          * 指定した種類のpoiを表示する
          * @param osmLayerName 表示するレイヤー名
          */
-        loadOsmPoi(osmLayerName) {
+        loadOsmPoi(osmLayerName, spriteName) {
             if (!osmLayerName) {
                 return;
             }
             const layerId = toOsmLayerNameType(osmLayerName);
+            console.log('loadOsmPoi', layerId, osmLayerName, spriteName);
             if (!layerId) {
                 return;
             }
             addOsmSource(this);
-            addOsmSprite(this);
-            addOsmLayer(this, layerId);
+            addOsmSprite(this, { [spriteName !== null && spriteName !== void 0 ? spriteName : 'basic']: this.spriteSheetUrl[spriteName !== null && spriteName !== void 0 ? spriteName : 'basic'] }, this.spriteSheetUrl);
+            addOsmLayer(this, layerId, spriteName);
         }
         /**
          * 指定した種類のpoiを非表示にする

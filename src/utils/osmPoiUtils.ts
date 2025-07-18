@@ -12,10 +12,10 @@ export const addOsmSource = (map: maplibregl.Map) => {
     }
 }
 
-export const addOsmLayer = (map: maplibregl.Map, layerName: OsmLayerNameType) => {
+export const addOsmLayer = (map: maplibregl.Map, layerName: OsmLayerNameType, spriteName: string) => {
     const layerId = `osm-${layerName}`;
     if (!map.getLayer(layerId)) {
-        getOSMLayerConfig(layerName).forEach(layerConfig => {
+        getOSMLayerConfig(layerName, spriteName).forEach(layerConfig => {
             map.addLayer(layerConfig);
         });
     }
@@ -23,7 +23,7 @@ export const addOsmLayer = (map: maplibregl.Map, layerName: OsmLayerNameType) =>
 
 export const removeOsmLayer = (map: maplibregl.Map, layerName: OsmLayerNameType) => {
     if (map.getLayer(layerName)) {
-        getOSMLayerConfig(layerName).forEach(layerConfig => {
+        getOSMLayerConfig(layerName, '').forEach(layerConfig => {
             map.removeLayer(layerConfig.id);
         });
     }
@@ -75,25 +75,27 @@ export function toOsmLayerNameType(name: string): OsmLayerNameType | undefined {
  * @param map maplibregl.Mapインスタンス
  * @param layerName OsmLayerNameType
  */
-export const addOsmSprite = (map: maplibregl.Map, layerName: OsmLayerNameType) => {
+export const addOsmSprite = (map: maplibregl.Map, spriteName: { [key: string]: string }, spriteList: { [key: string]: string }) => {
     const style = map.getStyle();
-    const osmSpriteUrl = "https://geoloniamaps.github.io/basic-v1/basic-v1";
+    const spriteKey = Object.keys(spriteName)[0];
+    const spriteUrl = Object.values(spriteName)[0];
 
     // spriteが未設定ならosmのみ追加
     if (!style || !style.sprite) {
         map.setStyle({
             ...style,
-            sprite: [{ id: "osm", url: osmSpriteUrl }]
+            sprite: [{ id: spriteKey, url: spriteUrl }]
         });
         return;
     }
 
-    // spriteがオブジェクトなら、osmスプライトがなければ追加
+    // spriteがオブジェクトで、指定したスプライトシートがなければ追加
     if (typeof style.sprite === "object" && style.sprite !== null) {
         const sprites: any[] = Array.isArray(style.sprite) ? style.sprite : [style.sprite];
-        const hasOsm = sprites.some(s => s.id === "osm");
+        const hasOsm = sprites.some(s => s.url === spriteUrl);
+        
         if (!hasOsm) {
-            const newSprites = [...sprites, { id: "osm", url: osmSpriteUrl }];
+            const newSprites = [...sprites, { id: spriteKey, url: spriteUrl }];
             map.setStyle({
                 ...style,
                 sprite: newSprites
@@ -102,12 +104,17 @@ export const addOsmSprite = (map: maplibregl.Map, layerName: OsmLayerNameType) =
         return;
     }
 
-    // spriteがstringだった場合、defaultとosmを配列で設定
-    if (typeof style.sprite === "string" && style.sprite !== osmSpriteUrl) {
-        const newSprites = [
-            { id: "default", url: style.sprite },
-            { id: "osm", url: osmSpriteUrl }
-        ];
+    // spriteがstringだった場合、defaultと渡された spriteを配列で設定
+    if (typeof style.sprite === "string" && style.sprite !== spriteUrl) {
+        const currentSpriteIndex = Object.values(spriteList).findIndex(url => url === style.sprite);
+        const currentSpriteKey = currentSpriteIndex === -1 ? "default" : Object.keys(spriteList)[currentSpriteIndex];
+        const newSprites = [{ id: currentSpriteKey, url: style.sprite }];
+
+        // currentSpriteKeyとspriteKeyが違う場合のみ追加
+        if (currentSpriteKey !== spriteKey) {
+            newSprites.push({ id: spriteKey, url: spriteUrl });
+        }
+        
         map.setStyle({
             ...style,
             sprite: newSprites
@@ -115,5 +122,11 @@ export const addOsmSprite = (map: maplibregl.Map, layerName: OsmLayerNameType) =
         return;
     }
 
-    // それ以外は何もしない
+    // spriteがstringだった場合、URLが同じだったら、指定のspriteシート名で更新
+    if (typeof style.sprite === "string" && style.sprite === spriteUrl) {
+        map.setStyle({
+            ...style,
+            sprite: [{ id: spriteKey, url: spriteUrl }]
+        });
+    }
 };

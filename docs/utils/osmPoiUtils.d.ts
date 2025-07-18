@@ -1,7 +1,7 @@
 import { OsmLayerNameType } from "../types";
 export declare const OSM_SOURCE_ID = "osm";
 export declare const addOsmSource: (map: maplibregl.Map) => void;
-export declare const addOsmLayer: (map: maplibregl.Map, layerName: OsmLayerNameType) => void;
+export declare const addOsmLayer: (map: maplibregl.Map, layerName: OsmLayerNameType, spriteName: string) => void;
 export declare const removeOsmLayer: (map: maplibregl.Map, layerName: OsmLayerNameType) => void;
 /**
  * 任意の文字列をOsmLayerNameTypeに変換する
@@ -14,4 +14,8 @@ export declare function toOsmLayerNameType(name: string): OsmLayerNameType | und
  * @param map maplibregl.Mapインスタンス
  * @param layerName OsmLayerNameType
  */
-export declare const addOsmSprite: (map: maplibregl.Map, layerName: OsmLayerNameType) => void;
+export declare const addOsmSprite: (map: maplibregl.Map, spriteName: {
+    [key: string]: string;
+}, spriteList: {
+    [key: string]: string;
+}) => void;
