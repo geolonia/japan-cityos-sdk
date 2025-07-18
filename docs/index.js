@@ -3359,11 +3359,14 @@
     };
     const addOsmLayer = (map, layerName, spriteName) => {
         const layerId = `osm-${layerName}`;
+        const layerNames = [];
         if (!map.getLayer(layerId)) {
             getOSMLayerConfig(layerName, spriteName).forEach(layerConfig => {
                 map.addLayer(layerConfig);
+                layerNames.push(layerConfig.id);
             });
         }
+        return layerNames;
     };
     const removeOsmLayer = (map, layerName) => {
         if (map.getLayer(layerName)) {
@@ -3453,6 +3456,41 @@
             map.setStyle(Object.assign(Object.assign({}, style), { sprite: [{ id: spriteKey, url: spriteUrl }] }));
         }
     };
+    /**
+     * 指定レイヤーのicon-imageプロパティだけを更新する
+     * @param map GeoloniaMapインスタンス
+     * @param layerId OsmLayerNameType（またはレイヤーID）
+     * @param spriteKey スプライトシート名（prefixとして使う）
+     */
+    function updateSpriteSheet(map, layerId, spriteKey) {
+        // レイヤーIDに一致するレイヤーを取得
+        const layers = map.getStyle().layers;
+        console.log(`Updating icon images for layer: ${layerId} with spriteKey: ${spriteKey}`, layers);
+        layers.forEach(layer => {
+            if (layer.id === `osm-${layerId}` || layer.id === layerId) {
+                // icon-imageがexpressionの場合
+                if (layer.layout &&
+                    typeof layer.layout === "object" &&
+                    "icon-image" in layer.layout &&
+                    layer.layout["icon-image"] !== undefined) {
+                    const iconImage = layer.layout["icon-image"];
+                    // ["concat", oldSpriteKey, ":", iconName] の場合
+                    if (Array.isArray(iconImage) && iconImage[0] === "concat") {
+                        // spriteKeyを新しいものに置き換え
+                        iconImage[1] = spriteKey;
+                        map.setLayoutProperty(layer.id, 'icon-image', iconImage);
+                    }
+                    // 文字列の場合（"oldSpriteKey:iconName"）
+                    if (typeof iconImage === "string") {
+                        const parts = iconImage.split(':');
+                        if (parts.length === 2) {
+                            map.setLayoutProperty(layer.id, 'icon-image', `${spriteKey}:${parts[1]}`);
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
@@ -3625,13 +3663,13 @@
                 return;
             }
             const layerId = toOsmLayerNameType(osmLayerName);
-            console.log('loadOsmPoi', layerId, osmLayerName, spriteName);
             if (!layerId) {
                 return;
             }
             addOsmSource(this);
             addOsmSprite(this, { [spriteName !== null && spriteName !== void 0 ? spriteName : 'basic']: this.spriteSheetUrl[spriteName !== null && spriteName !== void 0 ? spriteName : 'basic'] }, this.spriteSheetUrl);
-            addOsmLayer(this, layerId, spriteName);
+            const layers = addOsmLayer(this, layerId, spriteName);
+            return layers;
         }
         /**
          * 指定した種類のpoiを非表示にする
@@ -3666,6 +3704,36 @@
                 museum: '博物館',
                 park: '公園'
             };
+        }
+        /**
+         * 指定したレイヤーIDが存在するかどうかを判定する
+         * @param map maplibregl.Mapインスタンス
+         * @param layerId レイヤーID
+         * @returns 存在すればtrue、なければfalse
+         */
+        hasLayer(layerId) {
+            const layerName = toOsmLayerNameType(layerId);
+            if (!layerName) {
+                return;
+            }
+            const layerIdArr = [];
+            getOSMLayerConfig(layerName, '').forEach(layerConfig => {
+                if (this.getLayer(layerConfig.id)) {
+                    layerIdArr.push(layerConfig.id);
+                }
+            });
+            return layerIdArr.length > 0 ? layerIdArr : undefined;
+        }
+        /**
+        * 指定したPOIレイヤーのスプライトシートを切り替える
+        * @param layerName レイヤー名（日本語または英語）
+        * @param spriteKey スプライトシート名（spriteSheetUrlのkey）
+        */
+        changeSpriteSheet(layerName, spriteKey) {
+            // スプライトを追加・切り替え
+            addOsmSprite(this, { [spriteKey]: this.spriteSheetUrl[spriteKey] }, this.spriteSheetUrl);
+            // レイヤーを再描画（icon-image式にspriteKeyを渡す）
+            updateSpriteSheet(this, layerName, spriteKey);
         }
     }
     const currentScript = document.currentScript;

@@ -57,6 +57,16 @@
     <input type="checkbox" id="poi-checkbox2" checked>
     <label for="poi-checkbox2">OSM：鉄道</label>
   </div>
+  <div style="position:absolute;z-index:10;top:104px;left:10px;">
+    <input type="checkbox" id="poi-checkbox3" checked>
+    <label for="poi-checkbox3">OSM：学校</label>
+  </div>
+  <div style="position:absolute;z-index:10;top:136px;left:10px;">
+    <select id="school-sprite-select">
+      <option value="basic" default>学校を'basic'スプライトで表示</option>
+      <option value="chizubouken-lab">学校を'chizubouken-lab'スプライトで表示</option>
+    </select>
+  </div>
   <div id="map"></div>
   <script src="./index.js"></script>
   <script type="application/javascript">
@@ -130,6 +140,26 @@
           japan.loadOsmPoi('鉄道', 'basic');
         } else {
           japan.removeOsmPoi('鉄道');
+        }
+      });
+
+      japan.loadOsmPoi('学校', 'basic');
+      document.getElementById('poi-checkbox3').addEventListener('change', function (e) {
+        if (e.target.checked) {
+          japan.loadOsmPoi('学校', 'basic');
+        } else {
+          japan.removeOsmPoi('学校');
+        }
+      });
+
+
+      // スタイル切り替え
+      document.getElementById('school-sprite-select').addEventListener('change', function (e) {
+        const schoolLayerIds = japan.hasLayer('学校');
+        if(schoolLayerIds.length > 0) {
+          schoolLayerIds.forEach(layerId => {
+            japan.changeSpriteSheet(layerId, e.target.value);
+          });
         }
       });
 

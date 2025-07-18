@@ -4,7 +4,8 @@ import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByL
 import Papa from 'papaparse';
 import { toQueryBox } from './toQueryBox';
 import { OsmLayerNameType } from './types';
-import { addOsmLayer, addOsmSource, addOsmSprite, removeOsmLayer, toOsmLayerNameType } from './utils/osmPoiUtils';
+import { addOsmLayer, addOsmSource, addOsmSprite, removeOsmLayer, toOsmLayerNameType, updateSpriteSheet } from './utils/osmPoiUtils';
+import { getOSMLayerConfig } from './utils/osmStyles';
 
 declare global {
   interface Window {
@@ -205,14 +206,14 @@ class GeoloniaMap extends maplibregl.Map {
    * 指定した種類のpoiを表示する
    * @param osmLayerName 表示するレイヤー名
    */
-  loadOsmPoi(osmLayerName: string, spriteName?: keyof typeof this.spriteSheetUrl) {
+  loadOsmPoi(osmLayerName: string, spriteName?: keyof typeof this.spriteSheetUrl): string[] {
     if (!osmLayerName) { return; }
     const layerId = toOsmLayerNameType(osmLayerName);
-    console.log('loadOsmPoi', layerId, osmLayerName, spriteName);
     if (!layerId) { return; }
     addOsmSource(this);
     addOsmSprite(this, { [spriteName ?? 'basic']: this.spriteSheetUrl[spriteName ?? 'basic'] }, this.spriteSheetUrl);
-    addOsmLayer(this, layerId, spriteName as string);
+    const layers = addOsmLayer(this, layerId, spriteName as string);
+    return layers;
   }
 
   /**
@@ -245,6 +246,36 @@ class GeoloniaMap extends maplibregl.Map {
       museum: '博物館',
       park: '公園'
     };
+  }
+
+  /**
+   * 指定したレイヤーIDが存在するかどうかを判定する
+   * @param map maplibregl.Mapインスタンス
+   * @param layerId レイヤーID
+   * @returns 存在すればtrue、なければfalse
+   */
+  hasLayer(layerId: string): string[] | undefined {
+    const layerName = toOsmLayerNameType(layerId);
+    if (!layerName) { return; }
+    const layerIdArr: string[] = [];
+    getOSMLayerConfig(layerName, '').forEach(layerConfig => {
+      if (this.getLayer(layerConfig.id)) {
+        layerIdArr.push(layerConfig.id);
+      }
+    });
+    return layerIdArr.length > 0 ? layerIdArr : undefined;
+  }
+
+   /**
+   * 指定したPOIレイヤーのスプライトシートを切り替える
+   * @param layerName レイヤー名（日本語または英語）
+   * @param spriteKey スプライトシート名（spriteSheetUrlのkey）
+   */
+  changeSpriteSheet(layerName: string, spriteKey: keyof typeof this.spriteSheetUrl) {
+    // スプライトを追加・切り替え
+    addOsmSprite(this, { [spriteKey]: this.spriteSheetUrl[spriteKey] }, this.spriteSheetUrl);
+    // レイヤーを再描画（icon-image式にspriteKeyを渡す）
+    updateSpriteSheet(this, layerName, spriteKey as string);
   }
 
 }
