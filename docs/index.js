@@ -3358,22 +3358,23 @@
         }
     };
     const addOsmLayer = (map, layerName, spriteName) => {
-        const layerId = `osm-${layerName}`;
+        const layers = getOSMLayerConfig(layerName, spriteName);
         const layerNames = [];
-        if (!map.getLayer(layerId)) {
-            getOSMLayerConfig(layerName, spriteName).forEach(layerConfig => {
-                map.addLayer(layerConfig);
-                layerNames.push(layerConfig.id);
-            });
-        }
+        layers.forEach(layer => {
+            if (!map.getLayer(layer.id)) {
+                map.addLayer(layer);
+                layerNames.push(layer.id);
+            }
+        });
         return layerNames;
     };
     const removeOsmLayer = (map, layerName) => {
-        if (map.getLayer(layerName)) {
-            getOSMLayerConfig(layerName, '').forEach(layerConfig => {
-                map.removeLayer(layerConfig.id);
-            });
-        }
+        const layers = getOSMLayerConfig(layerName, '');
+        layers.forEach(layer => {
+            if (map.getLayer(layer.id)) {
+                map.removeLayer(layer.id);
+            }
+        });
     };
     /**
      * 任意の文字列をOsmLayerNameTypeに変換する
@@ -3580,7 +3581,7 @@
             return __awaiter(this, void 0, void 0, function* () {
                 // すでにSourceが存在する場合はデータを更新
                 const existingSource = this.getSource(className);
-                const spriteSheet = simpleStyle === null || simpleStyle === void 0 ? void 0 : simpleStyle.spriteSheet;
+                const spriteSheet = simpleStyle === null || simpleStyle === void 0 ? void 0 : simpleStyle['sprite-sheet'];
                 if (existingSource && 'setData' in existingSource) {
                     existingSource.setData(geojson);
                 }
@@ -3681,13 +3682,17 @@
          */
         removeOsmPoi(osmLayerName) {
             if (!osmLayerName) {
-                return;
+                return false;
             }
             const layerId = toOsmLayerNameType(osmLayerName);
             if (!layerId) {
-                return;
+                return false;
             }
+            const before = this.hasLayer(layerId);
             removeOsmLayer(this, layerId);
+            const after = this.hasLayer(layerId);
+            // 削除前に存在し、削除後に存在しなければtrue
+            return !!before && !after;
         }
         getOsmPoiLayers() {
             return {

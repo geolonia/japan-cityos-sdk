@@ -226,11 +226,15 @@ class GeoloniaMap extends maplibregl.Map {
    * 指定した種類のpoiを非表示にする
    * @param osmLayerName 非表示にするレイヤー名
    */
-  removeOsmPoi(osmLayerName: string) {
-    if (!osmLayerName) { return; }
+  removeOsmPoi(osmLayerName: string): boolean {
+    if (!osmLayerName) { return false; }
     const layerId = toOsmLayerNameType(osmLayerName);
-    if (!layerId) { return; }
+    if (!layerId) { return false; }
+    const before = this.hasLayer(layerId);
     removeOsmLayer(this, layerId);
+    const after = this.hasLayer(layerId);
+    // 削除前に存在し、削除後に存在しなければtrue
+    return !!before && !after;
   }
 
   getOsmPoiLayers(): Record<OsmLayerNameType, string> {
