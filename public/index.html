@@ -166,7 +166,8 @@
         if (e.target.checked) {
           japan.loadOsmPoi('restaurant', 'chizubouken-lab');
         } else {
-          japan.removeOsmPoi('restaurant');
+          const res = japan.removeOsmPoi('restaurant');
+          console.log('レストランのPOIを削除:', res);
         }
       });
 
@@ -175,7 +176,8 @@
         if (e.target.checked) {
           japan.loadOsmPoi('鉄道', 'basic');
         } else {
-          japan.removeOsmPoi('鉄道');
+          const res = japan.removeOsmPoi('鉄道');
+          console.log('鉄道のPOIを削除:', res);
         }
       });
 
@@ -184,7 +186,8 @@
         if (e.target.checked) {
           japan.loadOsmPoi('学校', 'basic');
         } else {
-          japan.removeOsmPoi('学校');
+          const res = japan.removeOsmPoi('学校');
+          console.log('学校のPOIを削除:', res);
         }
       });
 

@@ -13,23 +13,24 @@ export const addOsmSource = (map: maplibregl.Map) => {
 }
 
 export const addOsmLayer = (map: maplibregl.Map, layerName: OsmLayerNameType, spriteName: string): string[] => {
-    const layerId = `osm-${layerName}`;
+    const layers = getOSMLayerConfig(layerName, spriteName);
     const layerNames: string[] = [];
-    if (!map.getLayer(layerId)) {
-        getOSMLayerConfig(layerName, spriteName).forEach(layerConfig => {
-            map.addLayer(layerConfig);
-            layerNames.push(layerConfig.id);
-        });
-    }
+    layers.forEach(layer => {
+        if (!map.getLayer(layer.id)) {
+            map.addLayer(layer);
+            layerNames.push(layer.id);
+        }
+    });
     return layerNames;
 }
 
 export const removeOsmLayer = (map: maplibregl.Map, layerName: OsmLayerNameType) => {
-    if (map.getLayer(layerName)) {
-        getOSMLayerConfig(layerName, '').forEach(layerConfig => {
-            map.removeLayer(layerConfig.id);
-        });
-    }
+    const layers = getOSMLayerConfig(layerName, '');
+    layers.forEach(layer => {
+        if (map.getLayer(layer.id)) {
+            map.removeLayer(layer.id);
+        }
+    });
 }
 
 /**
