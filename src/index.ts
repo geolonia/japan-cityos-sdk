@@ -264,16 +264,16 @@ class GeoloniaMap extends maplibregl.Map {
    * @param layerId レイヤーID
    * @returns 存在すればtrue、なければfalse
    */
-  hasLayer(layerId: string): string[] | undefined {
+  hasLayer(layerId: string): string[] {
     const layerName = toOsmLayerNameType(layerId);
-    if (!layerName) { return; }
+    if (!layerName) { return []; }
     const layerIdArr: string[] = [];
     getOSMLayerConfig(layerName, '').forEach(layerConfig => {
       if (this.getLayer(layerConfig.id)) {
         layerIdArr.push(layerConfig.id);
       }
     });
-    return layerIdArr.length > 0 ? layerIdArr : undefined;
+    return layerIdArr.length > 0 ? layerIdArr : [];
   }
 
    /**
