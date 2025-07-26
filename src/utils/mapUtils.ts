@@ -286,7 +286,6 @@ export function mergeSourcesByLoadedIds(
     return acc;
   }, {} as Record<string, any>);
   Object.assign(filteredSources, nextSources);
-  
   return filteredSources;
 }
 

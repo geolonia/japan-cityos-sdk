@@ -3355,6 +3355,7 @@
                 type: 'vector',
                 url: 'https://tileserver.geolonia.com/v3/tiles.json?key=YOUR-API-KEY'
             });
+            return OSM_SOURCE_ID;
         }
     };
     const addOsmLayer = (map, layerName, spriteName) => {
@@ -3671,7 +3672,10 @@
             if (!layerId) {
                 return;
             }
-            addOsmSource(this);
+            const sourceId = addOsmSource(this);
+            if (sourceId) {
+                this.loadedSourceIds.add(sourceId);
+            }
             addOsmSprite(this, { [spriteName !== null && spriteName !== void 0 ? spriteName : 'basic']: this.spriteSheetUrl[spriteName !== null && spriteName !== void 0 ? spriteName : 'basic'] }, this.spriteSheetUrl);
             const layers = addOsmLayer(this, layerId, spriteName);
             return layers;
@@ -3723,7 +3727,7 @@
         hasLayer(layerId) {
             const layerName = toOsmLayerNameType(layerId);
             if (!layerName) {
-                return;
+                return [];
             }
             const layerIdArr = [];
             getOSMLayerConfig(layerName, '').forEach(layerConfig => {
@@ -3731,7 +3735,7 @@
                     layerIdArr.push(layerConfig.id);
                 }
             });
-            return layerIdArr.length > 0 ? layerIdArr : undefined;
+            return layerIdArr.length > 0 ? layerIdArr : [];
         }
         /**
         * 指定したPOIレイヤーのスプライトシートを切り替える

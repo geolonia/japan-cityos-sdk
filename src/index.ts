@@ -216,7 +216,10 @@ class GeoloniaMap extends maplibregl.Map {
     if (!osmLayerName) { return; }
     const layerId = toOsmLayerNameType(osmLayerName);
     if (!layerId) { return; }
-    addOsmSource(this);
+    const sourceId = addOsmSource(this);
+    if(sourceId) {
+      this.loadedSourceIds.add(sourceId);
+    }
     addOsmSprite(this, { [spriteName ?? 'basic']: this.spriteSheetUrl[spriteName ?? 'basic'] }, this.spriteSheetUrl);
     const layers = addOsmLayer(this, layerId, spriteName as string);
     return layers;

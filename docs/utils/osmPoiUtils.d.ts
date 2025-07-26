@@ -1,6 +1,6 @@
 import { OsmLayerNameType } from "../types";
 export declare const OSM_SOURCE_ID = "osm";
-export declare const addOsmSource: (map: maplibregl.Map) => void;
+export declare const addOsmSource: (map: maplibregl.Map) => string;
 export declare const addOsmLayer: (map: maplibregl.Map, layerName: OsmLayerNameType, spriteName: string) => string[];
 export declare const removeOsmLayer: (map: maplibregl.Map, layerName: OsmLayerNameType) => void;
 /**
