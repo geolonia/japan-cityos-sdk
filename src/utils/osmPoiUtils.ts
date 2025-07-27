@@ -9,6 +9,7 @@ export const addOsmSource = (map: maplibregl.Map) => {
             type: 'vector',
             url: 'https://tileserver.geolonia.com/v3/tiles.json?key=YOUR-API-KEY'
         });
+        return OSM_SOURCE_ID;
     }
 }
 

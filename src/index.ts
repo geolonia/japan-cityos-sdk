@@ -216,7 +216,10 @@ class GeoloniaMap extends maplibregl.Map {
     if (!osmLayerName) { return; }
     const layerId = toOsmLayerNameType(osmLayerName);
     if (!layerId) { return; }
-    addOsmSource(this);
+    const sourceId = addOsmSource(this);
+    if(sourceId) {
+      this.loadedSourceIds.add(sourceId);
+    }
     addOsmSprite(this, { [spriteName ?? 'basic']: this.spriteSheetUrl[spriteName ?? 'basic'] }, this.spriteSheetUrl);
     const layers = addOsmLayer(this, layerId, spriteName as string);
     return layers;
@@ -264,16 +267,16 @@ class GeoloniaMap extends maplibregl.Map {
    * @param layerId レイヤーID
    * @returns 存在すればtrue、なければfalse
    */
-  hasLayer(layerId: string): string[] | undefined {
+  hasLayer(layerId: string): string[] {
     const layerName = toOsmLayerNameType(layerId);
-    if (!layerName) { return; }
+    if (!layerName) { return []; }
     const layerIdArr: string[] = [];
     getOSMLayerConfig(layerName, '').forEach(layerConfig => {
       if (this.getLayer(layerConfig.id)) {
         layerIdArr.push(layerConfig.id);
       }
     });
-    return layerIdArr.length > 0 ? layerIdArr : undefined;
+    return layerIdArr.length > 0 ? layerIdArr : [];
   }
 
    /**
