@@ -45,10 +45,3 @@ export declare function mergeSourcesByLoadedIds(previousSources: Record<string, 
  * @returns マージされたlayers
  */
 export declare function mergeLayersByLoadedIds(previousLayers: any[], nextLayers: any[], loadedSourceIds: Set<string>): any[];
-/**
- * includeObj, notIncludeObj から maplibregl の filter expressions を生成する
- * @param {Record<string, string | number>} includeObj - 含めたい値のオブジェクト（key: プロパティ名, value: 含めたい値）
- * @param {Record<string, string | number>} notIncludeObj - 除外したい値のオブジェクト（key: プロパティ名, value: 除外したい値）
- * @returns {any[]} filter expression
- */
-export declare function createFilterExpressions(includeObj?: Record<string, string | number>, notIncludeObj?: Record<string, string | number>): any[];
