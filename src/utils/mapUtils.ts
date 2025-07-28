@@ -306,31 +306,3 @@ export function mergeLayersByLoadedIds(
   );
   return [...nextLayers, ...filteredPrevLayers];
 }
-
-
-/**
- * includeObj, notIncludeObj から maplibregl の filter expressions を生成する
- * @param {Record<string, string | number>} includeObj - 含めたい値のオブジェクト（key: プロパティ名, value: 含めたい値）
- * @param {Record<string, string | number>} notIncludeObj - 除外したい値のオブジェクト（key: プロパティ名, value: 除外したい値）
- * @returns {any[]} filter expression
- */
-export function createFilterExpressions(
-  includeObj?: Record<string, string | number>,
-  notIncludeObj?: Record<string, string | number>
-): any[] {
-  const expressions: any[] = ['all'];
-
-  if (includeObj) {
-    Object.entries(includeObj).forEach(([key, value]) => {
-      expressions.push(['==', ['get', key], value]);
-    });
-  }
-
-  if (notIncludeObj) {
-    Object.entries(notIncludeObj).forEach(([key, value]) => {
-      expressions.push(['!=', ['get', key], value]);
-    });
-  }
-
-  return expressions.length === 1 ? [] : expressions;
-}
