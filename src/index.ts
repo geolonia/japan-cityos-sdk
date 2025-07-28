@@ -6,6 +6,7 @@ import { toQueryBox } from './toQueryBox';
 import { OsmLayerNameType } from './types';
 import { addOsmLayer, addOsmSource, addOsmSprite, removeOsmLayer, toOsmLayerNameType, updateSpriteSheet } from './utils/osmPoiUtils';
 import { getOSMLayerConfig } from './utils/osmStyles';
+import { addHazardMapLayer, addHazardMapSource } from './utils/hazardmapUtils';
 
 declare global {
   interface Window {
@@ -311,18 +312,17 @@ class GeoloniaMap extends maplibregl.Map {
    * ハザードマップデータを表示する
    * @param layerId レイヤーID
    */
-  loadHazardMapData(layerId: string, size: string) {
+  loadHazardMapData(layerId: string) {
     if (!this.getLayer(layerId)) {
       console.warn(`Layer ${layerId} does not exist.`);
       return;
     }
-    const hazardMapData = HAZARD_MAP_DATA[layerId];
-    if (!hazardMapData) {
-      return;
-    }
     // 表示していたら、表示しない。
-    addHazardMapSource(this, layerId, size);
-    addHazardMapLayer(this, layerId, size);
+    const sourceId = addHazardMapSource(this, layerId);
+    if(sourceId) {
+      this.loadedSourceIds.add(sourceId);
+    }
+    addHazardMapLayer(this, layerId);
   }
 
 }
