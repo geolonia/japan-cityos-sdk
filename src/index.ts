@@ -307,6 +307,24 @@ class GeoloniaMap extends maplibregl.Map {
     this.setLayoutProperty(layerId, "icon-image", iconImageExpr);
   }
 
+  /**
+   * ハザードマップデータを表示する
+   * @param layerId レイヤーID
+   */
+  loadHazardMapData(layerId: string, size: string) {
+    if (!this.getLayer(layerId)) {
+      console.warn(`Layer ${layerId} does not exist.`);
+      return;
+    }
+    const hazardMapData = HAZARD_MAP_DATA[layerId];
+    if (!hazardMapData) {
+      return;
+    }
+    // 表示していたら、表示しない。
+    addHazardMapSource(this, layerId, size);
+    addHazardMapLayer(this, layerId, size);
+  }
+
 }
 
 const currentScript = document.currentScript as HTMLScriptElement;
