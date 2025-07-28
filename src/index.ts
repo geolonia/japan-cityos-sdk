@@ -302,8 +302,10 @@ class GeoloniaMap extends maplibregl.Map {
       console.warn(`Layer ${layerId} does not exist.`);
       return;
     }
+    // TODO：後でスクラッチ側を修正
+    const name = iconName === 'ピン' ? 'pin' : iconName;
     // icon-image式 ["concat", spriteKey, ":", iconName] で更新
-    const iconImageExpr = ["concat", spriteKey, ":", iconName];
+    const iconImageExpr = ["concat", spriteKey, ":", name];
     this.setLayoutProperty(layerId, "icon-image", iconImageExpr);
   }
 
