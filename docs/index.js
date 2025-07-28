@@ -3493,6 +3493,33 @@
         });
     }
 
+    /**
+     * 指定のスプライトシートに指定アイコン名が存在するかどうかを確認する
+     * @param spriteSheetUrl スプライトシートのURL（例: https://geolonia.github.io/chizubouken-lab-sprite/sprite）
+     * @param iconName アイコン名（例: "pin"）
+     * @returns Promise<boolean>
+     */
+    function existsSpriteIcon(spriteSheetUrl, iconName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // スプライトJSONのURLを生成（@2x対応も考慮）
+                const jsonUrl = spriteSheetUrl.endsWith('.json')
+                    ? spriteSheetUrl
+                    : spriteSheetUrl + '.json';
+                const res = yield fetch(jsonUrl);
+                if (!res.ok) {
+                    return false;
+                }
+                const spriteJson = yield res.json();
+                // アイコン名が存在するかチェック
+                return Object.prototype.hasOwnProperty.call(spriteJson, iconName);
+            }
+            catch (_a) {
+                return false;
+            }
+        });
+    }
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d, _e;
@@ -3759,11 +3786,19 @@
                 console.warn(`Layer ${layerId} does not exist.`);
                 return;
             }
-            // TODO：後でスクラッチ側を修正
-            const name = iconName === 'ピン' ? 'pin' : iconName;
-            // icon-image式 ["concat", spriteKey, ":", iconName] で更新
-            const iconImageExpr = ["concat", spriteKey, ":", name];
-            this.setLayoutProperty(layerId, "icon-image", iconImageExpr);
+            existsSpriteIcon(this.spriteSheetUrl[spriteKey], iconName)
+                .then((hasSprite) => {
+                if (!hasSprite) {
+                    console.warn(`Icon "${iconName}" does not exist in sprite "${spriteKey}".`);
+                    return;
+                }
+                // icon-image式 ["concat", spriteKey, ":", iconName] で更新
+                const iconImageExpr = ["concat", spriteKey, ":", iconName];
+                this.setLayoutProperty(layerId, "icon-image", iconImageExpr);
+            })
+                .catch(() => {
+                console.error(`Failed to check icon "${iconName}" in sprite "${spriteKey}".`);
+            });
         }
     }
     const currentScript = document.currentScript;
