@@ -3616,6 +3616,181 @@
         return Object.keys(HAZARD_MAP_DATA);
     }
 
+    const layerConfigFactory = (key, id, color, sourceLayerId) => {
+        const defaultColor = '#563310';
+        const baseConfig = {
+            id: id,
+            source: id
+        };
+        if (sourceLayerId) {
+            baseConfig['source-layer'] = sourceLayerId;
+        }
+        return {
+            'circle': [Object.assign(Object.assign({}, baseConfig), { type: 'circle', paint: {
+                        'circle-radius': 6,
+                        'circle-color': !color || color === '' ? defaultColor : color,
+                        'circle-opacity': 0.8,
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': !color || color === '' ? defaultColor : color
+                    } })],
+            'polygon': [
+                Object.assign(Object.assign({}, baseConfig), { type: 'fill', paint: {
+                        'fill-color': !color || color === '' ? defaultColor : color,
+                        'fill-opacity': 0.3
+                    } }),
+                Object.assign(Object.assign({}, baseConfig), { id: `${id}-outline`, type: 'line', filter: ['==', ['geometry-type'], 'Polygon'], paint: {
+                        'line-color': !color || color === '' ? defaultColor : color,
+                        'line-width': 2,
+                        'line-opacity': 1
+                    } })
+            ],
+            'line': [Object.assign(Object.assign({}, baseConfig), { type: 'line', paint: {
+                        'line-color': !color || color === '' ? defaultColor : color,
+                        'line-width': 3
+                    } })]
+        }[key];
+    };
+
+    const NLNI_DATA = {
+        "小学校区": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT004/{z}/{x}/{y}.pbf",
+            id: "elementary-school-district",
+            geometryType: 'polygon',
+            color: '#ff0000'
+        },
+        "中学校区": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT005/{z}/{x}/{y}.pbf",
+            id: "junior-high-school-district",
+            geometryType: 'polygon',
+            color: '#54b738'
+        },
+        "学校": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT006/{z}/{x}/{y}.pbf",
+            id: "school",
+            geometryType: 'circle',
+            color: '#fccd3f'
+        },
+        "保育園・幼稚園等": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT007/{z}/{x}/{y}.pbf",
+            id: "nursery-kindergarten-etc",
+            geometryType: 'circle',
+            color: '#e67e22'
+        },
+        "医療機関": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT010/{z}/{x}/{y}.pbf",
+            id: "medical-institution",
+            geometryType: 'circle',
+            color: '#16a085'
+        },
+        "福祉施設": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT011/{z}/{x}/{y}.pbf",
+            id: "welfare-facility",
+            geometryType: 'circle',
+            color: '#9b59b6'
+        },
+        "将来推計人口250mメッシュ": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT013/{z}/{x}/{y}.pbf",
+            id: "future-population-estimate-250m-mesh",
+            geometryType: 'polygon',
+            color: '#f39c12'
+        },
+        "駅別乗降客数": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT015/{z}/{x}/{y}.pbf",
+            id: "station-passenger-numbers",
+            geometryType: 'polygon',
+            color: '#2980b9'
+        },
+        "災害危険区域": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT016/{z}/{x}/{y}.pbf",
+            id: "disaster-hazard-area",
+            geometryType: 'polygon',
+            color: '#c0392b'
+        },
+        "図書館": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT017/{z}/{x}/{y}.pbf",
+            id: "library",
+            geometryType: 'circle',
+            color: '#27ae60'
+        },
+        "市区町村役場及び集会施設等": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT018/{z}/{x}/{y}.pbf",
+            id: "municipal-office-and-community-facility",
+            geometryType: 'circle',
+            color: '#34495e'
+        },
+        "自然公園地域": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT019/{z}/{x}/{y}.pbf",
+            id: "natural-park-area",
+            geometryType: 'circle',
+            color: '#2ecc71'
+        },
+        "大規模盛土造成地マップ": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT020/{z}/{x}/{y}.pbf",
+            id: "large-scale-embankment-map",
+            geometryType: 'polygon',
+            color: '#e84393'
+        },
+        "地すべり防止地区": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT021/{z}/{x}/{y}.pbf",
+            id: "landslide-prevention-area",
+            geometryType: 'polygon',
+            color: '#fdcb6e'
+        },
+        "急傾斜地崩壊危険区域": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT022/{z}/{x}/{y}.pbf",
+            id: "steep-slope-collapse-hazard-area",
+            geometryType: 'polygon',
+            color: '#636e72'
+        },
+        "地形区分に基づく液状化の発生傾向図": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT025/{z}/{x}/{y}.pbf",
+            id: "liquefaction-tendency-map-by-landform",
+            geometryType: 'polygon',
+            color: '#00b894'
+        }
+    };
+    const addNLNISource = (map, nlniId) => {
+        const hazardMapData = NLNI_DATA[nlniId];
+        if (!hazardMapData) {
+            console.error(`Hazard map data for ${nlniId} not found.`);
+            return undefined;
+        }
+        const id = hazardMapData.id;
+        console.log(`Adding hazard map source: ${id}`, map.getSource(id));
+        if (!map.getSource(id)) {
+            map.addSource(id, {
+                type: 'vector',
+                tiles: [hazardMapData.tileUrl]
+            });
+            return id;
+        }
+    };
+    const addNLNILayer = (map, key) => {
+        if (!key) {
+            return;
+        }
+        const data = NLNI_DATA[key];
+        layerConfigFactory(data.geometryType, data.id, data.color, 'hits').forEach(layer => {
+            if (data && !map.getLayer(layer.id)) {
+                map.addLayer(layer);
+            }
+        });
+    };
+    const removeNLNILayer = (map, key) => {
+        if (!key) {
+            return;
+        }
+        const data = NLNI_DATA[key];
+        layerConfigFactory(data.geometryType, data.id, data.color, 'hits').forEach(layer => {
+            if (data && map.getLayer(layer.id)) {
+                map.removeLayer(layer.id);
+            }
+        });
+    };
+    function getNLNIKeys() {
+        return Object.keys(NLNI_DATA);
+    }
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d, _e;
@@ -3920,6 +4095,38 @@
         }
         getHazardMapData() {
             return getHazardMapKeys();
+        }
+        /**
+         * 国土数値情報データを表示する
+         * @param layerId レイヤーID
+         */
+        loadNLNIData(layerId) {
+            if (!getNLNIKeys().includes(layerId)) {
+                console.warn(`国土数値情報データ for ${layerId} not found.`);
+                return;
+            }
+            const sourceId = addNLNISource(this, layerId);
+            if (sourceId) {
+                this.loadedSourceIds.add(sourceId);
+            }
+            addNLNILayer(this, layerId);
+        }
+        /**
+         * 国土数値情報データを非表示にする
+         * @param layerId レイヤーID
+         */
+        removeNLNIData(layerId) {
+            if (!getNLNIKeys().includes(layerId)) {
+                console.warn(`国土数値情報データ for ${layerId} not found.`);
+                return;
+            }
+            removeNLNILayer(this, layerId);
+        }
+        /**
+         * 国土数値情報データのキーを取得する
+         */
+        getNLNIData() {
+            return getNLNIKeys();
         }
     }
     const currentScript = document.currentScript;

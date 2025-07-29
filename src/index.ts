@@ -8,6 +8,7 @@ import { addOsmLayer, addOsmSource, addOsmSprite, removeOsmLayer, toOsmLayerName
 import { getOSMLayerConfig } from './utils/osmStyles';
 import { existsSpriteIcon } from './utils/spriteUtils';
 import { addHazardMapLayer, addHazardMapSource, getHazardMapKeys, removeHazardMapLayer } from './utils/hazardmapUtils';
+import { addNLNILayer, addNLNISource, getNLNIKeys, removeNLNILayer } from './utils/nationalLandNumericalInformationUtils';
 
 declare global {
   interface Window {
@@ -350,6 +351,42 @@ class GeoloniaMap extends maplibregl.Map {
     return getHazardMapKeys();
   }
 
+  /**
+   * 国土数値情報データを表示する
+   * @param layerId レイヤーID
+   */
+  loadNLNIData(layerId: string) {
+    if (!getNLNIKeys().includes(layerId)) {
+      console.warn(`国土数値情報データ for ${layerId} not found.`);
+      return;
+    }
+
+    const sourceId = addNLNISource(this, layerId);
+    if(sourceId) {
+      this.loadedSourceIds.add(sourceId);
+    }
+    addNLNILayer(this, layerId);
+  }
+  
+  /**
+   * 国土数値情報データを非表示にする
+   * @param layerId レイヤーID
+   */
+  removeNLNIData(layerId: string) {
+    if (!getNLNIKeys().includes(layerId)) {
+      console.warn(`国土数値情報データ for ${layerId} not found.`);
+      return;
+    }
+    
+    removeNLNILayer(this, layerId);
+  }
+
+  /**
+   * 国土数値情報データのキーを取得する
+   */
+  getNLNIData(): string[] {
+    return getNLNIKeys();
+  }
 }
 
 const currentScript = document.currentScript as HTMLScriptElement;
