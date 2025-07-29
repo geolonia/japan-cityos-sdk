@@ -6,6 +6,7 @@ import { toQueryBox } from './toQueryBox';
 import { OsmLayerNameType } from './types';
 import { addOsmLayer, addOsmSource, addOsmSprite, removeOsmLayer, toOsmLayerNameType, updateSpriteSheet } from './utils/osmPoiUtils';
 import { getOSMLayerConfig } from './utils/osmStyles';
+import { existsSpriteIcon } from './utils/spriteUtils';
 import { addHazardMapLayer, addHazardMapSource, getHazardMapKeys, removeHazardMapLayer } from './utils/hazardmapUtils';
 
 declare global {
@@ -303,9 +304,20 @@ class GeoloniaMap extends maplibregl.Map {
       console.warn(`Layer ${layerId} does not exist.`);
       return;
     }
-    // icon-image式 ["concat", spriteKey, ":", iconName] で更新
-    const iconImageExpr = ["concat", spriteKey, ":", iconName];
-    this.setLayoutProperty(layerId, "icon-image", iconImageExpr);
+
+    existsSpriteIcon(this.spriteSheetUrl[spriteKey], iconName)
+    .then((hasSprite) => {
+      if (!hasSprite) {
+        console.warn(`Icon "${iconName}" does not exist in sprite "${spriteKey}".`);
+        return;
+      }
+      // icon-image式 ["concat", spriteKey, ":", iconName] で更新
+      const iconImageExpr = ["concat", spriteKey, ":", iconName];
+      this.setLayoutProperty(layerId, "icon-image", iconImageExpr);
+    })
+    .catch(() => {
+      console.error(`Failed to check icon "${iconName}" in sprite "${spriteKey}".`);
+    });
   }
 
   /**
