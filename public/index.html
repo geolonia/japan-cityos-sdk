@@ -77,6 +77,9 @@
       <option value="castle">動物園を'城'アイコンで表示</option>
     </select>
   </div>
+  <div style="position:absolute;z-index:10;top:232px;left:10px;background:#fff;padding:5px;border-radius:5px;">
+    <div id="hazardmap-checkbox-list"></div>
+  </div>
   <div id="map"></div>
   <script src="./index.js"></script>
   <script type="application/javascript">
@@ -120,6 +123,27 @@
     // スタイル切り替え
     document.getElementById('style-select').addEventListener('change', function (e) {
       japan.setBaseMapStyle(e.target.value);
+    });
+    
+    // ハザードマップデータ名をチェックボックスとして追加
+    const hazardMapData = japan.getHazardMapData();
+    const hazardCheckboxList = document.getElementById('hazardmap-checkbox-list');
+    hazardMapData.forEach(name => {
+      const label = document.createElement('label');
+      label.style.display = 'block';
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.value = name;
+      checkbox.addEventListener('change', function(e) {
+        if (e.target.checked) {
+          japan.loadHazardMapData(name);
+        } else {
+          japan.removeHazardMapData(name);
+        }
+      });
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode(name));
+      hazardCheckboxList.appendChild(label);
     });
 
     japan.on('load', () => {
@@ -220,6 +244,12 @@
             japan.changeLayerIcon(layerId, e.target.value, 'chizubouken-lab');
           });
         }
+      });
+
+      // ハザードマップ表示
+      hazardSelect.addEventListener('change', function(e) {
+        const selected = e.target.value;
+        japan.loadHazardMapData(selected);
       });
 
       japan.on('click', (e) => {

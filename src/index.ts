@@ -6,6 +6,7 @@ import { toQueryBox } from './toQueryBox';
 import { OsmLayerNameType } from './types';
 import { addOsmLayer, addOsmSource, addOsmSprite, removeOsmLayer, toOsmLayerNameType, updateSpriteSheet } from './utils/osmPoiUtils';
 import { getOSMLayerConfig } from './utils/osmStyles';
+import { addHazardMapLayer, addHazardMapSource, getHazardMapKeys, removeHazardMapLayer } from './utils/hazardmapUtils';
 
 declare global {
   interface Window {
@@ -305,6 +306,36 @@ class GeoloniaMap extends maplibregl.Map {
     // icon-image式 ["concat", spriteKey, ":", iconName] で更新
     const iconImageExpr = ["concat", spriteKey, ":", iconName];
     this.setLayoutProperty(layerId, "icon-image", iconImageExpr);
+  }
+
+  /**
+   * ハザードマップデータを表示する
+   * @param layerId レイヤーID
+   */
+  loadHazardMapData(layerId: string) {
+    if (!getHazardMapKeys().includes(layerId)) {
+      console.warn(`Hazard map data for ${layerId} not found.`);
+      return;
+    }
+    
+    const sourceId = addHazardMapSource(this, layerId);
+    if(sourceId) {
+      this.loadedSourceIds.add(sourceId);
+    }
+    addHazardMapLayer(this, layerId);
+  }
+
+  removeHazardMapData(layerId: string) {
+    if (!getHazardMapKeys().includes(layerId)) {
+      console.warn(`Hazard map data for ${layerId} not found.`);
+      return;
+    }
+    
+    removeHazardMapLayer(this, layerId);
+  }
+
+  getHazardMapData(): string[] {
+    return getHazardMapKeys();
   }
 
 }
