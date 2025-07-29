@@ -3577,7 +3577,6 @@
             return undefined;
         }
         const id = hazardMapData.id;
-        console.log(`Adding hazard map source: ${id}`, map.getSource(id));
         if (!map.getSource(id)) {
             map.addSource(id, {
                 type: 'raster',
@@ -3756,7 +3755,6 @@
             return undefined;
         }
         const id = hazardMapData.id;
-        console.log(`Adding hazard map source: ${id}`, map.getSource(id));
         if (!map.getSource(id)) {
             map.addSource(id, {
                 type: 'vector',

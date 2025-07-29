@@ -108,7 +108,6 @@ export const addNLNISource = (map: maplibregl.Map, nlniId: string): string | und
     }
 
     const id = hazardMapData.id;
-    console.log(`Adding hazard map source: ${id}`, map.getSource(id));
     if (!map.getSource(id)) {
         map.addSource(id, {
             type: 'vector',
