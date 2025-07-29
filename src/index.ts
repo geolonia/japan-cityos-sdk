@@ -337,6 +337,10 @@ class GeoloniaMap extends maplibregl.Map {
     addHazardMapLayer(this, layerId);
   }
 
+  /**
+   * ハザードマップデータを非表示にする
+   * @param layerId レイヤーID
+   */
   removeHazardMapData(layerId: string) {
     if (!getHazardMapKeys().includes(layerId)) {
       console.warn(`Hazard map data for ${layerId} not found.`);
@@ -346,6 +350,9 @@ class GeoloniaMap extends maplibregl.Map {
     removeHazardMapLayer(this, layerId);
   }
 
+  /**
+   * ハザードマップデータ名を取得する
+   */
   getHazardMapData(): string[] {
     return getHazardMapKeys();
   }
