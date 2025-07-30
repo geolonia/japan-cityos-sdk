@@ -247,13 +247,8 @@
         }
       });
 
-      // ハザードマップ表示
-      hazardSelect.addEventListener('change', function(e) {
-        const selected = e.target.value;
-        japan.loadHazardMapData(selected);
-      });
-
       japan.on('click', (e) => {
+        console.log('Clicked point:', e.point);
         // const hasFeature = japan.hasFeature([e.point.x, e.point.y], ['restaurant', '選挙時投票所一覧']);
         // const features = japan.getFeatures([e.point.x, e.point.y], ['restaurant', '選挙時投票所一覧']);
 
@@ -268,18 +263,17 @@
 
         // if(!hasFeature) { return; }
 
-        const properties = japan.getFeaturesProperties(
+        const data = japan.getFeaturesProperties(
           [e.point.x, e.point.y],
           { firstOnly: true }
         );
-        console.log('Clicked properties:', properties);
 
-        if(!properties || properties.length === 0) {
+        if(!data || data.length === 0) {
           console.log('No features found at this point');
           return;
         }
 
-        const property = properties[0];
+        const property = data[0].properties;
 
         let tableHTML = "<table class='popup-table'>";
         tableHTML += "<tr><th>属性</th><th>値</th></tr>"; // ヘッダー行を追加

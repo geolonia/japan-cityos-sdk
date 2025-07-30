@@ -237,7 +237,10 @@ class GeoloniaMap extends maplibregl.Map {
     // propertiesが空でないものだけ返す
     return features.filter(
       f => f && f.properties && Object.keys(f.properties).length > 0
-    );
+    ).map(f => ({
+      layerId: f.layer.id,
+      properties: f.properties
+    }));
   }
 
   /**

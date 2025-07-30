@@ -3801,7 +3801,10 @@
             const firstOnly = (_a = options === null || options === void 0 ? void 0 : options.firstOnly) !== null && _a !== void 0 ? _a : false;
             const features = this.getFeatures(xy, { layerIds, firstOnly });
             // propertiesが空でないものだけ返す
-            return features.filter(f => f && f.properties && Object.keys(f.properties).length > 0);
+            return features.filter(f => f && f.properties && Object.keys(f.properties).length > 0).map(f => ({
+                layerId: f.layer.id,
+                properties: f.properties
+            }));
         }
         /**
          * 指定した種類のpoiを表示する
