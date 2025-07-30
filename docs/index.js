@@ -3769,10 +3769,13 @@
          * @param layerIds レイヤーIDまたは配列
          * @returns Feature配列
          */
-        getFeatures(xy, layerIds) {
+        getFeatures(xy, options) {
+            var _a;
             if (!xy) {
                 return [];
             }
+            const layerIds = options === null || options === void 0 ? void 0 : options.layerIds;
+            const firstOnly = (_a = options === null || options === void 0 ? void 0 : options.firstOnly) !== null && _a !== void 0 ? _a : false;
             const queryBox = toQueryBox(xy);
             if (!queryBox) {
                 return [];
@@ -3781,7 +3784,27 @@
                 ? Array.isArray(layerIds) ? layerIds : [layerIds]
                 : undefined;
             const features = this.queryRenderedFeatures(queryBox, layers ? { layers } : undefined);
-            return features;
+            return firstOnly ? [features[0]] : features;
+        }
+        /**
+         * 指定した座標またはbboxのFeatureを取得する
+         * @param xy [lng,lat] | {lng,lat} | [[minLng,minLat],[maxLng,maxLat]]
+         * @param layerIds レイヤーIDまたは配列
+         * @returns Feature配列
+         */
+        getFeaturesProperties(xy, options) {
+            var _a;
+            if (!xy) {
+                return [];
+            }
+            const layerIds = options === null || options === void 0 ? void 0 : options.layerIds;
+            const firstOnly = (_a = options === null || options === void 0 ? void 0 : options.firstOnly) !== null && _a !== void 0 ? _a : false;
+            const features = this.getFeatures(xy, { layerIds, firstOnly });
+            // propertiesが空でないものだけ返す
+            return features.filter(f => f && f.properties && Object.keys(f.properties).length > 0).map(f => ({
+                layerId: f.layer.id,
+                properties: f.properties
+            }));
         }
         /**
          * 指定した種類のpoiを表示する

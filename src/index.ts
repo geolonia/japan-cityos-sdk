@@ -194,9 +194,14 @@ class GeoloniaMap extends maplibregl.Map {
    */
   getFeatures(
     xy: [number, number] | [[number, number], [number, number]] | undefined,
-    layerIds?: string | string[]
+    options?: { 
+      firstOnly?: boolean;
+      layerIds?: string | string[];
+    }
   ): maplibregl.MapGeoJSONFeature[] {
     if (!xy) { return []; }
+    const layerIds = options?.layerIds;
+    const firstOnly = options?.firstOnly ?? false;
 
     const queryBox = toQueryBox(xy);
 
@@ -207,7 +212,35 @@ class GeoloniaMap extends maplibregl.Map {
       : undefined;
 
     const features = this.queryRenderedFeatures(queryBox, layers ? { layers } : undefined);
-    return features;
+    return firstOnly ? [features[0]] : features;
+  }
+
+  /**
+   * 指定した座標またはbboxのFeatureを取得する
+   * @param xy [lng,lat] | {lng,lat} | [[minLng,minLat],[maxLng,maxLat]]
+   * @param layerIds レイヤーIDまたは配列
+   * @returns Feature配列
+   */
+  getFeaturesProperties(
+    xy: [number, number] | [[number, number], [number, number]] | undefined,
+    options?: { 
+      firstOnly?: boolean;
+      layerIds?: string | string[];
+    }
+  ): { [key: string]: any }[] {
+    if (!xy) { return []; }
+    const layerIds = options?.layerIds;
+    const firstOnly = options?.firstOnly ?? false;
+
+    const features = this.getFeatures(xy, { layerIds, firstOnly });
+
+    // propertiesが空でないものだけ返す
+    return features.filter(
+      f => f && f.properties && Object.keys(f.properties).length > 0
+    ).map(f => ({
+      layerId: f.layer.id,
+      properties: f.properties
+    }));
   }
 
   /**
