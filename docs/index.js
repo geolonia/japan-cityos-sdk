@@ -3911,6 +3911,10 @@
             }
             addHazardMapLayer(this, layerId);
         }
+        /**
+         * ハザードマップデータを非表示にする
+         * @param layerId レイヤーID
+         */
         removeHazardMapData(layerId) {
             if (!getHazardMapKeys().includes(layerId)) {
                 console.warn(`Hazard map data for ${layerId} not found.`);
@@ -3918,6 +3922,9 @@
             }
             removeHazardMapLayer(this, layerId);
         }
+        /**
+         * ハザードマップデータ名を取得する
+         */
         getHazardMapData() {
             return getHazardMapKeys();
         }
