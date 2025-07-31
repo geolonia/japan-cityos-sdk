@@ -51,6 +51,25 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       box-sizing: border-box;
     }
+
+    .info {
+      display: none;
+      position: absolute;
+      z-index: 10;
+      bottom: 56px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 4px;
+      border-radius: 8px;
+    }
+    .info.show {
+      display: block;
+    }
+    .info p {
+      margin: 0;
+      padding: 0;
+      font-size: 12px;
+    }
   </style>
 </head>
 
@@ -107,6 +126,7 @@
       <div id="nlni-checkbox-list"></div>
     </div>
   </div>
+  <div class="info"></div>
   <div id="map"></div>
   <script src="./index.js"></script>
   <script type="application/javascript">
@@ -174,8 +194,11 @@
     });
 
     // 国土数値情報データ名をチェックボックスとして追加
-    const nlniData = japan.getNLNIData(); // string[]が返る
+    const nlnDisplayKeys = new Set([]);
+    const nlniData = japan.getNLNIData();
     const nlniCheckboxList = document.getElementById('nlni-checkbox-list');
+    const infoDiv = document.querySelector('.info');
+
     nlniData.forEach(name => {
       const label = document.createElement('label');
       label.style.display = 'block';
@@ -185,8 +208,25 @@
       checkbox.addEventListener('change', function (e) {
         if (e.target.checked) {
           japan.loadNLNIData(name);
+          nlnDisplayKeys.add(name);
         } else {
           japan.removeNLNIData(name);
+          nlnDisplayKeys.delete(name);
+        }
+
+        infoDiv.innerHTML = '';
+
+        // 出典の表示非表示
+        if (nlnDisplayKeys.size > 0) {
+          const sources = japan.getNLNIInfo(Array.from(nlnDisplayKeys));
+          sources.forEach(src => {
+            const p = document.createElement('p');
+            p.textContent = src;
+            infoDiv.appendChild(p);
+          });
+          infoDiv.classList.add('show');
+        } else {
+          infoDiv.classList.remove('show');
         }
       });
       label.appendChild(checkbox);
