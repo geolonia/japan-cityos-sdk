@@ -23,7 +23,7 @@ jobs:
           name: build
           path: docs
 
-  deploy-s3:
+  deploy-dev-s3:
     needs:
       - build
 
