@@ -2,8 +2,8 @@ name: Build & Deploy
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 jobs:
@@ -19,20 +19,16 @@ jobs:
       - run: npm run build
 
       - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/main'
         with:
           name: build
           path: docs
 
   deploy-s3:
-    if: github.ref == 'refs/heads/main'
-
     needs:
       - build
 
     runs-on: ubuntu-latest
 
-    # Allow write on id-token so we can use it to authenticate to AWS
     permissions:
       contents: read
       id-token: write
