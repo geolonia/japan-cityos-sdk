@@ -8,7 +8,7 @@ import { addOsmLayer, addOsmSource, addOsmSprite, removeOsmLayer, toOsmLayerName
 import { getOSMLayerConfig } from './utils/osmStyles';
 import { existsSpriteIcon } from './utils/spriteUtils';
 import { addHazardMapLayer, addHazardMapSource, getHazardMapKeys, removeHazardMapLayer } from './utils/hazardmapUtils';
-import { addNLNILayer, addNLNISource, getNLNIInfos, getNLNIKeys, removeNLNILayer } from './utils/nationalLandNumericalInformationUtils';
+import { addNLNILayer, addNLNISource, getNLNIKeys, removeNLNILayer } from './utils/nationalLandNumericalInformationUtils';
 
 declare global {
   interface Window {
@@ -419,14 +419,6 @@ class GeoloniaMap extends maplibregl.Map {
     }
     
     removeNLNILayer(this, layerId);
-  }
-
-  /**
-   * 国土数値情報の出典を取得する
-   * @param layerId レイヤーID
-   */
-  getNLNIInfo(layerIds: string[]) {
-    return getNLNIInfos(layerIds);
   }
 
   /**

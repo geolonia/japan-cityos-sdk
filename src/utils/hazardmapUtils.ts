@@ -62,7 +62,8 @@ export const addHazardMapSource = (map: maplibregl.Map, hazardMapId: string): st
     map.addSource(id, {
       type: 'raster',
       tiles: [hazardMapData.tileUrl],
-      tileSize: 256
+      tileSize: 256,
+      attribution: 'ハザードマップポータルサイト'
     });
 
     return id;

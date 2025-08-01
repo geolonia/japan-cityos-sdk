@@ -1,58 +1,50 @@
 import { layerConfigFactory } from "./layerConfig";
 
-const NLNI_DATA: { [key: string]: { tileUrl: string; id: string; geometryType: 'circle' | 'polygon' | 'line'; color: string; downloadUrl: string } } = {
+const NLNI_DATA: { [key: string]: { tileUrl: string; id: string; geometryType: 'circle' | 'polygon' | 'line'; color: string } } = {
     "小学校区": {
         tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT004/{z}/{x}/{y}.pbf",
-        downloadUrl: "https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-A27-2023.html",
         id: "elementary-school-district",
         geometryType: 'polygon',
         color: '#ff0000'
     },
     "中学校区": {
         tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT005/{z}/{x}/{y}.pbf",
-        downloadUrl: "https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-A32-2023.html",    
         id: "junior-high-school-district",
         geometryType: 'polygon',
         color: '#54b738'
     },
     "学校": {
         tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT006/{z}/{x}/{y}.pbf",
-        downloadUrl: "https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P29-2023.html",
         id: "school",
         geometryType: 'circle',
         color: '#fccd3f'
     },
     "医療機関": {
         tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT010/{z}/{x}/{y}.pbf",
-        downloadUrl: "https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P04-2020.html",
         id: "medical-institution",
         geometryType: 'circle',
         color: '#16a085'
     },
     "将来推計人口250mメッシュ": {
         tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT013/{z}/{x}/{y}.pbf",
-        downloadUrl: "https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-mesh250r6.html",
         id: "future-population-estimate-250m-mesh",
         geometryType: 'polygon',
         color: '#f39c12'
     },
     "駅別乗降客数": {
         tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT015/{z}/{x}/{y}.pbf",
-        downloadUrl: "https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-S12-2023.html",
         id: "station-passenger-numbers",
         geometryType: 'polygon',
         color: '#2980b9'
     },
     "市町村役場及び集会施設等": {
         tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT018/{z}/{x}/{y}.pbf",
-        downloadUrl: "https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P05-2022.html",
         id: "municipal-office-and-community-facility",
         geometryType: 'circle',
         color: '#34495e'
     },
     "大規模盛土造成地": {
         tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT020/{z}/{x}/{y}.pbf",
-        downloadUrl: "https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-A54-2023.html",
         id: "large-scale-embankment-map",
         geometryType: 'polygon',
         color: '#e84393'
@@ -71,7 +63,8 @@ export const addNLNISource = (map: maplibregl.Map, nlniId: string): string | und
     if (!map.getSource(id)) {
         map.addSource(id, {
             type: 'vector',
-            tiles: [hazardMapData.tileUrl]
+            tiles: [hazardMapData.tileUrl],
+            attribution: '国土交通省国土数値情報ダウンロードサイト'
         });
 
         return id;
@@ -100,11 +93,4 @@ export const removeNLNILayer = (map: maplibregl.Map, key: string) => {
 
 export function getNLNIKeys(): string[] {
     return Object.keys(NLNI_DATA);
-}
-
-export function getNLNIInfos(keys: string[]): string[] {
-    return keys.filter(key => NLNI_DATA[key]).map(key => {
-        const data = NLNI_DATA[key];
-        return `出典：国土交通省国土数値情報ダウンロードサイト（${data.downloadUrl}）`;
-    });
 }
