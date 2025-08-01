@@ -45,7 +45,7 @@ jobs:
       - name: Configure AWS credentials (dev)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::762706324393:role/cityos-sdk-deploy-dev
+          role-to-assume: arn:aws:iam::762706324393:role/cityos-sdk-deploy-v1
           aws-region: ap-northeast-1
 
       - name: Upload SDK to CDN (dev)
