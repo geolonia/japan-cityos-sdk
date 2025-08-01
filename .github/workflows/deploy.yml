@@ -2,6 +2,8 @@ name: Build & Deploy
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
   workflow_dispatch:
@@ -23,7 +25,8 @@ jobs:
           name: build
           path: docs
 
-  deploy-s3:
+  deploy-dev-s3:
+    if: github.ref == 'refs/heads/main'
     needs:
       - build
 
@@ -39,12 +42,39 @@ jobs:
           name: build
           path: docs
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials (dev)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::762706324393:role/cityos-sdk-deploy-dev
+          aws-region: ap-northeast-1
+
+      - name: Upload SDK to CDN (dev)
+        run: |
+          aws s3 cp --content-type="application/javascript" --cache-control="public, max-age=300" docs/index.js s3://gl-cityos-sdk-v1-ap-northeast-1/dev/japan/api.js
+
+  deploy-prod-s3:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - build
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: docs
+
+      - name: Configure AWS credentials (prod)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::762706324393:role/cityos-sdk-deploy-v1
           aws-region: ap-northeast-1
 
-      - name: Upload SDK to CDN
+      - name: Upload SDK to CDN (prod)
         run: |
           aws s3 cp --content-type="application/javascript" --cache-control="public, max-age=300" docs/index.js s3://gl-cityos-sdk-v1-ap-northeast-1/v1/japan/api.js
