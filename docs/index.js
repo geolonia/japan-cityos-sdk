@@ -3581,7 +3581,8 @@
             map.addSource(id, {
                 type: 'raster',
                 tiles: [hazardMapData.tileUrl],
-                tileSize: 256
+                tileSize: 256,
+                attribution: 'ハザードマップポータルサイト'
             });
             return id;
         }
