@@ -3493,6 +3493,256 @@
         });
     }
 
+    /**
+     * 指定のスプライトシートに指定アイコン名が存在するかどうかを確認する
+     * @param spriteSheetUrl スプライトシートのURL（例: https://geolonia.github.io/chizubouken-lab-sprite/sprite）
+     * @param iconName アイコン名（例: "pin"）
+     * @returns Promise<boolean>
+     */
+    function existsSpriteIcon(spriteSheetUrl, iconName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // スプライトJSONのURLを生成（@2x対応も考慮）
+                const jsonUrl = spriteSheetUrl.endsWith('.json')
+                    ? spriteSheetUrl
+                    : spriteSheetUrl + '.json';
+                const res = yield fetch(jsonUrl);
+                if (!res.ok) {
+                    return false;
+                }
+                const spriteJson = yield res.json();
+                // アイコン名が存在するかチェック
+                return Object.prototype.hasOwnProperty.call(spriteJson, iconName);
+            }
+            catch (_a) {
+                return false;
+            }
+        });
+    }
+
+    const HAZARD_MAP_DATA = {
+        '洪水浸水想定区域(想定最大規模)': {
+            "tileUrl": "https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png",
+            "id": "flood-inundation-assumed-area-maximum-assumed-scale"
+        },
+        '洪水浸水想定区域(計画規模(現在の凡例))': {
+            "tileUrl": "https://disaportaldata.gsi.go.jp/raster/01_flood_l1_shinsuishin_newlegend_data/{z}/{x}/{y}.png",
+            "id": "flood-inundation-assumed-area-planned-scale-current-legend"
+        },
+        '浸水継続時間(想定最大規模)': {
+            "tileUrl": "https://disaportaldata.gsi.go.jp/raster/01_flood_l2_keizoku_data/{z}/{x}/{y}.png",
+            "id": "flood-inundation-continuation-time-maximum-assumed-scale"
+        },
+        '家屋倒壊等氾濫想定区域(氾濫流)': {
+            "tileUrl": "https://disaportaldata.gsi.go.jp/raster/01_flood_l2_kaokutoukai_hanran_data/{z}/{x}/{y}.png",
+            "id": "house-collapse-flood-assumed-area-flood-flow"
+        },
+        '家屋倒壊等氾濫想定区域(河岸侵食)': {
+            "tileUrl": "https://disaportaldata.gsi.go.jp/raster/01_flood_l2_kaokutoukai_kagan_data/{z}/{x}/{y}.png",
+            "id": "house-collapse-flood-assumed-area-bank-erosion"
+        },
+        '内水(雨水出水)浸水想定区域': {
+            "tileUrl": "https://disaportaldata.gsi.go.jp/raster/02_naisui_data/{z}/{x}/{y}.png",
+            "id": "internal-water-rainwater-drainage-inundation-assumed-area"
+        },
+        '高潮浸水想定区域': {
+            "tileUrl": "https://disaportaldata.gsi.go.jp/raster/03_hightide_l2_shinsuishin_data/{z}/{x}/{y}.png",
+            "id": "storm-surge-inundation-assumed-area"
+        },
+        '津波浸水想定': {
+            "tileUrl": "https://disaportaldata.gsi.go.jp/raster/04_tsunami_newlegend_data/{z}/{x}/{y}.png",
+            "id": "tsunami-inundation-assumed-area"
+        },
+        '土砂災害警戒区域(土石流)': {
+            "tileUrl": "https://disaportaldata.gsi.go.jp/raster/05_dosekiryukeikaikuiki/{z}/{x}/{y}.png",
+            "id": "sediment-disaster-warning-area-debris-flow"
+        },
+        '土砂災害警戒区域(急傾斜地の崩壊)': {
+            "tileUrl": "https://disaportaldata.gsi.go.jp/raster/05_kyukeishakeikaikuiki/{z}/{x}/{y}.png",
+            "id": "sediment-disaster-warning-area-steep-slope-collapse"
+        },
+        '土砂災害警戒区域(地すべり)': {
+            "tileUrl": "https://disaportaldata.gsi.go.jp/raster/05_jisuberikeikaikuiki/{z}/{x}/{y}.png",
+            "id": "sediment-disaster-warning-area-landslide"
+        },
+        '雪崩危険箇所': {
+            "tileUrl": "https://disaportaldata.gsi.go.jp/raster/05_nadarekikenkasyo/{z}/{x}/{y}.png",
+            "id": "avalanche-hazard-location"
+        }
+    };
+    const addHazardMapSource = (map, hazardMapId) => {
+        const hazardMapData = HAZARD_MAP_DATA[hazardMapId];
+        if (!hazardMapData) {
+            console.error(`Hazard map data for ${hazardMapId} not found.`);
+            return undefined;
+        }
+        const id = hazardMapData.id;
+        if (!map.getSource(id)) {
+            map.addSource(id, {
+                type: 'raster',
+                tiles: [hazardMapData.tileUrl],
+                tileSize: 256,
+                attribution: 'ハザードマップポータルサイト'
+            });
+            return id;
+        }
+    };
+    const addHazardMapLayer = (map, key) => {
+        if (!key) {
+            return;
+        }
+        const id = HAZARD_MAP_DATA[key].id;
+        if (!map.getLayer(id)) {
+            map.addLayer({
+                id: id,
+                type: 'raster',
+                source: id,
+                paint: {
+                    'raster-opacity': 0.5
+                }
+            });
+        }
+    };
+    const removeHazardMapLayer = (map, key) => {
+        if (!key) {
+            return;
+        }
+        const id = HAZARD_MAP_DATA[key].id;
+        if (map.getLayer(id)) {
+            map.removeLayer(id);
+        }
+    };
+    function getHazardMapKeys() {
+        return Object.keys(HAZARD_MAP_DATA);
+    }
+
+    const layerConfigFactory = (key, id, color, sourceLayerId) => {
+        const defaultColor = '#563310';
+        const baseConfig = {
+            id: id,
+            source: id
+        };
+        if (sourceLayerId) {
+            baseConfig['source-layer'] = sourceLayerId;
+        }
+        return {
+            'circle': [Object.assign(Object.assign({}, baseConfig), { type: 'circle', paint: {
+                        'circle-radius': 6,
+                        'circle-color': !color || color === '' ? defaultColor : color,
+                        'circle-opacity': 0.8,
+                        'circle-stroke-width': 1,
+                        'circle-stroke-color': !color || color === '' ? defaultColor : color
+                    } })],
+            'polygon': [
+                Object.assign(Object.assign({}, baseConfig), { type: 'fill', paint: {
+                        'fill-color': !color || color === '' ? defaultColor : color,
+                        'fill-opacity': 0.3
+                    } }),
+                Object.assign(Object.assign({}, baseConfig), { id: `${id}-outline`, type: 'line', filter: ['==', ['geometry-type'], 'Polygon'], paint: {
+                        'line-color': !color || color === '' ? defaultColor : color,
+                        'line-width': 2,
+                        'line-opacity': 1
+                    } })
+            ],
+            'line': [Object.assign(Object.assign({}, baseConfig), { type: 'line', paint: {
+                        'line-color': !color || color === '' ? defaultColor : color,
+                        'line-width': 3
+                    } })]
+        }[key];
+    };
+
+    const NLNI_DATA = {
+        "小学校区": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT004/{z}/{x}/{y}.pbf",
+            id: "elementary-school-district",
+            geometryType: 'polygon',
+            color: '#ff0000'
+        },
+        "中学校区": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT005/{z}/{x}/{y}.pbf",
+            id: "junior-high-school-district",
+            geometryType: 'polygon',
+            color: '#54b738'
+        },
+        "学校": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT006/{z}/{x}/{y}.pbf",
+            id: "school",
+            geometryType: 'circle',
+            color: '#fccd3f'
+        },
+        "医療機関": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT010/{z}/{x}/{y}.pbf",
+            id: "medical-institution",
+            geometryType: 'circle',
+            color: '#16a085'
+        },
+        "将来推計人口250mメッシュ": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT013/{z}/{x}/{y}.pbf",
+            id: "future-population-estimate-250m-mesh",
+            geometryType: 'polygon',
+            color: '#f39c12'
+        },
+        "駅別乗降客数": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT015/{z}/{x}/{y}.pbf",
+            id: "station-passenger-numbers",
+            geometryType: 'polygon',
+            color: '#2980b9'
+        },
+        "市町村役場及び集会施設等": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT018/{z}/{x}/{y}.pbf",
+            id: "municipal-office-and-community-facility",
+            geometryType: 'circle',
+            color: '#34495e'
+        },
+        "大規模盛土造成地": {
+            tileUrl: "https://du6jhqfvlioa4.cloudfront.net/ex-api/external/XKT020/{z}/{x}/{y}.pbf",
+            id: "large-scale-embankment-map",
+            geometryType: 'polygon',
+            color: '#e84393'
+        }
+    };
+    const addNLNISource = (map, nlniId) => {
+        const hazardMapData = NLNI_DATA[nlniId];
+        if (!hazardMapData) {
+            console.error(`Hazard map data for ${nlniId} not found.`);
+            return undefined;
+        }
+        const id = hazardMapData.id;
+        if (!map.getSource(id)) {
+            map.addSource(id, {
+                type: 'vector',
+                tiles: [hazardMapData.tileUrl],
+                attribution: '国土交通省国土数値情報ダウンロードサイト'
+            });
+            return id;
+        }
+    };
+    const addNLNILayer = (map, key) => {
+        if (!key) {
+            return;
+        }
+        const data = NLNI_DATA[key];
+        layerConfigFactory(data.geometryType, data.id, data.color, 'hits').forEach(layer => {
+            if (data && !map.getLayer(layer.id)) {
+                map.addLayer(layer);
+            }
+        });
+    };
+    const removeNLNILayer = (map, key) => {
+        if (!key) {
+            return;
+        }
+        const data = NLNI_DATA[key];
+        layerConfigFactory(data.geometryType, data.id, data.color, 'hits').forEach(layer => {
+            if (data && map.getLayer(layer.id)) {
+                map.removeLayer(layer.id);
+            }
+        });
+    };
+    function getNLNIKeys() {
+        return Object.keys(NLNI_DATA);
+    }
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d, _e;
@@ -3646,10 +3896,13 @@
          * @param layerIds レイヤーIDまたは配列
          * @returns Feature配列
          */
-        getFeatures(xy, layerIds) {
+        getFeatures(xy, options) {
+            var _a;
             if (!xy) {
                 return [];
             }
+            const layerIds = options === null || options === void 0 ? void 0 : options.layerIds;
+            const firstOnly = (_a = options === null || options === void 0 ? void 0 : options.firstOnly) !== null && _a !== void 0 ? _a : false;
             const queryBox = toQueryBox(xy);
             if (!queryBox) {
                 return [];
@@ -3658,7 +3911,27 @@
                 ? Array.isArray(layerIds) ? layerIds : [layerIds]
                 : undefined;
             const features = this.queryRenderedFeatures(queryBox, layers ? { layers } : undefined);
-            return features;
+            return firstOnly ? [features[0]] : features;
+        }
+        /**
+         * 指定した座標またはbboxのFeatureを取得する
+         * @param xy [lng,lat] | {lng,lat} | [[minLng,minLat],[maxLng,maxLat]]
+         * @param layerIds レイヤーIDまたは配列
+         * @returns Feature配列
+         */
+        getFeaturesProperties(xy, options) {
+            var _a;
+            if (!xy) {
+                return [];
+            }
+            const layerIds = options === null || options === void 0 ? void 0 : options.layerIds;
+            const firstOnly = (_a = options === null || options === void 0 ? void 0 : options.firstOnly) !== null && _a !== void 0 ? _a : false;
+            const features = this.getFeatures(xy, { layerIds, firstOnly });
+            // propertiesが空でないものだけ返す
+            return features.filter(f => f && f.properties && Object.keys(f.properties).length > 0).map(f => ({
+                layerId: f.layer.id,
+                properties: f.properties
+            }));
         }
         /**
          * 指定した種類のpoiを表示する
@@ -3759,11 +4032,83 @@
                 console.warn(`Layer ${layerId} does not exist.`);
                 return;
             }
-            // TODO：後でスクラッチ側を修正
-            const name = iconName === 'ピン' ? 'pin' : iconName;
-            // icon-image式 ["concat", spriteKey, ":", iconName] で更新
-            const iconImageExpr = ["concat", spriteKey, ":", name];
-            this.setLayoutProperty(layerId, "icon-image", iconImageExpr);
+            existsSpriteIcon(this.spriteSheetUrl[spriteKey], iconName)
+                .then((hasSprite) => {
+                if (!hasSprite) {
+                    console.warn(`Icon "${iconName}" does not exist in sprite "${spriteKey}".`);
+                    return;
+                }
+                // icon-image式 ["concat", spriteKey, ":", iconName] で更新
+                const iconImageExpr = ["concat", spriteKey, ":", iconName];
+                this.setLayoutProperty(layerId, "icon-image", iconImageExpr);
+            })
+                .catch(() => {
+                console.error(`Failed to check icon "${iconName}" in sprite "${spriteKey}".`);
+            });
+        }
+        /**
+         * ハザードマップデータを表示する
+         * @param layerId レイヤーID
+         */
+        loadHazardMapData(layerId) {
+            if (!getHazardMapKeys().includes(layerId)) {
+                console.warn(`Hazard map data for ${layerId} not found.`);
+                return;
+            }
+            const sourceId = addHazardMapSource(this, layerId);
+            if (sourceId) {
+                this.loadedSourceIds.add(sourceId);
+            }
+            addHazardMapLayer(this, layerId);
+        }
+        /**
+         * ハザードマップデータを非表示にする
+         * @param layerId レイヤーID
+         */
+        removeHazardMapData(layerId) {
+            if (!getHazardMapKeys().includes(layerId)) {
+                console.warn(`Hazard map data for ${layerId} not found.`);
+                return;
+            }
+            removeHazardMapLayer(this, layerId);
+        }
+        /**
+         * ハザードマップデータ名を取得する
+         */
+        getHazardMapData() {
+            return getHazardMapKeys();
+        }
+        /**
+         * 国土数値情報データを表示する
+         * @param layerId レイヤーID
+         */
+        loadNLNIData(layerId) {
+            if (!getNLNIKeys().includes(layerId)) {
+                console.warn(`国土数値情報データ for ${layerId} not found.`);
+                return;
+            }
+            const sourceId = addNLNISource(this, layerId);
+            if (sourceId) {
+                this.loadedSourceIds.add(sourceId);
+            }
+            addNLNILayer(this, layerId);
+        }
+        /**
+         * 国土数値情報データを非表示にする
+         * @param layerId レイヤーID
+         */
+        removeNLNIData(layerId) {
+            if (!getNLNIKeys().includes(layerId)) {
+                console.warn(`国土数値情報データ for ${layerId} not found.`);
+                return;
+            }
+            removeNLNILayer(this, layerId);
+        }
+        /**
+         * 国土数値情報データのキーを取得する
+         */
+        getNLNIData() {
+            return getNLNIKeys();
         }
     }
     const currentScript = document.currentScript;

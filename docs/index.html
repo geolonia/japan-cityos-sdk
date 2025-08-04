@@ -36,46 +36,76 @@
     .maplibregl-popup-content {
       overflow: auto;
     }
+
+    #sidebar {
+      position: absolute;
+      z-index: 10;
+      top: 10px;
+      left: 10px;
+      width: 260px;
+      height: calc(100% - 20px);
+      overflow-y: auto;
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-sizing: border-box;
+    }
   </style>
 </head>
 
 <body>
-  <div style="position:absolute;z-index:10;top:10px;left:10px;">
-    <select id="style-select">
-      <option value="https://basic-v1-background-only.pages.dev/style.json">basic</option>
-      <option value="https://geoloniamaps.github.io/gsi/style.json">標準</option>
-      <option value="https://smartmap.styles.geoloniamaps.com/style.json">GSI</option>
-      <option value="https://smartcity-satellite.styles.geoloniamaps.com/style.json">衛星写真</option>
-      <option value="https://chizubouken-lab.pages.dev/style.json">ゲーム風</option>
-    </select>
-  </div>
-  <div style="position:absolute;z-index:10;top:40px;left:10px;">
-    <input type="checkbox" id="poi-checkbox" checked>
-    <label for="poi-checkbox">OSM：レストラン</label>
-  </div>
-  <div style="position:absolute;z-index:10;top:72px;left:10px;">
-    <input type="checkbox" id="poi-checkbox2" checked>
-    <label for="poi-checkbox2">OSM：鉄道</label>
-  </div>
-  <div style="position:absolute;z-index:10;top:104px;left:10px;">
-    <input type="checkbox" id="poi-checkbox3" checked>
-    <label for="poi-checkbox3">OSM：学校</label>
-  </div>
-  <div style="position:absolute;z-index:10;top:136px;left:10px;">
-    <select id="school-sprite-select">
-      <option value="basic" default>学校を'basic'スプライトで表示</option>
-      <option value="chizubouken-lab">学校を'chizubouken-lab'スプライトで表示</option>
-    </select>
-  </div>
-  <div style="position:absolute;z-index:10;top:168px;left:10px;">
-    <input type="checkbox" id="poi-checkbox4" checked>
-    <label for="poi-checkbox4">OSM：zoo</label>
-  </div>
-  <div style="position:absolute;z-index:10;top:200px;left:10px;">
-    <select id="zoo-icon-select">
-      <option value="zoo" default>動物園を'動物園'アイコンで表示</option>
-      <option value="castle">動物園を'城'アイコンで表示</option>
-    </select>
+  <!-- サイドバー全体をまとめるdivを追加 -->
+  <div 
+    id="sidebar"
+  >
+    <div style="margin-bottom:12px;">
+      <p style="font-weight:bold;">背景地図</p>
+      <select id="style-select" style="width:100%;">
+        <option value="https://basic-v1-background-only.pages.dev/style.json">basic</option>
+        <option value="https://geoloniamaps.github.io/gsi/style.json">標準</option>
+        <option value="https://smartmap.styles.geoloniamaps.com/style.json">GSI</option>
+        <option value="https://smartcity-satellite.styles.geoloniamaps.com/style.json">衛星写真</option>
+        <option value="https://chizubouken-lab.pages.dev/style.json">ゲーム風</option>
+      </select>
+    </div>
+    <div style="margin-bottom:12px;">
+      <input type="checkbox" id="poi-checkbox" checked>
+      <label for="poi-checkbox">OSM：レストラン</label>
+    </div>
+    <div style="margin-bottom:12px;">
+      <input type="checkbox" id="poi-checkbox2" checked>
+      <label for="poi-checkbox2">OSM：鉄道</label>
+    </div>
+    <div style="margin-bottom:12px;">
+      <input type="checkbox" id="poi-checkbox3" checked>
+      <label for="poi-checkbox3">OSM：学校</label>
+    </div>
+    <div style="margin-bottom:12px;">
+      <select id="school-sprite-select" style="width:100%;">
+        <option value="basic" default>学校を'basic'スプライトで表示</option>
+        <option value="chizubouken-lab">学校を'chizubouken-lab'スプライトで表示</option>
+      </select>
+    </div>
+    <div style="margin-bottom:12px;">
+      <input type="checkbox" id="poi-checkbox4" checked>
+      <label for="poi-checkbox4">OSM：zoo</label>
+    </div>
+    <div style="margin-bottom:12px;">
+      <select id="zoo-icon-select" style="width:100%;">
+        <option value="zoo" default>動物園を'動物園'アイコンで表示</option>
+        <option value="castle">動物園を'城'アイコンで表示</option>
+        <option value="nonexistent">動物園を存在しないアイコンで表示（アイコン切り替わりません）</option>
+      </select>
+    </div>
+    <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
+      <p style="font-weight:bold;">ハザードマップ</p>
+      <div id="hazardmap-checkbox-list"></div>
+    </div>
+    <div style="background:#fff;padding:5px;border-radius:5px;">
+      <p style="font-weight:bold;">国土数値情報</p>
+      <div id="nlni-checkbox-list"></div>
+    </div>
   </div>
   <div id="map"></div>
   <script src="./index.js"></script>
@@ -122,6 +152,48 @@
       japan.setBaseMapStyle(e.target.value);
     });
 
+    // ハザードマップデータ名をチェックボックスとして追加
+    const hazardMapData = japan.getHazardMapData();
+    const hazardCheckboxList = document.getElementById('hazardmap-checkbox-list');
+    hazardMapData.forEach(name => {
+      const label = document.createElement('label');
+      label.style.display = 'block';
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.value = name;
+      checkbox.addEventListener('change', function (e) {
+        if (e.target.checked) {
+          japan.loadHazardMapData(name);
+        } else {
+          japan.removeHazardMapData(name);
+        }
+      });
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode(name));
+      hazardCheckboxList.appendChild(label);
+    });
+
+    // 国土数値情報データ名をチェックボックスとして追加
+    const nlniData = japan.getNLNIData();
+    const nlniCheckboxList = document.getElementById('nlni-checkbox-list');
+    nlniData.forEach(name => {
+      const label = document.createElement('label');
+      label.style.display = 'block';
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.value = name;
+      checkbox.addEventListener('change', function (e) {
+        if (e.target.checked) {
+          japan.loadNLNIData(name);
+        } else {
+          japan.removeNLNIData(name);
+        }
+      });
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode(name));
+      nlniCheckboxList.appendChild(label);
+    });
+
     japan.on('load', () => {
       // csvデータの読み込み
       const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSv5OOG_biAGX5Q2XXrBPEtfthDNmFFtwPd50wCRON4aphbQMPHUWXtvzZ7UUjOFGhmNSv3h_jE-tyu/pub?gid=2058114753&single=true&output=csv'
@@ -130,8 +202,8 @@
       });
 
       // geojsonの読み込み
-      japan.loadGeojson(geojson, 'restaurant', {
-        'marker-symbol': 'marker:restaurant',
+      japan.loadGeojson(geojson, 'cafe', {
+        'marker-symbol': 'chizubouken-lab:cafe',
         'title': ['get', 'name']
       });
 
@@ -204,7 +276,7 @@
       // スタイル切り替え
       document.getElementById('school-sprite-select').addEventListener('change', function (e) {
         const schoolLayerIds = japan.hasLayer('学校');
-        if(schoolLayerIds.length > 0) {
+        if (schoolLayerIds.length > 0) {
           schoolLayerIds.forEach(layerId => {
             japan.changeSpriteSheet(layerId, e.target.value);
           });
@@ -215,7 +287,7 @@
       // スタイル切り替え
       document.getElementById('zoo-icon-select').addEventListener('change', function (e) {
         const zooLayerIds = japan.hasLayer('動物園');
-        if(zooLayerIds.length > 0) {
+        if (zooLayerIds.length > 0) {
           zooLayerIds.forEach(layerId => {
             japan.changeLayerIcon(layerId, e.target.value, 'chizubouken-lab');
           });
@@ -223,26 +295,29 @@
       });
 
       japan.on('click', (e) => {
-        const hasFeature = japan.hasFeature([e.point.x, e.point.y], ['restaurant', '選挙時投票所一覧']);
-        const features = japan.getFeatures([e.point.x, e.point.y], ['restaurant', '選挙時投票所一覧']);
-
         const x = e.point.x;
         const y = e.point.y;
         const bbox = [
           [x - 10, y - 10],
           [x + 10, y + 10]
         ];
-        const hasBboxFeature = japan.hasFeature(bbox, ['restaurant', '選挙時投票所一覧']);
-        const bboxFeatures = japan.getFeatures(bbox, ['restaurant', '選挙時投票所一覧']);
 
-        if(!hasFeature) { return; }
+        const data = japan.getFeaturesProperties(
+          [e.point.x, e.point.y],
+          { firstOnly: true }
+        );
 
-        const properties = features[0].properties;
+        if(!data || data.length === 0) {
+          console.warn('No features found at this point');
+          return;
+        }
+
+        const property = data[0].properties;
 
         let tableHTML = "<table class='popup-table'>";
         tableHTML += "<tr><th>属性</th><th>値</th></tr>"; // ヘッダー行を追加
-        for (let key in properties) {
-          tableHTML += `<tr><td>${key}</td><td>${properties[key]}</td></tr>`;
+        for (let key in property) {
+          tableHTML += `<tr><td>${key}</td><td>${property[key]}</td></tr>`;
         }
         tableHTML += "</table>";
 

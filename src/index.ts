@@ -6,6 +6,9 @@ import { toQueryBox } from './toQueryBox';
 import { OsmLayerNameType } from './types';
 import { addOsmLayer, addOsmSource, addOsmSprite, removeOsmLayer, toOsmLayerNameType, updateSpriteSheet } from './utils/osmPoiUtils';
 import { getOSMLayerConfig } from './utils/osmStyles';
+import { existsSpriteIcon } from './utils/spriteUtils';
+import { addHazardMapLayer, addHazardMapSource, getHazardMapKeys, removeHazardMapLayer } from './utils/hazardmapUtils';
+import { addNLNILayer, addNLNISource, getNLNIKeys, removeNLNILayer } from './utils/nationalLandNumericalInformationUtils';
 
 declare global {
   interface Window {
@@ -192,9 +195,14 @@ class GeoloniaMap extends maplibregl.Map {
    */
   getFeatures(
     xy: [number, number] | [[number, number], [number, number]] | undefined,
-    layerIds?: string | string[]
+    options?: { 
+      firstOnly?: boolean;
+      layerIds?: string | string[];
+    }
   ): maplibregl.MapGeoJSONFeature[] {
     if (!xy) { return []; }
+    const layerIds = options?.layerIds;
+    const firstOnly = options?.firstOnly ?? false;
 
     const queryBox = toQueryBox(xy);
 
@@ -205,7 +213,35 @@ class GeoloniaMap extends maplibregl.Map {
       : undefined;
 
     const features = this.queryRenderedFeatures(queryBox, layers ? { layers } : undefined);
-    return features;
+    return firstOnly ? [features[0]] : features;
+  }
+
+  /**
+   * 指定した座標またはbboxのFeatureを取得する
+   * @param xy [lng,lat] | {lng,lat} | [[minLng,minLat],[maxLng,maxLat]]
+   * @param layerIds レイヤーIDまたは配列
+   * @returns Feature配列
+   */
+  getFeaturesProperties(
+    xy: [number, number] | [[number, number], [number, number]] | undefined,
+    options?: { 
+      firstOnly?: boolean;
+      layerIds?: string | string[];
+    }
+  ): { [key: string]: any }[] {
+    if (!xy) { return []; }
+    const layerIds = options?.layerIds;
+    const firstOnly = options?.firstOnly ?? false;
+
+    const features = this.getFeatures(xy, { layerIds, firstOnly });
+
+    // propertiesが空でないものだけ返す
+    return features.filter(
+      f => f && f.properties && Object.keys(f.properties).length > 0
+    ).map(f => ({
+      layerId: f.layer.id,
+      properties: f.properties
+    }));
   }
 
   /**
@@ -302,13 +338,95 @@ class GeoloniaMap extends maplibregl.Map {
       console.warn(`Layer ${layerId} does not exist.`);
       return;
     }
-    // TODO：後でスクラッチ側を修正
-    const name = iconName === 'ピン' ? 'pin' : iconName;
-    // icon-image式 ["concat", spriteKey, ":", iconName] で更新
-    const iconImageExpr = ["concat", spriteKey, ":", name];
-    this.setLayoutProperty(layerId, "icon-image", iconImageExpr);
+
+    existsSpriteIcon(this.spriteSheetUrl[spriteKey], iconName)
+    .then((hasSprite) => {
+      if (!hasSprite) {
+        console.warn(`Icon "${iconName}" does not exist in sprite "${spriteKey}".`);
+        return;
+      }
+      // icon-image式 ["concat", spriteKey, ":", iconName] で更新
+      const iconImageExpr = ["concat", spriteKey, ":", iconName];
+      this.setLayoutProperty(layerId, "icon-image", iconImageExpr);
+    })
+    .catch(() => {
+      console.error(`Failed to check icon "${iconName}" in sprite "${spriteKey}".`);
+    });
   }
 
+  /**
+   * ハザードマップデータを表示する
+   * @param layerId レイヤーID
+   */
+  loadHazardMapData(layerId: string) {
+    if (!getHazardMapKeys().includes(layerId)) {
+      console.warn(`Hazard map data for ${layerId} not found.`);
+      return;
+    }
+    
+    const sourceId = addHazardMapSource(this, layerId);
+    if(sourceId) {
+      this.loadedSourceIds.add(sourceId);
+    }
+    addHazardMapLayer(this, layerId);
+  }
+
+  /**
+   * ハザードマップデータを非表示にする
+   * @param layerId レイヤーID
+   */
+  removeHazardMapData(layerId: string) {
+    if (!getHazardMapKeys().includes(layerId)) {
+      console.warn(`Hazard map data for ${layerId} not found.`);
+      return;
+    }
+    
+    removeHazardMapLayer(this, layerId);
+  }
+
+  /**
+   * ハザードマップデータ名を取得する
+   */
+  getHazardMapData(): string[] {
+    return getHazardMapKeys();
+  }
+
+  /**
+   * 国土数値情報データを表示する
+   * @param layerId レイヤーID
+   */
+  loadNLNIData(layerId: string) {
+    if (!getNLNIKeys().includes(layerId)) {
+      console.warn(`国土数値情報データ for ${layerId} not found.`);
+      return;
+    }
+
+    const sourceId = addNLNISource(this, layerId);
+    if(sourceId) {
+      this.loadedSourceIds.add(sourceId);
+    }
+    addNLNILayer(this, layerId);
+  }
+  
+  /**
+   * 国土数値情報データを非表示にする
+   * @param layerId レイヤーID
+   */
+  removeNLNIData(layerId: string) {
+    if (!getNLNIKeys().includes(layerId)) {
+      console.warn(`国土数値情報データ for ${layerId} not found.`);
+      return;
+    }
+    
+    removeNLNILayer(this, layerId);
+  }
+
+  /**
+   * 国土数値情報データのキーを取得する
+   */
+  getNLNIData(): string[] {
+    return getNLNIKeys();
+  }
 }
 
 const currentScript = document.currentScript as HTMLScriptElement;
