@@ -6,7 +6,7 @@ import { toQueryBox } from './toQueryBox';
 import { OsmLayerNameType } from './types';
 import { addOsmLayer, addOsmSource, addOsmSprite, removeOsmLayer, toOsmLayerNameType, updateSpriteSheet } from './utils/osmPoiUtils';
 import { getOSMLayerConfig } from './utils/osmStyles';
-import { existsSpriteIcon } from './utils/spriteUtils';
+import { existsSpriteIcon, getSpriteIconNames } from './utils/spriteUtils';
 import { addHazardMapLayer, addHazardMapSource, getHazardMapKeys, removeHazardMapLayer } from './utils/hazardmapUtils';
 import { addNLNILayer, addNLNISource, getNLNIKeys, removeNLNILayer } from './utils/nationalLandNumericalInformationUtils';
 
@@ -20,7 +20,7 @@ class GeoloniaMap extends maplibregl.Map {
 
   private loadedSourceIds: Set<string> = new Set();
 
-  spriteSheetUrl: {[key: string]: string} = {
+  static spriteSheetUrl: {[key: string]: string} = {
     'chizubouken-lab': 'https://geolonia.github.io/chizubouken-lab-sprite/sprite',
     'mapfan': 'https://geolonia.github.io/mapfandb-sprite/sprite',
     'smartmap': 'https://geolonia.github.io/custom-smartmap-sprite/sprite',
@@ -45,6 +45,29 @@ class GeoloniaMap extends maplibregl.Map {
     }
 
     super({...defaults, ...params});
+  }
+
+
+  /**
+   * ハザードマップデータのキーを取得する
+   */
+  static getHazardMapData(): string[] {
+    return getHazardMapKeys();
+  }
+
+  /**
+   * 国土数値情報データのキーを取得する
+   */
+  static getNLNIData(): string[] {
+    return getNLNIKeys();
+  }
+
+  /**
+   * 使用できるアイコン名を取得する
+   */
+  static async getIconNames(spriteKey: string): Promise<string[]> {
+    const iconNames = await getSpriteIconNames(GeoloniaMap.spriteSheetUrl[spriteKey]);
+    return iconNames;
   }
 
   /* ****************
@@ -126,7 +149,7 @@ class GeoloniaMap extends maplibregl.Map {
     }
 
     if (spriteSheet) {
-      addOsmSprite(this, { [spriteSheet]: this.spriteSheetUrl[spriteSheet] }, this.spriteSheetUrl);
+      addOsmSprite(this, { [spriteSheet]: GeoloniaMap.spriteSheetUrl[spriteSheet] }, GeoloniaMap.spriteSheetUrl);
     }
 
     const layers = createLayer(className, {
@@ -248,7 +271,7 @@ class GeoloniaMap extends maplibregl.Map {
    * 指定した種類のpoiを表示する
    * @param osmLayerName 表示するレイヤー名
    */
-  loadOsmPoi(osmLayerName: string, spriteName?: keyof typeof this.spriteSheetUrl): string[] {
+  loadOsmPoi(osmLayerName: string, spriteName?: keyof typeof GeoloniaMap.spriteSheetUrl): string[] {
     if (!osmLayerName) { return; }
     const layerId = toOsmLayerNameType(osmLayerName);
     if (!layerId) { return; }
@@ -256,7 +279,11 @@ class GeoloniaMap extends maplibregl.Map {
     if(sourceId) {
       this.loadedSourceIds.add(sourceId);
     }
-    addOsmSprite(this, { [spriteName ?? 'basic']: this.spriteSheetUrl[spriteName ?? 'basic'] }, this.spriteSheetUrl);
+    addOsmSprite(
+      this,
+      { [(spriteName ?? 'basic')]: GeoloniaMap.spriteSheetUrl[(spriteName ?? 'basic')] },
+      GeoloniaMap.spriteSheetUrl
+    );
     const layers = addOsmLayer(this, layerId, spriteName as string);
     return layers;
   }
@@ -274,27 +301,6 @@ class GeoloniaMap extends maplibregl.Map {
     const after = this.hasLayer(layerId);
     // 削除前に存在し、削除後に存在しなければtrue
     return !!before && !after;
-  }
-
-  getOsmPoiLayers(): Record<OsmLayerNameType, string> {
-    return {
-      restaurant: 'レストラン',
-      railway: '鉄道',
-      mountain: '山',
-      airport: '空港',
-      school: '学校',
-      college: '大学',
-      convenience: 'コンビニ',
-      bank: '銀行',
-      hospital: '病院',
-      cafe: 'カフェ',
-      'fast-food': 'ファストフード',
-      zoo: '動物園',
-      parking: '駐車場',
-      castle: '城',
-      museum: '博物館',
-      park: '公園'
-    };
   }
 
   /**
@@ -320,9 +326,9 @@ class GeoloniaMap extends maplibregl.Map {
    * @param layerName レイヤー名（日本語または英語）
    * @param spriteKey スプライトシート名（spriteSheetUrlのkey）
    */
-  changeSpriteSheet(layerName: string, spriteKey: keyof typeof this.spriteSheetUrl) {
+  changeSpriteSheet(layerName: string, spriteKey: keyof typeof GeoloniaMap.spriteSheetUrl) {
     // スプライトを追加・切り替え
-    addOsmSprite(this, { [spriteKey]: this.spriteSheetUrl[spriteKey] }, this.spriteSheetUrl);
+    addOsmSprite(this, { [spriteKey]: GeoloniaMap.spriteSheetUrl[spriteKey] }, GeoloniaMap.spriteSheetUrl);
     // レイヤーを再描画（icon-image式にspriteKeyを渡す）
     updateSpriteSheet(this, layerName, spriteKey as string);
   }
@@ -339,7 +345,7 @@ class GeoloniaMap extends maplibregl.Map {
       return;
     }
 
-    existsSpriteIcon(this.spriteSheetUrl[spriteKey], iconName)
+    existsSpriteIcon(GeoloniaMap.spriteSheetUrl[spriteKey], iconName)
     .then((hasSprite) => {
       if (!hasSprite) {
         console.warn(`Icon "${iconName}" does not exist in sprite "${spriteKey}".`);
@@ -385,13 +391,6 @@ class GeoloniaMap extends maplibregl.Map {
   }
 
   /**
-   * ハザードマップデータ名を取得する
-   */
-  getHazardMapData(): string[] {
-    return getHazardMapKeys();
-  }
-
-  /**
    * 国土数値情報データを表示する
    * @param layerId レイヤーID
    */
@@ -419,13 +418,6 @@ class GeoloniaMap extends maplibregl.Map {
     }
     
     removeNLNILayer(this, layerId);
-  }
-
-  /**
-   * 国土数値情報データのキーを取得する
-   */
-  getNLNIData(): string[] {
-    return getNLNIKeys();
   }
 }
 
