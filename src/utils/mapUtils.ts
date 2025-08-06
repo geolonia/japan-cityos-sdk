@@ -308,3 +308,26 @@ export function mergeLayersByLoadedIds(
   );
   return [...nextLayers, ...filteredPrevLayers];
 }
+
+/**
+ * 背景地図以外の全てのソースを削除する
+ */
+export function removeSourcesByLoadedIds(
+  sources: Record<string, maplibregl.SourceSpecification>,
+  loadedSourceIds: Set<string>
+) {
+  return Object.fromEntries(
+    Object.entries(sources).filter(
+      ([id]) => !loadedSourceIds.has(id)
+    )
+  );
+}
+
+/**
+ * 背景地図以外の全てのレイヤーを削除する
+ */
+export function removeLayersByLoadedIds(layers: maplibregl.LayerSpecification[], loadedSourceIds: Set<string>) {
+  return layers.filter(
+    layer => 'source' in layer && !loadedSourceIds.has(layer.source)
+  );
+}
