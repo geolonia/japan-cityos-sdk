@@ -1,6 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey, updateLayer } from './utils/mapUtils';
+import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey, removeLayersByLoadedIds, removeSourcesByLoadedIds, updateLayer } from './utils/mapUtils';
 import Papa from 'papaparse';
 import { toQueryBox } from './toQueryBox';
 import { OsmLayerNameType } from './types';
@@ -183,6 +183,21 @@ class GeoloniaMap extends maplibregl.Map {
           layers: newLayers
         };
       }
+    });
+  }
+
+  /****************
+   * 背景地図以外のレイヤーとソースを削除する
+   ****************/
+  removeAllCustomLayers() {
+    const style = this.getStyle();
+    const newSources = removeSourcesByLoadedIds(style.sources, this.loadedSourceIds);
+    const newLayers = removeLayersByLoadedIds(style.layers, this.loadedSourceIds);
+
+    this.setStyle({
+      ...style,
+      sources: newSources,
+      layers: newLayers
     });
   }
 
