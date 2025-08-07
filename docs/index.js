@@ -257,7 +257,7 @@
             const iconSizeKey = simpleStyle['marker-size'];
             const customIconSize = simpleStyle['custom-marker-size'];
             const iconSize = (_a = MARKER_SIZE_MAP[iconSizeKey]) !== null && _a !== void 0 ? _a : MARKER_SIZE_MAP.medium;
-            layers.push(Object.assign(Object.assign({}, base), { type: 'symbol', layout: Object.assign({ 'icon-image': (_b = simpleStyle['marker-symbol']) !== null && _b !== void 0 ? _b : DEFAULT_MARKER_NAME, 'icon-size': customIconSize ? customIconSize : iconSize, 'icon-allow-overlap': true }, (simpleStyle['title'] ? {
+            layers.push(Object.assign(Object.assign({}, base), { type: 'symbol', layout: Object.assign({ 'icon-image': (_b = simpleStyle['marker-symbol']) !== null && _b !== void 0 ? _b : DEFAULT_MARKER_NAME, 'icon-size': customIconSize ? customIconSize : iconSize, 'icon-allow-overlap': true, 'icon-overlap': 'always', 'text-allow-overlap': true }, (simpleStyle['title'] ? {
                     'text-field': simpleStyle['title'],
                     'text-font': (_c = simpleStyle['text-font']) !== null && _c !== void 0 ? _c : ["Noto Sans Regular"],
                     'text-size': (_d = simpleStyle['text-size']) !== null && _d !== void 0 ? _d : 12,
@@ -355,6 +355,18 @@
     function mergeLayersByLoadedIds(previousLayers, nextLayers, loadedSourceIds) {
         const filteredPrevLayers = previousLayers.filter(layer => 'source' in layer && loadedSourceIds.has(layer.source));
         return [...nextLayers, ...filteredPrevLayers];
+    }
+    /**
+     * 背景地図以外の全てのソースを削除する
+     */
+    function removeSourcesByLoadedIds(sources, loadedSourceIds) {
+        return Object.fromEntries(Object.entries(sources).filter(([id]) => !loadedSourceIds.has(id)));
+    }
+    /**
+     * 背景地図以外の全てのレイヤーを削除する
+     */
+    function removeLayersByLoadedIds(layers, loadedSourceIds) {
+        return layers.filter(layer => 'source' in layer && !loadedSourceIds.has(layer.source));
     }
 
     var papaparse = {exports: {}};
@@ -2336,6 +2348,10 @@
                         ]
                     ],
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -2368,9 +2384,7 @@
                         "text-max-width": 9,
                         "icon-optional": false,
                         "icon-ignore-placement": false,
-                        "icon-allow-overlap": false,
                         "text-ignore-placement": false,
-                        "text-allow-overlap": false,
                         "text-optional": true
                     },
                     "paint": {
@@ -2404,6 +2418,10 @@
                         ]
                     ],
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -2461,6 +2479,10 @@
                         ]
                     ],
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -2504,6 +2526,10 @@
                         ]
                     ],
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -2554,6 +2580,10 @@
                         ]
                     ],
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -2586,6 +2616,10 @@
                     "source": OSM_SOURCE_ID,
                     "source-layer": "poi",
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -2639,6 +2673,10 @@
                     "source": OSM_SOURCE_ID,
                     "source-layer": "poi",
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -2692,6 +2730,10 @@
                     "source": OSM_SOURCE_ID,
                     "source-layer": "poi",
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -2745,6 +2787,10 @@
                     "source": OSM_SOURCE_ID,
                     "source-layer": "poi",
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -2798,6 +2844,10 @@
                     "source": OSM_SOURCE_ID,
                     "source-layer": "poi",
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -2851,6 +2901,10 @@
                     "source": OSM_SOURCE_ID,
                     "source-layer": "poi",
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -2904,6 +2958,10 @@
                     "source": OSM_SOURCE_ID,
                     "source-layer": "poi",
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -2957,6 +3015,10 @@
                     "source": OSM_SOURCE_ID,
                     "source-layer": "poi",
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -3010,6 +3072,10 @@
                     "source": OSM_SOURCE_ID,
                     "source-layer": "poi",
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -3063,6 +3129,10 @@
                     "source": OSM_SOURCE_ID,
                     "source-layer": "poi",
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -3116,6 +3186,10 @@
                     "source": OSM_SOURCE_ID,
                     "source-layer": "poi",
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -3169,6 +3243,10 @@
                     "source": OSM_SOURCE_ID,
                     "source-layer": "poi",
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Universal Regular"
@@ -3249,6 +3327,10 @@
                         ]
                     ],
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Regular"
@@ -3307,6 +3389,10 @@
                         ]
                     ],
                     "layout": {
+                        "icon-overlap": "always",
+                        "icon-allow-overlap": true,
+                        "text-overlap": "always",
+                        "text-allow-overlap": true,
                         "text-padding": 2,
                         "text-font": [
                             "Noto Sans Regular"
@@ -3494,6 +3580,29 @@
     }
 
     /**
+     * 指定のスプライトシートに含まれるアイコン名一覧を取得する
+     * @param spriteSheetUrl スプライトシートのURL（例: https://geolonia.github.io/chizubouken-lab-sprite/sprite）
+     * @returns Promise<string[]> アイコン名の配列
+     */
+    function getSpriteIconNames(spriteSheetUrl) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const jsonUrl = spriteSheetUrl.endsWith('.json')
+                    ? spriteSheetUrl
+                    : spriteSheetUrl + '.json';
+                const res = yield fetch(jsonUrl);
+                if (!res.ok) {
+                    return [];
+                }
+                const spriteJson = yield res.json();
+                return Object.keys(spriteJson);
+            }
+            catch (_a) {
+                return [];
+            }
+        });
+    }
+    /**
      * 指定のスプライトシートに指定アイコン名が存在するかどうかを確認する
      * @param spriteSheetUrl スプライトシートのURL（例: https://geolonia.github.io/chizubouken-lab-sprite/sprite）
      * @param iconName アイコン名（例: "pin"）
@@ -3501,22 +3610,8 @@
      */
     function existsSpriteIcon(spriteSheetUrl, iconName) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                // スプライトJSONのURLを生成（@2x対応も考慮）
-                const jsonUrl = spriteSheetUrl.endsWith('.json')
-                    ? spriteSheetUrl
-                    : spriteSheetUrl + '.json';
-                const res = yield fetch(jsonUrl);
-                if (!res.ok) {
-                    return false;
-                }
-                const spriteJson = yield res.json();
-                // アイコン名が存在するかチェック
-                return Object.prototype.hasOwnProperty.call(spriteJson, iconName);
-            }
-            catch (_a) {
-                return false;
-            }
+            const iconNames = yield getSpriteIconNames(spriteSheetUrl);
+            return iconNames.includes(iconName);
         });
     }
 
@@ -3765,12 +3860,27 @@
             };
             super(Object.assign(Object.assign({}, defaults), params));
             this.loadedSourceIds = new Set();
-            this.spriteSheetUrl = {
-                'chizubouken-lab': 'https://geolonia.github.io/chizubouken-lab-sprite/sprite',
-                'mapfan': 'https://geolonia.github.io/mapfandb-sprite/sprite',
-                'smartmap': 'https://geolonia.github.io/custom-smartmap-sprite/sprite',
-                'basic': 'https://geoloniamaps.github.io/basic-v1/basic-v1',
-            };
+        }
+        /**
+         * ハザードマップデータのキーを取得する
+         */
+        static getHazardMapData() {
+            return getHazardMapKeys();
+        }
+        /**
+         * 国土数値情報データのキーを取得する
+         */
+        static getNLNIData() {
+            return getNLNIKeys();
+        }
+        /**
+         * 使用できるアイコン名を取得する
+         */
+        static getIconNames(spriteKey) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const iconNames = yield getSpriteIconNames(GeoloniaMap.spriteSheetUrl[spriteKey]);
+                return iconNames;
+            });
         }
         /* ****************
          * レイヤーを追加する
@@ -3840,7 +3950,7 @@
                     this.addSource(className, createSourceByType('geojson', geojson));
                 }
                 if (spriteSheet) {
-                    addOsmSprite(this, { [spriteSheet]: this.spriteSheetUrl[spriteSheet] }, this.spriteSheetUrl);
+                    addOsmSprite(this, { [spriteSheet]: GeoloniaMap.spriteSheetUrl[spriteSheet] }, GeoloniaMap.spriteSheetUrl);
                 }
                 const layers = createLayer(className, {
                     simpleStyle: simpleStyle
@@ -3869,6 +3979,15 @@
                     return Object.assign(Object.assign(Object.assign({}, previousStyle), nextStyle), { sources: newSources, layers: newLayers });
                 }
             });
+        }
+        /****************
+         * 背景地図以外のレイヤーとソースを削除する
+         ****************/
+        removeAllCustomLayers() {
+            const style = this.getStyle();
+            const newSources = removeSourcesByLoadedIds(style.sources, this.loadedSourceIds);
+            const newLayers = removeLayersByLoadedIds(style.layers, this.loadedSourceIds);
+            this.setStyle(Object.assign(Object.assign({}, style), { sources: newSources, layers: newLayers }));
         }
         /**
          * 指定した座標またはbboxのFeatureが存在するか判定する
@@ -3949,7 +4068,7 @@
             if (sourceId) {
                 this.loadedSourceIds.add(sourceId);
             }
-            addOsmSprite(this, { [spriteName !== null && spriteName !== void 0 ? spriteName : 'basic']: this.spriteSheetUrl[spriteName !== null && spriteName !== void 0 ? spriteName : 'basic'] }, this.spriteSheetUrl);
+            addOsmSprite(this, { [(spriteName !== null && spriteName !== void 0 ? spriteName : 'basic')]: GeoloniaMap.spriteSheetUrl[(spriteName !== null && spriteName !== void 0 ? spriteName : 'basic')] }, GeoloniaMap.spriteSheetUrl);
             const layers = addOsmLayer(this, layerId, spriteName);
             return layers;
         }
@@ -3970,26 +4089,6 @@
             const after = this.hasLayer(layerId);
             // 削除前に存在し、削除後に存在しなければtrue
             return !!before && !after;
-        }
-        getOsmPoiLayers() {
-            return {
-                restaurant: 'レストラン',
-                railway: '鉄道',
-                mountain: '山',
-                airport: '空港',
-                school: '学校',
-                college: '大学',
-                convenience: 'コンビニ',
-                bank: '銀行',
-                hospital: '病院',
-                cafe: 'カフェ',
-                'fast-food': 'ファストフード',
-                zoo: '動物園',
-                parking: '駐車場',
-                castle: '城',
-                museum: '博物館',
-                park: '公園'
-            };
         }
         /**
          * 指定したレイヤーIDが存在するかどうかを判定する
@@ -4017,7 +4116,7 @@
         */
         changeSpriteSheet(layerName, spriteKey) {
             // スプライトを追加・切り替え
-            addOsmSprite(this, { [spriteKey]: this.spriteSheetUrl[spriteKey] }, this.spriteSheetUrl);
+            addOsmSprite(this, { [spriteKey]: GeoloniaMap.spriteSheetUrl[spriteKey] }, GeoloniaMap.spriteSheetUrl);
             // レイヤーを再描画（icon-image式にspriteKeyを渡す）
             updateSpriteSheet(this, layerName, spriteKey);
         }
@@ -4032,7 +4131,7 @@
                 console.warn(`Layer ${layerId} does not exist.`);
                 return;
             }
-            existsSpriteIcon(this.spriteSheetUrl[spriteKey], iconName)
+            existsSpriteIcon(GeoloniaMap.spriteSheetUrl[spriteKey], iconName)
                 .then((hasSprite) => {
                 if (!hasSprite) {
                     console.warn(`Icon "${iconName}" does not exist in sprite "${spriteKey}".`);
@@ -4073,12 +4172,6 @@
             removeHazardMapLayer(this, layerId);
         }
         /**
-         * ハザードマップデータ名を取得する
-         */
-        getHazardMapData() {
-            return getHazardMapKeys();
-        }
-        /**
          * 国土数値情報データを表示する
          * @param layerId レイヤーID
          */
@@ -4104,13 +4197,13 @@
             }
             removeNLNILayer(this, layerId);
         }
-        /**
-         * 国土数値情報データのキーを取得する
-         */
-        getNLNIData() {
-            return getNLNIKeys();
-        }
     }
+    GeoloniaMap.spriteSheetUrl = {
+        'chizubouken-lab': 'https://geolonia.github.io/chizubouken-lab-sprite/sprite',
+        'mapfan': 'https://geolonia.github.io/mapfandb-sprite/sprite',
+        'smartmap': 'https://geolonia.github.io/custom-smartmap-sprite/sprite',
+        'basic': 'https://geoloniamaps.github.io/basic-v1/basic-v1',
+    };
     const currentScript = document.currentScript;
     window.geolonia = {};
     window.geolonia.apiKey = parseApiKey(currentScript);

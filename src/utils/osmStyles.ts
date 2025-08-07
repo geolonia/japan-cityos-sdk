@@ -38,6 +38,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
                 ]
             ],
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -70,9 +74,7 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
                 "text-max-width": 9,
                 "icon-optional": false,
                 "icon-ignore-placement": false,
-                "icon-allow-overlap": false,
                 "text-ignore-placement": false,
-                "text-allow-overlap": false,
                 "text-optional": true
             },
             "paint": {
@@ -106,6 +108,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
                 ]
             ],
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -163,6 +169,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
                 ]
             ],
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -206,6 +216,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
                 ]
             ],
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -256,6 +270,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
                 ]
             ],
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -288,6 +306,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
             "source": OSM_SOURCE_ID,
             "source-layer": "poi",
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -341,6 +363,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
             "source": OSM_SOURCE_ID,
             "source-layer": "poi",
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -394,6 +420,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
             "source": OSM_SOURCE_ID,
             "source-layer": "poi",
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -447,6 +477,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
             "source": OSM_SOURCE_ID,
             "source-layer": "poi",
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -500,6 +534,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
             "source": OSM_SOURCE_ID,
             "source-layer": "poi",
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -553,6 +591,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
             "source": OSM_SOURCE_ID,
             "source-layer": "poi",
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -606,6 +648,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
             "source": OSM_SOURCE_ID,
             "source-layer": "poi",
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -659,6 +705,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
             "source": OSM_SOURCE_ID,
             "source-layer": "poi",
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -712,6 +762,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
             "source": OSM_SOURCE_ID,
             "source-layer": "poi",
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -765,6 +819,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
             "source": OSM_SOURCE_ID,
             "source-layer": "poi",
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -818,6 +876,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
             "source": OSM_SOURCE_ID,
             "source-layer": "poi",
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -871,6 +933,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
             "source": OSM_SOURCE_ID,
             "source-layer": "poi",
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Universal Regular"
@@ -951,6 +1017,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
                 ]
             ],
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Regular"
@@ -1009,6 +1079,10 @@ export const getOSMLayerConfig = (layerName: OsmLayerNameType, spriteName: strin
                 ]
             ],
             "layout": {
+                "icon-overlap": "always",
+                "icon-allow-overlap": true,
+                "text-overlap": "always",
+                "text-allow-overlap": true,
                 "text-padding": 2,
                 "text-font": [
                     "Noto Sans Regular"

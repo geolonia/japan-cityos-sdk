@@ -45,3 +45,13 @@ export declare function mergeSourcesByLoadedIds(previousSources: Record<string, 
  * @returns マージされたlayers
  */
 export declare function mergeLayersByLoadedIds(previousLayers: any[], nextLayers: any[], loadedSourceIds: Set<string>): any[];
+/**
+ * 背景地図以外の全てのソースを削除する
+ */
+export declare function removeSourcesByLoadedIds(sources: Record<string, maplibregl.SourceSpecification>, loadedSourceIds: Set<string>): {
+    [k: string]: import("maplibre-gl").SourceSpecification;
+};
+/**
+ * 背景地図以外の全てのレイヤーを削除する
+ */
+export declare function removeLayersByLoadedIds(layers: maplibregl.LayerSpecification[], loadedSourceIds: Set<string>): import("maplibre-gl").LayerSpecification[];
