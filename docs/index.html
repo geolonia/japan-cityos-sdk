@@ -152,8 +152,9 @@
       japan.setBaseMapStyle(e.target.value);
     });
 
-    // ハザードマップデータ名をチェックボックスとして追加
-    const hazardMapData = japan.getHazardMapData();
+    // ハザードマップデータ名をチェックボックスとして追加する
+    const hazardMapData = geolonia.japan.Map.getHazardMapData();
+    console.log('hazardMapData:', hazardMapData);
     const hazardCheckboxList = document.getElementById('hazardmap-checkbox-list');
     hazardMapData.forEach(name => {
       const label = document.createElement('label');
@@ -174,7 +175,7 @@
     });
 
     // 国土数値情報データ名をチェックボックスとして追加
-    const nlniData = japan.getNLNIData();
+    const nlniData = geolonia.japan.Map.getNLNIData();
     const nlniCheckboxList = document.getElementById('nlni-checkbox-list');
     nlniData.forEach(name => {
       const label = document.createElement('label');
