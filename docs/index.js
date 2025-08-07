@@ -257,7 +257,7 @@
             const iconSizeKey = simpleStyle['marker-size'];
             const customIconSize = simpleStyle['custom-marker-size'];
             const iconSize = (_a = MARKER_SIZE_MAP[iconSizeKey]) !== null && _a !== void 0 ? _a : MARKER_SIZE_MAP.medium;
-            layers.push(Object.assign(Object.assign({}, base), { type: 'symbol', layout: Object.assign({ 'icon-image': (_b = simpleStyle['marker-symbol']) !== null && _b !== void 0 ? _b : DEFAULT_MARKER_NAME, 'icon-size': customIconSize ? customIconSize : iconSize, 'icon-allow-overlap': true, 'icon-overlap': 'always', 'text-allow-overlap': true }, (simpleStyle['title'] ? {
+            layers.push(Object.assign(Object.assign({}, base), { type: 'symbol', layout: Object.assign({ 'icon-image': (_b = simpleStyle['marker-symbol']) !== null && _b !== void 0 ? _b : DEFAULT_MARKER_NAME, 'icon-size': customIconSize ? customIconSize : iconSize, 'icon-allow-overlap': true, 'icon-overlap': 'always', 'text-overlap': 'always', 'text-allow-overlap': true }, (simpleStyle['title'] ? {
                     'text-field': simpleStyle['title'],
                     'text-font': (_c = simpleStyle['text-font']) !== null && _c !== void 0 ? _c : ["Noto Sans Regular"],
                     'text-size': (_d = simpleStyle['text-size']) !== null && _d !== void 0 ? _d : 12,
@@ -3840,13 +3840,15 @@
 
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
-            var _a, _b, _c, _d, _e;
+            var _a, _b, _c, _d, _e, _f, _g;
             const defaults = {
                 container: (_a = params.container) !== null && _a !== void 0 ? _a : 'map',
                 style: (_b = params.style) !== null && _b !== void 0 ? _b : 'https://basic-v1-background-only.pages.dev/style.json',
                 center: (_c = params.lngLat) !== null && _c !== void 0 ? _c : [139.692, 35.689],
                 zoom: (_d = params.zoom) !== null && _d !== void 0 ? _d : 12,
                 hash: (_e = params.hash) !== null && _e !== void 0 ? _e : false,
+                minZoom: (_f = params.minZoom) !== null && _f !== void 0 ? _f : 8,
+                maxZoom: (_g = params.maxZoom) !== null && _g !== void 0 ? _g : 20,
                 transformRequest: (url, resourceType) => {
                     if (!window.geolonia.apiKey) {
                         return { url };
@@ -3860,6 +3862,26 @@
             };
             super(Object.assign(Object.assign({}, defaults), params));
             this.loadedSourceIds = new Set();
+        }
+        getOsmPoiLayers() {
+            return {
+                restaurant: 'レストラン',
+                railway: '鉄道',
+                mountain: '山',
+                airport: '空港',
+                school: '学校',
+                college: '大学',
+                convenience: 'コンビニ',
+                bank: '銀行',
+                hospital: '病院',
+                cafe: 'カフェ',
+                'fast-food': 'ファストフード',
+                zoo: '動物園',
+                parking: '駐車場',
+                castle: '城',
+                museum: '博物館',
+                park: '公園'
+            };
         }
         /**
          * ハザードマップデータのキーを取得する

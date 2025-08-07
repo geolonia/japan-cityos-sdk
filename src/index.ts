@@ -34,6 +34,8 @@ class GeoloniaMap extends maplibregl.Map {
       center: params.lngLat ?? [139.692, 35.689],
       zoom: params.zoom ?? 12,
       hash: params.hash ?? false,
+      minZoom: params.minZoom ?? 8,
+      maxZoom: params.maxZoom ?? 20,
       transformRequest: (url: string, resourceType: string) => {
         if (!window.geolonia.apiKey) { return { url }; }
         if ((resourceType === 'Tile' || resourceType === 'Source') && url.startsWith('https://tileserver.geolonia.com')) {
@@ -45,6 +47,27 @@ class GeoloniaMap extends maplibregl.Map {
     }
 
     super({...defaults, ...params});
+  }
+
+  getOsmPoiLayers(): Record<OsmLayerNameType, string> {
+    return {
+      restaurant: 'レストラン',
+      railway: '鉄道',
+      mountain: '山',
+      airport: '空港',
+      school: '学校',
+      college: '大学',
+      convenience: 'コンビニ',
+      bank: '銀行',
+      hospital: '病院',
+      cafe: 'カフェ',
+      'fast-food': 'ファストフード',
+      zoo: '動物園',
+      parking: '駐車場',
+      castle: '城',
+      museum: '博物館',
+      park: '公園'
+    };
   }
 
 
