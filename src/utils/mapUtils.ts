@@ -156,6 +156,7 @@ export const createLayer = (
         'icon-size': customIconSize ? customIconSize : iconSize,
         'icon-allow-overlap': true,
         'icon-overlap': 'always',
+        'text-overlap': 'always',
         'text-allow-overlap': true,
         ...(simpleStyle['title'] ? { 
           'text-field': simpleStyle['title'],
