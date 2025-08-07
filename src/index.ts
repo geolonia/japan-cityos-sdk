@@ -34,6 +34,8 @@ class GeoloniaMap extends maplibregl.Map {
       center: params.lngLat ?? [139.692, 35.689],
       zoom: params.zoom ?? 12,
       hash: params.hash ?? false,
+      minZoom: params.minZoom ?? 8,
+      maxZoom: params.maxZoom ?? 20,
       transformRequest: (url: string, resourceType: string) => {
         if (!window.geolonia.apiKey) { return { url }; }
         if ((resourceType === 'Tile' || resourceType === 'Source') && url.startsWith('https://tileserver.geolonia.com')) {
