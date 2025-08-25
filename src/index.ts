@@ -457,6 +457,50 @@ class GeoloniaMap extends maplibregl.Map {
     
     removeNLNILayer(this, layerId);
   }
+
+  /**
+   * 3D地形表示を有効にする
+   */
+  show3DTerrain() {
+    const style = this.getStyle();
+    // terrain sourceがなければ追加
+    if (!style.sources || !style.sources["terrain"]) {
+      const apiKey = window.geolonia.apiKey || "YOUR-API-KEY";
+      this.addSource("terrain", {
+        type: "raster-dem",
+        url: `https://tileserver.geolonia.com/gsi-dem/tiles.json?key=${apiKey}`
+      });
+    }
+    // hillshade layerがなければ追加
+    if (!this.getLayer("terrain/hillshade-layer")) {
+      this.addLayer({
+        id: "terrain/hillshade-layer",
+        type: "hillshade",
+        source: "terrain",
+        paint: {
+          "hillshade-exaggeration": 0.5,
+          "hillshade-shadow-color": "rgba(71, 59, 36, 0.1)"
+        },
+        layout: {
+          visibility: "none"
+        }
+      });
+    }
+    // terrainプロパティをセット
+    this.setTerrain({ source: "terrain" });
+  }
+
+  /**
+   * 3D地形表示を無効にする（2Dに戻す）
+   */
+  hide3DTerrain() {
+    // terrainプロパティを解除
+    this.setTerrain(null);
+    // hillshadeレイヤーを非表示
+    if (this.getLayer("terrain/hillshade-layer")) {
+      this.setLayoutProperty("terrain/hillshade-layer", "visibility", "none");
+    }
+  }
 }
 
 const currentScript = document.currentScript as HTMLScriptElement;
