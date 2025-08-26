@@ -154,7 +154,6 @@
 
     // ハザードマップデータ名をチェックボックスとして追加する
     const hazardMapData = geolonia.japan.Map.getHazardMapData();
-    console.log('hazardMapData:', hazardMapData);
     const hazardCheckboxList = document.getElementById('hazardmap-checkbox-list');
     hazardMapData.forEach(name => {
       const label = document.createElement('label');
@@ -240,7 +239,6 @@
           japan.loadOsmPoi('restaurant', 'chizubouken-lab');
         } else {
           const res = japan.removeOsmPoi('restaurant');
-          console.log('レストランのPOIを削除:', res);
         }
       });
 
@@ -250,7 +248,6 @@
           japan.loadOsmPoi('鉄道', 'basic');
         } else {
           const res = japan.removeOsmPoi('鉄道');
-          console.log('鉄道のPOIを削除:', res);
         }
       });
 

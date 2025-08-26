@@ -26,3 +26,7 @@ export declare const addOsmSprite: (map: maplibregl.Map, spriteName: {
  * @param spriteKey スプライトシート名（prefixとして使う）
  */
 export declare function updateSpriteSheet(map: maplibregl.Map, layerId: string, spriteKey: string): void;
+/**
+ * japaneseMapのkey（日本語名）のみを配列で返す
+ */
+export declare function getJapaneseOsmLayerNames(): string[];
