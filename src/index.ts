@@ -9,6 +9,7 @@ import { getOSMLayerConfig } from './utils/osmStyles';
 import { existsSpriteIcon, getSpriteIconNames } from './utils/spriteUtils';
 import { addHazardMapLayer, addHazardMapSource, getHazardMapKeys, removeHazardMapLayer } from './utils/hazardmapUtils';
 import { addNLNILayer, addNLNISource, getNLNIKeys, removeNLNILayer } from './utils/nationalLandNumericalInformationUtils';
+import { addTerrainSource, addHillshadeLayer, TERRAIN_SOURCE_ID, HILLSHADE_LAYER_ID } from './utils/terrainUtils';
 
 declare global {
   interface Window {
@@ -26,6 +27,10 @@ class GeoloniaMap extends maplibregl.Map {
     'smartmap': 'https://geolonia.github.io/custom-smartmap-sprite/sprite',
     'basic': 'https://geoloniamaps.github.io/basic-v1/basic-v1',
   };
+
+  // 3D地形用のソース・レイヤーID（クラス内共通で利用）
+  private static readonly TERRAIN_SOURCE_ID = "dem";
+  private static readonly HILLSHADE_LAYER_ID = "hillshading";
 
   constructor(params: any) {
     const defaults = {
@@ -462,51 +467,30 @@ class GeoloniaMap extends maplibregl.Map {
    * 3D地形表示を有効にする
    */
   show3DTerrain() {
-    const style = this.getStyle();
-    // terrain sourceがなければ追加
-    if (!style.sources || !style.sources["terrain"]) {
-      const apiKey = window.geolonia.apiKey || "YOUR-API-KEY";
-      this.addSource("terrain", {
-        type: "raster-dem",
-        url: `https://tileserver.geolonia.com/gsi-dem/tiles.json?key=${apiKey}`
-      });
+    const apiKey = window.geolonia.apiKey || '';
+    addTerrainSource(this, apiKey);
+    if (this.getLayer(HILLSHADE_LAYER_ID)) {
+      this.removeLayer(HILLSHADE_LAYER_ID);
     }
-    // hillshade layerがなければ追加
-    if (!this.getLayer("terrain/hillshade-layer")) {
-      this.addLayer({
-        id: "terrain/hillshade-layer",
-        type: "hillshade",
-        source: "terrain",
-        paint: {
-          "hillshade-exaggeration": 0.5,
-          "hillshade-shadow-color": "rgba(71, 59, 36, 0.1)"
-        },
-        layout: {
-          visibility: "none"
-        }
-      });
-    }
-    // terrainプロパティをセット
-    this.setTerrain({ source: "terrain" });
+    addHillshadeLayer(this);
+    this.setTerrain({ source: TERRAIN_SOURCE_ID, exaggeration: 1 });
   }
 
   /**
    * 3D地形表示を無効にする（2Dに戻す）
    */
   hide3DTerrain() {
-    // terrainプロパティを解除
+    const hillshadeLayerId = GeoloniaMap.HILLSHADE_LAYER_ID;
     this.setTerrain(null);
-    // hillshadeレイヤーを非表示
-    if (this.getLayer("terrain/hillshade-layer")) {
-      this.setLayoutProperty("terrain/hillshade-layer", "visibility", "none");
+    if (this.getLayer(hillshadeLayerId)) {
+      this.removeLayer(hillshadeLayerId);
     }
   }
 }
 
-const currentScript = document.currentScript as HTMLScriptElement;
-
-window.geolonia = {}
-window.geolonia.apiKey = parseApiKey(currentScript);
+const currentScript = document.currentScript as HTMLScriptElement | null;
+window.geolonia = window.geolonia || {};
+window.geolonia.apiKey = parseApiKey(currentScript || undefined) || "";
 window.geolonia.japan = maplibregl;
 window.geolonia.japan.Map = GeoloniaMap;
 window.geolonia.japan.Popup = maplibregl.Popup;

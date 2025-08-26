@@ -106,6 +106,9 @@
       <p style="font-weight:bold;">国土数値情報</p>
       <div id="nlni-checkbox-list"></div>
     </div>
+    <div style="margin-bottom:12px;">
+      <button id="toggle-3d-btn" style="width:100%;padding:8px 0;">3D地形表示 ON</button>
+    </div>
   </div>
   <div id="map"></div>
   <script src="./index.js"></script>
@@ -201,6 +204,7 @@
       japan.loadCSV(url, '選挙時投票所一覧', {
         'marker-color': '#eba037'
       });
+    console.log('style:', japan.getStyle());
 
       // geojsonの読み込み
       japan.loadGeojson(geojson, 'cafe', {
@@ -330,6 +334,23 @@
           .addTo(japan);
       });
     })
+
+    let is3DEnabled = false;
+    const toggle3DBtn = document.getElementById('toggle-3d-btn');
+    toggle3DBtn.addEventListener('click', function () {
+      if (!is3DEnabled) {
+        console.log('3D地形表示 ON');
+        japan.show3DTerrain();
+        japan.flyTo({ pitch: 60 });
+        toggle3DBtn.textContent = '3D地形表示 OFF';
+        is3DEnabled = true;
+      } else {
+        japan.hide3DTerrain();
+        japan.flyTo({ pitch: 0 });
+        toggle3DBtn.textContent = '3D地形表示 ON';
+        is3DEnabled = false;
+      }
+    });
   </script>
 </body>
 
