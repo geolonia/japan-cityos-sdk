@@ -3839,6 +3839,36 @@
         return Object.keys(NLNI_DATA);
     }
 
+    const TERRAIN_SOURCE_ID = "dem";
+    const HILLSHADE_LAYER_ID = "hillshading";
+    /**
+     * DEMソースを追加する
+     */
+    function addTerrainSource(map, apiKey) {
+        if (!map.getSource(TERRAIN_SOURCE_ID)) {
+            map.addSource(TERRAIN_SOURCE_ID, {
+                type: "raster-dem",
+                url: `https://tileserver.geolonia.com/gsi-dem/tiles.json?key=${apiKey}`
+            });
+        }
+    }
+    /**
+     * hillshadeレイヤーを追加する
+     */
+    function addHillshadeLayer(map) {
+        if (!map.getLayer(HILLSHADE_LAYER_ID)) {
+            map.addLayer({
+                id: HILLSHADE_LAYER_ID,
+                type: "hillshade",
+                source: TERRAIN_SOURCE_ID,
+                paint: {
+                    "hillshade-exaggeration": 0.5,
+                    "hillshade-shadow-color": "rgba(71, 59, 36, 0.1)"
+                }
+            });
+        }
+    }
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d, _e, _f, _g;
@@ -4206,6 +4236,28 @@
             }
             removeNLNILayer(this, layerId);
         }
+        /**
+         * 3D地形表示を有効にする
+         */
+        show3DTerrain() {
+            const apiKey = window.geolonia.apiKey || '';
+            addTerrainSource(this, apiKey);
+            if (this.getLayer(HILLSHADE_LAYER_ID)) {
+                this.removeLayer(HILLSHADE_LAYER_ID);
+            }
+            addHillshadeLayer(this);
+            this.setTerrain({ source: TERRAIN_SOURCE_ID, exaggeration: 1 });
+        }
+        /**
+         * 3D地形表示を無効にする（2Dに戻す）
+         */
+        hide3DTerrain() {
+            const hillshadeLayerId = GeoloniaMap.HILLSHADE_LAYER_ID;
+            this.setTerrain(null);
+            if (this.getLayer(hillshadeLayerId)) {
+                this.removeLayer(hillshadeLayerId);
+            }
+        }
     }
     GeoloniaMap.spriteSheetUrl = {
         'chizubouken-lab': 'https://geolonia.github.io/chizubouken-lab-sprite/sprite',
@@ -4213,9 +4265,12 @@
         'smartmap': 'https://geolonia.github.io/custom-smartmap-sprite/sprite',
         'basic': 'https://geoloniamaps.github.io/basic-v1/basic-v1',
     };
+    // 3D地形用のソース・レイヤーID（クラス内共通で利用）
+    GeoloniaMap.TERRAIN_SOURCE_ID = "dem";
+    GeoloniaMap.HILLSHADE_LAYER_ID = "hillshading";
     const currentScript = document.currentScript;
-    window.geolonia = {};
-    window.geolonia.apiKey = parseApiKey(currentScript);
+    window.geolonia = window.geolonia || {};
+    window.geolonia.apiKey = parseApiKey(currentScript || undefined) || "";
     window.geolonia.japan = maplibregl;
     window.geolonia.japan.Map = GeoloniaMap;
     window.geolonia.japan.Popup = maplibregl.Popup;
