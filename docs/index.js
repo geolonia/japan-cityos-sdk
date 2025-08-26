@@ -3463,45 +3463,40 @@
             }
         });
     };
+    // 日本語キーのみのマップ
+    const japaneseMap = {
+        'レストラン': 'restaurant',
+        '鉄道': 'railway',
+        '山': 'mountain',
+        '空港': 'airport',
+        '学校': 'school',
+        '大学': 'college',
+        'コンビニ': 'convenience',
+        '銀行': 'bank',
+        '病院': 'hospital',
+        'カフェ': 'cafe',
+        'ファストフード': 'fast-food',
+        '動物園': 'zoo',
+        '駐車場': 'parking',
+        '城': 'castle',
+        '博物館': 'museum'
+    };
     /**
      * 任意の文字列をOsmLayerNameTypeに変換する
      * @param name 任意のレイヤー名（日本語・英語どちらも可）
      * @returns OsmLayerNameType | undefined
      */
     function toOsmLayerNameType(name) {
-        const map = {
-            'restaurant': 'restaurant',
-            'レストラン': 'restaurant',
-            'railway': 'railway',
-            '鉄道': 'railway',
-            'mountain': 'mountain',
-            '山': 'mountain',
-            'airport': 'airport',
-            '空港': 'airport',
-            'school': 'school',
-            '学校': 'school',
-            'college': 'college',
-            '大学': 'college',
-            'convenience': 'convenience',
-            'コンビニ': 'convenience',
-            'bank': 'bank',
-            '銀行': 'bank',
-            'hospital': 'hospital',
-            '病院': 'hospital',
-            'cafe': 'cafe',
-            'カフェ': 'cafe',
-            'fast-food': 'fast-food',
-            'ファストフード': 'fast-food',
-            'zoo': 'zoo',
-            '動物園': 'zoo',
-            'parking': 'parking',
-            '駐車場': 'parking',
-            'castle': 'castle',
-            '城': 'castle',
-            'museum': 'museum',
-            '博物館': 'museum'
-        };
-        return map[name];
+        // 日本語キーならそのまま返す
+        if (japaneseMap[name]) {
+            return japaneseMap[name];
+        }
+        // 英語が来た場合はvalueと比較
+        const found = Object.entries(japaneseMap).find(([jp, en]) => en === name);
+        if (found) {
+            return found[1];
+        }
+        return undefined;
     }
     /**
      * スタイルに該当のスプライトがなければ追加する
@@ -3577,6 +3572,12 @@
                 }
             }
         });
+    }
+    /**
+     * japaneseMapのkey（日本語名）のみを配列で返す
+     */
+    function getJapaneseOsmLayerNames() {
+        return Object.keys(japaneseMap);
     }
 
     /**
@@ -3893,25 +3894,11 @@
             super(Object.assign(Object.assign({}, defaults), params));
             this.loadedSourceIds = new Set();
         }
-        getOsmPoiLayers() {
-            return {
-                restaurant: 'レストラン',
-                railway: '鉄道',
-                mountain: '山',
-                airport: '空港',
-                school: '学校',
-                college: '大学',
-                convenience: 'コンビニ',
-                bank: '銀行',
-                hospital: '病院',
-                cafe: 'カフェ',
-                'fast-food': 'ファストフード',
-                zoo: '動物園',
-                parking: '駐車場',
-                castle: '城',
-                museum: '博物館',
-                park: '公園'
-            };
+        /**
+         * osm poiレイヤー名を取得する（日本語キーのみ）
+         */
+        static getOsmPoiLayers() {
+            return getJapaneseOsmLayerNames();
         }
         /**
          * ハザードマップデータのキーを取得する
@@ -4255,12 +4242,10 @@
         show3DTerrain() {
             const apiKey = window.geolonia.apiKey || '';
             addTerrainSource(this, apiKey);
-            // hillshade layerがなければ追加
             if (this.getLayer(HILLSHADE_LAYER_ID)) {
                 this.removeLayer(HILLSHADE_LAYER_ID);
             }
             addHillshadeLayer(this);
-            // terrainプロパティをセット
             this.setTerrain({ source: TERRAIN_SOURCE_ID, exaggeration: 1 });
         }
         /**
@@ -4268,9 +4253,7 @@
          */
         hide3DTerrain() {
             const hillshadeLayerId = GeoloniaMap.HILLSHADE_LAYER_ID;
-            // terrainプロパティを解除
             this.setTerrain(null);
-            // hillshadeレイヤーを非表示
             if (this.getLayer(hillshadeLayerId)) {
                 this.removeLayer(hillshadeLayerId);
             }

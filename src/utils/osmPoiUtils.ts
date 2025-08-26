@@ -34,45 +34,41 @@ export const removeOsmLayer = (map: maplibregl.Map, layerName: OsmLayerNameType)
     });
 }
 
+// 日本語キーのみのマップ
+const japaneseMap: Record<string, OsmLayerNameType> = {
+    'レストラン': 'restaurant',
+    '鉄道': 'railway',
+    '山': 'mountain',
+    '空港': 'airport',
+    '学校': 'school',
+    '大学': 'college',
+    'コンビニ': 'convenience',
+    '銀行': 'bank',
+    '病院': 'hospital',
+    'カフェ': 'cafe',
+    'ファストフード': 'fast-food',
+    '動物園': 'zoo',
+    '駐車場': 'parking',
+    '城': 'castle',
+    '博物館': 'museum'
+};
+
 /**
  * 任意の文字列をOsmLayerNameTypeに変換する
  * @param name 任意のレイヤー名（日本語・英語どちらも可）
  * @returns OsmLayerNameType | undefined
  */
 export function toOsmLayerNameType(name: string): OsmLayerNameType | undefined {
-    const map: Record<string, OsmLayerNameType> = {
-        'restaurant': 'restaurant',
-        'レストラン': 'restaurant',
-        'railway': 'railway',
-        '鉄道': 'railway',
-        'mountain': 'mountain',
-        '山': 'mountain',
-        'airport': 'airport',
-        '空港': 'airport',
-        'school': 'school',
-        '学校': 'school',
-        'college': 'college',
-        '大学': 'college',
-        'convenience': 'convenience',
-        'コンビニ': 'convenience',
-        'bank': 'bank',
-        '銀行': 'bank',
-        'hospital': 'hospital',
-        '病院': 'hospital',
-        'cafe': 'cafe',
-        'カフェ': 'cafe',
-        'fast-food': 'fast-food',
-        'ファストフード': 'fast-food',
-        'zoo': 'zoo',
-        '動物園': 'zoo',
-        'parking': 'parking',
-        '駐車場': 'parking',
-        'castle': 'castle',
-        '城': 'castle',
-        'museum': 'museum',
-        '博物館': 'museum'
-    };
-    return map[name];
+    // 日本語キーならそのまま返す
+    if (japaneseMap[name]) {
+        return japaneseMap[name];
+    }
+    // 英語が来た場合はvalueと比較
+    const found = Object.entries(japaneseMap).find(([jp, en]) => en === name);
+    if (found) {
+        return found[1];
+    }
+    return undefined;
 }
 
 /**
@@ -171,4 +167,11 @@ export function updateSpriteSheet(map: maplibregl.Map, layerId: string, spriteKe
       }
     }
   });
+}
+
+/**
+ * japaneseMapのkey（日本語名）のみを配列で返す
+ */
+export function getJapaneseOsmLayerNames(): string[] {
+    return Object.keys(japaneseMap);
 }
