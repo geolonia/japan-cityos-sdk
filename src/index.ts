@@ -153,13 +153,13 @@ class GeoloniaMap extends maplibregl.Map {
   ) {
     // すでにSourceが存在する場合はデータを更新
     const existingSource = this.getSource(className) as maplibregl.GeoJSONSource | undefined;
-    const spriteSheet = simpleStyle?.['sprite-sheet'];
 
     if (existingSource && 'setData' in existingSource) {
       existingSource.setData(geojson as any);
     } else {
       this.addSource(className, createSourceByType('geojson', geojson));
     }
+    const spriteSheet = simpleStyle?.['sprite-sheet'];
 
     if (spriteSheet) {
       addOsmSprite(this, { [spriteSheet]: GeoloniaMap.spriteSheetUrl[spriteSheet] }, GeoloniaMap.spriteSheetUrl);
