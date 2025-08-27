@@ -329,6 +329,8 @@ export function removeSourcesByLoadedIds(
  */
 export function removeLayersByLoadedIds(layers: maplibregl.LayerSpecification[], loadedSourceIds: Set<string>) {
   return layers.filter(
-    layer => 'source' in layer && !loadedSourceIds.has(layer.source)
+    layer =>
+      layer.type === 'background' || // backgroundレイヤーは必ず残す
+      ('source' in layer && !loadedSourceIds.has(layer.source))
   );
 }
