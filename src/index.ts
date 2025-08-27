@@ -11,6 +11,8 @@ import { addHazardMapLayer, addHazardMapSource, getHazardMapKeys, removeHazardMa
 import { addNLNILayer, addNLNISource, getNLNIKeys, removeNLNILayer } from './utils/nationalLandNumericalInformationUtils';
 import { addTerrainSource, addHillshadeLayer, TERRAIN_SOURCE_ID, HILLSHADE_LAYER_ID } from './utils/terrainUtils';
 import { addOrUpdateGeojsonSource } from './utils/sourceUtils';
+import { addOrUpdateLayers } from './utils/layerUtils';
+import { getGeometryTypes } from './utils/geojsonUtils';
 
 declare global {
   interface Window {
@@ -160,17 +162,8 @@ class GeoloniaMap extends maplibregl.Map {
       addOsmSprite(this, { [spriteSheet]: GeoloniaMap.spriteSheetUrl[spriteSheet] }, GeoloniaMap.spriteSheetUrl);
     }
 
-    const layers = createLayer(className, {
-      simpleStyle: simpleStyle
-    });
-    const hasLayerFlg = hasLayer(this, className);
-    layers.forEach(layer => {
-      if (hasLayerFlg) { 
-        updateLayer(this, layer); 
-      } else {
-        this.addLayer(layer); 
-      }
-    });
+    const geometryTypes = getGeometryTypes(typeof geojson === 'string' ? JSON.parse(geojson) : geojson);
+    addOrUpdateLayers(this, className, geometryTypes, simpleStyle);
 
     this.loadedSourceIds.add(className);
   }

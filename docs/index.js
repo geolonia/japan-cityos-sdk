@@ -3888,6 +3888,123 @@
         }
     }
 
+    // シンボルレイヤーを作成
+    function createSymbolLayer(className, simpleStyle, options) {
+        var _a, _b, _c, _d, _e, _f, _g, _h;
+        simpleStyle = simpleStyle !== null && simpleStyle !== void 0 ? simpleStyle : {};
+        options = options !== null && options !== void 0 ? options : {};
+        const iconSizeKey = simpleStyle['marker-size'];
+        const customIconSize = simpleStyle['custom-marker-size'];
+        const iconSize = (_a = MARKER_SIZE_MAP[iconSizeKey]) !== null && _a !== void 0 ? _a : MARKER_SIZE_MAP.medium;
+        return Object.assign(Object.assign(Object.assign({ id: className, source: className }, ((options === null || options === void 0 ? void 0 : options.sourceLayer) ? { 'source-layer': options.sourceLayer } : {})), ((options === null || options === void 0 ? void 0 : options.filter) ? { filter: options.filter } : {})), { type: 'symbol', layout: Object.assign({ 'icon-image': (_b = simpleStyle['marker-symbol']) !== null && _b !== void 0 ? _b : DEFAULT_MARKER_NAME, 'icon-size': customIconSize ? customIconSize : iconSize, 'icon-allow-overlap': true, "text-overlap": "always", "text-allow-overlap": true, "icon-overlap": "always" }, (simpleStyle['title'] ? {
+                'text-field': simpleStyle['title'],
+                'text-font': (_c = simpleStyle['text-font']) !== null && _c !== void 0 ? _c : ["Noto Sans Regular"],
+                'text-size': (_d = simpleStyle['text-size']) !== null && _d !== void 0 ? _d : 12,
+                'text-offset': (_e = simpleStyle['text-offset']) !== null && _e !== void 0 ? _e : [0, 1.5],
+                'text-anchor': (_f = simpleStyle['text-anchor']) !== null && _f !== void 0 ? _f : 'top'
+            } : {})), paint: Object.assign(Object.assign({}, ((_g = simpleStyle.paint) !== null && _g !== void 0 ? _g : {})), (simpleStyle['title'] && {
+                'text-color': (_h = simpleStyle['text-color']) !== null && _h !== void 0 ? _h : DEFAULT_TEXT_COLOR,
+                'text-halo-color': '#fff',
+                'text-halo-width': 2
+            })), filter: [
+                'all',
+                ...((options === null || options === void 0 ? void 0 : options.filter) ? [options.filter] : []),
+                ['==', '$type', 'Point']
+            ] });
+    }
+    // ポイントレイヤーを作成
+    function createCircleLayer(className, simpleStyle, options) {
+        var _a;
+        simpleStyle = simpleStyle !== null && simpleStyle !== void 0 ? simpleStyle : {};
+        options = options !== null && options !== void 0 ? options : {};
+        const circleSizeKey = simpleStyle['circle-radius'];
+        const circleSize = (_a = CIRCLE_SIZE_MAP[circleSizeKey]) !== null && _a !== void 0 ? _a : CIRCLE_SIZE_MAP.medium;
+        return Object.assign(Object.assign(Object.assign({ id: className, source: className }, ((options === null || options === void 0 ? void 0 : options.sourceLayer) ? { 'source-layer': options.sourceLayer } : {})), ((options === null || options === void 0 ? void 0 : options.filter) ? { filter: options.filter } : {})), { type: 'circle', paint: Object.assign({ 'circle-radius': circleSize, 'circle-color': simpleStyle['marker-color'] || DEFAULT_CIRCLE_COLOR }, simpleStyle.paint), filter: [
+                'all',
+                ...((options === null || options === void 0 ? void 0 : options.filter) ? [options.filter] : []),
+                ['==', '$type', 'Point']
+            ] });
+    }
+    // ラインレイヤーを作成
+    function createLineLayer(className, simpleStyle, options) {
+        var _a, _b;
+        simpleStyle = simpleStyle !== null && simpleStyle !== void 0 ? simpleStyle : {};
+        options = options !== null && options !== void 0 ? options : {};
+        return Object.assign(Object.assign(Object.assign({ id: `${className}-line`, source: className }, ((options === null || options === void 0 ? void 0 : options.sourceLayer) ? { 'source-layer': options.sourceLayer } : {})), ((options === null || options === void 0 ? void 0 : options.filter) ? { filter: options.filter } : {})), { type: 'line', paint: Object.assign({ 'line-color': (_a = simpleStyle['line-color']) !== null && _a !== void 0 ? _a : '#0000FF', 'line-width': (_b = simpleStyle['line-width']) !== null && _b !== void 0 ? _b : 2 }, simpleStyle.paint), filter: [
+                'all',
+                ...((options === null || options === void 0 ? void 0 : options.filter) ? [options.filter] : []),
+                ['==', '$type', 'LineString']
+            ] });
+    }
+    // ポリゴンレイヤーを作成
+    function createFillLayer(className, simpleStyle, options) {
+        var _a, _b;
+        simpleStyle = simpleStyle !== null && simpleStyle !== void 0 ? simpleStyle : {};
+        options = options !== null && options !== void 0 ? options : {};
+        return Object.assign(Object.assign(Object.assign({ id: `${className}-polygon`, source: className }, (options.sourceLayer ? { 'source-layer': options.sourceLayer } : {})), (options.filter ? { filter: options.filter } : {})), { type: 'fill', paint: Object.assign({ 'fill-color': (_a = simpleStyle['fill-color']) !== null && _a !== void 0 ? _a : '#00FF00', 'fill-opacity': (_b = simpleStyle['fill-opacity']) !== null && _b !== void 0 ? _b : 0.5 }, simpleStyle.paint), filter: [
+                'all',
+                ...(options.filter ? [options.filter] : []),
+                ['==', '$type', 'Polygon']
+            ] });
+    }
+    /**
+     * geometryTypeの配列・スタイル・オプションから、geometryTypeごとに適切なレイヤーを作成する
+     * @param className レイヤーID
+     * @param geometryTypes geometryTypeの配列（例: ['Point', 'LineString']）
+     * @param simpleStyle スタイル情報（任意）
+     * @param options sourceLayerやfilterなど（任意）
+     * @returns maplibregl.LayerSpecification[]（geometryTypeごとに必要なレイヤーのみ返す）
+     */
+    function createLayersByGeometryTypes(className, geometryTypes, simpleStyle, options) {
+        const layers = [];
+        if (geometryTypes.includes('Point')) {
+            if (simpleStyle && (simpleStyle['marker-symbol'] || simpleStyle['title'])) {
+                layers.push(createSymbolLayer(className, simpleStyle, options));
+            }
+            else {
+                layers.push(createCircleLayer(className, simpleStyle !== null && simpleStyle !== void 0 ? simpleStyle : {}, options));
+            }
+        }
+        if (geometryTypes.includes('LineString')) {
+            layers.push(createLineLayer(className, simpleStyle !== null && simpleStyle !== void 0 ? simpleStyle : {}, options));
+        }
+        if (geometryTypes.includes('Polygon')) {
+            layers.push(createFillLayer(className, simpleStyle !== null && simpleStyle !== void 0 ? simpleStyle : {}, options));
+        }
+        return layers;
+    }
+
+    /**
+     * geometryTypes・className・simpleStyleからレイヤーを作成し、マップに追加または更新する
+     * @param map maplibregl.Mapインスタンス
+     * @param className レイヤーID
+     * @param geometryTypes geometryTypeの配列
+     * @param simpleStyle スタイル情報（任意）
+     */
+    function addOrUpdateLayers(map, className, geometryTypes, simpleStyle) {
+        const layers = createLayersByGeometryTypes(className, geometryTypes, simpleStyle);
+        const hasLayerFlg = hasLayer(map, className);
+        layers.forEach(layer => {
+            if (hasLayerFlg) {
+                updateLayer(map, layer);
+            }
+            else {
+                map.addLayer(layer);
+            }
+        });
+    }
+
+    // geojson内のtypeを配列で取得
+    function getGeometryTypes(geojson) {
+        const types = new Set();
+        for (const feature of geojson.features) {
+            if (feature.geometry && feature.geometry.type) {
+                types.add(feature.geometry.type);
+            }
+        }
+        return Array.from(types);
+    }
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d, _e, _f, _g;
@@ -4003,18 +4120,8 @@
                 if (spriteSheet) {
                     addOsmSprite(this, { [spriteSheet]: GeoloniaMap.spriteSheetUrl[spriteSheet] }, GeoloniaMap.spriteSheetUrl);
                 }
-                const layers = createLayer(className, {
-                    simpleStyle: simpleStyle
-                });
-                const hasLayerFlg = hasLayer(this, className);
-                layers.forEach(layer => {
-                    if (hasLayerFlg) {
-                        updateLayer(this, layer);
-                    }
-                    else {
-                        this.addLayer(layer);
-                    }
-                });
+                const geometryTypes = getGeometryTypes(typeof geojson === 'string' ? JSON.parse(geojson) : geojson);
+                addOrUpdateLayers(this, className, geometryTypes, simpleStyle);
                 this.loadedSourceIds.add(className);
             });
         }
