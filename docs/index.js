@@ -3981,13 +3981,13 @@
             return __awaiter(this, void 0, void 0, function* () {
                 // すでにSourceが存在する場合はデータを更新
                 const existingSource = this.getSource(className);
-                const spriteSheet = simpleStyle === null || simpleStyle === void 0 ? void 0 : simpleStyle['sprite-sheet'];
                 if (existingSource && 'setData' in existingSource) {
                     existingSource.setData(geojson);
                 }
                 else {
                     this.addSource(className, createSourceByType('geojson', geojson));
                 }
+                const spriteSheet = simpleStyle === null || simpleStyle === void 0 ? void 0 : simpleStyle['sprite-sheet'];
                 if (spriteSheet) {
                     addOsmSprite(this, { [spriteSheet]: GeoloniaMap.spriteSheetUrl[spriteSheet] }, GeoloniaMap.spriteSheetUrl);
                 }
