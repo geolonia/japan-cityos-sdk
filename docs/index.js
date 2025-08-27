@@ -3869,6 +3869,25 @@
         }
     }
 
+    /**
+     * GeoJSONソースを追加する（既存ならsetData、なければaddSource）
+     * @param map maplibregl.Mapインスタンス
+     * @param className ソースID
+     * @param geojson GeoJSONデータ
+     */
+    function addOrUpdateGeojsonSource(map, className, geojson) {
+        const existingSource = map.getSource(className);
+        if (existingSource && 'setData' in existingSource) {
+            existingSource.setData(geojson);
+        }
+        else {
+            map.addSource(className, {
+                type: 'geojson',
+                data: geojson
+            });
+        }
+    }
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d, _e, _f, _g;
@@ -3979,14 +3998,7 @@
          * ****************/
         loadGeojson(geojson, className, simpleStyle) {
             return __awaiter(this, void 0, void 0, function* () {
-                // すでにSourceが存在する場合はデータを更新
-                const existingSource = this.getSource(className);
-                if (existingSource && 'setData' in existingSource) {
-                    existingSource.setData(geojson);
-                }
-                else {
-                    this.addSource(className, createSourceByType('geojson', geojson));
-                }
+                addOrUpdateGeojsonSource(this, className, typeof geojson === 'string' ? JSON.parse(geojson) : geojson);
                 const spriteSheet = simpleStyle === null || simpleStyle === void 0 ? void 0 : simpleStyle['sprite-sheet'];
                 if (spriteSheet) {
                     addOsmSprite(this, { [spriteSheet]: GeoloniaMap.spriteSheetUrl[spriteSheet] }, GeoloniaMap.spriteSheetUrl);
