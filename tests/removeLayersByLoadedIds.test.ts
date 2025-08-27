@@ -39,7 +39,7 @@ describe('removeLayersByLoadedIds', () => {
     expect(result).toEqual(layers);
   });
 
-  it('sourceを持たないlayerは除外される', () => {
+  it('backgroundレイヤーは消えずに残る', () => {
     const layers = [
       { id: 'background', type: 'background' },
       { id: 'a', type: 'symbol', source: 'a' }
@@ -48,6 +48,8 @@ describe('removeLayersByLoadedIds', () => {
 
     const result = removeLayersByLoadedIds(layers, loadedSourceIds);
 
-    expect(result).toEqual([]);
+    expect(result).toEqual([
+      { id: 'background', type: 'background' }
+    ]);
   });
 });
