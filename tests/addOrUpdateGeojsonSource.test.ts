@@ -1,4 +1,4 @@
-import { addOrUpdateGeojsonSource } from '../src/sourceUtils';
+import { addOrUpdateGeojsonSource } from '../src/utils/sourceUtils';
 
 describe('addOrUpdateGeojsonSourceのテスト', () => {
   const className = 'test-source';

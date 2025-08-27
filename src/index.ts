@@ -10,7 +10,7 @@ import { existsSpriteIcon, getSpriteIconNames } from './utils/spriteUtils';
 import { addHazardMapLayer, addHazardMapSource, getHazardMapKeys, removeHazardMapLayer } from './utils/hazardmapUtils';
 import { addNLNILayer, addNLNISource, getNLNIKeys, removeNLNILayer } from './utils/nationalLandNumericalInformationUtils';
 import { addTerrainSource, addHillshadeLayer, TERRAIN_SOURCE_ID, HILLSHADE_LAYER_ID } from './utils/terrainUtils';
-import { addOrUpdateGeojsonSource } from './sourceUtils';
+import { addOrUpdateGeojsonSource } from './utils/sourceUtils';
 
 declare global {
   interface Window {
