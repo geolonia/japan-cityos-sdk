@@ -1,5 +1,6 @@
 import { CIRCLE_SIZE_MAP, DEFAULT_CIRCLE_COLOR, DEFAULT_MARKER_NAME, DEFAULT_TEXT_COLOR, MARKER_SIZE_MAP } from "../constants";
 import maplibregl, { FilterSpecification } from "maplibre-gl";
+import { getGeometryTypes } from "./geojsonUtils";
 
 // シンボルレイヤーを作成
 export function createSymbolLayer(
@@ -140,4 +141,41 @@ export function createFillLayer(
             ['==', '$type', 'Polygon']
         ] as FilterSpecification
     };
+}
+
+
+/**
+ * geometryTypeの配列・スタイル・オプションから、geometryTypeごとに適切なレイヤーを作成する
+ * @param className レイヤーID
+ * @param geometryTypes geometryTypeの配列（例: ['Point', 'LineString']）
+ * @param simpleStyle スタイル情報（任意）
+ * @param options sourceLayerやfilterなど（任意）
+ * @returns maplibregl.LayerSpecification[]（geometryTypeごとに必要なレイヤーのみ返す）
+ */
+export function createLayersByGeometryTypes(
+  className: string,
+  geometryTypes: string[],
+  simpleStyle?: { [key: string]: any },
+  options?: { sourceLayer?: string, filter?: maplibregl.FilterSpecification }
+): maplibregl.LayerSpecification[] {
+    
+  const layers: maplibregl.LayerSpecification[] = [];
+
+  if (geometryTypes.includes('Point')) {
+    if (simpleStyle && (simpleStyle['marker-symbol'] || simpleStyle['title'])) {
+      layers.push(createSymbolLayer(className, simpleStyle, options));
+    } else {
+      layers.push(createCircleLayer(className, simpleStyle ?? {}, options));
+    }
+  }
+
+  if (geometryTypes.includes('LineString')) {
+    layers.push(createLineLayer(className, simpleStyle ?? {}, options));
+  }
+
+  if (geometryTypes.includes('Polygon')) {
+    layers.push(createFillLayer(className, simpleStyle ?? {}, options));
+  }
+
+  return layers;
 }
