@@ -102,8 +102,8 @@ export function createLineLayer(
         ...(options?.filter ? { filter: options.filter } : {}),
         type: 'line',
         paint: {
-            'line-color': simpleStyle['line-color'] ?? '#0000FF',
-            'line-width': simpleStyle['line-width'] ?? 2,
+            'line-color': simpleStyle['stroke'] ?? '#0000FF',
+            'line-width': simpleStyle['stroke-width'] ?? 2,
             ...simpleStyle.paint,
         },
         filter: [
@@ -131,7 +131,7 @@ export function createFillLayer(
         ...(options.filter ? { filter: options.filter } : {}),
         type: 'fill',
         paint: {
-            'fill-color': simpleStyle['fill-color'] ?? '#00FF00',
+            'fill-color': simpleStyle['fill'] ?? '#00FF00',
             'fill-opacity': simpleStyle['fill-opacity'] ?? 0.5,
             ...simpleStyle.paint,
         },
