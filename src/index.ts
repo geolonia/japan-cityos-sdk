@@ -12,7 +12,7 @@ import { addNLNILayer, addNLNISource, getNLNIKeys, removeNLNILayer } from './uti
 import { addTerrainSource, addHillshadeLayer, TERRAIN_SOURCE_ID, HILLSHADE_LAYER_ID } from './utils/terrainUtils';
 import { addOrUpdateGeojsonSource } from './utils/sourceUtils';
 import { addOrUpdateLayers } from './utils/layerUtils';
-import { getGeometryTypes } from './utils/geojsonUtils';
+import { getGeometryTypes, isValidGeojsonInput } from './utils/geojsonUtils';
 
 declare global {
   interface Window {
@@ -155,6 +155,10 @@ class GeoloniaMap extends maplibregl.Map {
     simpleStyle: { [key: string]: any } | undefined | null
   ) {
     
+    if(isValidGeojsonInput(geojson) === false) {
+      throw new Error('Invalid GeoJSON input');
+    }
+
     addOrUpdateGeojsonSource(this, className, typeof geojson === 'string' ? JSON.parse(geojson) : geojson);
     
     const spriteSheet = simpleStyle?.['sprite-sheet'];
