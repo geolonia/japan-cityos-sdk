@@ -3,8 +3,8 @@ import { createLineLayer } from '../src/utils/createLayer';
 describe('createLineLayerのテスト', () => {
   const className = 'test-line';
   const simpleStyle = {
-    'line-color': '#ff0000',
-    'line-width': 5
+    'stroke': '#ff0000',
+    'stroke-width': 5
   };
   const options = {
       sourceLayer: 'test-source-layer',
@@ -25,7 +25,7 @@ describe('createLineLayerのテスト', () => {
   });
 
   it('渡ってきた値が不正だった時、デフォルト値で返す', () => {
-    const layer = createLineLayer(className, { 'line-width': 'invalid' }, {});
+    const layer = createLineLayer(className, { 'stroke-width': 'invalid' }, {});
     expect(layer.paint && layer.paint['line-width']).toBeDefined();
   });
 

@@ -3,7 +3,7 @@ import { createFillLayer } from '../src/utils/createLayer';
 describe('createFillLayerのテスト', () => {
   const className = 'test-fill';
   const simpleStyle = {
-    'fill-color': '#00ff00',
+    'fill': '#00ff00',
     'fill-opacity': 0.8
   };
   const options = {
