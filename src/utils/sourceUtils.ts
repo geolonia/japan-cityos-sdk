@@ -9,7 +9,7 @@ import maplibregl from 'maplibre-gl';
 export function addOrUpdateGeojsonSource(
   map: maplibregl.Map,
   className: string,
-  geojson: GeoJSON.FeatureCollection
+  geojson: GeoJSON.FeatureCollection | string
 ) {
   const existingSource = map.getSource(className) as maplibregl.GeoJSONSource | undefined;
   if (existingSource && 'setData' in existingSource) {
