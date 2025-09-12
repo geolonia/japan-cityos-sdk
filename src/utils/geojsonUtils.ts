@@ -9,3 +9,19 @@ export function getGeometryTypes(geojson: GeoJSON.FeatureCollection): string[] {
   }
   return Array.from(types);
 }
+
+// geojson引数の型チェック関数
+export function isValidGeojsonInput(geojson: any): boolean {
+  if (typeof geojson === 'object' && geojson !== null) {
+    return (
+      geojson.type === 'FeatureCollection' &&
+      Array.isArray(geojson.features)
+    );
+  }
+  if (typeof geojson === 'string') {
+    return (
+      /^https?:\/\/.+\.geojson$/i.test(geojson.trim())
+    );
+  }
+  return false;
+}
