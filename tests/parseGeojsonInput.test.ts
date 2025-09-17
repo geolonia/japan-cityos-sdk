@@ -26,7 +26,7 @@ describe('parseGeojsonInputのテスト', () => {
   });
 
   it('string型でhttp/httpsかつ.geojson拡張子ならその文字列を返す', () => {
-    expect(parseGeojsonInput('https://example.com/data.geojson')).toBe('https://example.com/data.geojson');
+    expect(parseGeojsonInput('https://gist.githubusercontent.com/sugama-satsuki/93867b64377ea2e4999495e3ebf27bdd/raw/sample.geojson')).toBe('https://gist.githubusercontent.com/sugama-satsuki/93867b64377ea2e4999495e3ebf27bdd/raw/sample.geojson');
     expect(parseGeojsonInput('http://example.com/data.geojson')).toBe('http://example.com/data.geojson');
   });
 
