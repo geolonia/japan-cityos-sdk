@@ -32,8 +32,10 @@ class GeoloniaMap extends maplibregl.Map {
   };
 
   // 3D地形用のソース・レイヤーID（クラス内共通で利用）
-  private static readonly TERRAIN_SOURCE_ID = "dem";
+  private readonly TERRAIN_SOURCE_ID = "dem";
   private static readonly HILLSHADE_LAYER_ID = "hillshading";
+
+  private readonly API_KEY = window.geolonia.API_KEY || '';
 
   constructor(params: any) {
     const defaults = {
@@ -45,9 +47,9 @@ class GeoloniaMap extends maplibregl.Map {
       minZoom: params.minZoom ?? 8,
       maxZoom: params.maxZoom ?? 20,
       transformRequest: (url: string, resourceType: string) => {
-        if (!window.geolonia.apiKey) { return { url }; }
+        if (!window.geolonia.API_KEY) { return { url }; }
         if ((resourceType === 'Tile' || resourceType === 'Source') && url.startsWith('https://tileserver.geolonia.com')) {
-          const updatedUrl = url.replace('YOUR-API-KEY', window.geolonia.apiKey);
+          const updatedUrl = url.replace('YOUR-API-KEY', window.geolonia.API_KEY);
           return { url: updatedUrl };
         }
         return { url };
@@ -192,6 +194,21 @@ class GeoloniaMap extends maplibregl.Map {
         };
       }
     });
+  }
+
+  /****************
+   * 標高の取得
+   * @param lngLat [経度, 緯度]
+   ****************/
+  async getElevation(lngLat: [number, number] = this.getCenter().toArray()): Promise<number | null> {
+    if (!this.getTerrain()) {
+      addTerrainSource(this, this.API_KEY);
+      this.setTerrain({ source: this.TERRAIN_SOURCE_ID, exaggeration: 1 });
+      await new Promise<void>(resolve => {
+        this.once('styledata', () => resolve());
+      });
+    }
+    return this.queryTerrainElevation(lngLat);
   }
 
   /****************
@@ -447,13 +464,12 @@ class GeoloniaMap extends maplibregl.Map {
    * 3D地形表示を有効にする
    */
   show3DTerrain() {
-    const apiKey = window.geolonia.apiKey || '';
-    addTerrainSource(this, apiKey);
+    addTerrainSource(this, this.API_KEY);
     if (this.getLayer(HILLSHADE_LAYER_ID)) {
       this.removeLayer(HILLSHADE_LAYER_ID);
     }
     addHillshadeLayer(this);
-    this.setTerrain({ source: TERRAIN_SOURCE_ID, exaggeration: 1 });
+    this.setTerrain({ source: this.TERRAIN_SOURCE_ID, exaggeration: 1 });
   }
 
   /**
@@ -470,7 +486,7 @@ class GeoloniaMap extends maplibregl.Map {
 
 const currentScript = document.currentScript as HTMLScriptElement | null;
 window.geolonia = window.geolonia || {};
-window.geolonia.apiKey = parseApiKey(currentScript || undefined) || "";
+window.geolonia.API_KEY = parseApiKey(currentScript || undefined) || "";
 window.geolonia.japan = maplibregl;
 window.geolonia.japan.Map = GeoloniaMap;
 window.geolonia.japan.Popup = maplibregl.Popup;
