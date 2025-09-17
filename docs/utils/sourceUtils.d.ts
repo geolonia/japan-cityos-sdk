@@ -5,4 +5,4 @@ import maplibregl from 'maplibre-gl';
  * @param className ソースID
  * @param geojson GeoJSONデータ
  */
-export declare function addOrUpdateGeojsonSource(map: maplibregl.Map, className: string, geojson: GeoJSON.FeatureCollection): void;
+export declare function addOrUpdateGeojsonSource(map: maplibregl.Map, className: string, geojson: GeoJSON.FeatureCollection | string): void;

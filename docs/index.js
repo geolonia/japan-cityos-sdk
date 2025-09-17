@@ -366,7 +366,8 @@
      * 背景地図以外の全てのレイヤーを削除する
      */
     function removeLayersByLoadedIds(layers, loadedSourceIds) {
-        return layers.filter(layer => 'source' in layer && !loadedSourceIds.has(layer.source));
+        return layers.filter(layer => layer.type === 'background' || // backgroundレイヤーは必ず残す
+            ('source' in layer && !loadedSourceIds.has(layer.source)));
     }
 
     var papaparse = {exports: {}};
@@ -3930,7 +3931,7 @@
         var _a, _b;
         simpleStyle = simpleStyle !== null && simpleStyle !== void 0 ? simpleStyle : {};
         options = options !== null && options !== void 0 ? options : {};
-        return Object.assign(Object.assign(Object.assign({ id: `${className}-line`, source: className }, ((options === null || options === void 0 ? void 0 : options.sourceLayer) ? { 'source-layer': options.sourceLayer } : {})), ((options === null || options === void 0 ? void 0 : options.filter) ? { filter: options.filter } : {})), { type: 'line', paint: Object.assign({ 'line-color': (_a = simpleStyle['line-color']) !== null && _a !== void 0 ? _a : '#0000FF', 'line-width': (_b = simpleStyle['line-width']) !== null && _b !== void 0 ? _b : 2 }, simpleStyle.paint), filter: [
+        return Object.assign(Object.assign(Object.assign({ id: `${className}-line`, source: className }, ((options === null || options === void 0 ? void 0 : options.sourceLayer) ? { 'source-layer': options.sourceLayer } : {})), ((options === null || options === void 0 ? void 0 : options.filter) ? { filter: options.filter } : {})), { type: 'line', paint: Object.assign({ 'line-color': (_a = simpleStyle['stroke']) !== null && _a !== void 0 ? _a : '#0000FF', 'line-width': (_b = simpleStyle['stroke-width']) !== null && _b !== void 0 ? _b : 2 }, simpleStyle.paint), filter: [
                 'all',
                 ...((options === null || options === void 0 ? void 0 : options.filter) ? [options.filter] : []),
                 ['==', '$type', 'LineString']
@@ -3941,7 +3942,7 @@
         var _a, _b;
         simpleStyle = simpleStyle !== null && simpleStyle !== void 0 ? simpleStyle : {};
         options = options !== null && options !== void 0 ? options : {};
-        return Object.assign(Object.assign(Object.assign({ id: `${className}-polygon`, source: className }, (options.sourceLayer ? { 'source-layer': options.sourceLayer } : {})), (options.filter ? { filter: options.filter } : {})), { type: 'fill', paint: Object.assign({ 'fill-color': (_a = simpleStyle['fill-color']) !== null && _a !== void 0 ? _a : '#00FF00', 'fill-opacity': (_b = simpleStyle['fill-opacity']) !== null && _b !== void 0 ? _b : 0.5 }, simpleStyle.paint), filter: [
+        return Object.assign(Object.assign(Object.assign({ id: `${className}-polygon`, source: className }, (options.sourceLayer ? { 'source-layer': options.sourceLayer } : {})), (options.filter ? { filter: options.filter } : {})), { type: 'fill', paint: Object.assign({ 'fill-color': (_a = simpleStyle['fill']) !== null && _a !== void 0 ? _a : '#00FF00', 'fill-opacity': (_b = simpleStyle['fill-opacity']) !== null && _b !== void 0 ? _b : 0.5 }, simpleStyle.paint), filter: [
                 'all',
                 ...(options.filter ? [options.filter] : []),
                 ['==', '$type', 'Polygon']
@@ -3996,6 +3997,18 @@
 
     // geojson内のtypeを配列で取得
     function getGeometryTypes(geojson) {
+        if (typeof geojson === 'string') {
+            // URLの場合は全てのgeometry typeを返す
+            return [
+                'Point',
+                'LineString',
+                'Polygon',
+                'MultiPoint',
+                'MultiLineString',
+                'MultiPolygon',
+                'GeometryCollection'
+            ];
+        }
         const types = new Set();
         for (const feature of geojson.features) {
             if (feature.geometry && feature.geometry.type) {
@@ -4003,6 +4016,37 @@
             }
         }
         return Array.from(types);
+    }
+    // geojsonか判定し、データを返すかundefinedを返す関数
+    function parseGeojsonInput(geojson) {
+        if (!geojson) {
+            return undefined;
+        }
+        if (typeof geojson === 'string') {
+            // URLの場合はJSON.parseせずそのまま返す
+            if (/^https?:\/\/.+\.geojson$/i.test(geojson.trim())) {
+                return geojson;
+            }
+            // URLでなければJSON.parseを試みる
+            try {
+                const parsed = JSON.parse(geojson);
+                if (parsed && parsed.type === 'FeatureCollection' && Array.isArray(parsed.features)) {
+                    return parsed;
+                }
+                else {
+                    return undefined;
+                }
+            }
+            catch (e) {
+                return undefined;
+            }
+        }
+        if (typeof geojson === 'object' &&
+            geojson.type === 'FeatureCollection' &&
+            Array.isArray(geojson.features)) {
+            return geojson;
+        }
+        return undefined;
     }
 
     class GeoloniaMap extends maplibregl.Map {
@@ -4017,11 +4061,11 @@
                 minZoom: (_f = params.minZoom) !== null && _f !== void 0 ? _f : 8,
                 maxZoom: (_g = params.maxZoom) !== null && _g !== void 0 ? _g : 20,
                 transformRequest: (url, resourceType) => {
-                    if (!window.geolonia.apiKey) {
+                    if (!window.geolonia.API_KEY) {
                         return { url };
                     }
                     if ((resourceType === 'Tile' || resourceType === 'Source') && url.startsWith('https://tileserver.geolonia.com')) {
-                        const updatedUrl = url.replace('YOUR-API-KEY', window.geolonia.apiKey);
+                        const updatedUrl = url.replace('YOUR-API-KEY', window.geolonia.API_KEY);
                         return { url: updatedUrl };
                     }
                     return { url };
@@ -4029,6 +4073,9 @@
             };
             super(Object.assign(Object.assign({}, defaults), params));
             this.loadedSourceIds = new Set();
+            // 3D地形用のソース・レイヤーID（クラス内共通で利用）
+            this.TERRAIN_SOURCE_ID = "dem";
+            this.API_KEY = window.geolonia.API_KEY || '';
         }
         /**
          * osm poiレイヤー名を取得する（日本語キーのみ）
@@ -4115,12 +4162,17 @@
          * ****************/
         loadGeojson(geojson, className, simpleStyle) {
             return __awaiter(this, void 0, void 0, function* () {
-                addOrUpdateGeojsonSource(this, className, typeof geojson === 'string' ? JSON.parse(geojson) : geojson);
+                const parsedGeojson = parseGeojsonInput(geojson);
+                if (!parsedGeojson) {
+                    console.error('Invalid GeoJSON data');
+                    return;
+                }
+                addOrUpdateGeojsonSource(this, className, parsedGeojson);
                 const spriteSheet = simpleStyle === null || simpleStyle === void 0 ? void 0 : simpleStyle['sprite-sheet'];
                 if (spriteSheet) {
                     addOsmSprite(this, { [spriteSheet]: GeoloniaMap.spriteSheetUrl[spriteSheet] }, GeoloniaMap.spriteSheetUrl);
                 }
-                const geometryTypes = getGeometryTypes(typeof geojson === 'string' ? JSON.parse(geojson) : geojson);
+                const geometryTypes = getGeometryTypes(parsedGeojson);
                 addOrUpdateLayers(this, className, geometryTypes, simpleStyle);
                 this.loadedSourceIds.add(className);
             });
@@ -4136,6 +4188,22 @@
                     const newLayers = mergeLayersByLoadedIds(previousStyle.layers, nextStyle.layers, this.loadedSourceIds);
                     return Object.assign(Object.assign(Object.assign({}, previousStyle), nextStyle), { sources: newSources, layers: newLayers });
                 }
+            });
+        }
+        /****************
+         * 標高の取得
+         * @param lngLat [経度, 緯度]
+         ****************/
+        getElevation(lngLat = this.getCenter().toArray()) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (!this.getTerrain()) {
+                    addTerrainSource(this, this.API_KEY);
+                    this.setTerrain({ source: this.TERRAIN_SOURCE_ID, exaggeration: 1 });
+                    yield new Promise(resolve => {
+                        this.once('styledata', () => resolve());
+                    });
+                }
+                return this.queryTerrainElevation(lngLat);
             });
         }
         /****************
@@ -4359,13 +4427,12 @@
          * 3D地形表示を有効にする
          */
         show3DTerrain() {
-            const apiKey = window.geolonia.apiKey || '';
-            addTerrainSource(this, apiKey);
+            addTerrainSource(this, this.API_KEY);
             if (this.getLayer(HILLSHADE_LAYER_ID)) {
                 this.removeLayer(HILLSHADE_LAYER_ID);
             }
             addHillshadeLayer(this);
-            this.setTerrain({ source: TERRAIN_SOURCE_ID, exaggeration: 1 });
+            this.setTerrain({ source: this.TERRAIN_SOURCE_ID, exaggeration: 1 });
         }
         /**
          * 3D地形表示を無効にする（2Dに戻す）
@@ -4384,12 +4451,10 @@
         'smartmap': 'https://geolonia.github.io/custom-smartmap-sprite/sprite',
         'basic': 'https://geoloniamaps.github.io/basic-v1/basic-v1',
     };
-    // 3D地形用のソース・レイヤーID（クラス内共通で利用）
-    GeoloniaMap.TERRAIN_SOURCE_ID = "dem";
     GeoloniaMap.HILLSHADE_LAYER_ID = "hillshading";
     const currentScript = document.currentScript;
     window.geolonia = window.geolonia || {};
-    window.geolonia.apiKey = parseApiKey(currentScript || undefined) || "";
+    window.geolonia.API_KEY = parseApiKey(currentScript || undefined) || "";
     window.geolonia.japan = maplibregl;
     window.geolonia.japan.Map = GeoloniaMap;
     window.geolonia.japan.Popup = maplibregl.Popup;

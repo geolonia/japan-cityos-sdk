@@ -109,11 +109,13 @@
     <div style="margin-bottom:12px;">
       <button id="toggle-3d-btn" style="width:100%;padding:8px 0;">3D地形表示 ON</button>
     </div>
+    <div style="margin-bottom:12px;">
+      <button id="get-elevation-btn" style="width:100%;padding:8px 0;">現在地の標高を取得</button>
+    </div>
   </div>
   <div id="map"></div>
   <script src="./index.js"></script>
   <script type="application/javascript">
-
     const geojson = {
       type: 'FeatureCollection',
       features: [
@@ -346,6 +348,22 @@
         japan.flyTo({ pitch: 0 });
         toggle3DBtn.textContent = '3D地形表示 ON';
         is3DEnabled = false;
+      }
+    });
+
+    // 標高取得ボタンのイベント
+    const getElevationBtn = document.getElementById('get-elevation-btn');
+    getElevationBtn.addEventListener('click', async function () {
+      if (typeof japan.getElevation === 'function') {
+        const center = japan.getCenter();
+        const elevation = await japan.getElevation([center.lng, center.lat]);
+        if (typeof elevation === 'number') {
+          alert(`現在地（地図中心）の標高: ${elevation.toFixed(2)} m`);
+        } else {
+          alert('標高データが取得できませんでした。3D地形表示がONか確認してください。');
+        }
+      } else {
+        alert('getElevation APIが利用できません。MapLibreのバージョンを確認してください。');
       }
     });
   </script>
