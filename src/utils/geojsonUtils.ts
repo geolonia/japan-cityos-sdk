@@ -25,24 +25,29 @@ export function getGeometryTypes(geojson: GeoJSON.FeatureCollection | string): s
 // geojsonか判定し、データを返すかundefinedを返す関数
 export function parseGeojsonInput(geojson: any): string | GeoJSON.FeatureCollection | undefined {
 
-  if(!geojson) { return undefined; }
-
-  let geojsonObj;
+  if (!geojson) { return undefined; }
 
   if (typeof geojson === 'string') {
-    if(/^https?:\/\/.+\.geojson$/i.test(geojson.trim())) {
+    // URLの場合はJSON.parseせずそのまま返す
+    if (/^https?:\/\/.+\.geojson$/i.test(geojson.trim())) {
       return geojson;
     }
+    // URLでなければJSON.parseを試みる
     try {
-      geojsonObj = JSON.parse(geojson);
+      const parsed = JSON.parse(geojson);
+      if (parsed && parsed.type === 'FeatureCollection' && Array.isArray(parsed.features)) {
+        return parsed;
+      } else {
+        return undefined;
+      }
     } catch (e) {
       return undefined;
     }
   }
 
   if (
-    typeof geojson === 'object' && 
-    geojson.type === 'FeatureCollection' && 
+    typeof geojson === 'object' &&
+    geojson.type === 'FeatureCollection' &&
     Array.isArray(geojson.features)
   ) {
     return geojson;
