@@ -1,6 +1,18 @@
 
 // geojson内のtypeを配列で取得
-export function getGeometryTypes(geojson: GeoJSON.FeatureCollection): string[] {
+export function getGeometryTypes(geojson: GeoJSON.FeatureCollection | string): string[] {
+  if (typeof geojson === 'string') {
+    // URLの場合は全てのgeometry typeを返す
+    return [
+      'Point',
+      'LineString',
+      'Polygon',
+      'MultiPoint',
+      'MultiLineString',
+      'MultiPolygon',
+      'GeometryCollection'
+    ];
+  }
   const types = new Set<string>();
   for (const feature of geojson.features) {
     if (feature.geometry && feature.geometry.type) {
@@ -10,18 +22,31 @@ export function getGeometryTypes(geojson: GeoJSON.FeatureCollection): string[] {
   return Array.from(types);
 }
 
-// geojson引数の型チェック関数
-export function isValidGeojsonInput(geojson: any): boolean {
-  if (typeof geojson === 'object' && geojson !== null) {
-    return (
-      geojson.type === 'FeatureCollection' &&
-      Array.isArray(geojson.features)
-    );
-  }
+// geojsonか判定し、データを返すかundefinedを返す関数
+export function parseGeojsonInput(geojson: any): string | GeoJSON.FeatureCollection | undefined {
+
+  if(!geojson) { return undefined; }
+
+  let geojsonObj;
+
   if (typeof geojson === 'string') {
-    return (
-      /^https?:\/\/.+\.geojson$/i.test(geojson.trim())
-    );
+    if(/^https?:\/\/.+\.geojson$/i.test(geojson.trim())) {
+      return geojson;
+    }
+    try {
+      geojsonObj = JSON.parse(geojson);
+    } catch (e) {
+      return undefined;
+    }
   }
-  return false;
+
+  if (
+    typeof geojson === 'object' && 
+    geojson.type === 'FeatureCollection' && 
+    Array.isArray(geojson.features)
+  ) {
+    return geojson;
+  }
+
+  return undefined;
 }

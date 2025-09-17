@@ -12,7 +12,7 @@ import { addNLNILayer, addNLNISource, getNLNIKeys, removeNLNILayer } from './uti
 import { addTerrainSource, addHillshadeLayer, TERRAIN_SOURCE_ID, HILLSHADE_LAYER_ID } from './utils/terrainUtils';
 import { addOrUpdateGeojsonSource } from './utils/sourceUtils';
 import { addOrUpdateLayers } from './utils/layerUtils';
-import { getGeometryTypes, isValidGeojsonInput } from './utils/geojsonUtils';
+import { getGeometryTypes, parseGeojsonInput } from './utils/geojsonUtils';
 
 declare global {
   interface Window {
@@ -154,19 +154,22 @@ class GeoloniaMap extends maplibregl.Map {
     className: string,
     simpleStyle: { [key: string]: any } | undefined | null
   ) {
-    
-    if(isValidGeojsonInput(geojson) === false) {
-      throw new Error('Invalid GeoJSON input');
+
+    const parsedGeojson = parseGeojsonInput(geojson);
+
+    if(!parsedGeojson) {
+      console.error('Invalid GeoJSON data');
+      return;
     }
 
-    addOrUpdateGeojsonSource(this, className, typeof geojson === 'string' ? JSON.parse(geojson) : geojson);
-    
+    addOrUpdateGeojsonSource(this, className, parsedGeojson);
+
     const spriteSheet = simpleStyle?.['sprite-sheet'];
     if (spriteSheet) {
       addOsmSprite(this, { [spriteSheet]: GeoloniaMap.spriteSheetUrl[spriteSheet] }, GeoloniaMap.spriteSheetUrl);
     }
 
-    const geometryTypes = getGeometryTypes(typeof geojson === 'string' ? JSON.parse(geojson) : geojson);
+    const geometryTypes = getGeometryTypes(parsedGeojson);
     addOrUpdateLayers(this, className, geometryTypes, simpleStyle);
 
     this.loadedSourceIds.add(className);
