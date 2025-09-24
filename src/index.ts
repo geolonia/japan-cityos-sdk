@@ -3,7 +3,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey, removeLayersByLoadedIds, removeSourcesByLoadedIds, updateLayer } from './utils/mapUtils';
 import Papa from 'papaparse';
 import { toQueryBox } from './toQueryBox';
-import { OsmLayerNameType } from './types';
+import { normalize } from '@geolonia/normalize-japanese-addresses';
 import { addOsmLayer, addOsmSource, addOsmSprite, getJapaneseOsmLayerNames, removeOsmLayer, toOsmLayerNameType, updateSpriteSheet } from './utils/osmPoiUtils';
 import { getOSMLayerConfig } from './utils/osmStyles';
 import { existsSpriteIcon, getSpriteIconNames } from './utils/spriteUtils';
@@ -175,6 +175,15 @@ class GeoloniaMap extends maplibregl.Map {
     addOrUpdateLayers(this, className, geometryTypes, simpleStyle);
 
     this.loadedSourceIds.add(className);
+  }
+
+  async getLatLngByPrefecture(prefName: string): Promise<[number, number] | null> {
+    const result = await normalize(prefName);
+    const point = result?.point;
+    if (point) {
+      return [point.lng, point.lat];
+    }
+    return null;
   }
 
   /****************
