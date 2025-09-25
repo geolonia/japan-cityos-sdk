@@ -4138,6 +4138,19 @@
                 return iconNames;
             });
         }
+        /**
+         * 都道府県の中心座標を取得する
+         */
+        static getLatLngByPrefecture(prefName) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const result = yield ut(prefName);
+                const point = result === null || result === void 0 ? void 0 : result.point;
+                if (point) {
+                    return [point.lng, point.lat];
+                }
+                return null;
+            });
+        }
         /* ****************
          * レイヤーを追加する
          * @param className クラス名
@@ -4209,16 +4222,6 @@
                 const geometryTypes = getGeometryTypes(parsedGeojson);
                 addOrUpdateLayers(this, className, geometryTypes, simpleStyle);
                 this.loadedSourceIds.add(className);
-            });
-        }
-        getLatLngByPrefecture(prefName) {
-            return __awaiter(this, void 0, void 0, function* () {
-                const result = yield ut(prefName);
-                const point = result === null || result === void 0 ? void 0 : result.point;
-                if (point) {
-                    return [point.lng, point.lat];
-                }
-                return null;
             });
         }
         /****************

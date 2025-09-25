@@ -88,6 +88,18 @@ class GeoloniaMap extends maplibregl.Map {
     return iconNames;
   }
 
+  /**
+   * 都道府県の中心座標を取得する
+   */
+  static async getLatLngByPrefecture(prefName: string): Promise<[number, number] | null> {
+    const result = await normalize(prefName);
+    const point = result?.point;
+    if (point) {
+      return [point.lng, point.lat];
+    }
+    return null;
+  }
+
   /* ****************
    * レイヤーを追加する
    * @param className クラス名
@@ -175,15 +187,6 @@ class GeoloniaMap extends maplibregl.Map {
     addOrUpdateLayers(this, className, geometryTypes, simpleStyle);
 
     this.loadedSourceIds.add(className);
-  }
-
-  async getLatLngByPrefecture(prefName: string): Promise<[number, number] | null> {
-    const result = await normalize(prefName);
-    const point = result?.point;
-    if (point) {
-      return [point.lng, point.lat];
-    }
-    return null;
   }
 
   /****************
