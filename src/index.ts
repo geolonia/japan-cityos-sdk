@@ -11,7 +11,7 @@ import { addHazardMapLayer, addHazardMapSource, getHazardMapKeys, removeHazardMa
 import { addNLNILayer, addNLNISource, getNLNIKeys, removeNLNILayer } from './utils/nationalLandNumericalInformationUtils';
 import { addTerrainSource, addHillshadeLayer, TERRAIN_SOURCE_ID, HILLSHADE_LAYER_ID } from './utils/terrainUtils';
 import { addOrUpdateGeojsonSource } from './utils/sourceUtils';
-import { addOrUpdateLayers } from './utils/layerUtils';
+import { addOrUpdateLayers, getLayerIdsBySource } from './utils/layerUtils';
 import { getGeometryTypes, parseGeojsonInput } from './utils/geojsonUtils';
 
 declare global {
@@ -188,6 +188,25 @@ class GeoloniaMap extends maplibregl.Map {
 
     this.loadedSourceIds.add(className);
   }
+
+  removeGeojsonLayer(className: string) {
+    // レイヤー削除
+    const layers = this.getStyle().layers;
+    if (layers) {
+      getLayerIdsBySource(layers, className).forEach(layerId => {
+        if (this.getLayer(layerId)) {
+          this.removeLayer(layerId);
+        }
+      });
+    }
+    // ソース削除
+    if (this.getSource(className)) {
+      this.removeSource(className);
+    }
+    // loadedSourceIds からも削除
+    this.loadedSourceIds.delete(className);
+  }
+
 
   /****************
    * 背景地図のスタイルを切り替える
