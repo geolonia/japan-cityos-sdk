@@ -4028,6 +4028,11 @@
             }
         });
     }
+    function getLayerIdsBySource(layers, sourceId) {
+        return layers
+            .filter(layer => 'source' in layer && layer.source === sourceId)
+            .map(layer => layer.id);
+    }
 
     // geojson内のtypeを配列で取得
     function getGeometryTypes(geojson) {
@@ -4223,6 +4228,23 @@
                 addOrUpdateLayers(this, className, geometryTypes, simpleStyle);
                 this.loadedSourceIds.add(className);
             });
+        }
+        removeGeojsonLayer(className) {
+            // レイヤー削除
+            const layers = this.getStyle().layers;
+            if (layers) {
+                getLayerIdsBySource(layers, className).forEach(layerId => {
+                    if (this.getLayer(layerId)) {
+                        this.removeLayer(layerId);
+                    }
+                });
+            }
+            // ソース削除
+            if (this.getSource(className)) {
+                this.removeSource(className);
+            }
+            // loadedSourceIds からも削除
+            this.loadedSourceIds.delete(className);
         }
         /****************
          * 背景地図のスタイルを切り替える

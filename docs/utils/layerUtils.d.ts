@@ -1,3 +1,4 @@
+import { LayerSpecification } from 'maplibre-gl';
 /**
  * geometryTypes・className・simpleStyleからレイヤーを作成し、マップに追加または更新する
  * @param map maplibregl.Mapインスタンス
@@ -8,3 +9,4 @@
 export declare function addOrUpdateLayers(map: maplibregl.Map, className: string, geometryTypes: string[], simpleStyle?: {
     [key: string]: any;
 }): void;
+export declare function getLayerIdsBySource(layers: LayerSpecification[], sourceId: string): string[];
