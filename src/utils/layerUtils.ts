@@ -1,3 +1,4 @@
+import { LayerSpecification } from 'maplibre-gl';
 import { createLayersByGeometryTypes } from './createLayer';
 import { hasLayer, updateLayer } from './mapUtils';
 
@@ -23,4 +24,10 @@ export function addOrUpdateLayers(
             map.addLayer(layer);
         }
     });
+}
+
+export function getLayerIdsBySource(layers: LayerSpecification[], sourceId: string): string[] {
+  return layers
+    .filter(layer => 'source' in layer && (layer as any).source === sourceId)
+    .map(layer => layer.id);
 }
