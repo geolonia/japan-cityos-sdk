@@ -112,6 +112,10 @@
     <div style="margin-bottom:12px;">
       <button id="get-elevation-btn" style="width:100%;padding:8px 0;">現在地の標高を取得</button>
     </div>
+    <div style="margin-bottom:12px;">
+      <button id="show-icons-btn" style="width:100%;padding:8px 0;">アイコン一覧表示</button>
+    </div>
+    <div id="icon-popup" style="display:none;position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:1000;background:#fff;border:1px solid #ccc;padding:16px;border-radius:8px;max-width:90vw;max-height:70vh;overflow:auto;"></div>
   </div>
   <div id="map"></div>
   <script src="./index.js"></script>
@@ -365,6 +369,28 @@
       } else {
         alert('getElevation APIが利用できません。MapLibreのバージョンを確認してください。');
       }
+    });
+
+    // アイコン一覧表示ボタンのイベント
+    document.getElementById('show-icons-btn').addEventListener('click', async function () {
+      const popup = document.getElementById('icon-popup');
+      // 既に表示されている場合は非表示にする
+      if (popup.style.display === 'block') {
+        popup.style.display = 'none';
+        return;
+      }
+      // 例: 'chizubouken-lab' のアイコン一覧を取得
+      const styles = await geolonia.japan.Map.getIconStyles('chizubouken-lab');
+      let html = '<strong>chizubouken-lab のアイコン一覧</strong><br><div style="display:flex;flex-wrap:wrap;gap:12px;">';
+      styles.forEach(style => {
+        html += `<div style="display:inline-block;text-align:center;margin-bottom:8px;">
+          <div style="width:${style.width};height:${style.height};background-image:${style.backgroundImage};background-position:${style.backgroundPosition};background-repeat:no-repeat;margin:auto;"></div>
+          <div style="font-size:12px;color:#555;">${style.name}</div>
+        </div>`;
+      });
+      html += '</div>';
+      popup.innerHTML = html;
+      popup.style.display = 'block';
     });
   </script>
 </body>

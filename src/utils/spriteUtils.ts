@@ -1,4 +1,3 @@
-
 /**
  * スプライトシートのJSONデータを取得する
  * @param spriteSheetUrl スプライトシートのURL
@@ -44,7 +43,8 @@ export async function getSpriteIconStyles(spriteSheetUrl: string): Promise<{
   const pngUrl = spriteSheetUrl.endsWith('.json')
     ? spriteSheetUrl.replace(/\.json$/, '.png')
     : spriteSheetUrl + '.png';
-  return Object.values(spriteJson).map((spriteInfo: any) => ({
+  return Object.entries(spriteJson).map(([name, spriteInfo]: [string, any]) => ({
+    name,
     width: `${spriteInfo.width}px`,
     height: `${spriteInfo.height}px`,
     backgroundImage: `url('${pngUrl}')`,
