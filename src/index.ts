@@ -6,7 +6,7 @@ import { toQueryBox } from './toQueryBox';
 import { normalize } from '@geolonia/normalize-japanese-addresses';
 import { addOsmLayer, addOsmSource, addOsmSprite, getJapaneseOsmLayerNames, removeOsmLayer, toOsmLayerNameType, updateSpriteSheet } from './utils/osmPoiUtils';
 import { getOSMLayerConfig } from './utils/osmStyles';
-import { existsSpriteIcon, getSpriteIconNames } from './utils/spriteUtils';
+import { existsSpriteIcon, getSpriteIconNames, getSpriteIconStyles } from './utils/spriteUtils';
 import { addHazardMapLayer, addHazardMapSource, getHazardMapKeys, removeHazardMapLayer } from './utils/hazardmapUtils';
 import { addNLNILayer, addNLNISource, getNLNIKeys, removeNLNILayer } from './utils/nationalLandNumericalInformationUtils';
 import { addTerrainSource, addHillshadeLayer, TERRAIN_SOURCE_ID, HILLSHADE_LAYER_ID } from './utils/terrainUtils';
@@ -86,6 +86,22 @@ class GeoloniaMap extends maplibregl.Map {
   static async getIconNames(spriteKey: string): Promise<string[]> {
     const iconNames = await getSpriteIconNames(GeoloniaMap.spriteSheetUrl[spriteKey]);
     return iconNames;
+  }
+
+  /**
+   * スプライトシート名を指定してアイコンスタイル一覧を取得する
+   * @param spriteKey スプライトシート名（spriteSheetUrlのkey）
+   * @returns Promise<{ width: string; height: string; backgroundImage: string; backgroundPosition: string; }[]>
+   */
+  static async getIconStyles(spriteKey: string): Promise<{
+    width: string;
+    height: string;
+    backgroundImage: string;
+    backgroundPosition: string;
+  }[]> {
+    const url = GeoloniaMap.spriteSheetUrl[spriteKey];
+    if (!url) return [];
+    return await getSpriteIconStyles(url);
   }
 
   /**

@@ -3616,11 +3616,11 @@
     }
 
     /**
-     * 指定のスプライトシートに含まれるアイコン名一覧を取得する
-     * @param spriteSheetUrl スプライトシートのURL（例: https://geolonia.github.io/chizubouken-lab-sprite/sprite）
-     * @returns Promise<string[]> アイコン名の配列
+     * スプライトシートのJSONデータを取得する
+     * @param spriteSheetUrl スプライトシートのURL
+     * @returns Promise<any|null> JSONオブジェクトまたはnull
      */
-    function getSpriteIconNames(spriteSheetUrl) {
+    function getSpriteSheetJson(spriteSheetUrl) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const jsonUrl = spriteSheetUrl.endsWith('.json')
@@ -3628,14 +3628,48 @@
                     : spriteSheetUrl + '.json';
                 const res = yield fetch(jsonUrl);
                 if (!res.ok) {
-                    return [];
+                    return null;
                 }
-                const spriteJson = yield res.json();
-                return Object.keys(spriteJson);
+                return yield res.json();
             }
             catch (_a) {
-                return [];
+                return null;
             }
+        });
+    }
+    /**
+     * 指定のスプライトシートに含まれるアイコン名一覧を取得する
+     * @param spriteSheetUrl スプライトシートのURL（例: https://geolonia.github.io/chizubouken-lab-sprite/sprite）
+     * @returns Promise<string[]> アイコン名の配列
+     */
+    function getSpriteIconNames(spriteSheetUrl) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const spriteJson = yield getSpriteSheetJson(spriteSheetUrl);
+            if (!spriteJson)
+                return [];
+            return Object.keys(spriteJson);
+        });
+    }
+    /**
+     * スプライトシートの各アイコンに対応するスタイル情報一覧を返す
+     * @param spriteSheetUrl スプライトシートのURL（例: https://geolonia.github.io/custom-smartmap-sprite/sprite）
+     * @returns Promise<{ width: string, height: string, backgroundImage: string, backgroundPosition: string }[]>
+     */
+    function getSpriteIconStyles(spriteSheetUrl) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const spriteJson = yield getSpriteSheetJson(spriteSheetUrl);
+            if (!spriteJson)
+                return [];
+            const pngUrl = spriteSheetUrl.endsWith('.json')
+                ? spriteSheetUrl.replace(/\.json$/, '.png')
+                : spriteSheetUrl + '.png';
+            return Object.entries(spriteJson).map(([name, spriteInfo]) => ({
+                name,
+                width: `${spriteInfo.width}px`,
+                height: `${spriteInfo.height}px`,
+                backgroundImage: `url('${pngUrl}')`,
+                backgroundPosition: `-${spriteInfo.x}px -${spriteInfo.y}px`
+            }));
         });
     }
     /**
@@ -4141,6 +4175,19 @@
             return __awaiter(this, void 0, void 0, function* () {
                 const iconNames = yield getSpriteIconNames(GeoloniaMap.spriteSheetUrl[spriteKey]);
                 return iconNames;
+            });
+        }
+        /**
+         * スプライトシート名を指定してアイコンスタイル一覧を取得する
+         * @param spriteKey スプライトシート名（spriteSheetUrlのkey）
+         * @returns Promise<{ width: string; height: string; backgroundImage: string; backgroundPosition: string; }[]>
+         */
+        static getIconStyles(spriteKey) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const url = GeoloniaMap.spriteSheetUrl[spriteKey];
+                if (!url)
+                    return [];
+                return yield getSpriteIconStyles(url);
             });
         }
         /**
