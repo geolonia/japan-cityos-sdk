@@ -4203,6 +4203,7 @@
                     return GeoloniaMap._prefNames;
                 }
                 const json = yield fetchJson('https://japanese-addresses-v2.geoloniamaps.com/api/ja.json');
+                GeoloniaMap._prefData = (json === null || json === void 0 ? void 0 : json.data) || null;
                 if (!json.data || !Array.isArray(json.data)) {
                     return [];
                 }
@@ -4212,13 +4213,15 @@
         }
         static fetchCityNames(prefName) {
             return __awaiter(this, void 0, void 0, function* () {
-                const json = GeoloniaMap._prefNames ? GeoloniaMap._prefNames : yield fetchJson('https://japanese-addresses-v2.geoloniamaps.com/api/ja.json');
+                const json = GeoloniaMap._prefData ? GeoloniaMap._prefData : yield fetchJson('https://japanese-addresses-v2.geoloniamaps.com/api/ja.json');
+                if (!json.data || !Array.isArray(json.data)) {
+                    return [];
+                }
                 const prefObj = json.data.find((item) => item.pref === prefName);
                 if (!prefObj) {
                     return [];
                 }
-                const cityNames = prefObj.cities.map((item) => item.city);
-                return cityNames;
+                return prefObj.cities.map((item) => item.city);
             });
         }
         /**
@@ -4616,6 +4619,7 @@
      * 都道府県名一覧を取得（キャッシュ付き）
      */
     GeoloniaMap._prefNames = null;
+    GeoloniaMap._prefData = null;
     const currentScript = document.currentScript;
     window.geolonia = window.geolonia || {};
     window.geolonia.API_KEY = parseApiKey(currentScript || undefined) || "";
