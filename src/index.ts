@@ -88,6 +88,20 @@ class GeoloniaMap extends maplibregl.Map {
     return iconNames;
   }
 
+
+  /**
+   * 都道府県名一覧を取得（キャッシュ付き）
+   */
+  static _prefNames: string[] | null = null;
+  static async fetchPrefNames(): Promise<string[]> {
+    if (GeoloniaMap._prefNames) { return GeoloniaMap._prefNames; }
+    const res = await fetch('https://japanese-addresses-v2.geoloniamaps.com/api/ja.json');
+    const json = await res.json();
+    if (!json.data || !Array.isArray(json.data)) { return []; }
+    GeoloniaMap._prefNames = json.data.map((item: any) => item.pref);
+    return GeoloniaMap._prefNames;
+  }
+
   /**
    * スプライトシート名を指定してアイコンスタイル一覧を取得する
    * @param spriteKey スプライトシート名（spriteSheetUrlのkey）
