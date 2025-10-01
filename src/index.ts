@@ -94,20 +94,22 @@ class GeoloniaMap extends maplibregl.Map {
    * 都道府県名一覧を取得（キャッシュ付き）
    */
   static _prefNames: string[] | null = null;
+  static _prefData: {[key: string]: any}[] | null = null;
   static async fetchPrefNames(): Promise<string[]> {
     if (GeoloniaMap._prefNames) { return GeoloniaMap._prefNames; }
     const json = await fetchJson('https://japanese-addresses-v2.geoloniamaps.com/api/ja.json');
+    GeoloniaMap._prefData = json?.data || null;
     if (!json.data || !Array.isArray(json.data)) { return []; }
     GeoloniaMap._prefNames = json.data.map((item: any) => item.pref);
     return GeoloniaMap._prefNames;
   }
 
   static async fetchCityNames(prefName: string): Promise<string[]> {
-    const json = GeoloniaMap._prefNames ? GeoloniaMap._prefNames : await fetchJson('https://japanese-addresses-v2.geoloniamaps.com/api/ja.json');
+    const json = GeoloniaMap._prefData ? GeoloniaMap._prefData : await fetchJson('https://japanese-addresses-v2.geoloniamaps.com/api/ja.json');
+    if (!json.data || !Array.isArray(json.data)) { return []; }
     const prefObj = json.data.find((item: any) => item.pref === prefName);
     if (!prefObj) { return []; }
-    const cityNames = prefObj.cities.map((item: any) => item.city);
-    return cityNames;
+    return prefObj.cities.map((item: any) => item.city);
   }
 
   /**
