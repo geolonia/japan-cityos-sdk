@@ -4122,6 +4122,26 @@
         return undefined;
     }
 
+    /**
+     * 指定URLからJSONデータを取得する
+     * @param url JSONデータのURL
+     * @returns Promise<any|null> JSONオブジェクトまたはnull
+     */
+    function fetchJson(url) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const res = yield fetch(url);
+                if (!res.ok) {
+                    return null;
+                }
+                return yield res.json();
+            }
+            catch (_a) {
+                return null;
+            }
+        });
+    }
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d, _e, _f, _g;
@@ -4182,13 +4202,23 @@
                 if (GeoloniaMap._prefNames) {
                     return GeoloniaMap._prefNames;
                 }
-                const res = yield fetch('https://japanese-addresses-v2.geoloniamaps.com/api/ja.json');
-                const json = yield res.json();
+                const json = yield fetchJson('https://japanese-addresses-v2.geoloniamaps.com/api/ja.json');
                 if (!json.data || !Array.isArray(json.data)) {
                     return [];
                 }
                 GeoloniaMap._prefNames = json.data.map((item) => item.pref);
                 return GeoloniaMap._prefNames;
+            });
+        }
+        static fetchCityNames(prefName) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const json = GeoloniaMap._prefNames ? GeoloniaMap._prefNames : yield fetchJson('https://japanese-addresses-v2.geoloniamaps.com/api/ja.json');
+                const prefObj = json.data.find((item) => item.pref === prefName);
+                if (!prefObj) {
+                    return [];
+                }
+                const cityNames = prefObj.cities.map((item) => item.city);
+                return cityNames;
             });
         }
         /**
