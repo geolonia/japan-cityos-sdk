@@ -4177,6 +4177,20 @@
                 return iconNames;
             });
         }
+        static fetchPrefNames() {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (GeoloniaMap._prefNames) {
+                    return GeoloniaMap._prefNames;
+                }
+                const res = yield fetch('https://japanese-addresses-v2.geoloniamaps.com/api/ja.json');
+                const json = yield res.json();
+                if (!json.data || !Array.isArray(json.data)) {
+                    return [];
+                }
+                GeoloniaMap._prefNames = json.data.map((item) => item.pref);
+                return GeoloniaMap._prefNames;
+            });
+        }
         /**
          * スプライトシート名を指定してアイコンスタイル一覧を取得する
          * @param spriteKey スプライトシート名（spriteSheetUrlのkey）
@@ -4568,6 +4582,10 @@
         'basic': 'https://geoloniamaps.github.io/basic-v1/basic-v1',
     };
     GeoloniaMap.HILLSHADE_LAYER_ID = "hillshading";
+    /**
+     * 都道府県名一覧を取得（キャッシュ付き）
+     */
+    GeoloniaMap._prefNames = null;
     const currentScript = document.currentScript;
     window.geolonia = window.geolonia || {};
     window.geolonia.API_KEY = parseApiKey(currentScript || undefined) || "";
