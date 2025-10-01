@@ -98,7 +98,7 @@ class GeoloniaMap extends maplibregl.Map {
   static async fetchPrefNames(): Promise<string[]> {
     if (GeoloniaMap._prefNames) { return GeoloniaMap._prefNames; }
     const json = await fetchJson('https://japanese-addresses-v2.geoloniamaps.com/api/ja.json');
-    GeoloniaMap._prefData = json?.data || null;
+    GeoloniaMap._prefData = json || null;
     if (!json.data || !Array.isArray(json.data)) { return []; }
     GeoloniaMap._prefNames = json.data.map((item: any) => item.pref);
     return GeoloniaMap._prefNames;
@@ -109,7 +109,9 @@ class GeoloniaMap extends maplibregl.Map {
     if (!json.data || !Array.isArray(json.data)) { return []; }
     const prefObj = json.data.find((item: any) => item.pref === prefName);
     if (!prefObj) { return []; }
-    return prefObj.cities.map((item: any) => item.city);
+    // 市名の重複を除外して返す
+    const cityNames = prefObj.cities.map((item: any) => item.city);
+    return Array.from(new Set(cityNames));
   }
 
   /**

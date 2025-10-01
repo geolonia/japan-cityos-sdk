@@ -4203,7 +4203,7 @@
                     return GeoloniaMap._prefNames;
                 }
                 const json = yield fetchJson('https://japanese-addresses-v2.geoloniamaps.com/api/ja.json');
-                GeoloniaMap._prefData = (json === null || json === void 0 ? void 0 : json.data) || null;
+                GeoloniaMap._prefData = json || null;
                 if (!json.data || !Array.isArray(json.data)) {
                     return [];
                 }
@@ -4221,7 +4221,9 @@
                 if (!prefObj) {
                     return [];
                 }
-                return prefObj.cities.map((item) => item.city);
+                // 市名の重複を除外して返す
+                const cityNames = prefObj.cities.map((item) => item.city);
+                return Array.from(new Set(cityNames));
             });
         }
         /**
