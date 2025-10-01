@@ -60,6 +60,12 @@
     id="sidebar"
   >
     <div style="margin-bottom:12px;">
+      <label for="pref-select" style="font-weight:bold;">都道府県</label>
+      <select id="pref-select" style="width:100%;margin-bottom:8px;"></select>
+      <label for="city-select" style="font-weight:bold;">市区町村</label>
+      <select id="city-select" style="width:100%;"></select>
+    </div>
+    <div style="margin-bottom:12px;">
       <p style="font-weight:bold;">背景地図</p>
       <select id="style-select" style="width:100%;">
         <option value="https://basic-v1-background-only.pages.dev/style.json">basic</option>
@@ -120,6 +126,26 @@
   <div id="map"></div>
   <script src="./index.js"></script>
   <script type="application/javascript">
+    // 都道府県・市区町村プルダウン初期化
+    async function initPrefCityDropdown() {
+      const prefSelect = document.getElementById('pref-select');
+      const citySelect = document.getElementById('city-select');
+      // 都道府県取得
+      const prefs = await geolonia.japan.Map.fetchPrefNames();
+      prefSelect.innerHTML = prefs.map(pref => `<option value="${pref}">${pref}</option>`).join('');
+      // 初期選択の市区町村表示
+      const firstPref = prefs[0];
+      const cities = await geolonia.japan.Map.fetchCityNames(firstPref);
+      citySelect.innerHTML = cities.map(city => `<option value="${city}">${city}</option>`).join('');
+      // 都道府県変更時のイベント
+      prefSelect.addEventListener('change', async function(e) {
+        const prefName = e.target.value;
+        const cities = await geolonia.japan.Map.fetchCityNames(prefName);
+        console.log('選択された都道府県:', prefName, cities);
+        citySelect.innerHTML = cities.map(city => `<option value="${city}">${city}</option>`).join('');
+      });
+    }
+
     const geojson = {
       type: 'FeatureCollection',
       features: [
@@ -204,6 +230,8 @@
     });
 
     japan.on('load', () => {
+  // 都道府県・市区町村プルダウン初期化
+  initPrefCityDropdown();
       // csvデータの読み込み
       const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSv5OOG_biAGX5Q2XXrBPEtfthDNmFFtwPd50wCRON4aphbQMPHUWXtvzZ7UUjOFGhmNSv3h_jE-tyu/pub?gid=2058114753&single=true&output=csv'
       japan.loadCSV(url, '選挙時投票所一覧', {
