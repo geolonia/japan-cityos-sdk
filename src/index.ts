@@ -300,6 +300,37 @@ class GeoloniaMap extends maplibregl.Map {
   }
 
   /**
+   * 画像マーカーを追加する
+   * @param imageUrl 画像URL
+   * @param args {LAT, LON, NAME}
+   */
+  addImageMarker(imageUrl: string, lat: number, lon: number, name?: string) {
+    const container = document.createElement('div');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.alignItems = 'center';
+
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    img.alt = name || 'image marker';
+    img.width = 100;
+    img.height = 100;
+    img.style.objectFit = 'contain';
+    img.className = 'marker-img';
+
+    const label = document.createElement('span');
+    label.textContent = name || '';
+    label.className = 'marker-label';
+
+    container.appendChild(img);
+    container.appendChild(label);
+
+    new window.geolonia.japan.Marker({element: container})
+      .setLngLat([lon, lat])
+      .addTo(this);
+  }
+
+  /**
    * 指定した座標またはbboxのFeatureが存在するか判定する
    * @param xy [lng,lat] | {lng,lat} | [[minLng,minLat],[maxLng,maxLat]]
    * @param layerIds レイヤーIDまたは配列
