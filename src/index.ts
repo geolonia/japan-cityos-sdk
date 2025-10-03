@@ -326,7 +326,7 @@ class GeoloniaMap extends maplibregl.Map {
     container.appendChild(label);
 
     new window.geolonia.japan.Marker({element: container})
-      .setLngLat([lon, lat])
+      .setLngLat([lat, lon])
       .addTo(this);
   }
 
