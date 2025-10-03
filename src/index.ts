@@ -323,7 +323,6 @@ class GeoloniaMap extends maplibregl.Map {
     img.src = imageUrl;
     img.alt = name || 'image marker';
     img.width = 100;
-    img.height = 100;
     img.style.objectFit = 'contain';
     img.className = 'marker-img';
 
@@ -358,6 +357,24 @@ class GeoloniaMap extends maplibregl.Map {
         return false; // 削除
       }
       return true; // 残す
+    });
+  }
+
+  /**
+   * 画像マーカーの幅を変更する
+   * @param lat 緯度
+   * @param lon 経度
+   * @param name ラベル名（任意）
+   * @param width 幅(px)
+   */
+  setImageMarkerWidth(name: string | undefined, width: number) {
+    this.imageMarkers.forEach(item => {
+      if (!name || item.name === name) {
+        const img = item.marker.getElement().querySelector('.marker-img') as HTMLImageElement;
+        if (img) {
+          img.width = width;
+        }
+      }
     });
   }
 
