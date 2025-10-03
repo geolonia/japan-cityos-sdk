@@ -22,6 +22,15 @@ declare global {
 }
 	
 class GeoloniaMap extends maplibregl.Map {
+  /**
+   * 画像マーカー管理用配列
+   */
+  private imageMarkers: Array<{
+    marker: any;
+    lat: number;
+    lon: number;
+    name?: string;
+  }> = [];
 
   private loadedSourceIds: Set<string> = new Set();
 
@@ -325,9 +334,31 @@ class GeoloniaMap extends maplibregl.Map {
     container.appendChild(img);
     container.appendChild(label);
 
-    new window.geolonia.japan.Marker({element: container})
+    const marker = new window.geolonia.japan.Marker({element: container})
       .setLngLat([lat, lon])
       .addTo(this);
+    (container as any).__marker = marker;
+
+    // 管理配列に追加
+    this.imageMarkers.push({ marker, lat, lon, name });
+  }
+
+  /**
+   * 指定した座標・名前の画像マーカーを削除する
+   * @param lat 緯度
+   * @param lon 経度
+   * @param name ラベル名（任意）
+   */
+  removeImageMarker(lat: number, lon: number, name?: string) {
+    // 管理配列から該当マーカーのみ削除
+    this.imageMarkers = this.imageMarkers.filter(item => {
+      const matches = item.lat === lat && item.lon === lon && (!name || item.name === name);
+      if (matches) {
+        item.marker.remove();
+        return false; // 削除
+      }
+      return true; // 残す
+    });
   }
 
   /**
