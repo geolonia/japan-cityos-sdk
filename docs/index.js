@@ -4398,7 +4398,6 @@
             img.src = imageUrl;
             img.alt = name || 'image marker';
             img.width = 100;
-            img.height = 100;
             img.style.objectFit = 'contain';
             img.className = 'marker-img';
             const label = document.createElement('span');
@@ -4428,6 +4427,30 @@
                     return false; // 削除
                 }
                 return true; // 残す
+            });
+        }
+        /**
+         * 全ての画像マーカーを削除する
+         */
+        removeAllImageMarkers() {
+            this.imageMarkers.forEach(item => item.marker.remove());
+            this.imageMarkers = [];
+        }
+        /**
+         * 画像マーカーの幅を変更する
+         * @param lat 緯度
+         * @param lon 経度
+         * @param name ラベル名（任意）
+         * @param width 幅(px)
+         */
+        setImageMarkerWidth(name, width) {
+            this.imageMarkers.forEach(item => {
+                if (!name || item.name === name) {
+                    const img = item.marker.getElement().querySelector('.marker-img');
+                    if (img) {
+                        img.width = width;
+                    }
+                }
             });
         }
         /**
