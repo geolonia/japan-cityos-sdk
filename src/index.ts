@@ -361,6 +361,14 @@ class GeoloniaMap extends maplibregl.Map {
   }
 
   /**
+   * 全ての画像マーカーを削除する
+   */
+  removeAllImageMarkers() {
+    this.imageMarkers.forEach(item => item.marker.remove());
+    this.imageMarkers = [];
+  }
+
+  /**
    * 画像マーカーの幅を変更する
    * @param lat 緯度
    * @param lon 経度
