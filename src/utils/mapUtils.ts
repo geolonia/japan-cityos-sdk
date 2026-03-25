@@ -271,6 +271,19 @@ export function updateLayer(map: maplibregl.Map, layer: maplibregl.LayerSpecific
 }
 
 /**
+ * 指定したSymbolレイヤーのicon-sizeを変更する
+ * @param map maplibregl.Mapインスタンス
+ * @param className レイヤーID（className）
+ * @param size icon-sizeの値
+ */
+export function setSymbolIconSize(map: maplibregl.Map, className: string, size: number) {
+  const existingLayer = map.getLayer(className);
+  if (!existingLayer) return;
+
+  map.setLayoutProperty(className, 'icon-size', size);
+}
+
+/**
  * previousStyle.sourcesから、loadedSourceIdsに含まれるsourceのみを抽出し、nextStyle.sourcesをマージして返す
  * @param previousSources - 前のスタイルのsources
  * @param nextSources - 次のスタイルのsources
