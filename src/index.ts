@@ -14,6 +14,7 @@ import { addOrUpdateGeojsonSource } from './utils/sourceUtils';
 import { addOrUpdateLayers, getLayerIdsBySource } from './utils/layerUtils';
 import { getGeometryTypes, parseGeojsonInput } from './utils/geojsonUtils';
 import { fetchJson } from './utils/fetchJson';
+import { setFillStyle as applyFillStyle, FillStyleOptions } from './setFillStyle';
 
 declare global {
   interface Window {
@@ -384,6 +385,15 @@ class GeoloniaMap extends maplibregl.Map {
         }
       }
     });
+  }
+
+  /**
+   * 指定した className の Fill レイヤー（Polygon）のスタイルを変更する
+   * @param className レイヤーのクラス名（レイヤーIDは `${className}-polygon`）
+   * @param style 変更するスタイルオプション（color, opacity, outlineColor）
+   */
+  setFillStyle(className: string, style: FillStyleOptions) {
+    applyFillStyle(this, className, style);
   }
 
   /**

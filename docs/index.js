@@ -4142,6 +4142,28 @@
         });
     }
 
+    /**
+     * 指定した className の Fill レイヤーのスタイルを変更する
+     * @param map maplibregl.Map インスタンス
+     * @param className レイヤーのクラス名（レイヤーIDは `${className}-polygon`）
+     * @param style 変更するスタイルオプション
+     */
+    function setFillStyle(map, className, style) {
+        const layerId = `${className}-polygon`;
+        const layer = map.getLayer(layerId);
+        if (!layer)
+            return;
+        if (style.color !== undefined) {
+            map.setPaintProperty(layerId, 'fill-color', style.color);
+        }
+        if (style.opacity !== undefined) {
+            map.setPaintProperty(layerId, 'fill-opacity', style.opacity);
+        }
+        if (style.outlineColor !== undefined) {
+            map.setPaintProperty(layerId, 'fill-outline-color', style.outlineColor);
+        }
+    }
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d, _e, _f, _g;
@@ -4452,6 +4474,14 @@
                     }
                 }
             });
+        }
+        /**
+         * 指定した className の Fill レイヤー（Polygon）のスタイルを変更する
+         * @param className レイヤーのクラス名（レイヤーIDは `${className}-polygon`）
+         * @param style 変更するスタイルオプション（color, opacity, outlineColor）
+         */
+        setFillStyle(className, style) {
+            setFillStyle(this, className, style);
         }
         /**
          * 指定した座標またはbboxのFeatureが存在するか判定する
