@@ -14,6 +14,7 @@ import { addOrUpdateGeojsonSource } from './utils/sourceUtils';
 import { addOrUpdateLayers, getLayerIdsBySource } from './utils/layerUtils';
 import { getGeometryTypes, parseGeojsonInput } from './utils/geojsonUtils';
 import { fetchJson } from './utils/fetchJson';
+import { setLineStyle, LineStyleOptions } from './utils/lineStyleUtils';
 
 declare global {
   interface Window {
@@ -384,6 +385,15 @@ class GeoloniaMap extends maplibregl.Map {
         }
       }
     });
+  }
+
+  /**
+   * Line レイヤーの描画スタイルを変更する
+   * @param className レイヤーのクラス名（レイヤーIDは `${className}-line`）
+   * @param style 変更するスタイルオプション（color, width, opacity）
+   */
+  setLineStyle(className: string, style: LineStyleOptions) {
+    setLineStyle(this, className, style);
   }
 
   /**

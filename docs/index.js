@@ -4142,6 +4142,38 @@
         });
     }
 
+    /**
+     * LineStyleOptions のキーと MapLibre paint プロパティ名のマッピング
+     */
+    const STYLE_PROPERTY_MAP = {
+        color: 'line-color',
+        width: 'line-width',
+        opacity: 'line-opacity',
+    };
+    /**
+     * 指定した Line レイヤーの描画スタイルを変更する
+     * @param map maplibregl.Map インスタンス
+     * @param className レイヤーのクラス名（レイヤーIDは `${className}-line`）
+     * @param style 変更するスタイルオプション
+     */
+    function setLineStyle(map, className, style) {
+        const layerId = `${className}-line`;
+        const layer = map.getLayer(layerId);
+        if (!layer)
+            return;
+        for (const [key, paintProperty] of Object.entries(STYLE_PROPERTY_MAP)) {
+            const value = style[key];
+            if (value !== undefined) {
+                try {
+                    map.setPaintProperty(layerId, paintProperty, value);
+                }
+                catch (e) {
+                    // プロパティが存在しない場合は無視
+                }
+            }
+        }
+    }
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d, _e, _f, _g;
@@ -4452,6 +4484,14 @@
                     }
                 }
             });
+        }
+        /**
+         * Line レイヤーの描画スタイルを変更する
+         * @param className レイヤーのクラス名（レイヤーIDは `${className}-line`）
+         * @param style 変更するスタイルオプション（color, width, opacity）
+         */
+        setLineStyle(className, style) {
+            setLineStyle(this, className, style);
         }
         /**
          * 指定した座標またはbboxのFeatureが存在するか判定する
