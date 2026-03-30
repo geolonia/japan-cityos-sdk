@@ -139,6 +139,15 @@
       <label>outlineColor</label>
       <input type="color" id="fill-outline-color" value="#00FF00" style="width:100%;">
     </div>
+    <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
+      <p style="font-weight:bold;">setLineStyle</p>
+      <label>color</label>
+      <input type="color" id="line-color" value="#0000FF" style="width:100%;">
+      <label>width: <span id="line-width-val">3</span></label>
+      <input type="range" id="line-width" min="1" max="20" step="1" value="3" style="width:100%;">
+      <label>opacity: <span id="line-opacity-val">1.0</span></label>
+      <input type="range" id="line-opacity" min="0" max="1" step="0.1" value="1.0" style="width:100%;">
+    </div>
     <div style="margin-bottom:12px;">
       <button id="toggle-3d-btn" style="width:100%;padding:8px 0;">3D地形表示 ON</button>
     </div>
@@ -263,6 +272,39 @@
       ]
     }
 
+    const lineGeojson = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: { name: '国道58号線' },
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [127.6725, 26.2124],
+              [127.6900, 26.3000],
+              [127.7500, 26.4000],
+              [127.8000, 26.5000],
+              [127.8500, 26.5500]
+            ]
+          }
+        },
+        {
+          type: 'Feature',
+          properties: { name: '海岸ルート' },
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [127.6500, 26.2000],
+              [127.6300, 26.2500],
+              [127.6200, 26.3500],
+              [127.6400, 26.4500]
+            ]
+          }
+        }
+      ]
+    }
+
     const japan = new geolonia.japan.Map({
       lngLat: [127.99866582363768, 26.47678028796848],
       zoom: 9.587623189139185,
@@ -364,6 +406,9 @@
 
       // Polygon GeoJSON
       japan.loadGeojson(polygonGeojson, 'sample-polygon', {});
+
+      // Line GeoJSON
+      japan.loadGeojson(lineGeojson, 'sample-line', {});
 
       // osmのpoiを表示
       japan.loadOsmPoi('restaurant', 'chizubouken-lab');
@@ -471,6 +516,25 @@
         updateFillStyle();
       });
       document.getElementById('fill-outline-color').addEventListener('input', updateFillStyle);
+
+      // setLineStyle
+      function updateLineStyle() {
+        japan.setLineStyle('sample-line', {
+          color: document.getElementById('line-color').value,
+          width: parseFloat(document.getElementById('line-width').value),
+          opacity: parseFloat(document.getElementById('line-opacity').value)
+        });
+      }
+      document.getElementById('line-color').addEventListener('input', updateLineStyle);
+      document.getElementById('line-width').addEventListener('input', function (e) {
+        document.getElementById('line-width-val').textContent = e.target.value;
+        updateLineStyle();
+      });
+      document.getElementById('line-opacity').addEventListener('input', function (e) {
+        document.getElementById('line-opacity-val').textContent = e.target.value;
+        updateLineStyle();
+      });
+
 
       japan.on('click', (e) => {
         const x = e.point.x;
