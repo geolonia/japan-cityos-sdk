@@ -4157,6 +4157,8 @@
      * @param style 変更するスタイルオプション
      */
     function setLineStyle(map, className, style) {
+        if (style == null)
+            return;
         const layerId = `${className}-line`;
         const layer = map.getLayer(layerId);
         if (!layer)
@@ -4168,7 +4170,10 @@
                     map.setPaintProperty(layerId, paintProperty, value);
                 }
                 catch (e) {
-                    // プロパティが存在しない場合は無視
+                    // プロパティが存在しない場合は無視（開発時のみログ出力）
+                    if (process.env.NODE_ENV === 'development') {
+                        console.warn(`setLineStyle: Failed to set ${paintProperty} on ${layerId}`, e);
+                    }
                 }
             }
         }
