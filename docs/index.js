@@ -329,6 +329,23 @@
         }
     }
     /**
+     * 指定したSymbolレイヤーのicon-sizeを変更する
+     * @param map maplibregl.Mapインスタンス
+     * @param className レイヤーID（className）
+     * @param size icon-sizeの値
+     */
+    function setSymbolIconSize(map, className, size) {
+        const existingLayer = map.getLayer(className);
+        if (!existingLayer)
+            return;
+        try {
+            map.setLayoutProperty(className, 'icon-size', size);
+        }
+        catch (e) {
+            // Symbolレイヤー以外の場合は無視
+        }
+    }
+    /**
      * previousStyle.sourcesから、loadedSourceIdsに含まれるsourceのみを抽出し、nextStyle.sourcesをマージして返す
      * @param previousSources - 前のスタイルのsources
      * @param nextSources - 次のスタイルのsources
@@ -4143,26 +4160,38 @@
     }
 
     /**
-     * 指定した className の Fill レイヤーのスタイルを変更する
+     * CircleStyleOptions のキーと MapLibre paint プロパティ名のマッピング
+     */
+    const STYLE_PROPERTY_MAP = {
+        color: 'circle-color',
+        radius: 'circle-radius',
+        strokeColor: 'circle-stroke-color',
+        strokeWidth: 'circle-stroke-width',
+        opacity: 'circle-opacity',
+    };
+    /**
+     * 指定した Circle レイヤーの描画スタイルを変更する
      * @param map maplibregl.Map インスタンス
-     * @param className レイヤーのクラス名（レイヤーIDは `${className}-polygon`）
+     * @param className レイヤーID（className）
      * @param style 変更するスタイルオプション
      */
-    function setFillStyle(map, className, style) {
-        if (style == null)
-            return;
-        const layerId = `${className}-polygon`;
-        const layer = map.getLayer(layerId);
+    function setCircleStyle(map, className, style) {
+        const layer = map.getLayer(className);
         if (!layer)
             return;
-        if (style.color !== undefined) {
-            map.setPaintProperty(layerId, 'fill-color', style.color);
-        }
-        if (style.opacity !== undefined) {
-            map.setPaintProperty(layerId, 'fill-opacity', style.opacity);
-        }
-        if (style.outlineColor !== undefined) {
-            map.setPaintProperty(layerId, 'fill-outline-color', style.outlineColor);
+        for (const [key, paintProperty] of Object.entries(STYLE_PROPERTY_MAP)) {
+            const value = style[key];
+            if (value !== undefined) {
+                try {
+                    map.setPaintProperty(className, paintProperty, value);
+                }
+                catch (e) {
+                    // プロパティが存在しない場合は無視（開発時のみログ出力）
+                    if (process.env.NODE_ENV === 'development') {
+                        console.warn(`setCircleStyle: Failed to set ${paintProperty} on ${className}`, e);
+                    }
+                }
+            }
         }
     }
 
@@ -4478,12 +4507,12 @@
             });
         }
         /**
-         * 指定した className の Fill レイヤー（Polygon）のスタイルを変更する
-         * @param className レイヤーのクラス名（レイヤーIDは `${className}-polygon`）
-         * @param style 変更するスタイルオプション（color, opacity, outlineColor）
+         * Symbolレイヤーのicon-sizeを変更する
+         * @param className レイヤーID（className）
+         * @param size icon-sizeの値
          */
-        setFillStyle(className, style) {
-            setFillStyle(this, className, style);
+        setSymbolIconSize(className, size) {
+            setSymbolIconSize(this, className, size);
         }
         /**
          * 指定した座標またはbboxのFeatureが存在するか判定する
@@ -4713,6 +4742,14 @@
             if (this.getLayer(hillshadeLayerId)) {
                 this.removeLayer(hillshadeLayerId);
             }
+        }
+        /**
+         * Circle レイヤーの描画スタイルを変更する
+         * @param className レイヤーID（className）
+         * @param style 変更するスタイルオプション（color, radius, strokeColor, strokeWidth, opacity）
+         */
+        setCircleStyle(className, style) {
+            setCircleStyle(this, className, style);
         }
     }
     GeoloniaMap.spriteSheetUrl = {

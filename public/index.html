@@ -113,6 +113,24 @@
       <div id="nlni-checkbox-list"></div>
     </div>
     <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
+      <p style="font-weight:bold;">setSymbolIconSize</p>
+      <label>icon-size: <span id="symbol-size-val">0.5</span></label>
+      <input type="range" id="symbol-size" min="0.1" max="3" step="0.1" value="0.5" style="width:100%;">
+    </div>
+    <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
+      <p style="font-weight:bold;">setCircleStyle</p>
+      <label>color</label>
+      <input type="color" id="circle-color" value="#FF0000" style="width:100%;">
+      <label>radius: <span id="circle-radius-val">6</span></label>
+      <input type="range" id="circle-radius" min="1" max="30" step="1" value="6" style="width:100%;">
+      <label>strokeColor</label>
+      <input type="color" id="circle-stroke-color" value="#FF0000" style="width:100%;">
+      <label>strokeWidth: <span id="circle-stroke-width-val">1</span></label>
+      <input type="range" id="circle-stroke-width" min="0" max="10" step="1" value="1" style="width:100%;">
+      <label>opacity: <span id="circle-opacity-val">0.8</span></label>
+      <input type="range" id="circle-opacity" min="0" max="1" step="0.1" value="0.8" style="width:100%;">
+    </div>
+    <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
       <p style="font-weight:bold;">setFillStyle</p>
       <label>color</label>
       <input type="color" id="fill-color" value="#00FF00" style="width:100%;">
@@ -181,6 +199,32 @@
             type: 'Point',
             coordinates: [127.98748696778947, 26.661740999954894]
           }
+        }
+      ]
+    }
+
+    const circleGeojson = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: { name: '那覇空港' },
+          geometry: { type: 'Point', coordinates: [127.6461, 26.2076] }
+        },
+        {
+          type: 'Feature',
+          properties: { name: '首里城' },
+          geometry: { type: 'Point', coordinates: [127.7195, 26.2172] }
+        },
+        {
+          type: 'Feature',
+          properties: { name: '美ら海水族館' },
+          geometry: { type: 'Point', coordinates: [127.8779, 26.6944] }
+        },
+        {
+          type: 'Feature',
+          properties: { name: '万座毛' },
+          geometry: { type: 'Point', coordinates: [127.8547, 26.5041] }
         }
       ]
     }
@@ -313,6 +357,11 @@
         }
       )
 
+      // Circle GeoJSON
+      japan.loadGeojson(circleGeojson, 'sample-circle', {
+        'marker-color': '#FF0000'
+      });
+
       // Polygon GeoJSON
       japan.loadGeojson(polygonGeojson, 'sample-polygon', {});
 
@@ -374,6 +423,38 @@
             japan.changeLayerIcon(layerId, e.target.value, 'chizubouken-lab');
           });
         }
+      });
+
+      // setSymbolIconSize
+      document.getElementById('symbol-size').addEventListener('input', function (e) {
+        const size = parseFloat(e.target.value);
+        document.getElementById('symbol-size-val').textContent = size;
+        japan.setSymbolIconSize('cafe', size);
+      });
+
+      // setCircleStyle
+      function updateCircleStyle() {
+        japan.setCircleStyle('sample-circle', {
+          color: document.getElementById('circle-color').value,
+          radius: parseFloat(document.getElementById('circle-radius').value),
+          strokeColor: document.getElementById('circle-stroke-color').value,
+          strokeWidth: parseFloat(document.getElementById('circle-stroke-width').value),
+          opacity: parseFloat(document.getElementById('circle-opacity').value)
+        });
+      }
+      document.getElementById('circle-color').addEventListener('input', updateCircleStyle);
+      document.getElementById('circle-radius').addEventListener('input', function (e) {
+        document.getElementById('circle-radius-val').textContent = e.target.value;
+        updateCircleStyle();
+      });
+      document.getElementById('circle-stroke-color').addEventListener('input', updateCircleStyle);
+      document.getElementById('circle-stroke-width').addEventListener('input', function (e) {
+        document.getElementById('circle-stroke-width-val').textContent = e.target.value;
+        updateCircleStyle();
+      });
+      document.getElementById('circle-opacity').addEventListener('input', function (e) {
+        document.getElementById('circle-opacity-val').textContent = e.target.value;
+        updateCircleStyle();
       });
 
       // setFillStyle
