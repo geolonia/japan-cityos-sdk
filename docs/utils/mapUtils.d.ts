@@ -30,6 +30,13 @@ export declare const createLayer: (className: string, options?: {
  */
 export declare function updateLayer(map: maplibregl.Map, layer: maplibregl.LayerSpecification): void;
 /**
+ * 指定したSymbolレイヤーのicon-sizeを変更する
+ * @param map maplibregl.Mapインスタンス
+ * @param className レイヤーID（className）
+ * @param size icon-sizeの値
+ */
+export declare function setSymbolIconSize(map: maplibregl.Map, className: string, size: number): void;
+/**
  * previousStyle.sourcesから、loadedSourceIdsに含まれるsourceのみを抽出し、nextStyle.sourcesをマージして返す
  * @param previousSources - 前のスタイルのsources
  * @param nextSources - 次のスタイルのsources
