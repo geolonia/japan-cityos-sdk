@@ -15,6 +15,7 @@ import { addOrUpdateLayers, getLayerIdsBySource } from './utils/layerUtils';
 import { getGeometryTypes, parseGeojsonInput } from './utils/geojsonUtils';
 import { fetchJson } from './utils/fetchJson';
 import { setCircleStyle as _setCircleStyle, CircleStyleOptions } from './utils/circleStyleUtils';
+import { setFillStyle as applyFillStyle, FillStyleOptions } from './setFillStyle';
 
 declare global {
   interface Window {
@@ -394,6 +395,15 @@ class GeoloniaMap extends maplibregl.Map {
    */
   setSymbolIconSize(className: string, size: number) {
     _setSymbolIconSize(this, className, size);
+  }
+
+  /**
+   * 指定した className の Fill レイヤー（Polygon）のスタイルを変更する
+   * @param className レイヤーのクラス名（レイヤーIDは `${className}-polygon`）
+   * @param style 変更するスタイルオプション（color, opacity, outlineColor）
+   */
+  setFillStyle(className: string, style: FillStyleOptions) {
+    applyFillStyle(this, className, style);
   }
 
   /**
