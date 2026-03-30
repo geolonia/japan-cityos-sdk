@@ -23,6 +23,8 @@ export function setFillStyle(
   className: string,
   style: FillStyleOptions
 ): void {
+  if (style == null) return;
+
   const layerId = `${className}-polygon`;
   const layer = map.getLayer(layerId);
   if (!layer) return;

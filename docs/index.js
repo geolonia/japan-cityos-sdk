@@ -4149,6 +4149,8 @@
      * @param style 変更するスタイルオプション
      */
     function setFillStyle(map, className, style) {
+        if (style == null)
+            return;
         const layerId = `${className}-polygon`;
         const layer = map.getLayer(layerId);
         if (!layer)
