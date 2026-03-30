@@ -14,6 +14,7 @@ import { addOrUpdateGeojsonSource } from './utils/sourceUtils';
 import { addOrUpdateLayers, getLayerIdsBySource } from './utils/layerUtils';
 import { getGeometryTypes, parseGeojsonInput } from './utils/geojsonUtils';
 import { fetchJson } from './utils/fetchJson';
+import { setCircleStyle as _setCircleStyle, CircleStyleOptions } from './utils/circleStyleUtils';
 
 declare global {
   interface Window {
@@ -650,6 +651,15 @@ class GeoloniaMap extends maplibregl.Map {
     if (this.getLayer(hillshadeLayerId)) {
       this.removeLayer(hillshadeLayerId);
     }
+  }
+
+  /**
+   * Circle レイヤーの描画スタイルを変更する
+   * @param className レイヤーID（className）
+   * @param style 変更するスタイルオプション（color, radius, strokeColor, strokeWidth, opacity）
+   */
+  setCircleStyle(className: string, style: CircleStyleOptions) {
+    _setCircleStyle(this, className, style);
   }
 }
 

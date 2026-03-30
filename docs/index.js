@@ -4159,6 +4159,42 @@
         });
     }
 
+    /**
+     * CircleStyleOptions のキーと MapLibre paint プロパティ名のマッピング
+     */
+    const STYLE_PROPERTY_MAP = {
+        color: 'circle-color',
+        radius: 'circle-radius',
+        strokeColor: 'circle-stroke-color',
+        strokeWidth: 'circle-stroke-width',
+        opacity: 'circle-opacity',
+    };
+    /**
+     * 指定した Circle レイヤーの描画スタイルを変更する
+     * @param map maplibregl.Map インスタンス
+     * @param className レイヤーID（className）
+     * @param style 変更するスタイルオプション
+     */
+    function setCircleStyle(map, className, style) {
+        const layer = map.getLayer(className);
+        if (!layer)
+            return;
+        for (const [key, paintProperty] of Object.entries(STYLE_PROPERTY_MAP)) {
+            const value = style[key];
+            if (value !== undefined) {
+                try {
+                    map.setPaintProperty(className, paintProperty, value);
+                }
+                catch (e) {
+                    // プロパティが存在しない場合は無視（開発時のみログ出力）
+                    if (process.env.NODE_ENV === 'development') {
+                        console.warn(`setCircleStyle: Failed to set ${paintProperty} on ${className}`, e);
+                    }
+                }
+            }
+        }
+    }
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d, _e, _f, _g;
@@ -4706,6 +4742,14 @@
             if (this.getLayer(hillshadeLayerId)) {
                 this.removeLayer(hillshadeLayerId);
             }
+        }
+        /**
+         * Circle レイヤーの描画スタイルを変更する
+         * @param className レイヤーID（className）
+         * @param style 変更するスタイルオプション（color, radius, strokeColor, strokeWidth, opacity）
+         */
+        setCircleStyle(className, style) {
+            setCircleStyle(this, className, style);
         }
     }
     GeoloniaMap.spriteSheetUrl = {
