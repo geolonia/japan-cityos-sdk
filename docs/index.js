@@ -329,6 +329,23 @@
         }
     }
     /**
+     * 指定したSymbolレイヤーのicon-sizeを変更する
+     * @param map maplibregl.Mapインスタンス
+     * @param className レイヤーID（className）
+     * @param size icon-sizeの値
+     */
+    function setSymbolIconSize(map, className, size) {
+        const existingLayer = map.getLayer(className);
+        if (!existingLayer)
+            return;
+        try {
+            map.setLayoutProperty(className, 'icon-size', size);
+        }
+        catch (e) {
+            // Symbolレイヤー以外の場合は無視
+        }
+    }
+    /**
      * previousStyle.sourcesから、loadedSourceIdsに含まれるsourceのみを抽出し、nextStyle.sourcesをマージして返す
      * @param previousSources - 前のスタイルのsources
      * @param nextSources - 次のスタイルのsources
@@ -4488,6 +4505,14 @@
                     }
                 }
             });
+        }
+        /**
+         * Symbolレイヤーのicon-sizeを変更する
+         * @param className レイヤーID（className）
+         * @param size icon-sizeの値
+         */
+        setSymbolIconSize(className, size) {
+            setSymbolIconSize(this, className, size);
         }
         /**
          * 指定した座標またはbboxのFeatureが存在するか判定する

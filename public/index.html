@@ -113,6 +113,11 @@
       <div id="nlni-checkbox-list"></div>
     </div>
     <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
+      <p style="font-weight:bold;">setSymbolIconSize</p>
+      <label>icon-size: <span id="symbol-size-val">0.5</span></label>
+      <input type="range" id="symbol-size" min="0.1" max="3" step="0.1" value="0.5" style="width:100%;">
+    </div>
+    <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
       <p style="font-weight:bold;">setCircleStyle</p>
       <label>color</label>
       <input type="color" id="circle-color" value="#FF0000" style="width:100%;">
@@ -124,6 +129,7 @@
       <input type="range" id="circle-stroke-width" min="0" max="10" step="1" value="1" style="width:100%;">
       <label>opacity: <span id="circle-opacity-val">0.8</span></label>
       <input type="range" id="circle-opacity" min="0" max="1" step="0.1" value="0.8" style="width:100%;">
+
     </div>
     <div style="margin-bottom:12px;">
       <button id="toggle-3d-btn" style="width:100%;padding:8px 0;">3D地形表示 ON</button>
@@ -372,6 +378,13 @@
             japan.changeLayerIcon(layerId, e.target.value, 'chizubouken-lab');
           });
         }
+      });
+
+      // setSymbolIconSize
+      document.getElementById('symbol-size').addEventListener('input', function (e) {
+        const size = parseFloat(e.target.value);
+        document.getElementById('symbol-size-val').textContent = size;
+        japan.setSymbolIconSize('cafe', size);
       });
 
       // setCircleStyle

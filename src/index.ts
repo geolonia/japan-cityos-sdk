@@ -1,6 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey, removeLayersByLoadedIds, removeSourcesByLoadedIds, updateLayer } from './utils/mapUtils';
+import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey, removeLayersByLoadedIds, removeSourcesByLoadedIds, setSymbolIconSize as _setSymbolIconSize, updateLayer } from './utils/mapUtils';
 import Papa from 'papaparse';
 import { toQueryBox } from './toQueryBox';
 import { normalize } from '@geolonia/normalize-japanese-addresses';
@@ -385,6 +385,15 @@ class GeoloniaMap extends maplibregl.Map {
         }
       }
     });
+  }
+
+  /**
+   * Symbolレイヤーのicon-sizeを変更する
+   * @param className レイヤーID（className）
+   * @param size icon-sizeの値
+   */
+  setSymbolIconSize(className: string, size: number) {
+    _setSymbolIconSize(this, className, size);
   }
 
   /**
