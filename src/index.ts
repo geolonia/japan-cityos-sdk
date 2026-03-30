@@ -1,6 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey, removeLayersByLoadedIds, removeSourcesByLoadedIds, updateLayer } from './utils/mapUtils';
+import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey, removeLayersByLoadedIds, removeSourcesByLoadedIds, setSymbolIconSize as _setSymbolIconSize, updateLayer } from './utils/mapUtils';
 import Papa from 'papaparse';
 import { toQueryBox } from './toQueryBox';
 import { normalize } from '@geolonia/normalize-japanese-addresses';
@@ -14,6 +14,8 @@ import { addOrUpdateGeojsonSource } from './utils/sourceUtils';
 import { addOrUpdateLayers, getLayerIdsBySource } from './utils/layerUtils';
 import { getGeometryTypes, parseGeojsonInput } from './utils/geojsonUtils';
 import { fetchJson } from './utils/fetchJson';
+import { setCircleStyle as _setCircleStyle, CircleStyleOptions } from './utils/circleStyleUtils';
+import { setFillStyle as applyFillStyle, FillStyleOptions } from './setFillStyle';
 import { setLineStyle, LineStyleOptions } from './utils/lineStyleUtils';
 
 declare global {
@@ -388,6 +390,24 @@ class GeoloniaMap extends maplibregl.Map {
   }
 
   /**
+   * Symbolレイヤーのicon-sizeを変更する
+   * @param className レイヤーID（className）
+   * @param size icon-sizeの値
+   */
+  setSymbolIconSize(className: string, size: number) {
+    _setSymbolIconSize(this, className, size);
+  }
+
+  /**
+   * 指定した className の Fill レイヤー（Polygon）のスタイルを変更する
+   * @param className レイヤーのクラス名（レイヤーIDは `${className}-polygon`）
+   * @param style 変更するスタイルオプション（color, opacity, outlineColor）
+   */
+  setFillStyle(className: string, style: FillStyleOptions) {
+    applyFillStyle(this, className, style);
+  }
+
+  /**
    * Line レイヤーの描画スタイルを変更する
    * @param className レイヤーのクラス名（レイヤーIDは `${className}-line`）
    * @param style 変更するスタイルオプション（color, width, opacity）
@@ -651,6 +671,15 @@ class GeoloniaMap extends maplibregl.Map {
     if (this.getLayer(hillshadeLayerId)) {
       this.removeLayer(hillshadeLayerId);
     }
+  }
+
+  /**
+   * Circle レイヤーの描画スタイルを変更する
+   * @param className レイヤーID（className）
+   * @param style 変更するスタイルオプション（color, radius, strokeColor, strokeWidth, opacity）
+   */
+  setCircleStyle(className: string, style: CircleStyleOptions) {
+    _setCircleStyle(this, className, style);
   }
 }
 
