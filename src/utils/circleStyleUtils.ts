@@ -47,7 +47,10 @@ export function setCircleStyle(
       try {
         map.setPaintProperty(className, paintProperty, value);
       } catch (e) {
-        // プロパティが存在しない場合は無視
+        // プロパティが存在しない場合は無視（開発時のみログ出力）
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`setCircleStyle: Failed to set ${paintProperty} on ${className}`, e);
+        }
       }
     }
   }

@@ -14,7 +14,7 @@ import { addOrUpdateGeojsonSource } from './utils/sourceUtils';
 import { addOrUpdateLayers, getLayerIdsBySource } from './utils/layerUtils';
 import { getGeometryTypes, parseGeojsonInput } from './utils/geojsonUtils';
 import { fetchJson } from './utils/fetchJson';
-import { setCircleStyle, CircleStyleOptions } from './utils/circleStyleUtils';
+import { setCircleStyle as _setCircleStyle, CircleStyleOptions } from './utils/circleStyleUtils';
 
 declare global {
   interface Window {
@@ -650,7 +650,7 @@ class GeoloniaMap extends maplibregl.Map {
    * @param style 変更するスタイルオプション（color, radius, strokeColor, strokeWidth, opacity）
    */
   setCircleStyle(className: string, style: CircleStyleOptions) {
-    setCircleStyle(this, className, style);
+    _setCircleStyle(this, className, style);
   }
 }
 

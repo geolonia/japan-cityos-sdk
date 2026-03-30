@@ -111,4 +111,18 @@ describe('setCircleStyle', () => {
 
     expect(() => setCircleStyle(map, 'restaurant', { color: '#FF0000' })).not.toThrow();
   });
+
+  it('一部プロパティで例外が出ても他プロパティの適用を継続する', () => {
+    map.getLayer.mockReturnValue({ id: 'restaurant', type: 'circle' });
+    map.setPaintProperty.mockImplementation((_: string, prop: string) => {
+      if (prop === 'circle-color') throw new Error('paint error');
+    });
+
+    expect(() =>
+      setCircleStyle(map, 'restaurant', { color: '#FF0000', radius: 8 })
+    ).not.toThrow();
+
+    expect(map.setPaintProperty).toHaveBeenCalledWith('restaurant', 'circle-color', '#FF0000');
+    expect(map.setPaintProperty).toHaveBeenCalledWith('restaurant', 'circle-radius', 8);
+  });
 });
