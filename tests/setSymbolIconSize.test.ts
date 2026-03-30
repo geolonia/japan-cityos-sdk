@@ -8,8 +8,6 @@ describe('setSymbolIconSize', () => {
       setLayoutProperty: jest.fn(),
     };
 
-    // setSymbolIconSize を直接テストするためにヘルパー関数として定義
-    // 実装は src/utils/mapUtils.ts に追加予定
     setSymbolIconSize = require('../src/utils/mapUtils').setSymbolIconSize;
   });
 

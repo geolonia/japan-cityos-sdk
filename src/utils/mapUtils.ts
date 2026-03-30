@@ -280,7 +280,11 @@ export function setSymbolIconSize(map: maplibregl.Map, className: string, size: 
   const existingLayer = map.getLayer(className);
   if (!existingLayer) return;
 
-  map.setLayoutProperty(className, 'icon-size', size);
+  try {
+    map.setLayoutProperty(className, 'icon-size', size);
+  } catch (e) {
+    // Symbolレイヤー以外の場合は無視
+  }
 }
 
 /**
