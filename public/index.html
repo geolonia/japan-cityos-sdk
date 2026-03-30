@@ -112,6 +112,11 @@
       <p style="font-weight:bold;">国土数値情報</p>
       <div id="nlni-checkbox-list"></div>
     </div>
+    <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
+      <p style="font-weight:bold;">setSymbolIconSize</p>
+      <label>icon-size: <span id="symbol-size-val">0.5</span></label>
+      <input type="range" id="symbol-size" min="0.1" max="3" step="0.1" value="0.5" style="width:100%;">
+    </div>
     <div style="margin-bottom:12px;">
       <button id="toggle-3d-btn" style="width:100%;padding:8px 0;">3D地形表示 ON</button>
     </div>
@@ -328,6 +333,13 @@
             japan.changeLayerIcon(layerId, e.target.value, 'chizubouken-lab');
           });
         }
+      });
+
+      // setSymbolIconSize
+      document.getElementById('symbol-size').addEventListener('input', function (e) {
+        const size = parseFloat(e.target.value);
+        document.getElementById('symbol-size-val').textContent = size;
+        japan.setSymbolIconSize('cafe', size);
       });
 
       japan.on('click', (e) => {
