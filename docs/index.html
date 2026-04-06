@@ -129,7 +129,24 @@
       <input type="range" id="circle-stroke-width" min="0" max="10" step="1" value="1" style="width:100%;">
       <label>opacity: <span id="circle-opacity-val">0.8</span></label>
       <input type="range" id="circle-opacity" min="0" max="1" step="0.1" value="0.8" style="width:100%;">
-
+    </div>
+    <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
+      <p style="font-weight:bold;">setFillStyle</p>
+      <label>color</label>
+      <input type="color" id="fill-color" value="#00FF00" style="width:100%;">
+      <label>opacity: <span id="fill-opacity-val">0.5</span></label>
+      <input type="range" id="fill-opacity" min="0" max="1" step="0.1" value="0.5" style="width:100%;">
+      <label>outlineColor</label>
+      <input type="color" id="fill-outline-color" value="#00FF00" style="width:100%;">
+    </div>
+    <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
+      <p style="font-weight:bold;">setLineStyle</p>
+      <label>color</label>
+      <input type="color" id="line-color" value="#0000FF" style="width:100%;">
+      <label>width: <span id="line-width-val">3</span></label>
+      <input type="range" id="line-width" min="1" max="20" step="1" value="3" style="width:100%;">
+      <label>opacity: <span id="line-opacity-val">1.0</span></label>
+      <input type="range" id="line-opacity" min="0" max="1" step="0.1" value="1.0" style="width:100%;">
     </div>
     <div style="margin-bottom:12px;">
       <button id="toggle-3d-btn" style="width:100%;padding:8px 0;">3D地形表示 ON</button>
@@ -217,6 +234,73 @@
           type: 'Feature',
           properties: { name: '万座毛' },
           geometry: { type: 'Point', coordinates: [127.8547, 26.5041] }
+        }
+      ]
+    }
+
+    const polygonGeojson = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: { name: '那覇エリア' },
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[
+              [127.65, 26.20],
+              [127.72, 26.20],
+              [127.72, 26.25],
+              [127.65, 26.25],
+              [127.65, 26.20]
+            ]]
+          }
+        },
+        {
+          type: 'Feature',
+          properties: { name: '名護エリア' },
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[
+              [127.95, 26.55],
+              [128.02, 26.55],
+              [128.02, 26.60],
+              [127.95, 26.60],
+              [127.95, 26.55]
+            ]]
+          }
+        }
+      ]
+    }
+
+    const lineGeojson = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: { name: '国道58号線' },
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [127.6725, 26.2124],
+              [127.6900, 26.3000],
+              [127.7500, 26.4000],
+              [127.8000, 26.5000],
+              [127.8500, 26.5500]
+            ]
+          }
+        },
+        {
+          type: 'Feature',
+          properties: { name: '海岸ルート' },
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [127.6500, 26.2000],
+              [127.6300, 26.2500],
+              [127.6200, 26.3500],
+              [127.6400, 26.4500]
+            ]
+          }
         }
       ]
     }
@@ -320,6 +404,12 @@
         'marker-color': '#FF0000'
       });
 
+      // Polygon GeoJSON
+      japan.loadGeojson(polygonGeojson, 'sample-polygon', {});
+
+      // Line GeoJSON
+      japan.loadGeojson(lineGeojson, 'sample-line', {});
+
       // osmのpoiを表示
       japan.loadOsmPoi('restaurant', 'chizubouken-lab');
       document.getElementById('poi-checkbox').addEventListener('change', function (e) {
@@ -411,6 +501,40 @@
         document.getElementById('circle-opacity-val').textContent = e.target.value;
         updateCircleStyle();
       });
+
+      // setFillStyle
+      function updateFillStyle() {
+        japan.setFillStyle('sample-polygon', {
+          color: document.getElementById('fill-color').value,
+          opacity: parseFloat(document.getElementById('fill-opacity').value),
+          outlineColor: document.getElementById('fill-outline-color').value
+        });
+      }
+      document.getElementById('fill-color').addEventListener('input', updateFillStyle);
+      document.getElementById('fill-opacity').addEventListener('input', function (e) {
+        document.getElementById('fill-opacity-val').textContent = e.target.value;
+        updateFillStyle();
+      });
+      document.getElementById('fill-outline-color').addEventListener('input', updateFillStyle);
+
+      // setLineStyle
+      function updateLineStyle() {
+        japan.setLineStyle('sample-line', {
+          color: document.getElementById('line-color').value,
+          width: parseFloat(document.getElementById('line-width').value),
+          opacity: parseFloat(document.getElementById('line-opacity').value)
+        });
+      }
+      document.getElementById('line-color').addEventListener('input', updateLineStyle);
+      document.getElementById('line-width').addEventListener('input', function (e) {
+        document.getElementById('line-width-val').textContent = e.target.value;
+        updateLineStyle();
+      });
+      document.getElementById('line-opacity').addEventListener('input', function (e) {
+        document.getElementById('line-opacity-val').textContent = e.target.value;
+        updateLineStyle();
+      });
+
 
       japan.on('click', (e) => {
         const x = e.point.x;
