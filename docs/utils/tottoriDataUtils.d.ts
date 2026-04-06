@@ -11,6 +11,10 @@ export type TottoriDataEntry = {
  */
 export declare function fetchTottoriDataIndex(): Promise<TottoriDataEntry[]>;
 /**
+ * tileUrl からタイル種別を判定する
+ */
+export declare function getTileType(tileUrl: string): 'raster' | 'vector';
+/**
  * 鳥取県データのソースを追加する
  */
 export declare function addTottoriDataSource(map: maplibregl.Map, entry: TottoriDataEntry): string | undefined;
