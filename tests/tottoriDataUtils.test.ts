@@ -1,4 +1,4 @@
-import { addTottoriDataSource, addTottoriDataLayer, removeTottoriDataLayer, fetchTottoriDataIndex, _resetCache } from '../src/utils/tottoriDataUtils';
+import { addTottoriDataSource, addTottoriDataLayer, removeTottoriDataLayer, fetchTottoriDataIndex, getTileType, _resetCache } from '../src/utils/tottoriDataUtils';
 
 // fetchJson をモック
 jest.mock('../src/utils/fetchJson', () => ({
@@ -64,15 +64,39 @@ describe('tottoriDataUtils', () => {
     });
   });
 
+  describe('getTileType', () => {
+    it('.png はラスターと判定する', () => {
+      expect(getTileType('https://example.com/tiles/{z}/{x}/{y}.png')).toBe('raster');
+    });
+
+    it('.pbf はベクターと判定する', () => {
+      expect(getTileType('https://example.com/tiles/{z}/{x}/{y}.pbf')).toBe('vector');
+    });
+  });
+
   describe('addTottoriDataSource', () => {
-    it('ラスターソースを追加する', () => {
+    it('ラスタータイルのソースを追加する', () => {
       const entry = MOCK_INDEX[0];
       const sourceId = addTottoriDataSource(map, entry);
       expect(sourceId).toBe('tottori-aerial_photo_ketaka_h31');
       expect(map.addSource).toHaveBeenCalledWith('tottori-aerial_photo_ketaka_h31', expect.objectContaining({
         type: 'raster',
         tiles: [entry.tileUrl],
+        tileSize: 256,
       }));
+    });
+
+    it('ベクタータイルのソースを追加する', () => {
+      const entry = MOCK_INDEX[1];
+      const sourceId = addTottoriDataSource(map, entry);
+      expect(sourceId).toBe('tottori-crime_tottori');
+      expect(map.addSource).toHaveBeenCalledWith('tottori-crime_tottori', expect.objectContaining({
+        type: 'vector',
+        tiles: [entry.tileUrl],
+      }));
+      // ベクターの場合 tileSize は付与しない
+      const callArgs = map.addSource.mock.calls[0][1];
+      expect(callArgs.tileSize).toBeUndefined();
     });
 
     it('既存ソースがあれば追加しない', () => {
@@ -85,13 +109,24 @@ describe('tottoriDataUtils', () => {
   });
 
   describe('addTottoriDataLayer', () => {
-    it('ラスターレイヤーを追加する', () => {
+    it('ラスタータイルのレイヤーを追加する', () => {
       const entry = MOCK_INDEX[0];
       addTottoriDataLayer(map, entry);
       expect(map.addLayer).toHaveBeenCalledWith(expect.objectContaining({
         id: 'tottori-aerial_photo_ketaka_h31',
         type: 'raster',
         source: 'tottori-aerial_photo_ketaka_h31',
+      }));
+    });
+
+    it('ベクタータイルのレイヤーを circle として追加する', () => {
+      const entry = MOCK_INDEX[1];
+      addTottoriDataLayer(map, entry);
+      expect(map.addLayer).toHaveBeenCalledWith(expect.objectContaining({
+        id: 'tottori-crime_tottori',
+        type: 'circle',
+        source: 'tottori-crime_tottori',
+        'source-layer': 'data',
       }));
     });
 

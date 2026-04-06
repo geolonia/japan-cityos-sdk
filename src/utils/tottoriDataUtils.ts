@@ -29,17 +29,28 @@ function toSourceId(entry: TottoriDataEntry): string {
 }
 
 /**
+ * tileUrl からタイル種別を判定する
+ */
+export function getTileType(tileUrl: string): 'raster' | 'vector' {
+  return tileUrl.endsWith('.pbf') ? 'vector' : 'raster';
+}
+
+/**
  * 鳥取県データのソースを追加する
  */
 export function addTottoriDataSource(map: maplibregl.Map, entry: TottoriDataEntry): string | undefined {
   const id = toSourceId(entry);
   if (!map.getSource(id)) {
-    map.addSource(id, {
-      type: 'raster',
+    const tileType = getTileType(entry.tileUrl);
+    const source: any = {
+      type: tileType,
       tiles: [entry.tileUrl],
-      tileSize: 256,
       attribution: '鳥取県スマートシティ',
-    });
+    };
+    if (tileType === 'raster') {
+      source.tileSize = 256;
+    }
+    map.addSource(id, source);
     return id;
   }
 }
@@ -50,14 +61,29 @@ export function addTottoriDataSource(map: maplibregl.Map, entry: TottoriDataEntr
 export function addTottoriDataLayer(map: maplibregl.Map, entry: TottoriDataEntry): void {
   const id = toSourceId(entry);
   if (!map.getLayer(id)) {
-    map.addLayer({
-      id: id,
-      type: 'raster',
-      source: id,
-      paint: {
-        'raster-opacity': 0.7,
-      },
-    });
+    const tileType = getTileType(entry.tileUrl);
+    if (tileType === 'raster') {
+      map.addLayer({
+        id: id,
+        type: 'raster',
+        source: id,
+        paint: {
+          'raster-opacity': 0.7,
+        },
+      });
+    } else {
+      map.addLayer({
+        id: id,
+        type: 'circle',
+        source: id,
+        'source-layer': 'data',
+        paint: {
+          'circle-color': '#3388ff',
+          'circle-radius': 5,
+          'circle-opacity': 0.7,
+        },
+      });
+    }
   }
 }
 
