@@ -45,7 +45,7 @@ class GeoloniaMap extends maplibregl.Map {
     'basic': 'https://geoloniamaps.github.io/basic-v1/basic-v1',
   };
 
-  static baseMapStyleUrl: {[key: string]: string} = baseMapStyleUrl;
+  static baseMapStyleUrl: {[key: string]: string} = { ...baseMapStyleUrl };
 
   // 3D地形用のソース・レイヤーID（クラス内共通で利用）
   private readonly TERRAIN_SOURCE_ID = "dem";

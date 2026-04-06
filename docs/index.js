@@ -4857,7 +4857,7 @@
         'smartmap': 'https://geolonia.github.io/custom-smartmap-sprite/sprite',
         'basic': 'https://geoloniamaps.github.io/basic-v1/basic-v1',
     };
-    GeoloniaMap.baseMapStyleUrl = baseMapStyleUrl;
+    GeoloniaMap.baseMapStyleUrl = Object.assign({}, baseMapStyleUrl);
     GeoloniaMap.HILLSHADE_LAYER_ID = "hillshading";
     /**
      * 都道府県名一覧を取得（キャッシュ付き）
