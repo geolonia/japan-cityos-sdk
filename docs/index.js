@@ -4162,7 +4162,7 @@
     /**
      * CircleStyleOptions のキーと MapLibre paint プロパティ名のマッピング
      */
-    const STYLE_PROPERTY_MAP = {
+    const STYLE_PROPERTY_MAP$1 = {
         color: 'circle-color',
         radius: 'circle-radius',
         strokeColor: 'circle-stroke-color',
@@ -4179,7 +4179,7 @@
         const layer = map.getLayer(className);
         if (!layer)
             return;
-        for (const [key, paintProperty] of Object.entries(STYLE_PROPERTY_MAP)) {
+        for (const [key, paintProperty] of Object.entries(STYLE_PROPERTY_MAP$1)) {
             const value = style[key];
             if (value !== undefined) {
                 try {
@@ -4195,12 +4195,89 @@
         }
     }
 
+    /**
+     * 指定した className の Fill レイヤーのスタイルを変更する
+     * @param map maplibregl.Map インスタンス
+     * @param className レイヤーのクラス名（レイヤーIDは `${className}-polygon`）
+     * @param style 変更するスタイルオプション
+     */
+    function setFillStyle(map, className, style) {
+        if (style == null)
+            return;
+        const layerId = `${className}-polygon`;
+        const layer = map.getLayer(layerId);
+        if (!layer)
+            return;
+        if (style.color !== undefined) {
+            map.setPaintProperty(layerId, 'fill-color', style.color);
+        }
+        if (style.opacity !== undefined) {
+            map.setPaintProperty(layerId, 'fill-opacity', style.opacity);
+        }
+        if (style.outlineColor !== undefined) {
+            map.setPaintProperty(layerId, 'fill-outline-color', style.outlineColor);
+        }
+    }
+
+    /**
+     * LineStyleOptions のキーと MapLibre paint プロパティ名のマッピング
+     */
+    const STYLE_PROPERTY_MAP = {
+        color: 'line-color',
+        width: 'line-width',
+        opacity: 'line-opacity',
+    };
+    /**
+     * 指定した Line レイヤーの描画スタイルを変更する
+     * @param map maplibregl.Map インスタンス
+     * @param className レイヤーのクラス名（レイヤーIDは `${className}-line`）
+     * @param style 変更するスタイルオプション
+     */
+    function setLineStyle(map, className, style) {
+        if (style == null)
+            return;
+        const layerId = `${className}-line`;
+        const layer = map.getLayer(layerId);
+        if (!layer)
+            return;
+        for (const [key, paintProperty] of Object.entries(STYLE_PROPERTY_MAP)) {
+            const value = style[key];
+            if (value !== undefined) {
+                try {
+                    map.setPaintProperty(layerId, paintProperty, value);
+                }
+                catch (e) {
+                    // プロパティが存在しない場合は無視（開発時のみログ出力）
+                    if (process.env.NODE_ENV === 'development') {
+                        console.warn(`setLineStyle: Failed to set ${paintProperty} on ${layerId}`, e);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 背景地図スタイルURL一覧
+     */
+    const baseMapStyleUrl = {
+        'basic': 'https://basic-v1-background-only.pages.dev/style.json',
+        'hakuchizu': 'https://geoloniamaps.github.io/hakuchizu-mapstyle/style.json',
+        'hakuchizu-nolabel': 'https://geoloniamaps.github.io/hakuchizu-mapstyle/style-nolabel.json',
+        'hakuchizu-notext': 'https://geoloniamaps.github.io/hakuchizu-mapstyle/style-notext.json',
+    };
+    /**
+     * 利用可能な背景地図スタイルのキー一覧を取得する
+     */
+    function getBaseMapStyleKeys() {
+        return Object.keys(baseMapStyleUrl);
+    }
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d, _e, _f, _g;
             const defaults = {
                 container: (_a = params.container) !== null && _a !== void 0 ? _a : 'map',
-                style: (_b = params.style) !== null && _b !== void 0 ? _b : 'https://basic-v1-background-only.pages.dev/style.json',
+                style: (_b = params.style) !== null && _b !== void 0 ? _b : baseMapStyleUrl['basic'],
                 center: (_c = params.lngLat) !== null && _c !== void 0 ? _c : [139.692, 35.689],
                 zoom: (_d = params.zoom) !== null && _d !== void 0 ? _d : 12,
                 hash: (_e = params.hash) !== null && _e !== void 0 ? _e : false,
@@ -4244,6 +4321,12 @@
          */
         static getNLNIData() {
             return getNLNIKeys();
+        }
+        /**
+         * 利用可能な背景地図スタイル名を取得する
+         */
+        static getBaseMapStyles() {
+            return getBaseMapStyleKeys();
         }
         /**
          * 使用できるアイコン名を取得する
@@ -4515,6 +4598,22 @@
             setSymbolIconSize(this, className, size);
         }
         /**
+         * 指定した className の Fill レイヤー（Polygon）のスタイルを変更する
+         * @param className レイヤーのクラス名（レイヤーIDは `${className}-polygon`）
+         * @param style 変更するスタイルオプション（color, opacity, outlineColor）
+         */
+        setFillStyle(className, style) {
+            setFillStyle(this, className, style);
+        }
+        /**
+         * Line レイヤーの描画スタイルを変更する
+         * @param className レイヤーのクラス名（レイヤーIDは `${className}-line`）
+         * @param style 変更するスタイルオプション（color, width, opacity）
+         */
+        setLineStyle(className, style) {
+            setLineStyle(this, className, style);
+        }
+        /**
          * 指定した座標またはbboxのFeatureが存在するか判定する
          * @param xy [lng,lat] | {lng,lat} | [[minLng,minLat],[maxLng,maxLat]]
          * @param layerIds レイヤーIDまたは配列
@@ -4758,6 +4857,7 @@
         'smartmap': 'https://geolonia.github.io/custom-smartmap-sprite/sprite',
         'basic': 'https://geoloniamaps.github.io/basic-v1/basic-v1',
     };
+    GeoloniaMap.baseMapStyleUrl = baseMapStyleUrl;
     GeoloniaMap.HILLSHADE_LAYER_ID = "hillshading";
     /**
      * 都道府県名一覧を取得（キャッシュ付き）
