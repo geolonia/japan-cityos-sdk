@@ -18,6 +18,7 @@ import { setCircleStyle as _setCircleStyle, CircleStyleOptions } from './utils/c
 import { setFillStyle as applyFillStyle, FillStyleOptions } from './setFillStyle';
 import { setLineStyle, LineStyleOptions } from './utils/lineStyleUtils';
 import { baseMapStyleUrl } from './utils/baseMapStyleUtils';
+import { fetchTottoriDataIndex, addTottoriDataSource, addTottoriDataLayer, removeTottoriDataLayer, TottoriDataEntry } from './utils/tottoriDataUtils';
 
 declare global {
   interface Window {
@@ -101,6 +102,14 @@ class GeoloniaMap extends maplibregl.Map {
    */
   static getBaseMapStyles(): string[] {
     return Object.keys(GeoloniaMap.baseMapStyleUrl);
+  }
+
+  /**
+   * 鳥取県スマートシティのデータレイヤー一覧を取得する
+   */
+  static async getTottoriData(): Promise<{ id: string; description: string }[]> {
+    const entries = await fetchTottoriDataIndex();
+    return entries.map(e => ({ id: e.id, description: e.description }));
   }
 
   /**
@@ -658,6 +667,43 @@ class GeoloniaMap extends maplibregl.Map {
     }
     
     removeNLNILayer(this, layerId);
+  }
+
+  /**
+   * 鳥取県スマートシティのデータを表示する
+   * @param dataId データID
+   */
+  async loadTottoriData(dataId: string) {
+    const entries = await fetchTottoriDataIndex();
+    const entry = entries.find(e => e.id === dataId);
+    if (!entry) {
+      console.warn(`鳥取県データ ID: ${dataId} が見つかりません`);
+      return;
+    }
+
+    const sourceId = addTottoriDataSource(this, entry);
+    if (sourceId) {
+      this.loadedSourceIds.add(sourceId);
+    }
+    addTottoriDataLayer(this, entry);
+  }
+
+  /**
+   * 鳥取県スマートシティのデータを非表示にする
+   * @param dataId データID
+   */
+  async removeTottoriData(dataId: string) {
+    const entries = await fetchTottoriDataIndex();
+    const entry = entries.find(e => e.id === dataId);
+    if (!entry) {
+      console.warn(`鳥取県データ ID: ${dataId} が見つかりません`);
+      return;
+    }
+
+    const removedSourceId = removeTottoriDataLayer(this, entry);
+    if (removedSourceId) {
+      this.loadedSourceIds.delete(removedSourceId);
+    }
   }
 
   /**

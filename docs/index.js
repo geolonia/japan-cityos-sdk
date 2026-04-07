@@ -4266,6 +4266,107 @@
         'hakuchizu-notext': 'https://geoloniamaps.github.io/hakuchizu-mapstyle/style-notext.json',
     };
 
+    const TOTTORI_INDEX_URL = 'https://tottori.smartcity.geolonia.com/data/index.json';
+    let _cache = null;
+    let _cachePromise = null;
+    /**
+     * 鳥取県スマートシティの index.json を取得する（キャッシュ付き）
+     */
+    function fetchTottoriDataIndex() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (_cache) {
+                return _cache;
+            }
+            if (_cachePromise) {
+                return _cachePromise;
+            }
+            _cachePromise = (() => __awaiter(this, void 0, void 0, function* () {
+                const data = yield fetchJson(TOTTORI_INDEX_URL);
+                if (!data || !Array.isArray(data)) {
+                    _cachePromise = null;
+                    return [];
+                }
+                _cache = data;
+                return _cache;
+            }))();
+            return _cachePromise;
+        });
+    }
+    function toSourceId(entry) {
+        return `tottori-${entry.id}`;
+    }
+    /**
+     * tileUrl からタイル種別を判定する
+     */
+    function getTileType(tileUrl) {
+        const normalized = tileUrl.split('?')[0].split('#')[0].toLowerCase();
+        return normalized.endsWith('.pbf') ? 'vector' : 'raster';
+    }
+    /**
+     * 鳥取県データのソースを追加する
+     */
+    function addTottoriDataSource(map, entry) {
+        const id = toSourceId(entry);
+        if (!map.getSource(id)) {
+            const tileType = getTileType(entry.tileUrl);
+            const source = {
+                type: tileType,
+                tiles: [entry.tileUrl],
+                attribution: '鳥取県スマートシティ',
+            };
+            if (tileType === 'raster') {
+                source.tileSize = 256;
+            }
+            map.addSource(id, source);
+            return id;
+        }
+    }
+    /**
+     * 鳥取県データのレイヤーを追加する
+     */
+    function addTottoriDataLayer(map, entry) {
+        const id = toSourceId(entry);
+        if (!map.getLayer(id)) {
+            const tileType = getTileType(entry.tileUrl);
+            if (tileType === 'raster') {
+                map.addLayer({
+                    id: id,
+                    type: 'raster',
+                    source: id,
+                    paint: {
+                        'raster-opacity': 0.7,
+                    },
+                });
+            }
+            else {
+                map.addLayer({
+                    id: id,
+                    type: 'circle',
+                    source: id,
+                    'source-layer': 'data',
+                    paint: {
+                        'circle-color': '#3388ff',
+                        'circle-radius': 5,
+                        'circle-opacity': 0.7,
+                    },
+                });
+            }
+        }
+    }
+    /**
+     * 鳥取県データのレイヤーとソースを削除する
+     */
+    function removeTottoriDataLayer(map, entry) {
+        const id = toSourceId(entry);
+        if (map.getLayer(id)) {
+            map.removeLayer(id);
+        }
+        if (map.getSource(id)) {
+            map.removeSource(id);
+            return id;
+        }
+    }
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d, _e, _f, _g;
@@ -4321,6 +4422,15 @@
          */
         static getBaseMapStyles() {
             return Object.keys(GeoloniaMap.baseMapStyleUrl);
+        }
+        /**
+         * 鳥取県スマートシティのデータレイヤー一覧を取得する
+         */
+        static getTottoriData() {
+            return __awaiter(this, void 0, void 0, function* () {
+                const entries = yield fetchTottoriDataIndex();
+                return entries.map(e => ({ id: e.id, description: e.description }));
+            });
         }
         /**
          * 使用できるアイコン名を取得する
@@ -4814,6 +4924,43 @@
                 return;
             }
             removeNLNILayer(this, layerId);
+        }
+        /**
+         * 鳥取県スマートシティのデータを表示する
+         * @param dataId データID
+         */
+        loadTottoriData(dataId) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const entries = yield fetchTottoriDataIndex();
+                const entry = entries.find(e => e.id === dataId);
+                if (!entry) {
+                    console.warn(`鳥取県データ ID: ${dataId} が見つかりません`);
+                    return;
+                }
+                const sourceId = addTottoriDataSource(this, entry);
+                if (sourceId) {
+                    this.loadedSourceIds.add(sourceId);
+                }
+                addTottoriDataLayer(this, entry);
+            });
+        }
+        /**
+         * 鳥取県スマートシティのデータを非表示にする
+         * @param dataId データID
+         */
+        removeTottoriData(dataId) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const entries = yield fetchTottoriDataIndex();
+                const entry = entries.find(e => e.id === dataId);
+                if (!entry) {
+                    console.warn(`鳥取県データ ID: ${dataId} が見つかりません`);
+                    return;
+                }
+                const removedSourceId = removeTottoriDataLayer(this, entry);
+                if (removedSourceId) {
+                    this.loadedSourceIds.delete(removedSourceId);
+                }
+            });
         }
         /**
          * 3D地形表示を有効にする
