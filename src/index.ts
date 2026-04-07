@@ -17,7 +17,7 @@ import { fetchJson } from './utils/fetchJson';
 import { setCircleStyle as _setCircleStyle, CircleStyleOptions } from './utils/circleStyleUtils';
 import { setFillStyle as applyFillStyle, FillStyleOptions } from './setFillStyle';
 import { setLineStyle, LineStyleOptions } from './utils/lineStyleUtils';
-import { baseMapStyleUrl, getBaseMapStyleKeys } from './utils/baseMapStyleUtils';
+import { baseMapStyleUrl } from './utils/baseMapStyleUtils';
 
 declare global {
   interface Window {
@@ -56,7 +56,7 @@ class GeoloniaMap extends maplibregl.Map {
   constructor(params: any) {
     const defaults = {
       container: params.container ?? 'map',
-      style: params.style ?? baseMapStyleUrl['basic'],
+      style: params.style ?? GeoloniaMap.baseMapStyleUrl['basic'],
       center: params.lngLat ?? [139.692, 35.689],
       zoom: params.zoom ?? 12,
       hash: params.hash ?? false,
@@ -100,7 +100,7 @@ class GeoloniaMap extends maplibregl.Map {
    * 利用可能な背景地図スタイル名を取得する
    */
   static getBaseMapStyles(): string[] {
-    return getBaseMapStyleKeys();
+    return Object.keys(GeoloniaMap.baseMapStyleUrl);
   }
 
   /**

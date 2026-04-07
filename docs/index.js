@@ -4187,7 +4187,7 @@
                 }
                 catch (e) {
                     // プロパティが存在しない場合は無視（開発時のみログ出力）
-                    if (process.env.NODE_ENV === 'development') {
+                    if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'development') {
                         console.warn(`setCircleStyle: Failed to set ${paintProperty} on ${className}`, e);
                     }
                 }
@@ -4248,7 +4248,7 @@
                 }
                 catch (e) {
                     // プロパティが存在しない場合は無視（開発時のみログ出力）
-                    if (process.env.NODE_ENV === 'development') {
+                    if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'development') {
                         console.warn(`setLineStyle: Failed to set ${paintProperty} on ${layerId}`, e);
                     }
                 }
@@ -4265,19 +4265,13 @@
         'hakuchizu-nolabel': 'https://geoloniamaps.github.io/hakuchizu-mapstyle/style-nolabel.json',
         'hakuchizu-notext': 'https://geoloniamaps.github.io/hakuchizu-mapstyle/style-notext.json',
     };
-    /**
-     * 利用可能な背景地図スタイルのキー一覧を取得する
-     */
-    function getBaseMapStyleKeys() {
-        return Object.keys(baseMapStyleUrl);
-    }
 
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d, _e, _f, _g;
             const defaults = {
                 container: (_a = params.container) !== null && _a !== void 0 ? _a : 'map',
-                style: (_b = params.style) !== null && _b !== void 0 ? _b : baseMapStyleUrl['basic'],
+                style: (_b = params.style) !== null && _b !== void 0 ? _b : GeoloniaMap.baseMapStyleUrl['basic'],
                 center: (_c = params.lngLat) !== null && _c !== void 0 ? _c : [139.692, 35.689],
                 zoom: (_d = params.zoom) !== null && _d !== void 0 ? _d : 12,
                 hash: (_e = params.hash) !== null && _e !== void 0 ? _e : false,
@@ -4326,7 +4320,7 @@
          * 利用可能な背景地図スタイル名を取得する
          */
         static getBaseMapStyles() {
-            return getBaseMapStyleKeys();
+            return Object.keys(GeoloniaMap.baseMapStyleUrl);
         }
         /**
          * 使用できるアイコン名を取得する
