@@ -4162,7 +4162,7 @@
     /**
      * CircleStyleOptions のキーと MapLibre paint プロパティ名のマッピング
      */
-    const STYLE_PROPERTY_MAP = {
+    const STYLE_PROPERTY_MAP$1 = {
         color: 'circle-color',
         radius: 'circle-radius',
         strokeColor: 'circle-stroke-color',
@@ -4179,7 +4179,7 @@
         const layer = map.getLayer(className);
         if (!layer)
             return;
-        for (const [key, paintProperty] of Object.entries(STYLE_PROPERTY_MAP)) {
+        for (const [key, paintProperty] of Object.entries(STYLE_PROPERTY_MAP$1)) {
             const value = style[key];
             if (value !== undefined) {
                 try {
@@ -4192,6 +4192,168 @@
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * 指定した className の Fill レイヤーのスタイルを変更する
+     * @param map maplibregl.Map インスタンス
+     * @param className レイヤーのクラス名（レイヤーIDは `${className}-polygon`）
+     * @param style 変更するスタイルオプション
+     */
+    function setFillStyle(map, className, style) {
+        if (style == null)
+            return;
+        const layerId = `${className}-polygon`;
+        const layer = map.getLayer(layerId);
+        if (!layer)
+            return;
+        if (style.color !== undefined) {
+            map.setPaintProperty(layerId, 'fill-color', style.color);
+        }
+        if (style.opacity !== undefined) {
+            map.setPaintProperty(layerId, 'fill-opacity', style.opacity);
+        }
+        if (style.outlineColor !== undefined) {
+            map.setPaintProperty(layerId, 'fill-outline-color', style.outlineColor);
+        }
+    }
+
+    /**
+     * LineStyleOptions のキーと MapLibre paint プロパティ名のマッピング
+     */
+    const STYLE_PROPERTY_MAP = {
+        color: 'line-color',
+        width: 'line-width',
+        opacity: 'line-opacity',
+    };
+    /**
+     * 指定した Line レイヤーの描画スタイルを変更する
+     * @param map maplibregl.Map インスタンス
+     * @param className レイヤーのクラス名（レイヤーIDは `${className}-line`）
+     * @param style 変更するスタイルオプション
+     */
+    function setLineStyle(map, className, style) {
+        if (style == null)
+            return;
+        const layerId = `${className}-line`;
+        const layer = map.getLayer(layerId);
+        if (!layer)
+            return;
+        for (const [key, paintProperty] of Object.entries(STYLE_PROPERTY_MAP)) {
+            const value = style[key];
+            if (value !== undefined) {
+                try {
+                    map.setPaintProperty(layerId, paintProperty, value);
+                }
+                catch (e) {
+                    // プロパティが存在しない場合は無視（開発時のみログ出力）
+                    if (process.env.NODE_ENV === 'development') {
+                        console.warn(`setLineStyle: Failed to set ${paintProperty} on ${layerId}`, e);
+                    }
+                }
+            }
+        }
+    }
+
+    const TOTTORI_INDEX_URL = 'https://tottori.smartcity.geolonia.com/data/index.json';
+    let _cache = null;
+    let _cachePromise = null;
+    /**
+     * 鳥取県スマートシティの index.json を取得する（キャッシュ付き）
+     */
+    function fetchTottoriDataIndex() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (_cache) {
+                return _cache;
+            }
+            if (_cachePromise) {
+                return _cachePromise;
+            }
+            _cachePromise = (() => __awaiter(this, void 0, void 0, function* () {
+                const data = yield fetchJson(TOTTORI_INDEX_URL);
+                if (!data || !Array.isArray(data)) {
+                    _cachePromise = null;
+                    return [];
+                }
+                _cache = data;
+                return _cache;
+            }))();
+            return _cachePromise;
+        });
+    }
+    function toSourceId(entry) {
+        return `tottori-${entry.id}`;
+    }
+    /**
+     * tileUrl からタイル種別を判定する
+     */
+    function getTileType(tileUrl) {
+        const normalized = tileUrl.split('?')[0].split('#')[0].toLowerCase();
+        return normalized.endsWith('.pbf') ? 'vector' : 'raster';
+    }
+    /**
+     * 鳥取県データのソースを追加する
+     */
+    function addTottoriDataSource(map, entry) {
+        const id = toSourceId(entry);
+        if (!map.getSource(id)) {
+            const tileType = getTileType(entry.tileUrl);
+            const source = {
+                type: tileType,
+                tiles: [entry.tileUrl],
+                attribution: '鳥取県スマートシティ',
+            };
+            if (tileType === 'raster') {
+                source.tileSize = 256;
+            }
+            map.addSource(id, source);
+            return id;
+        }
+    }
+    /**
+     * 鳥取県データのレイヤーを追加する
+     */
+    function addTottoriDataLayer(map, entry) {
+        const id = toSourceId(entry);
+        if (!map.getLayer(id)) {
+            const tileType = getTileType(entry.tileUrl);
+            if (tileType === 'raster') {
+                map.addLayer({
+                    id: id,
+                    type: 'raster',
+                    source: id,
+                    paint: {
+                        'raster-opacity': 0.7,
+                    },
+                });
+            }
+            else {
+                map.addLayer({
+                    id: id,
+                    type: 'circle',
+                    source: id,
+                    'source-layer': 'data',
+                    paint: {
+                        'circle-color': '#3388ff',
+                        'circle-radius': 5,
+                        'circle-opacity': 0.7,
+                    },
+                });
+            }
+        }
+    }
+    /**
+     * 鳥取県データのレイヤーとソースを削除する
+     */
+    function removeTottoriDataLayer(map, entry) {
+        const id = toSourceId(entry);
+        if (map.getLayer(id)) {
+            map.removeLayer(id);
+        }
+        if (map.getSource(id)) {
+            map.removeSource(id);
+            return id;
         }
     }
 
@@ -4244,6 +4406,15 @@
          */
         static getNLNIData() {
             return getNLNIKeys();
+        }
+        /**
+         * 鳥取県スマートシティのデータレイヤー一覧を取得する
+         */
+        static getTottoriData() {
+            return __awaiter(this, void 0, void 0, function* () {
+                const entries = yield fetchTottoriDataIndex();
+                return entries.map(e => ({ id: e.id, description: e.description }));
+            });
         }
         /**
          * 使用できるアイコン名を取得する
@@ -4515,6 +4686,22 @@
             setSymbolIconSize(this, className, size);
         }
         /**
+         * 指定した className の Fill レイヤー（Polygon）のスタイルを変更する
+         * @param className レイヤーのクラス名（レイヤーIDは `${className}-polygon`）
+         * @param style 変更するスタイルオプション（color, opacity, outlineColor）
+         */
+        setFillStyle(className, style) {
+            setFillStyle(this, className, style);
+        }
+        /**
+         * Line レイヤーの描画スタイルを変更する
+         * @param className レイヤーのクラス名（レイヤーIDは `${className}-line`）
+         * @param style 変更するスタイルオプション（color, width, opacity）
+         */
+        setLineStyle(className, style) {
+            setLineStyle(this, className, style);
+        }
+        /**
          * 指定した座標またはbboxのFeatureが存在するか判定する
          * @param xy [lng,lat] | {lng,lat} | [[minLng,minLat],[maxLng,maxLat]]
          * @param layerIds レイヤーIDまたは配列
@@ -4721,6 +4908,43 @@
                 return;
             }
             removeNLNILayer(this, layerId);
+        }
+        /**
+         * 鳥取県スマートシティのデータを表示する
+         * @param dataId データID
+         */
+        loadTottoriData(dataId) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const entries = yield fetchTottoriDataIndex();
+                const entry = entries.find(e => e.id === dataId);
+                if (!entry) {
+                    console.warn(`鳥取県データ ID: ${dataId} が見つかりません`);
+                    return;
+                }
+                const sourceId = addTottoriDataSource(this, entry);
+                if (sourceId) {
+                    this.loadedSourceIds.add(sourceId);
+                }
+                addTottoriDataLayer(this, entry);
+            });
+        }
+        /**
+         * 鳥取県スマートシティのデータを非表示にする
+         * @param dataId データID
+         */
+        removeTottoriData(dataId) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const entries = yield fetchTottoriDataIndex();
+                const entry = entries.find(e => e.id === dataId);
+                if (!entry) {
+                    console.warn(`鳥取県データ ID: ${dataId} が見つかりません`);
+                    return;
+                }
+                const removedSourceId = removeTottoriDataLayer(this, entry);
+                if (removedSourceId) {
+                    this.loadedSourceIds.delete(removedSourceId);
+                }
+            });
         }
         /**
          * 3D地形表示を有効にする
