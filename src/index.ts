@@ -163,6 +163,18 @@ class GeoloniaMap extends maplibregl.Map {
     return null;
   }
 
+  /**
+   * 都道府県+市区町村の中心座標を取得する
+   */
+  static async getLatLngByCity(prefName: string, cityName: string): Promise<[number, number] | null> {
+    const result = await normalize(prefName + cityName);
+    const point = result?.point;
+    if (point) {
+      return [point.lng, point.lat];
+    }
+    return null;
+  }
+
   /* ****************
    * レイヤーを追加する
    * @param className クラス名

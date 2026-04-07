@@ -42,131 +42,300 @@
       z-index: 10;
       top: 10px;
       left: 10px;
-      width: 260px;
+      width: 280px;
       height: calc(100% - 20px);
       overflow-y: auto;
       background: #fff;
-      padding: 10px;
+      padding: 12px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       box-sizing: border-box;
+      font-size: 13px;
+    }
+
+    #sidebar h2 {
+      font-size: 13px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .section {
+      margin-bottom: 8px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      background: #f8f8f8;
+      cursor: pointer;
+      user-select: none;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    .section-header:hover {
+      background: #f0f0f0;
+    }
+
+    .section-toggle {
+      font-size: 10px;
+      color: #888;
+      transition: transform 0.2s;
+    }
+
+    .section.collapsed .section-toggle {
+      transform: rotate(-90deg);
+    }
+
+    .section.collapsed .section-body {
+      display: none;
+    }
+
+    .section-body {
+      padding: 8px 10px;
+    }
+
+    .section-body label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+
+    .section-body select,
+    .section-body input[type="range"],
+    .section-body button {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .section-body select {
+      margin-bottom: 6px;
+      padding: 4px;
+    }
+
+    .section-body input[type="range"] {
+      margin-bottom: 6px;
+    }
+
+    .section-body input[type="color"] {
+      width: 100%;
+      height: 28px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 2px;
+      margin-bottom: 6px;
+      box-sizing: border-box;
+    }
+
+    .section-body input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 4px;
+      padding: 4px;
+    }
+
+    .section-body button {
+      padding: 6px 0;
+      margin-bottom: 4px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fafafa;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .section-body button:hover {
+      background: #f0f0f0;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      margin: 0;
+    }
+
+    .checkbox-row label {
+      display: inline;
+      margin: 0;
+      font-size: 12px;
+    }
+
+    .sub-control {
+      margin-left: 18px;
+      margin-bottom: 6px;
+    }
+
+    .sub-control select {
+      width: 100%;
+      font-size: 11px;
+    }
+
+    .style-separator {
+      border: none;
+      border-top: 1px solid #eee;
+      margin: 8px 0;
     }
   </style>
 </head>
 
 <body>
-  <!-- サイドバー全体をまとめるdivを追加 -->
-  <div 
-    id="sidebar"
-  >
-    <div style="margin-bottom:12px;">
-      <label for="pref-select" style="font-weight:bold;">都道府県</label>
-      <select id="pref-select" style="width:100%;margin-bottom:8px;"></select>
-      <label for="city-select" style="font-weight:bold;">市区町村</label>
-      <select id="city-select" style="width:100%;"></select>
+  <div id="sidebar">
+    <!-- 地図設定セクション -->
+    <div class="section" id="section-map-settings">
+      <div class="section-header" onclick="toggleSection('section-map-settings')">
+        <h2>地図設定</h2>
+        <span class="section-toggle">▼</span>
+      </div>
+      <div class="section-body">
+        <label for="pref-select"><strong>都道府県</strong></label>
+        <select id="pref-select"></select>
+        <label for="city-select"><strong>市区町村</strong></label>
+        <select id="city-select"></select>
+
+        <label for="style-select" style="margin-top:8px;"><strong>背景地図</strong></label>
+        <select id="style-select">
+          <option value="https://basic-v1-background-only.pages.dev/style.json">basic</option>
+          <option value="https://geoloniamaps.github.io/gsi/style.json">標準</option>
+          <option value="https://smartmap.styles.geoloniamaps.com/style.json">GSI</option>
+          <option value="https://smartcity-satellite.styles.geoloniamaps.com/style.json">衛星写真</option>
+          <option value="https://chizubouken-lab.pages.dev/style.json">ゲーム風</option>
+        </select>
+
+        <button id="toggle-3d-btn">3D地形表示 ON</button>
+        <button id="get-elevation-btn">現在地の標高を取得</button>
+      </div>
     </div>
-    <div style="margin-bottom:12px;">
-      <p style="font-weight:bold;">背景地図</p>
-      <select id="style-select" style="width:100%;">
-        <option value="https://basic-v1-background-only.pages.dev/style.json">basic</option>
-        <option value="https://geoloniamaps.github.io/gsi/style.json">標準</option>
-        <option value="https://smartmap.styles.geoloniamaps.com/style.json">GSI</option>
-        <option value="https://smartcity-satellite.styles.geoloniamaps.com/style.json">衛星写真</option>
-        <option value="https://chizubouken-lab.pages.dev/style.json">ゲーム風</option>
-      </select>
+
+    <!-- データ表示セクション -->
+    <div class="section" id="section-data">
+      <div class="section-header" onclick="toggleSection('section-data')">
+        <h2>データ表示</h2>
+        <span class="section-toggle">▼</span>
+      </div>
+      <div class="section-body">
+        <label><strong>OSM POI</strong></label>
+        <div class="checkbox-row">
+          <input type="checkbox" id="poi-checkbox" checked>
+          <label for="poi-checkbox">レストラン</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="poi-checkbox2" checked>
+          <label for="poi-checkbox2">鉄道</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="poi-checkbox3" checked>
+          <label for="poi-checkbox3">学校</label>
+        </div>
+        <div class="sub-control">
+          <select id="school-sprite-select">
+            <option value="basic" default>basicスプライト</option>
+            <option value="chizubouken-lab">chizubouken-labスプライト</option>
+          </select>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="poi-checkbox4" checked>
+          <label for="poi-checkbox4">動物園</label>
+        </div>
+        <div class="sub-control">
+          <select id="zoo-icon-select">
+            <option value="zoo" default>動物園アイコン</option>
+            <option value="castle">城アイコン</option>
+            <option value="nonexistent">存在しないアイコン</option>
+          </select>
+        </div>
+
+        <label style="margin-top:8px;"><strong>ハザードマップ</strong></label>
+        <div id="hazardmap-checkbox-list"></div>
+
+        <label style="margin-top:8px;"><strong>国土数値情報</strong></label>
+        <div id="nlni-checkbox-list"></div>
+
+        <label style="margin-top:8px;"><strong>鳥取県スマートシティ</strong></label>
+        <input type="text" id="tottori-search" placeholder="レイヤー検索...">
+        <div id="tottori-checkbox-list" style="max-height:200px;overflow-y:auto;"></div>
+      </div>
     </div>
-    <div style="margin-bottom:12px;">
-      <input type="checkbox" id="poi-checkbox" checked>
-      <label for="poi-checkbox">OSM：レストラン</label>
+
+    <!-- スタイル変更デモセクション -->
+    <div class="section" id="section-style-demo">
+      <div class="section-header" onclick="toggleSection('section-style-demo')">
+        <h2>スタイル変更デモ</h2>
+        <span class="section-toggle">▼</span>
+      </div>
+      <div class="section-body">
+        <button id="load-sample-features-btn" style="background:#4a90d9;color:#fff;border-color:#3a7bc8;">サンプルの地物を表示する</button>
+
+        <div id="style-controls" style="display:none;">
+          <hr class="style-separator">
+          <label><strong>setSymbolIconSize</strong> (cafe)</label>
+          <label>icon-size: <span id="symbol-size-val">0.5</span></label>
+          <input type="range" id="symbol-size" min="0.1" max="3" step="0.1" value="0.5">
+
+          <hr class="style-separator">
+          <label><strong>setCircleStyle</strong> (sample-circle)</label>
+          <label>color</label>
+          <input type="color" id="circle-color" value="#FF0000">
+          <label>radius: <span id="circle-radius-val">6</span></label>
+          <input type="range" id="circle-radius" min="1" max="30" step="1" value="6">
+          <label>strokeColor</label>
+          <input type="color" id="circle-stroke-color" value="#FF0000">
+          <label>strokeWidth: <span id="circle-stroke-width-val">1</span></label>
+          <input type="range" id="circle-stroke-width" min="0" max="10" step="1" value="1">
+          <label>opacity: <span id="circle-opacity-val">0.8</span></label>
+          <input type="range" id="circle-opacity" min="0" max="1" step="0.1" value="0.8">
+
+          <hr class="style-separator">
+          <label><strong>setFillStyle</strong> (sample-polygon)</label>
+          <label>color</label>
+          <input type="color" id="fill-color" value="#00FF00">
+          <label>opacity: <span id="fill-opacity-val">0.5</span></label>
+          <input type="range" id="fill-opacity" min="0" max="1" step="0.1" value="0.5">
+          <label>outlineColor</label>
+          <input type="color" id="fill-outline-color" value="#00FF00">
+
+          <hr class="style-separator">
+          <label><strong>setLineStyle</strong> (sample-line)</label>
+          <label>color</label>
+          <input type="color" id="line-color" value="#0000FF">
+          <label>width: <span id="line-width-val">3</span></label>
+          <input type="range" id="line-width" min="1" max="20" step="1" value="3">
+          <label>opacity: <span id="line-opacity-val">1.0</span></label>
+          <input type="range" id="line-opacity" min="0" max="1" step="0.1" value="1.0">
+        </div>
+      </div>
     </div>
-    <div style="margin-bottom:12px;">
-      <input type="checkbox" id="poi-checkbox2" checked>
-      <label for="poi-checkbox2">OSM：鉄道</label>
+
+    <!-- ツールセクション -->
+    <div class="section" id="section-tools">
+      <div class="section-header" onclick="toggleSection('section-tools')">
+        <h2>ツール</h2>
+        <span class="section-toggle">▼</span>
+      </div>
+      <div class="section-body">
+        <button id="show-icons-btn">アイコン一覧表示</button>
+      </div>
     </div>
-    <div style="margin-bottom:12px;">
-      <input type="checkbox" id="poi-checkbox3" checked>
-      <label for="poi-checkbox3">OSM：学校</label>
-    </div>
-    <div style="margin-bottom:12px;">
-      <select id="school-sprite-select" style="width:100%;">
-        <option value="basic" default>学校を'basic'スプライトで表示</option>
-        <option value="chizubouken-lab">学校を'chizubouken-lab'スプライトで表示</option>
-      </select>
-    </div>
-    <div style="margin-bottom:12px;">
-      <input type="checkbox" id="poi-checkbox4" checked>
-      <label for="poi-checkbox4">OSM：zoo</label>
-    </div>
-    <div style="margin-bottom:12px;">
-      <select id="zoo-icon-select" style="width:100%;">
-        <option value="zoo" default>動物園を'動物園'アイコンで表示</option>
-        <option value="castle">動物園を'城'アイコンで表示</option>
-        <option value="nonexistent">動物園を存在しないアイコンで表示（アイコン切り替わりません）</option>
-      </select>
-    </div>
-    <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
-      <p style="font-weight:bold;">ハザードマップ</p>
-      <div id="hazardmap-checkbox-list"></div>
-    </div>
-    <div style="background:#fff;padding:5px;border-radius:5px;">
-      <p style="font-weight:bold;">国土数値情報</p>
-      <div id="nlni-checkbox-list"></div>
-    </div>
-    <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
-      <p style="font-weight:bold;">鳥取県スマートシティ</p>
-      <input type="text" id="tottori-search" placeholder="レイヤー検索..." style="width:100%;margin-bottom:4px;box-sizing:border-box;">
-      <div id="tottori-checkbox-list" style="max-height:200px;overflow-y:auto;"></div>
-    </div>
-    <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
-      <p style="font-weight:bold;">setSymbolIconSize</p>
-      <label>icon-size: <span id="symbol-size-val">0.5</span></label>
-      <input type="range" id="symbol-size" min="0.1" max="3" step="0.1" value="0.5" style="width:100%;">
-    </div>
-    <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
-      <p style="font-weight:bold;">setCircleStyle</p>
-      <label>color</label>
-      <input type="color" id="circle-color" value="#FF0000" style="width:100%;">
-      <label>radius: <span id="circle-radius-val">6</span></label>
-      <input type="range" id="circle-radius" min="1" max="30" step="1" value="6" style="width:100%;">
-      <label>strokeColor</label>
-      <input type="color" id="circle-stroke-color" value="#FF0000" style="width:100%;">
-      <label>strokeWidth: <span id="circle-stroke-width-val">1</span></label>
-      <input type="range" id="circle-stroke-width" min="0" max="10" step="1" value="1" style="width:100%;">
-      <label>opacity: <span id="circle-opacity-val">0.8</span></label>
-      <input type="range" id="circle-opacity" min="0" max="1" step="0.1" value="0.8" style="width:100%;">
-    </div>
-    <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
-      <p style="font-weight:bold;">setFillStyle</p>
-      <label>color</label>
-      <input type="color" id="fill-color" value="#00FF00" style="width:100%;">
-      <label>opacity: <span id="fill-opacity-val">0.5</span></label>
-      <input type="range" id="fill-opacity" min="0" max="1" step="0.1" value="0.5" style="width:100%;">
-      <label>outlineColor</label>
-      <input type="color" id="fill-outline-color" value="#00FF00" style="width:100%;">
-    </div>
-    <div style="margin-bottom:12px;background:#fff;padding:5px;border-radius:5px;">
-      <p style="font-weight:bold;">setLineStyle</p>
-      <label>color</label>
-      <input type="color" id="line-color" value="#0000FF" style="width:100%;">
-      <label>width: <span id="line-width-val">3</span></label>
-      <input type="range" id="line-width" min="1" max="20" step="1" value="3" style="width:100%;">
-      <label>opacity: <span id="line-opacity-val">1.0</span></label>
-      <input type="range" id="line-opacity" min="0" max="1" step="0.1" value="1.0" style="width:100%;">
-    </div>
-    <div style="margin-bottom:12px;">
-      <button id="toggle-3d-btn" style="width:100%;padding:8px 0;">3D地形表示 ON</button>
-    </div>
-    <div style="margin-bottom:12px;">
-      <button id="get-elevation-btn" style="width:100%;padding:8px 0;">現在地の標高を取得</button>
-    </div>
-    <div style="margin-bottom:12px;">
-      <button id="show-icons-btn" style="width:100%;padding:8px 0;">アイコン一覧表示</button>
-    </div>
+
     <div id="icon-popup" style="display:none;position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:1000;background:#fff;border:1px solid #ccc;padding:16px;border-radius:8px;max-width:90vw;max-height:70vh;overflow:auto;"></div>
   </div>
   <div id="map"></div>
   <script src="./index.js"></script>
   <script type="application/javascript">
+    // セクション折りたたみ
+    function toggleSection(sectionId) {
+      document.getElementById(sectionId).classList.toggle('collapsed');
+    }
+
     // 都道府県・市区町村プルダウン初期化
     async function initPrefCityDropdown() {
       const prefSelect = document.getElementById('pref-select');
@@ -178,15 +347,31 @@
       const firstPref = prefs[0];
       const cities = await geolonia.japan.Map.fetchCityNames(firstPref);
       citySelect.innerHTML = cities.map(city => `<option value="${city}">${city}</option>`).join('');
-      // 都道府県変更時のイベント
+
+      // 都道府県変更時：市区町村を更新して地図を移動
       prefSelect.addEventListener('change', async function(e) {
         const prefName = e.target.value;
         const cities = await geolonia.japan.Map.fetchCityNames(prefName);
-        console.log('選択された都道府県:', prefName, cities);
         citySelect.innerHTML = cities.map(city => `<option value="${city}">${city}</option>`).join('');
+        // 都道府県の座標に移動
+        const lngLat = await geolonia.japan.Map.getLatLngByPrefecture(prefName);
+        if (lngLat) {
+          japan.flyTo({ center: lngLat, zoom: 10 });
+        }
+      });
+
+      // 市区町村変更時：地図を移動
+      citySelect.addEventListener('change', async function(e) {
+        const prefName = prefSelect.value;
+        const cityName = e.target.value;
+        const lngLat = await geolonia.japan.Map.getLatLngByCity(prefName, cityName);
+        if (lngLat) {
+          japan.flyTo({ center: lngLat, zoom: 13 });
+        }
       });
     }
 
+    // サンプル GeoJSON データ
     const geojson = {
       type: 'FeatureCollection',
       features: [
@@ -326,7 +511,7 @@
     const hazardCheckboxList = document.getElementById('hazardmap-checkbox-list');
     hazardMapData.forEach(name => {
       const label = document.createElement('label');
-      label.style.display = 'block';
+      label.className = 'checkbox-row';
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
       checkbox.value = name;
@@ -347,7 +532,7 @@
     const nlniCheckboxList = document.getElementById('nlni-checkbox-list');
     nlniData.forEach(name => {
       const label = document.createElement('label');
-      label.style.display = 'block';
+      label.className = 'checkbox-row';
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
       checkbox.value = name;
@@ -376,7 +561,6 @@
       const searchInput = document.getElementById('tottori-search');
 
       function renderList(filter) {
-        // チェック済みの ID を保持
         const checked = new Set(
           Array.from(container.querySelectorAll('input:checked')).map(cb => cb.value)
         );
@@ -390,8 +574,7 @@
           : entries;
         filtered.forEach(entry => {
           const label = document.createElement('label');
-          label.style.display = 'block';
-          label.style.fontSize = '12px';
+          label.className = 'checkbox-row';
           const checkbox = document.createElement('input');
           checkbox.type = 'checkbox';
           checkbox.value = entry.id;
@@ -422,15 +605,19 @@
     }
     initTottoriDataCheckboxes();
 
+    // サンプル地物の読み込み状態
+    let sampleFeaturesLoaded = false;
+
     japan.on('load', () => {
-  // 都道府県・市区町村プルダウン初期化
-  initPrefCityDropdown();
+      // 都道府県・市区町村プルダウン初期化
+      initPrefCityDropdown();
+
       // csvデータの読み込み
       const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSv5OOG_biAGX5Q2XXrBPEtfthDNmFFtwPd50wCRON4aphbQMPHUWXtvzZ7UUjOFGhmNSv3h_jE-tyu/pub?gid=2058114753&single=true&output=csv'
       japan.loadCSV(url, '選挙時投票所一覧', {
         'marker-color': '#eba037'
       });
-    console.log('style:', japan.getStyle());
+      console.log('style:', japan.getStyle());
 
       // geojsonの読み込み
       japan.loadGeojson(geojson, 'cafe', {
@@ -462,17 +649,6 @@
           "sprite-sheet": "chizubouken-lab"
         }
       )
-
-      // Circle GeoJSON
-      japan.loadGeojson(circleGeojson, 'sample-circle', {
-        'marker-color': '#FF0000'
-      });
-
-      // Polygon GeoJSON
-      japan.loadGeojson(polygonGeojson, 'sample-polygon', {});
-
-      // Line GeoJSON
-      japan.loadGeojson(lineGeojson, 'sample-line', {});
 
       // osmのpoiを表示
       japan.loadOsmPoi('restaurant', 'chizubouken-lab');
@@ -512,8 +688,7 @@
         }
       });
 
-
-      // スタイル切り替え
+      // スプライト切り替え
       document.getElementById('school-sprite-select').addEventListener('change', function (e) {
         const schoolLayerIds = japan.hasLayer('学校');
         if (schoolLayerIds.length > 0) {
@@ -523,8 +698,7 @@
         }
       });
 
-
-      // スタイル切り替え
+      // アイコン切り替え
       document.getElementById('zoo-icon-select').addEventListener('change', function (e) {
         const zooLayerIds = japan.hasLayer('動物園');
         if (zooLayerIds.length > 0) {
@@ -532,6 +706,28 @@
             japan.changeLayerIcon(layerId, e.target.value, 'chizubouken-lab');
           });
         }
+      });
+
+      // サンプル地物を表示するボタン
+      document.getElementById('load-sample-features-btn').addEventListener('click', function () {
+        if (sampleFeaturesLoaded) return;
+        sampleFeaturesLoaded = true;
+
+        // Circle GeoJSON
+        japan.loadGeojson(circleGeojson, 'sample-circle', {
+          'marker-color': '#FF0000'
+        });
+        // Polygon GeoJSON
+        japan.loadGeojson(polygonGeojson, 'sample-polygon', {});
+        // Line GeoJSON
+        japan.loadGeojson(lineGeojson, 'sample-line', {});
+
+        // スタイルコントロールを表示
+        document.getElementById('style-controls').style.display = 'block';
+        this.textContent = 'サンプル地物を表示済み';
+        this.style.background = '#999';
+        this.style.borderColor = '#888';
+        this.style.cursor = 'default';
       });
 
       // setSymbolIconSize
@@ -599,7 +795,6 @@
         updateLineStyle();
       });
 
-
       japan.on('click', (e) => {
         const x = e.point.x;
         const y = e.point.y;
@@ -621,7 +816,7 @@
         const property = data[0].properties;
 
         let tableHTML = "<table class='popup-table'>";
-        tableHTML += "<tr><th>属性</th><th>値</th></tr>"; // ヘッダー行を追加
+        tableHTML += "<tr><th>属性</th><th>値</th></tr>";
         for (let key in property) {
           tableHTML += `<tr><td>${key}</td><td>${property[key]}</td></tr>`;
         }
@@ -672,12 +867,10 @@
     // アイコン一覧表示ボタンのイベント
     document.getElementById('show-icons-btn').addEventListener('click', async function () {
       const popup = document.getElementById('icon-popup');
-      // 既に表示されている場合は非表示にする
       if (popup.style.display === 'block') {
         popup.style.display = 'none';
         return;
       }
-      // 例: 'chizubouken-lab' のアイコン一覧を取得
       const styles = await geolonia.japan.Map.getIconStyles('chizubouken-lab');
       let html = '<strong>chizubouken-lab のアイコン一覧</strong><br><div style="display:flex;flex-wrap:wrap;gap:12px;">';
       styles.forEach(style => {

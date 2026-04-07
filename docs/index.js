@@ -4480,6 +4480,19 @@
                 return null;
             });
         }
+        /**
+         * 都道府県+市区町村の中心座標を取得する
+         */
+        static getLatLngByCity(prefName, cityName) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const result = yield ut(prefName + cityName);
+                const point = result === null || result === void 0 ? void 0 : result.point;
+                if (point) {
+                    return [point.lng, point.lat];
+                }
+                return null;
+            });
+        }
         /* ****************
          * レイヤーを追加する
          * @param className クラス名
