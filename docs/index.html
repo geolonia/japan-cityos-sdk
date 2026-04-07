@@ -365,7 +365,13 @@
 
     // 鳥取県スマートシティデータのチェックボックスを生成（非同期）
     async function initTottoriDataCheckboxes() {
-      const entries = await geolonia.japan.Map.getTottoriData();
+      let entries;
+      try {
+        entries = await geolonia.japan.Map.getTottoriData();
+      } catch (err) {
+        console.error('鳥取県データの取得に失敗:', err);
+        return;
+      }
       const container = document.getElementById('tottori-checkbox-list');
       const searchInput = document.getElementById('tottori-search');
 
