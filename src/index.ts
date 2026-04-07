@@ -4,6 +4,7 @@ import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByL
 import Papa from 'papaparse';
 import { toQueryBox } from './toQueryBox';
 import { normalize } from '@geolonia/normalize-japanese-addresses';
+import { resolveLatLng } from './utils/resolveLatLng';
 import { addOsmLayer, addOsmSource, addOsmSprite, getJapaneseOsmLayerNames, removeOsmLayer, toOsmLayerNameType, updateSpriteSheet } from './utils/osmPoiUtils';
 import { getOSMLayerConfig } from './utils/osmStyles';
 import { existsSpriteIcon, getSpriteIconNames, getSpriteIconStyles } from './utils/spriteUtils';
@@ -155,24 +156,14 @@ class GeoloniaMap extends maplibregl.Map {
    * 都道府県の中心座標を取得する
    */
   static async getLatLngByPrefecture(prefName: string): Promise<[number, number] | null> {
-    const result = await normalize(prefName);
-    const point = result?.point;
-    if (point) {
-      return [point.lng, point.lat];
-    }
-    return null;
+    return resolveLatLng(prefName);
   }
 
   /**
    * 都道府県+市区町村の中心座標を取得する
    */
   static async getLatLngByCity(prefName: string, cityName: string): Promise<[number, number] | null> {
-    const result = await normalize(prefName + cityName);
-    const point = result?.point;
-    if (point) {
-      return [point.lng, point.lat];
-    }
-    return null;
+    return resolveLatLng(prefName + cityName);
   }
 
   /* ****************

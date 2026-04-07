@@ -348,13 +348,20 @@
       const cities = await geolonia.japan.Map.fetchCityNames(firstPref);
       citySelect.innerHTML = cities.map(city => `<option value="${city}">${city}</option>`).join('');
 
+      // レースコンディション防止用リクエストID
+      let prefRequestId = 0;
+      let cityRequestId = 0;
+
       // 都道府県変更時：市区町村を更新して地図を移動
       prefSelect.addEventListener('change', async function(e) {
         const prefName = e.target.value;
+        const reqId = ++prefRequestId;
         const cities = await geolonia.japan.Map.fetchCityNames(prefName);
+        if (reqId !== prefRequestId) return; // stale response を無視
         citySelect.innerHTML = cities.map(city => `<option value="${city}">${city}</option>`).join('');
         // 都道府県の座標に移動
         const lngLat = await geolonia.japan.Map.getLatLngByPrefecture(prefName);
+        if (reqId !== prefRequestId) return; // stale response を無視
         if (lngLat) {
           japan.flyTo({ center: lngLat, zoom: 10 });
         }
@@ -364,7 +371,9 @@
       citySelect.addEventListener('change', async function(e) {
         const prefName = prefSelect.value;
         const cityName = e.target.value;
+        const reqId = ++cityRequestId;
         const lngLat = await geolonia.japan.Map.getLatLngByCity(prefName, cityName);
+        if (reqId !== cityRequestId) return; // stale response を無視
         if (lngLat) {
           japan.flyTo({ center: lngLat, zoom: 13 });
         }

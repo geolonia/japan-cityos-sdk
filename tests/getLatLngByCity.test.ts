@@ -1,4 +1,5 @@
 import { normalize } from '@geolonia/normalize-japanese-addresses';
+import { resolveLatLng } from '../src/utils/resolveLatLng';
 
 jest.mock('@geolonia/normalize-japanese-addresses', () => ({
   normalize: jest.fn(),
@@ -6,20 +7,7 @@ jest.mock('@geolonia/normalize-japanese-addresses', () => ({
 
 const mockedNormalize = normalize as jest.MockedFunction<typeof normalize>;
 
-/**
- * getLatLngByCity のロジックを直接テストする
- * (GeoloniaMap クラスは maplibre-gl に依存しモジュール副作用があるため、ロジックのみ検証)
- */
-async function getLatLngByCity(prefName: string, cityName: string): Promise<[number, number] | null> {
-  const result = await normalize(prefName + cityName);
-  const point = (result as any)?.point;
-  if (point) {
-    return [point.lng, point.lat];
-  }
-  return null;
-}
-
-describe('getLatLngByCity', () => {
+describe('getLatLngByCity (resolveLatLng)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -36,9 +24,26 @@ describe('getLatLngByCity', () => {
       point: { lat: 26.2124, lng: 127.6792 },
     } as any);
 
-    const result = await getLatLngByCity('沖縄県', '那覇市');
+    const result = await resolveLatLng('沖縄県那覇市');
     expect(mockedNormalize).toHaveBeenCalledWith('沖縄県那覇市');
     expect(result).toEqual([127.6792, 26.2124]);
+  });
+
+  it('都道府県名のみから座標を取得できる', async () => {
+    mockedNormalize.mockResolvedValue({
+      pref: '沖縄県',
+      city: '',
+      town: '',
+      addr: '',
+      lat: 26.3344,
+      lng: 127.7809,
+      level: 1,
+      point: { lat: 26.3344, lng: 127.7809 },
+    } as any);
+
+    const result = await resolveLatLng('沖縄県');
+    expect(mockedNormalize).toHaveBeenCalledWith('沖縄県');
+    expect(result).toEqual([127.7809, 26.3344]);
   });
 
   it('座標が取得できない場合はnullを返す', async () => {
@@ -53,7 +58,7 @@ describe('getLatLngByCity', () => {
       point: undefined,
     } as any);
 
-    const result = await getLatLngByCity('存在しない県', '存在しない市');
+    const result = await resolveLatLng('存在しない県存在しない市');
     expect(result).toBeNull();
   });
 });
