@@ -6,7 +6,9 @@
   "scripts": {
     "build": "rimraf ./docs && rollup -c",
     "test": "jest",
-    "start": "npx serve ./docs"
+    "start": "npx serve ./docs",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev"
   },
   "author": "",
   "license": "ISC",
@@ -34,6 +36,7 @@
     "serve": "^14.2.4",
     "ts-jest": "^29.1.3",
     "tslib": "^2.5.0",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.2",
+    "wrangler": "^4.80.0"
   }
 }
