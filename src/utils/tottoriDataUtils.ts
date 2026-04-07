@@ -47,12 +47,33 @@ export function getTileType(tileUrl: string): 'raster' | 'vector' {
 }
 
 /**
+ * styleUrl から style.json を取得し、ソース設定（minzoom, maxzoom, bounds）を抽出する
+ */
+export async function fetchTottoriStyleSourceConfig(styleUrl: string): Promise<{ minzoom?: number; maxzoom?: number; bounds?: number[] }> {
+  try {
+    const style = await fetchJson(styleUrl);
+    if (!style || !style.sources) { return {}; }
+    const sourceKey = Object.keys(style.sources)[0];
+    if (!sourceKey) { return {}; }
+    const src = style.sources[sourceKey];
+    const config: { minzoom?: number; maxzoom?: number; bounds?: number[] } = {};
+    if (typeof src.minzoom === 'number') { config.minzoom = src.minzoom; }
+    if (typeof src.maxzoom === 'number') { config.maxzoom = src.maxzoom; }
+    if (Array.isArray(src.bounds)) { config.bounds = src.bounds; }
+    return config;
+  } catch {
+    return {};
+  }
+}
+
+/**
  * 鳥取県データのソースを追加する
  */
-export function addTottoriDataSource(map: maplibregl.Map, entry: TottoriDataEntry): string | undefined {
+export async function addTottoriDataSource(map: maplibregl.Map, entry: TottoriDataEntry): Promise<string | undefined> {
   const id = toSourceId(entry);
   if (!map.getSource(id)) {
     const tileType = getTileType(entry.tileUrl);
+    const styleConfig = await fetchTottoriStyleSourceConfig(entry.styleUrl);
     const source: any = {
       type: tileType,
       tiles: [entry.tileUrl],
@@ -61,6 +82,9 @@ export function addTottoriDataSource(map: maplibregl.Map, entry: TottoriDataEntr
     if (tileType === 'raster') {
       source.tileSize = 256;
     }
+    if (styleConfig.minzoom !== undefined) { source.minzoom = styleConfig.minzoom; }
+    if (styleConfig.maxzoom !== undefined) { source.maxzoom = styleConfig.maxzoom; }
+    if (styleConfig.bounds !== undefined) { source.bounds = styleConfig.bounds; }
     map.addSource(id, source);
     return id;
   }

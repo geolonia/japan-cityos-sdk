@@ -4293,23 +4293,67 @@
         return normalized.endsWith('.pbf') ? 'vector' : 'raster';
     }
     /**
+     * styleUrl から style.json を取得し、ソース設定（minzoom, maxzoom, bounds）を抽出する
+     */
+    function fetchTottoriStyleSourceConfig(styleUrl) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const style = yield fetchJson(styleUrl);
+                if (!style || !style.sources) {
+                    return {};
+                }
+                const sourceKey = Object.keys(style.sources)[0];
+                if (!sourceKey) {
+                    return {};
+                }
+                const src = style.sources[sourceKey];
+                const config = {};
+                if (typeof src.minzoom === 'number') {
+                    config.minzoom = src.minzoom;
+                }
+                if (typeof src.maxzoom === 'number') {
+                    config.maxzoom = src.maxzoom;
+                }
+                if (Array.isArray(src.bounds)) {
+                    config.bounds = src.bounds;
+                }
+                return config;
+            }
+            catch (_a) {
+                return {};
+            }
+        });
+    }
+    /**
      * 鳥取県データのソースを追加する
      */
     function addTottoriDataSource(map, entry) {
-        const id = toSourceId(entry);
-        if (!map.getSource(id)) {
-            const tileType = getTileType(entry.tileUrl);
-            const source = {
-                type: tileType,
-                tiles: [entry.tileUrl],
-                attribution: '鳥取県スマートシティ',
-            };
-            if (tileType === 'raster') {
-                source.tileSize = 256;
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = toSourceId(entry);
+            if (!map.getSource(id)) {
+                const tileType = getTileType(entry.tileUrl);
+                const styleConfig = yield fetchTottoriStyleSourceConfig(entry.styleUrl);
+                const source = {
+                    type: tileType,
+                    tiles: [entry.tileUrl],
+                    attribution: '鳥取県スマートシティ',
+                };
+                if (tileType === 'raster') {
+                    source.tileSize = 256;
+                }
+                if (styleConfig.minzoom !== undefined) {
+                    source.minzoom = styleConfig.minzoom;
+                }
+                if (styleConfig.maxzoom !== undefined) {
+                    source.maxzoom = styleConfig.maxzoom;
+                }
+                if (styleConfig.bounds !== undefined) {
+                    source.bounds = styleConfig.bounds;
+                }
+                map.addSource(id, source);
+                return id;
             }
-            map.addSource(id, source);
-            return id;
-        }
+        });
     }
     /**
      * 鳥取県データのレイヤーを追加する
@@ -4921,7 +4965,7 @@
                     console.warn(`鳥取県データ ID: ${dataId} が見つかりません`);
                     return;
                 }
-                const sourceId = addTottoriDataSource(this, entry);
+                const sourceId = yield addTottoriDataSource(this, entry);
                 if (sourceId) {
                     this.loadedSourceIds.add(sourceId);
                 }

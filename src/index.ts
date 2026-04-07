@@ -671,7 +671,7 @@ class GeoloniaMap extends maplibregl.Map {
       return;
     }
 
-    const sourceId = addTottoriDataSource(this, entry);
+    const sourceId = await addTottoriDataSource(this, entry);
     if (sourceId) {
       this.loadedSourceIds.add(sourceId);
     }
