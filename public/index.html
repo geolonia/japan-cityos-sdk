@@ -376,7 +376,11 @@
         );
         container.innerHTML = '';
         const filtered = filter
-          ? entries.filter(e => e.description.includes(filter) || e.id.includes(filter))
+          ? entries.filter(e => {
+              const lowerFilter = filter.toLowerCase();
+              return (e.description || '').toLowerCase().includes(lowerFilter) ||
+                     e.id.toLowerCase().includes(lowerFilter);
+            })
           : entries;
         filtered.forEach(entry => {
           const label = document.createElement('label');
@@ -388,9 +392,15 @@
           if (checked.has(entry.id)) checkbox.checked = true;
           checkbox.addEventListener('change', function (e) {
             if (e.target.checked) {
-              japan.loadTottoriData(entry.id);
+              japan.loadTottoriData(entry.id).catch(err => {
+                console.error('レイヤーの読み込みに失敗:', err);
+                e.target.checked = false;
+              });
             } else {
-              japan.removeTottoriData(entry.id);
+              japan.removeTottoriData(entry.id).catch(err => {
+                console.error('レイヤーの削除に失敗:', err);
+                e.target.checked = true;
+              });
             }
           });
           label.appendChild(checkbox);

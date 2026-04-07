@@ -12,16 +12,26 @@ export type TottoriDataEntry = {
 };
 
 let _cache: TottoriDataEntry[] | null = null;
+let _cachePromise: Promise<TottoriDataEntry[]> | null = null;
 
 /**
  * 鳥取県スマートシティの index.json を取得する（キャッシュ付き）
  */
 export async function fetchTottoriDataIndex(): Promise<TottoriDataEntry[]> {
   if (_cache) { return _cache; }
-  const data = await fetchJson(TOTTORI_INDEX_URL);
-  if (!data || !Array.isArray(data)) { return []; }
-  _cache = data;
-  return _cache;
+  if (_cachePromise) { return _cachePromise; }
+
+  _cachePromise = (async () => {
+    const data = await fetchJson(TOTTORI_INDEX_URL);
+    if (!data || !Array.isArray(data)) {
+      _cachePromise = null;
+      return [];
+    }
+    _cache = data;
+    return _cache;
+  })();
+
+  return _cachePromise;
 }
 
 function toSourceId(entry: TottoriDataEntry): string {
@@ -32,7 +42,8 @@ function toSourceId(entry: TottoriDataEntry): string {
  * tileUrl からタイル種別を判定する
  */
 export function getTileType(tileUrl: string): 'raster' | 'vector' {
-  return tileUrl.endsWith('.pbf') ? 'vector' : 'raster';
+  const normalized = tileUrl.split('?')[0].split('#')[0].toLowerCase();
+  return normalized.endsWith('.pbf') ? 'vector' : 'raster';
 }
 
 /**
@@ -88,12 +99,16 @@ export function addTottoriDataLayer(map: maplibregl.Map, entry: TottoriDataEntry
 }
 
 /**
- * 鳥取県データのレイヤーを削除する
+ * 鳥取県データのレイヤーとソースを削除する
  */
-export function removeTottoriDataLayer(map: maplibregl.Map, entry: TottoriDataEntry): void {
+export function removeTottoriDataLayer(map: maplibregl.Map, entry: TottoriDataEntry): string | undefined {
   const id = toSourceId(entry);
   if (map.getLayer(id)) {
     map.removeLayer(id);
+  }
+  if (map.getSource(id)) {
+    map.removeSource(id);
+    return id;
   }
 }
 
@@ -102,4 +117,5 @@ export function removeTottoriDataLayer(map: maplibregl.Map, entry: TottoriDataEn
  */
 export function _resetCache(): void {
   _cache = null;
+  _cachePromise = null;
 }

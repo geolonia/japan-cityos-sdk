@@ -667,7 +667,7 @@ class GeoloniaMap extends maplibregl.Map {
     const entries = await fetchTottoriDataIndex();
     const entry = entries.find(e => e.id === dataId);
     if (!entry) {
-      console.warn(`鳥取県データ for ${dataId} not found.`);
+      console.warn(`鳥取県データ ID: ${dataId} が見つかりません`);
       return;
     }
 
@@ -686,11 +686,14 @@ class GeoloniaMap extends maplibregl.Map {
     const entries = await fetchTottoriDataIndex();
     const entry = entries.find(e => e.id === dataId);
     if (!entry) {
-      console.warn(`鳥取県データ for ${dataId} not found.`);
+      console.warn(`鳥取県データ ID: ${dataId} が見つかりません`);
       return;
     }
 
-    removeTottoriDataLayer(this, entry);
+    const removedSourceId = removeTottoriDataLayer(this, entry);
+    if (removedSourceId) {
+      this.loadedSourceIds.delete(removedSourceId);
+    }
   }
 
   /**

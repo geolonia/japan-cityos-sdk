@@ -4258,6 +4258,7 @@
 
     const TOTTORI_INDEX_URL = 'https://tottori.smartcity.geolonia.com/data/index.json';
     let _cache = null;
+    let _cachePromise = null;
     /**
      * 鳥取県スマートシティの index.json を取得する（キャッシュ付き）
      */
@@ -4266,12 +4267,19 @@
             if (_cache) {
                 return _cache;
             }
-            const data = yield fetchJson(TOTTORI_INDEX_URL);
-            if (!data || !Array.isArray(data)) {
-                return [];
+            if (_cachePromise) {
+                return _cachePromise;
             }
-            _cache = data;
-            return _cache;
+            _cachePromise = (() => __awaiter(this, void 0, void 0, function* () {
+                const data = yield fetchJson(TOTTORI_INDEX_URL);
+                if (!data || !Array.isArray(data)) {
+                    _cachePromise = null;
+                    return [];
+                }
+                _cache = data;
+                return _cache;
+            }))();
+            return _cachePromise;
         });
     }
     function toSourceId(entry) {
@@ -4281,7 +4289,8 @@
      * tileUrl からタイル種別を判定する
      */
     function getTileType(tileUrl) {
-        return tileUrl.endsWith('.pbf') ? 'vector' : 'raster';
+        const normalized = tileUrl.split('?')[0].split('#')[0].toLowerCase();
+        return normalized.endsWith('.pbf') ? 'vector' : 'raster';
     }
     /**
      * 鳥取県データのソースを追加する
@@ -4335,12 +4344,16 @@
         }
     }
     /**
-     * 鳥取県データのレイヤーを削除する
+     * 鳥取県データのレイヤーとソースを削除する
      */
     function removeTottoriDataLayer(map, entry) {
         const id = toSourceId(entry);
         if (map.getLayer(id)) {
             map.removeLayer(id);
+        }
+        if (map.getSource(id)) {
+            map.removeSource(id);
+            return id;
         }
     }
 
@@ -4905,7 +4918,7 @@
                 const entries = yield fetchTottoriDataIndex();
                 const entry = entries.find(e => e.id === dataId);
                 if (!entry) {
-                    console.warn(`鳥取県データ for ${dataId} not found.`);
+                    console.warn(`鳥取県データ ID: ${dataId} が見つかりません`);
                     return;
                 }
                 const sourceId = addTottoriDataSource(this, entry);
@@ -4924,10 +4937,13 @@
                 const entries = yield fetchTottoriDataIndex();
                 const entry = entries.find(e => e.id === dataId);
                 if (!entry) {
-                    console.warn(`鳥取県データ for ${dataId} not found.`);
+                    console.warn(`鳥取県データ ID: ${dataId} が見つかりません`);
                     return;
                 }
-                removeTottoriDataLayer(this, entry);
+                const removedSourceId = removeTottoriDataLayer(this, entry);
+                if (removedSourceId) {
+                    this.loadedSourceIds.delete(removedSourceId);
+                }
             });
         }
         /**

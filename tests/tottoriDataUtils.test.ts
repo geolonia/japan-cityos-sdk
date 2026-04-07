@@ -35,6 +35,7 @@ describe('tottoriDataUtils', () => {
       layers: {} as any,
       addSource: jest.fn((id: string, src: any) => { map.sources[id] = src; }),
       getSource: jest.fn((id: string) => map.sources[id]),
+      removeSource: jest.fn((id: string) => { delete map.sources[id]; }),
       addLayer: jest.fn((layer: any) => { map.layers[layer.id] = layer; }),
       getLayer: jest.fn((id: string) => map.layers[id]),
       removeLayer: jest.fn((id: string) => { delete map.layers[id]; }),
@@ -71,6 +72,18 @@ describe('tottoriDataUtils', () => {
 
     it('.pbf はベクターと判定する', () => {
       expect(getTileType('https://example.com/tiles/{z}/{x}/{y}.pbf')).toBe('vector');
+    });
+
+    it('クエリ付き .pbf URL をベクターと判定する', () => {
+      expect(getTileType('https://example.com/tiles/{z}/{x}/{y}.pbf?token=abc')).toBe('vector');
+    });
+
+    it('ハッシュ付き .pbf URL をベクターと判定する', () => {
+      expect(getTileType('https://example.com/tiles/{z}/{x}/{y}.pbf#section')).toBe('vector');
+    });
+
+    it('大文字 .PBF をベクターと判定する', () => {
+      expect(getTileType('https://example.com/tiles/{z}/{x}/{y}.PBF')).toBe('vector');
     });
   });
 
@@ -139,17 +152,31 @@ describe('tottoriDataUtils', () => {
   });
 
   describe('removeTottoriDataLayer', () => {
-    it('レイヤーを削除する', () => {
+    it('レイヤーとソースを削除する', () => {
       const entry = MOCK_INDEX[0];
       map.layers['tottori-aerial_photo_ketaka_h31'] = { id: 'tottori-aerial_photo_ketaka_h31' };
-      removeTottoriDataLayer(map, entry);
+      map.sources['tottori-aerial_photo_ketaka_h31'] = { type: 'raster' };
+      const removedId = removeTottoriDataLayer(map, entry);
       expect(map.removeLayer).toHaveBeenCalledWith('tottori-aerial_photo_ketaka_h31');
+      expect(map.removeSource).toHaveBeenCalledWith('tottori-aerial_photo_ketaka_h31');
+      expect(removedId).toBe('tottori-aerial_photo_ketaka_h31');
     });
 
-    it('レイヤーがなければ何もしない', () => {
+    it('レイヤーがなくソースだけの場合はソースのみ削除する', () => {
       const entry = MOCK_INDEX[0];
-      removeTottoriDataLayer(map, entry);
+      map.sources['tottori-aerial_photo_ketaka_h31'] = { type: 'raster' };
+      const removedId = removeTottoriDataLayer(map, entry);
       expect(map.removeLayer).not.toHaveBeenCalled();
+      expect(map.removeSource).toHaveBeenCalledWith('tottori-aerial_photo_ketaka_h31');
+      expect(removedId).toBe('tottori-aerial_photo_ketaka_h31');
+    });
+
+    it('レイヤーもソースもなければ何もしない', () => {
+      const entry = MOCK_INDEX[0];
+      const removedId = removeTottoriDataLayer(map, entry);
+      expect(map.removeLayer).not.toHaveBeenCalled();
+      expect(map.removeSource).not.toHaveBeenCalled();
+      expect(removedId).toBeUndefined();
     });
   });
 });

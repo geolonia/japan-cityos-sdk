@@ -23,9 +23,9 @@ export declare function addTottoriDataSource(map: maplibregl.Map, entry: Tottori
  */
 export declare function addTottoriDataLayer(map: maplibregl.Map, entry: TottoriDataEntry): void;
 /**
- * 鳥取県データのレイヤーを削除する
+ * 鳥取県データのレイヤーとソースを削除する
  */
-export declare function removeTottoriDataLayer(map: maplibregl.Map, entry: TottoriDataEntry): void;
+export declare function removeTottoriDataLayer(map: maplibregl.Map, entry: TottoriDataEntry): string | undefined;
 /**
  * テスト用: キャッシュをリセットする
  */
