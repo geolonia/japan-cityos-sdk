@@ -294,9 +294,13 @@ class GeoloniaMap extends maplibregl.Map {
           if (previousStyle.sources[terrainSourceId]) {
             newSources[terrainSourceId] = previousStyle.sources[terrainSourceId];
           }
-          const hillshadeLayer = previousStyle.layers.find(l => l.id === GeoloniaMap.HILLSHADE_LAYER_ID);
-          if (hillshadeLayer) {
-            newLayers.push(hillshadeLayer);
+          const hillshadeLayerId = GeoloniaMap.HILLSHADE_LAYER_ID;
+          const alreadyExists = newLayers.some(l => l.id === hillshadeLayerId);
+          if (!alreadyExists) {
+            const hillshadeLayer = previousStyle.layers.find(l => l.id === hillshadeLayerId);
+            if (hillshadeLayer) {
+              newLayers.push(hillshadeLayer);
+            }
           }
         }
 
