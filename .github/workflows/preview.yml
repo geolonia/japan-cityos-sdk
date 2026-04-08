@@ -34,7 +34,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy docs --project-name=japan-cityos-sdk
+          command: pages deploy docs --project-name=japan-cityos-sdk --branch=${{ github.head_ref || 'main' }}
 
       - name: Comment preview URL on PR
         if: github.event_name == 'pull_request'
@@ -42,13 +42,18 @@ jobs:
         with:
           script: |
             const url = '${{ steps.deploy.outputs.deployment-url }}';
-            const body = `🔍 **Preview deployed!**\n\n${url}`;
-            const { data: comments } = await github.rest.issues.listComments({
+            const marker = '<!-- cf-pages-preview-comment -->';
+            const body = `${marker}\n🔍 **Preview deployed!**\n\n${url}`;
+            const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
+              per_page: 100,
             });
-            const existing = comments.find(c => c.body.includes('Preview deployed!'));
+            const existing = comments.find(c =>
+              c.user?.login === 'github-actions[bot]' &&
+              c.body?.includes(marker)
+            );
             if (existing) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
