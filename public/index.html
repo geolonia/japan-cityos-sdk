@@ -366,8 +366,8 @@
         <div class="section-body">
           <label><strong>場所</strong></label>
           <div class="location-row">
-            <select id="pref-select"></select>
-            <select id="city-select"></select>
+            <select id="pref-select" aria-label="都道府県"></select>
+            <select id="city-select" aria-label="市区町村"></select>
             <button class="fly-to-btn" id="fly-to-btn">移動</button>
           </div>
 
@@ -553,15 +553,26 @@
       });
 
       // 移動ボタン：選択中の市区町村に移動
+      let isFlying = false;
       flyToBtn.addEventListener('click', async function() {
+        if (isFlying) return;
         const prefName = prefSelect.value;
         const cityName = citySelect.value;
         if (!cityName) return;
-        const reqId = ++moveRequestId;
-        const lngLat = await geolonia.japan.Map.getLatLngByCity(prefName, cityName);
-        if (reqId !== moveRequestId || prefName !== prefSelect.value || cityName !== citySelect.value) return;
-        if (lngLat) {
-          japan.flyTo({ center: lngLat, zoom: 13 });
+        isFlying = true;
+        flyToBtn.disabled = true;
+        try {
+          const reqId = ++moveRequestId;
+          const lngLat = await geolonia.japan.Map.getLatLngByCity(prefName, cityName);
+          if (reqId !== moveRequestId || prefName !== prefSelect.value || cityName !== citySelect.value) return;
+          if (lngLat) {
+            japan.flyTo({ center: lngLat, zoom: 13 });
+          }
+        } catch (err) {
+          console.error('座標の取得に失敗:', err);
+        } finally {
+          isFlying = false;
+          flyToBtn.disabled = false;
         }
       });
     }
@@ -880,25 +891,40 @@
 
       // サンプル地物を表示するボタン（トグル）
       document.getElementById('load-sample-features-btn').addEventListener('click', function () {
+        const btn = this;
         if (!sampleFeaturesLoaded) {
           // 表示
-          japan.loadGeojson(circleGeojson, 'sample-circle', { 'marker-color': '#FF0000' });
-          japan.loadGeojson(polygonGeojson, 'sample-polygon', {});
-          japan.loadGeojson(lineGeojson, 'sample-line', {});
+          try {
+            japan.loadGeojson(circleGeojson, 'sample-circle', { 'marker-color': '#FF0000' });
+            japan.loadGeojson(polygonGeojson, 'sample-polygon', {});
+            japan.loadGeojson(lineGeojson, 'sample-line', {});
+          } catch (err) {
+            console.error('サンプル地物の読み込みに失敗:', err);
+            return;
+          }
+          // 現在のコントロール値でスタイルを再適用
+          updateCircleStyle();
+          updateFillStyle();
+          updateLineStyle();
           document.getElementById('style-controls').style.display = 'block';
-          this.textContent = 'サンプルの地物を非表示にする';
-          this.style.background = '#e74c3c';
-          this.style.borderColor = '#c0392b';
+          btn.textContent = 'サンプルの地物を非表示にする';
+          btn.style.background = '#e74c3c';
+          btn.style.borderColor = '#c0392b';
           sampleFeaturesLoaded = true;
         } else {
           // 非表示
-          japan.removeGeojsonLayer('sample-circle');
-          japan.removeGeojsonLayer('sample-polygon');
-          japan.removeGeojsonLayer('sample-line');
+          try {
+            japan.removeGeojsonLayer('sample-circle');
+            japan.removeGeojsonLayer('sample-polygon');
+            japan.removeGeojsonLayer('sample-line');
+          } catch (err) {
+            console.error('サンプル地物の削除に失敗:', err);
+            return;
+          }
           document.getElementById('style-controls').style.display = 'none';
-          this.textContent = 'サンプルの地物を表示する';
-          this.style.background = '#4a90d9';
-          this.style.borderColor = '#3a7bc8';
+          btn.textContent = 'サンプルの地物を表示する';
+          btn.style.background = '#4a90d9';
+          btn.style.borderColor = '#3a7bc8';
           sampleFeaturesLoaded = false;
         }
       });
