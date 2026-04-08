@@ -835,8 +835,6 @@
       japan.loadCSV(url, '選挙時投票所一覧', {
         'marker-color': '#eba037'
       });
-      console.log('style:', japan.getStyle());
-
       // geojsonの読み込み
       japan.loadGeojson(geojson, 'cafe', {
         'marker-symbol': 'chizubouken-lab:cafe',
@@ -998,7 +996,6 @@
     const toggle3DBtn = document.getElementById('toggle-3d-btn');
     toggle3DBtn.addEventListener('click', function () {
       if (!is3DEnabled) {
-        console.log('3D地形表示 ON');
         japan.show3DTerrain();
         japan.flyTo({ pitch: 60 });
         toggle3DBtn.textContent = '3D地形表示 OFF';
