@@ -289,14 +289,13 @@ class GeoloniaMap extends maplibregl.Map {
         const newLayers = mergeLayersByLoadedIds(previousStyle.layers, nextStyle.layers, this.loadedSourceIds);
 
         // terrain用のソースとレイヤーを保持
-        if (hadTerrain) {
-          const terrainSourceId = this.TERRAIN_SOURCE_ID;
+        const terrainSourceId = terrainState?.source ?? this.TERRAIN_SOURCE_ID;
+        if (terrainSourceId && hadTerrain) {
           if (previousStyle.sources[terrainSourceId]) {
             newSources[terrainSourceId] = previousStyle.sources[terrainSourceId];
           }
           const hillshadeLayerId = GeoloniaMap.HILLSHADE_LAYER_ID;
-          const alreadyExists = newLayers.some(l => l.id === hillshadeLayerId);
-          if (!alreadyExists) {
+          if (!newLayers.some(l => l.id === hillshadeLayerId)) {
             const hillshadeLayer = previousStyle.layers.find(l => l.id === hillshadeLayerId);
             if (hillshadeLayer) {
               newLayers.push(hillshadeLayer);
@@ -304,12 +303,13 @@ class GeoloniaMap extends maplibregl.Map {
           }
         }
 
+        const canRestoreTerrain = hadTerrain && !!terrainSourceId && !!newSources[terrainSourceId];
         return {
           ...previousStyle,
           ...nextStyle,
           sources: newSources,
           layers: newLayers,
-          ...(hadTerrain ? { terrain: { source: this.TERRAIN_SOURCE_ID, exaggeration: terrainState.exaggeration ?? 1 } } : {})
+          ...(canRestoreTerrain ? { terrain: { source: terrainSourceId, exaggeration: terrainState.exaggeration ?? 1 } } : {})
         };
       }
     });

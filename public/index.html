@@ -533,21 +533,33 @@
 
       // レースコンディション防止用リクエストID
       let prefRequestId = 0;
+      let moveRequestId = 0;
 
       // 都道府県変更時：市区町村を更新（移動しない）
       prefSelect.addEventListener('change', async function(e) {
         const prefName = e.target.value;
         const reqId = ++prefRequestId;
-        const cities = await geolonia.japan.Map.fetchCityNames(prefName);
-        if (reqId !== prefRequestId) return;
-        citySelect.innerHTML = cities.map(city => `<option value="${city}">${city}</option>`).join('');
+        citySelect.innerHTML = '';
+        flyToBtn.disabled = true;
+        try {
+          const cities = await geolonia.japan.Map.fetchCityNames(prefName);
+          if (reqId !== prefRequestId) return;
+          citySelect.innerHTML = cities.map(city => `<option value="${city}">${city}</option>`).join('');
+          flyToBtn.disabled = cities.length === 0;
+        } catch (err) {
+          if (reqId === prefRequestId) flyToBtn.disabled = false;
+          console.error('市区町村一覧の取得に失敗:', err);
+        }
       });
 
       // 移動ボタン：選択中の市区町村に移動
       flyToBtn.addEventListener('click', async function() {
         const prefName = prefSelect.value;
         const cityName = citySelect.value;
+        if (!cityName) return;
+        const reqId = ++moveRequestId;
         const lngLat = await geolonia.japan.Map.getLatLngByCity(prefName, cityName);
+        if (reqId !== moveRequestId || prefName !== prefSelect.value || cityName !== citySelect.value) return;
         if (lngLat) {
           japan.flyTo({ center: lngLat, zoom: 13 });
         }
@@ -976,10 +988,19 @@
 
         const property = data[0].properties;
 
+        function escapeHtml(value) {
+          return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        }
+
         let tableHTML = "<table class='popup-table'>";
         tableHTML += "<tr><th>属性</th><th>値</th></tr>";
-        for (let key in property) {
-          tableHTML += `<tr><td>${key}</td><td>${property[key]}</td></tr>`;
+        for (const [key, value] of Object.entries(property)) {
+          tableHTML += `<tr><td>${escapeHtml(key)}</td><td>${escapeHtml(value)}</td></tr>`;
         }
         tableHTML += "</table>";
 
@@ -1012,50 +1033,44 @@
     const getElevationBtn = document.getElementById('get-elevation-btn');
     const centerCrosshair = document.getElementById('center-crosshair');
     let elevationPopup = null;
+    let elevationRequestId = 0;
+
+    function showElevationPopup(center, html) {
+      if (elevationPopup) elevationPopup.remove();
+      elevationPopup = new geolonia.japan.Popup({ closeOnClick: false, maxWidth: '200px' })
+        .setLngLat([center.lng, center.lat])
+        .setHTML(html)
+        .addTo(japan);
+      elevationPopup.on('close', function() {
+        centerCrosshair.style.display = 'none';
+        elevationPopup = null;
+      });
+    }
 
     getElevationBtn.addEventListener('click', async function () {
-      // 中心十字マーカーを表示
       centerCrosshair.style.display = 'block';
 
-      if (typeof japan.getElevation === 'function') {
-        const center = japan.getCenter();
-        const elevation = await japan.getElevation([center.lng, center.lat]);
-
-        // 前回のポップアップがあれば削除
-        if (elevationPopup) {
-          elevationPopup.remove();
-        }
-
-        if (typeof elevation === 'number') {
-          elevationPopup = new geolonia.japan.Popup({
-            closeOnClick: false,
-            maxWidth: '200px'
-          })
-            .setLngLat([center.lng, center.lat])
-            .setHTML(`<div style="text-align:center;padding:4px;font-size:13px;">ここの標高は<br><strong style="font-size:18px;">${elevation.toFixed(2)} m</strong></div>`)
-            .addTo(japan);
-
-          // ポップアップが閉じられたら十字も消す
-          elevationPopup.on('close', function() {
-            centerCrosshair.style.display = 'none';
-            elevationPopup = null;
-          });
-        } else {
-          elevationPopup = new geolonia.japan.Popup({
-            closeOnClick: false,
-            maxWidth: '200px'
-          })
-            .setLngLat([center.lng, center.lat])
-            .setHTML('<div style="text-align:center;padding:4px;font-size:13px;">標高データが取得できませんでした。<br>3D地形表示がONか確認してください。</div>')
-            .addTo(japan);
-
-          elevationPopup.on('close', function() {
-            centerCrosshair.style.display = 'none';
-            elevationPopup = null;
-          });
-        }
-      } else {
+      if (typeof japan.getElevation !== 'function') {
         centerCrosshair.style.display = 'none';
+        return;
+      }
+
+      const center = japan.getCenter();
+      const reqId = ++elevationRequestId;
+      let elevation;
+      try {
+        elevation = await japan.getElevation([center.lng, center.lat]);
+      } catch (err) {
+        if (reqId === elevationRequestId) centerCrosshair.style.display = 'none';
+        console.error('標高データの取得に失敗:', err);
+        return;
+      }
+      if (reqId !== elevationRequestId) return;
+
+      if (typeof elevation === 'number') {
+        showElevationPopup(center, `<div style="text-align:center;padding:4px;font-size:13px;">ここの標高は<br><strong style="font-size:18px;">${elevation.toFixed(2)} m</strong></div>`);
+      } else {
+        showElevationPopup(center, '<div style="text-align:center;padding:4px;font-size:13px;">標高データが取得できませんでした。<br>3D地形表示がONか確認してください。</div>');
       }
     });
 

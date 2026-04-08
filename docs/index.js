@@ -4599,25 +4599,25 @@
             const hadTerrain = !!terrainState;
             this.setStyle(styleUrlOrObject, {
                 transformStyle: (previousStyle, nextStyle) => {
-                    var _a;
+                    var _a, _b;
                     const newSources = mergeSourcesByLoadedIds(previousStyle.sources, nextStyle.sources, this.loadedSourceIds);
                     const newLayers = mergeLayersByLoadedIds(previousStyle.layers, nextStyle.layers, this.loadedSourceIds);
                     // terrain用のソースとレイヤーを保持
-                    if (hadTerrain) {
-                        const terrainSourceId = this.TERRAIN_SOURCE_ID;
+                    const terrainSourceId = (_a = terrainState === null || terrainState === void 0 ? void 0 : terrainState.source) !== null && _a !== void 0 ? _a : this.TERRAIN_SOURCE_ID;
+                    if (terrainSourceId && hadTerrain) {
                         if (previousStyle.sources[terrainSourceId]) {
                             newSources[terrainSourceId] = previousStyle.sources[terrainSourceId];
                         }
                         const hillshadeLayerId = GeoloniaMap.HILLSHADE_LAYER_ID;
-                        const alreadyExists = newLayers.some(l => l.id === hillshadeLayerId);
-                        if (!alreadyExists) {
+                        if (!newLayers.some(l => l.id === hillshadeLayerId)) {
                             const hillshadeLayer = previousStyle.layers.find(l => l.id === hillshadeLayerId);
                             if (hillshadeLayer) {
                                 newLayers.push(hillshadeLayer);
                             }
                         }
                     }
-                    return Object.assign(Object.assign(Object.assign(Object.assign({}, previousStyle), nextStyle), { sources: newSources, layers: newLayers }), (hadTerrain ? { terrain: { source: this.TERRAIN_SOURCE_ID, exaggeration: (_a = terrainState.exaggeration) !== null && _a !== void 0 ? _a : 1 } } : {}));
+                    const canRestoreTerrain = hadTerrain && !!terrainSourceId && !!newSources[terrainSourceId];
+                    return Object.assign(Object.assign(Object.assign(Object.assign({}, previousStyle), nextStyle), { sources: newSources, layers: newLayers }), (canRestoreTerrain ? { terrain: { source: terrainSourceId, exaggeration: (_b = terrainState.exaggeration) !== null && _b !== void 0 ? _b : 1 } } : {}));
                 }
             });
         }
