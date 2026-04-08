@@ -279,15 +279,33 @@ class GeoloniaMap extends maplibregl.Map {
    * @param styleUrlOrObject スタイルのURLまたはオブジェクト
    ****************/
   setBaseMapStyle(styleUrlOrObject: string | maplibregl.StyleSpecification) {
+    // 3D地形の状態を保持
+    const terrainState = this.getTerrain();
+    const hadTerrain = !!terrainState;
+
     this.setStyle(styleUrlOrObject, {
       transformStyle: (previousStyle, nextStyle) => {
         const newSources = mergeSourcesByLoadedIds(previousStyle.sources, nextStyle.sources, this.loadedSourceIds);
         const newLayers = mergeLayersByLoadedIds(previousStyle.layers, nextStyle.layers, this.loadedSourceIds);
+
+        // terrain用のソースとレイヤーを保持
+        if (hadTerrain) {
+          const terrainSourceId = this.TERRAIN_SOURCE_ID;
+          if (previousStyle.sources[terrainSourceId]) {
+            newSources[terrainSourceId] = previousStyle.sources[terrainSourceId];
+          }
+          const hillshadeLayer = previousStyle.layers.find(l => l.id === GeoloniaMap.HILLSHADE_LAYER_ID);
+          if (hillshadeLayer) {
+            newLayers.push(hillshadeLayer);
+          }
+        }
+
         return {
           ...previousStyle,
           ...nextStyle,
           sources: newSources,
-          layers: newLayers
+          layers: newLayers,
+          ...(hadTerrain ? { terrain: { source: this.TERRAIN_SOURCE_ID, exaggeration: terrainState.exaggeration ?? 1 } } : {})
         };
       }
     });

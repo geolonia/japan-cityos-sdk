@@ -46,11 +46,24 @@
       height: calc(100% - 20px);
       overflow-y: auto;
       background: #fff;
-      padding: 12px;
+      padding: 0;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       box-sizing: border-box;
       font-size: 13px;
+    }
+
+    #sidebar-title {
+      padding: 14px 14px 10px;
+      margin: 0;
+      font-size: 15px;
+      font-weight: bold;
+      color: #333;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    #sidebar-content {
+      padding: 8px 12px 12px;
     }
 
     #sidebar h2 {
@@ -185,149 +198,312 @@
       border-top: 1px solid #eee;
       margin: 8px 0;
     }
+
+    /* データ表示セクション：サブカテゴリ */
+    .data-category {
+      margin-bottom: 6px;
+    }
+
+    .data-category-header {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      user-select: none;
+      padding: 4px 0;
+      font-size: 12px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    .data-category-header:hover {
+      color: #222;
+    }
+
+    .data-category-toggle {
+      font-size: 8px;
+      color: #999;
+      transition: transform 0.15s;
+    }
+
+    .data-category.collapsed .data-category-toggle {
+      transform: rotate(-90deg);
+    }
+
+    .data-category.collapsed .data-category-body {
+      display: none;
+    }
+
+    .data-category-body {
+      padding-left: 4px;
+    }
+
+    /* 場所セクション */
+    .location-row {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .location-row select {
+      flex: 1;
+      min-width: 0;
+      padding: 4px;
+      font-size: 12px;
+    }
+
+    .fly-to-btn {
+      flex-shrink: 0;
+      padding: 4px 10px !important;
+      width: auto !important;
+      font-size: 12px !important;
+      background: #4a90d9 !important;
+      color: #fff !important;
+      border-color: #3a7bc8 !important;
+    }
+
+    .fly-to-btn:hover {
+      background: #3a7bc8 !important;
+    }
+
+    /* 中心マーカー（十字） */
+    #center-crosshair {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    #center-crosshair::before,
+    #center-crosshair::after {
+      content: '';
+      position: absolute;
+      background: #e74c3c;
+    }
+
+    #center-crosshair::before {
+      width: 2px;
+      height: 24px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #center-crosshair::after {
+      width: 24px;
+      height: 2px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* アイコンポップアップ */
+    #icon-popup {
+      display: none;
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 16px;
+      border-radius: 8px;
+      max-width: 90vw;
+      max-height: 70vh;
+      overflow: auto;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    #icon-popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    #icon-popup-header strong {
+      font-size: 14px;
+    }
+
+    #icon-popup-close {
+      border: none;
+      background: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #888;
+      padding: 0 4px;
+      line-height: 1;
+    }
+
+    #icon-popup-close:hover {
+      color: #333;
+    }
+
+    /* アクティブ状態のボタン */
+    button.active {
+      background: #4a90d9 !important;
+      color: #fff !important;
+      border-color: #3a7bc8 !important;
+    }
   </style>
 </head>
 
 <body>
   <div id="sidebar">
-    <!-- 地図設定セクション -->
-    <div class="section" id="section-map-settings">
-      <div class="section-header" onclick="toggleSection('section-map-settings')">
-        <h2>地図設定</h2>
-        <span class="section-toggle">▼</span>
-      </div>
-      <div class="section-body">
-        <label for="pref-select"><strong>都道府県</strong></label>
-        <select id="pref-select"></select>
-        <label for="city-select"><strong>市区町村</strong></label>
-        <select id="city-select"></select>
-
-        <label for="style-select" style="margin-top:8px;"><strong>背景地図</strong></label>
-        <select id="style-select">
-          <option value="https://basic-v1-background-only.pages.dev/style.json">basic</option>
-          <option value="https://geoloniamaps.github.io/gsi/style.json">標準</option>
-          <option value="https://smartmap.styles.geoloniamaps.com/style.json">GSI</option>
-          <option value="https://smartcity-satellite.styles.geoloniamaps.com/style.json">衛星写真</option>
-          <option value="https://chizubouken-lab.pages.dev/style.json">ゲーム風</option>
-        </select>
-
-        <button id="toggle-3d-btn">3D地形表示 ON</button>
-        <button id="get-elevation-btn">現在地の標高を取得</button>
-      </div>
-    </div>
-
-    <!-- データ表示セクション -->
-    <div class="section" id="section-data">
-      <div class="section-header" onclick="toggleSection('section-data')">
-        <h2>データ表示</h2>
-        <span class="section-toggle">▼</span>
-      </div>
-      <div class="section-body">
-        <label><strong>OSM POI</strong></label>
-        <div class="checkbox-row">
-          <input type="checkbox" id="poi-checkbox" checked>
-          <label for="poi-checkbox">レストラン</label>
+    <div id="sidebar-title">SDK Demo</div>
+    <div id="sidebar-content">
+      <!-- 地図設定セクション -->
+      <div class="section" id="section-map-settings">
+        <div class="section-header" onclick="toggleSection('section-map-settings')">
+          <h2>地図設定</h2>
+          <span class="section-toggle">▼</span>
         </div>
-        <div class="checkbox-row">
-          <input type="checkbox" id="poi-checkbox2" checked>
-          <label for="poi-checkbox2">鉄道</label>
-        </div>
-        <div class="checkbox-row">
-          <input type="checkbox" id="poi-checkbox3" checked>
-          <label for="poi-checkbox3">学校</label>
-        </div>
-        <div class="sub-control">
-          <select id="school-sprite-select">
-            <option value="basic" default>basicスプライト</option>
-            <option value="chizubouken-lab">chizubouken-labスプライト</option>
+        <div class="section-body">
+          <label><strong>場所</strong></label>
+          <div class="location-row">
+            <select id="pref-select"></select>
+            <select id="city-select"></select>
+            <button class="fly-to-btn" id="fly-to-btn">移動</button>
+          </div>
+
+          <label for="style-select" style="margin-top:8px;"><strong>背景地図</strong></label>
+          <select id="style-select">
+            <option value="https://basic-v1-background-only.pages.dev/style.json">basic</option>
+            <option value="https://geoloniamaps.github.io/gsi/style.json">標準</option>
+            <option value="https://smartmap.styles.geoloniamaps.com/style.json">GSI</option>
+            <option value="https://smartcity-satellite.styles.geoloniamaps.com/style.json">衛星写真</option>
+            <option value="https://chizubouken-lab.pages.dev/style.json">ゲーム風</option>
           </select>
-        </div>
-        <div class="checkbox-row">
-          <input type="checkbox" id="poi-checkbox4" checked>
-          <label for="poi-checkbox4">動物園</label>
-        </div>
-        <div class="sub-control">
-          <select id="zoo-icon-select">
-            <option value="zoo" default>動物園アイコン</option>
-            <option value="castle">城アイコン</option>
-            <option value="nonexistent">存在しないアイコン</option>
-          </select>
-        </div>
 
-        <label style="margin-top:8px;"><strong>ハザードマップ</strong></label>
-        <div id="hazardmap-checkbox-list"></div>
+          <button id="toggle-3d-btn">3D地形表示 ON</button>
+          <button id="get-elevation-btn">標高を取得</button>
+        </div>
+      </div>
 
-        <label style="margin-top:8px;"><strong>国土数値情報</strong></label>
-        <div id="nlni-checkbox-list"></div>
+      <!-- データ表示セクション -->
+      <div class="section" id="section-data">
+        <div class="section-header" onclick="toggleSection('section-data')">
+          <h2>データ表示</h2>
+          <span class="section-toggle">▼</span>
+        </div>
+        <div class="section-body">
+          <!-- OSMデータ -->
+          <div class="data-category" id="data-osm">
+            <div class="data-category-header" onclick="toggleDataCategory('data-osm')">
+              <span class="data-category-toggle">▼</span>
+              OSMデータ
+            </div>
+            <div class="data-category-body" id="osm-checkbox-list"></div>
+          </div>
 
-        <label style="margin-top:8px;"><strong>鳥取県スマートシティ</strong></label>
-        <input type="text" id="tottori-search" placeholder="レイヤー検索...">
-        <div id="tottori-checkbox-list" style="max-height:200px;overflow-y:auto;"></div>
+          <!-- ハザードマップ -->
+          <div class="data-category" id="data-hazard">
+            <div class="data-category-header" onclick="toggleDataCategory('data-hazard')">
+              <span class="data-category-toggle">▼</span>
+              ハザードマップ
+            </div>
+            <div class="data-category-body" id="hazardmap-checkbox-list"></div>
+          </div>
+
+          <!-- 国土数値情報 -->
+          <div class="data-category" id="data-nlni">
+            <div class="data-category-header" onclick="toggleDataCategory('data-nlni')">
+              <span class="data-category-toggle">▼</span>
+              国土数値情報
+            </div>
+            <div class="data-category-body" id="nlni-checkbox-list"></div>
+          </div>
+
+          <!-- 鳥取県スマートシティ -->
+          <div class="data-category" id="data-tottori">
+            <div class="data-category-header" onclick="toggleDataCategory('data-tottori')">
+              <span class="data-category-toggle">▼</span>
+              鳥取県スマートシティ
+            </div>
+            <div class="data-category-body">
+              <input type="text" id="tottori-search" placeholder="レイヤー検索...">
+              <div id="tottori-checkbox-list" style="max-height:200px;overflow-y:auto;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- スタイル変更デモセクション -->
+      <div class="section" id="section-style-demo">
+        <div class="section-header" onclick="toggleSection('section-style-demo')">
+          <h2>スタイル変更デモ</h2>
+          <span class="section-toggle">▼</span>
+        </div>
+        <div class="section-body">
+          <button id="load-sample-features-btn" style="background:#4a90d9;color:#fff;border-color:#3a7bc8;">サンプルの地物を表示する</button>
+
+          <div id="style-controls" style="display:none;">
+            <hr class="style-separator">
+            <label><strong>setSymbolIconSize</strong> (cafe)</label>
+            <label>icon-size: <span id="symbol-size-val">0.5</span></label>
+            <input type="range" id="symbol-size" min="0.1" max="3" step="0.1" value="0.5">
+
+            <hr class="style-separator">
+            <label><strong>setCircleStyle</strong> (sample-circle)</label>
+            <label>color</label>
+            <input type="color" id="circle-color" value="#FF0000">
+            <label>radius: <span id="circle-radius-val">6</span></label>
+            <input type="range" id="circle-radius" min="1" max="30" step="1" value="6">
+            <label>strokeColor</label>
+            <input type="color" id="circle-stroke-color" value="#FF0000">
+            <label>strokeWidth: <span id="circle-stroke-width-val">1</span></label>
+            <input type="range" id="circle-stroke-width" min="0" max="10" step="1" value="1">
+            <label>opacity: <span id="circle-opacity-val">0.8</span></label>
+            <input type="range" id="circle-opacity" min="0" max="1" step="0.1" value="0.8">
+
+            <hr class="style-separator">
+            <label><strong>setFillStyle</strong> (sample-polygon)</label>
+            <label>color</label>
+            <input type="color" id="fill-color" value="#00FF00">
+            <label>opacity: <span id="fill-opacity-val">0.5</span></label>
+            <input type="range" id="fill-opacity" min="0" max="1" step="0.1" value="0.5">
+            <label>outlineColor</label>
+            <input type="color" id="fill-outline-color" value="#00FF00">
+
+            <hr class="style-separator">
+            <label><strong>setLineStyle</strong> (sample-line)</label>
+            <label>color</label>
+            <input type="color" id="line-color" value="#0000FF">
+            <label>width: <span id="line-width-val">3</span></label>
+            <input type="range" id="line-width" min="1" max="20" step="1" value="3">
+            <label>opacity: <span id="line-opacity-val">1.0</span></label>
+            <input type="range" id="line-opacity" min="0" max="1" step="0.1" value="1.0">
+          </div>
+        </div>
+      </div>
+
+      <!-- ツールセクション -->
+      <div class="section" id="section-tools">
+        <div class="section-header" onclick="toggleSection('section-tools')">
+          <h2>ツール</h2>
+          <span class="section-toggle">▼</span>
+        </div>
+        <div class="section-body">
+          <button id="show-icons-btn">アイコン一覧表示</button>
+        </div>
       </div>
     </div>
 
-    <!-- スタイル変更デモセクション -->
-    <div class="section" id="section-style-demo">
-      <div class="section-header" onclick="toggleSection('section-style-demo')">
-        <h2>スタイル変更デモ</h2>
-        <span class="section-toggle">▼</span>
+    <div id="icon-popup">
+      <div id="icon-popup-header">
+        <strong>chizubouken-lab のアイコン一覧</strong>
+        <button id="icon-popup-close">&times;</button>
       </div>
-      <div class="section-body">
-        <button id="load-sample-features-btn" style="background:#4a90d9;color:#fff;border-color:#3a7bc8;">サンプルの地物を表示する</button>
-
-        <div id="style-controls" style="display:none;">
-          <hr class="style-separator">
-          <label><strong>setSymbolIconSize</strong> (cafe)</label>
-          <label>icon-size: <span id="symbol-size-val">0.5</span></label>
-          <input type="range" id="symbol-size" min="0.1" max="3" step="0.1" value="0.5">
-
-          <hr class="style-separator">
-          <label><strong>setCircleStyle</strong> (sample-circle)</label>
-          <label>color</label>
-          <input type="color" id="circle-color" value="#FF0000">
-          <label>radius: <span id="circle-radius-val">6</span></label>
-          <input type="range" id="circle-radius" min="1" max="30" step="1" value="6">
-          <label>strokeColor</label>
-          <input type="color" id="circle-stroke-color" value="#FF0000">
-          <label>strokeWidth: <span id="circle-stroke-width-val">1</span></label>
-          <input type="range" id="circle-stroke-width" min="0" max="10" step="1" value="1">
-          <label>opacity: <span id="circle-opacity-val">0.8</span></label>
-          <input type="range" id="circle-opacity" min="0" max="1" step="0.1" value="0.8">
-
-          <hr class="style-separator">
-          <label><strong>setFillStyle</strong> (sample-polygon)</label>
-          <label>color</label>
-          <input type="color" id="fill-color" value="#00FF00">
-          <label>opacity: <span id="fill-opacity-val">0.5</span></label>
-          <input type="range" id="fill-opacity" min="0" max="1" step="0.1" value="0.5">
-          <label>outlineColor</label>
-          <input type="color" id="fill-outline-color" value="#00FF00">
-
-          <hr class="style-separator">
-          <label><strong>setLineStyle</strong> (sample-line)</label>
-          <label>color</label>
-          <input type="color" id="line-color" value="#0000FF">
-          <label>width: <span id="line-width-val">3</span></label>
-          <input type="range" id="line-width" min="1" max="20" step="1" value="3">
-          <label>opacity: <span id="line-opacity-val">1.0</span></label>
-          <input type="range" id="line-opacity" min="0" max="1" step="0.1" value="1.0">
-        </div>
-      </div>
+      <div id="icon-popup-body"></div>
     </div>
-
-    <!-- ツールセクション -->
-    <div class="section" id="section-tools">
-      <div class="section-header" onclick="toggleSection('section-tools')">
-        <h2>ツール</h2>
-        <span class="section-toggle">▼</span>
-      </div>
-      <div class="section-body">
-        <button id="show-icons-btn">アイコン一覧表示</button>
-      </div>
-    </div>
-
-    <div id="icon-popup" style="display:none;position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:1000;background:#fff;border:1px solid #ccc;padding:16px;border-radius:8px;max-width:90vw;max-height:70vh;overflow:auto;"></div>
   </div>
+
+  <div id="center-crosshair"></div>
   <div id="map"></div>
   <script src="./index.js"></script>
   <script type="application/javascript">
@@ -336,10 +512,17 @@
       document.getElementById(sectionId).classList.toggle('collapsed');
     }
 
+    // データカテゴリ折りたたみ
+    function toggleDataCategory(categoryId) {
+      document.getElementById(categoryId).classList.toggle('collapsed');
+    }
+
     // 都道府県・市区町村プルダウン初期化
     async function initPrefCityDropdown() {
       const prefSelect = document.getElementById('pref-select');
       const citySelect = document.getElementById('city-select');
+      const flyToBtn = document.getElementById('fly-to-btn');
+
       // 都道府県取得
       const prefs = await geolonia.japan.Map.fetchPrefNames();
       prefSelect.innerHTML = prefs.map(pref => `<option value="${pref}">${pref}</option>`).join('');
@@ -350,30 +533,21 @@
 
       // レースコンディション防止用リクエストID
       let prefRequestId = 0;
-      let cityRequestId = 0;
 
-      // 都道府県変更時：市区町村を更新して地図を移動
+      // 都道府県変更時：市区町村を更新（移動しない）
       prefSelect.addEventListener('change', async function(e) {
         const prefName = e.target.value;
         const reqId = ++prefRequestId;
         const cities = await geolonia.japan.Map.fetchCityNames(prefName);
-        if (reqId !== prefRequestId) return; // stale response を無視
+        if (reqId !== prefRequestId) return;
         citySelect.innerHTML = cities.map(city => `<option value="${city}">${city}</option>`).join('');
-        // 都道府県の座標に移動
-        const lngLat = await geolonia.japan.Map.getLatLngByPrefecture(prefName);
-        if (reqId !== prefRequestId) return; // stale response を無視
-        if (lngLat) {
-          japan.flyTo({ center: lngLat, zoom: 10 });
-        }
       });
 
-      // 市区町村変更時：地図を移動
-      citySelect.addEventListener('change', async function(e) {
+      // 移動ボタン：選択中の市区町村に移動
+      flyToBtn.addEventListener('click', async function() {
         const prefName = prefSelect.value;
-        const cityName = e.target.value;
-        const reqId = ++cityRequestId;
+        const cityName = citySelect.value;
         const lngLat = await geolonia.japan.Map.getLatLngByCity(prefName, cityName);
-        if (reqId !== cityRequestId) return; // stale response を無視
         if (lngLat) {
           japan.flyTo({ center: lngLat, zoom: 13 });
         }
@@ -515,14 +689,40 @@
       japan.setBaseMapStyle(e.target.value);
     });
 
+    // OSMデータのチェックボックスを動的生成
+    const osmNames = geolonia.japan.Map.getOsmPoiLayers();
+    const osmCheckboxList = document.getElementById('osm-checkbox-list');
+    osmNames.forEach(name => {
+      const row = document.createElement('div');
+      row.className = 'checkbox-row';
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.id = 'osm-' + name;
+      checkbox.value = name;
+      checkbox.addEventListener('change', function(e) {
+        if (e.target.checked) {
+          japan.loadOsmPoi(name, 'chizubouken-lab');
+        } else {
+          japan.removeOsmPoi(name);
+        }
+      });
+      const label = document.createElement('label');
+      label.htmlFor = checkbox.id;
+      label.textContent = name;
+      row.appendChild(checkbox);
+      row.appendChild(label);
+      osmCheckboxList.appendChild(row);
+    });
+
     // ハザードマップデータ名をチェックボックスとして追加する
     const hazardMapData = geolonia.japan.Map.getHazardMapData();
     const hazardCheckboxList = document.getElementById('hazardmap-checkbox-list');
     hazardMapData.forEach(name => {
-      const label = document.createElement('label');
-      label.className = 'checkbox-row';
+      const row = document.createElement('div');
+      row.className = 'checkbox-row';
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
+      checkbox.id = 'hazard-' + name;
       checkbox.value = name;
       checkbox.addEventListener('change', function (e) {
         if (e.target.checked) {
@@ -531,19 +731,23 @@
           japan.removeHazardMapData(name);
         }
       });
-      label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(name));
-      hazardCheckboxList.appendChild(label);
+      const label = document.createElement('label');
+      label.htmlFor = checkbox.id;
+      label.textContent = name;
+      row.appendChild(checkbox);
+      row.appendChild(label);
+      hazardCheckboxList.appendChild(row);
     });
 
     // 国土数値情報データ名をチェックボックスとして追加
     const nlniData = geolonia.japan.Map.getNLNIData();
     const nlniCheckboxList = document.getElementById('nlni-checkbox-list');
     nlniData.forEach(name => {
-      const label = document.createElement('label');
-      label.className = 'checkbox-row';
+      const row = document.createElement('div');
+      row.className = 'checkbox-row';
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
+      checkbox.id = 'nlni-' + name;
       checkbox.value = name;
       checkbox.addEventListener('change', function (e) {
         if (e.target.checked) {
@@ -552,9 +756,12 @@
           japan.removeNLNIData(name);
         }
       });
-      label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(name));
-      nlniCheckboxList.appendChild(label);
+      const label = document.createElement('label');
+      label.htmlFor = checkbox.id;
+      label.textContent = name;
+      row.appendChild(checkbox);
+      row.appendChild(label);
+      nlniCheckboxList.appendChild(row);
     });
 
     // 鳥取県スマートシティデータのチェックボックスを生成（非同期）
@@ -582,8 +789,8 @@
             })
           : entries;
         filtered.forEach(entry => {
-          const label = document.createElement('label');
-          label.className = 'checkbox-row';
+          const row = document.createElement('div');
+          row.className = 'checkbox-row';
           const checkbox = document.createElement('input');
           checkbox.type = 'checkbox';
           checkbox.value = entry.id;
@@ -601,9 +808,11 @@
               });
             }
           });
-          label.appendChild(checkbox);
-          label.appendChild(document.createTextNode(entry.description || entry.id));
-          container.appendChild(label);
+          const label = document.createElement('label');
+          label.textContent = entry.description || entry.id;
+          row.appendChild(checkbox);
+          row.appendChild(label);
+          container.appendChild(row);
         });
       }
 
@@ -659,84 +868,29 @@
         }
       )
 
-      // osmのpoiを表示
-      japan.loadOsmPoi('restaurant', 'chizubouken-lab');
-      document.getElementById('poi-checkbox').addEventListener('change', function (e) {
-        if (e.target.checked) {
-          japan.loadOsmPoi('restaurant', 'chizubouken-lab');
-        } else {
-          const res = japan.removeOsmPoi('restaurant');
-        }
-      });
-
-      japan.loadOsmPoi('鉄道', 'basic');
-      document.getElementById('poi-checkbox2').addEventListener('change', function (e) {
-        if (e.target.checked) {
-          japan.loadOsmPoi('鉄道', 'basic');
-        } else {
-          const res = japan.removeOsmPoi('鉄道');
-        }
-      });
-
-      japan.loadOsmPoi('学校', 'basic');
-      document.getElementById('poi-checkbox3').addEventListener('change', function (e) {
-        if (e.target.checked) {
-          japan.loadOsmPoi('学校', 'basic');
-        } else {
-          const res = japan.removeOsmPoi('学校');
-          console.log('学校のPOIを削除:', res);
-        }
-      });
-
-      japan.loadOsmPoi('動物園', 'chizubouken-lab');
-      document.getElementById('poi-checkbox4').addEventListener('change', function (e) {
-        if (e.target.checked) {
-          japan.loadOsmPoi('動物園', 'chizubouken-lab');
-        } else {
-          japan.removeOsmPoi('動物園');
-        }
-      });
-
-      // スプライト切り替え
-      document.getElementById('school-sprite-select').addEventListener('change', function (e) {
-        const schoolLayerIds = japan.hasLayer('学校');
-        if (schoolLayerIds.length > 0) {
-          schoolLayerIds.forEach(layerId => {
-            japan.changeSpriteSheet(layerId, e.target.value);
-          });
-        }
-      });
-
-      // アイコン切り替え
-      document.getElementById('zoo-icon-select').addEventListener('change', function (e) {
-        const zooLayerIds = japan.hasLayer('動物園');
-        if (zooLayerIds.length > 0) {
-          zooLayerIds.forEach(layerId => {
-            japan.changeLayerIcon(layerId, e.target.value, 'chizubouken-lab');
-          });
-        }
-      });
-
-      // サンプル地物を表示するボタン
+      // サンプル地物を表示するボタン（トグル）
       document.getElementById('load-sample-features-btn').addEventListener('click', function () {
-        if (sampleFeaturesLoaded) return;
-        sampleFeaturesLoaded = true;
-
-        // Circle GeoJSON
-        japan.loadGeojson(circleGeojson, 'sample-circle', {
-          'marker-color': '#FF0000'
-        });
-        // Polygon GeoJSON
-        japan.loadGeojson(polygonGeojson, 'sample-polygon', {});
-        // Line GeoJSON
-        japan.loadGeojson(lineGeojson, 'sample-line', {});
-
-        // スタイルコントロールを表示
-        document.getElementById('style-controls').style.display = 'block';
-        this.textContent = 'サンプル地物を表示済み';
-        this.style.background = '#999';
-        this.style.borderColor = '#888';
-        this.style.cursor = 'default';
+        if (!sampleFeaturesLoaded) {
+          // 表示
+          japan.loadGeojson(circleGeojson, 'sample-circle', { 'marker-color': '#FF0000' });
+          japan.loadGeojson(polygonGeojson, 'sample-polygon', {});
+          japan.loadGeojson(lineGeojson, 'sample-line', {});
+          document.getElementById('style-controls').style.display = 'block';
+          this.textContent = 'サンプルの地物を非表示にする';
+          this.style.background = '#e74c3c';
+          this.style.borderColor = '#c0392b';
+          sampleFeaturesLoaded = true;
+        } else {
+          // 非表示
+          japan.removeGeojsonLayer('sample-circle');
+          japan.removeGeojsonLayer('sample-polygon');
+          japan.removeGeojsonLayer('sample-line');
+          document.getElementById('style-controls').style.display = 'none';
+          this.textContent = 'サンプルの地物を表示する';
+          this.style.background = '#4a90d9';
+          this.style.borderColor = '#3a7bc8';
+          sampleFeaturesLoaded = false;
+        }
       });
 
       // setSymbolIconSize
@@ -859,29 +1013,70 @@
 
     // 標高取得ボタンのイベント
     const getElevationBtn = document.getElementById('get-elevation-btn');
+    const centerCrosshair = document.getElementById('center-crosshair');
+    let elevationPopup = null;
+
     getElevationBtn.addEventListener('click', async function () {
+      // 中心十字マーカーを表示
+      centerCrosshair.style.display = 'block';
+
       if (typeof japan.getElevation === 'function') {
         const center = japan.getCenter();
         const elevation = await japan.getElevation([center.lng, center.lat]);
+
+        // 前回のポップアップがあれば削除
+        if (elevationPopup) {
+          elevationPopup.remove();
+        }
+
         if (typeof elevation === 'number') {
-          alert(`現在地（地図中心）の標高: ${elevation.toFixed(2)} m`);
+          elevationPopup = new geolonia.japan.Popup({
+            closeOnClick: false,
+            maxWidth: '200px'
+          })
+            .setLngLat([center.lng, center.lat])
+            .setHTML(`<div style="text-align:center;padding:4px;font-size:13px;">ここの標高は<br><strong style="font-size:18px;">${elevation.toFixed(2)} m</strong></div>`)
+            .addTo(japan);
+
+          // ポップアップが閉じられたら十字も消す
+          elevationPopup.on('close', function() {
+            centerCrosshair.style.display = 'none';
+            elevationPopup = null;
+          });
         } else {
-          alert('標高データが取得できませんでした。3D地形表示がONか確認してください。');
+          elevationPopup = new geolonia.japan.Popup({
+            closeOnClick: false,
+            maxWidth: '200px'
+          })
+            .setLngLat([center.lng, center.lat])
+            .setHTML('<div style="text-align:center;padding:4px;font-size:13px;">標高データが取得できませんでした。<br>3D地形表示がONか確認してください。</div>')
+            .addTo(japan);
+
+          elevationPopup.on('close', function() {
+            centerCrosshair.style.display = 'none';
+            elevationPopup = null;
+          });
         }
       } else {
-        alert('getElevation APIが利用できません。MapLibreのバージョンを確認してください。');
+        centerCrosshair.style.display = 'none';
       }
     });
 
     // アイコン一覧表示ボタンのイベント
-    document.getElementById('show-icons-btn').addEventListener('click', async function () {
-      const popup = document.getElementById('icon-popup');
-      if (popup.style.display === 'block') {
-        popup.style.display = 'none';
+    const showIconsBtn = document.getElementById('show-icons-btn');
+    const iconPopup = document.getElementById('icon-popup');
+    const iconPopupBody = document.getElementById('icon-popup-body');
+    const iconPopupClose = document.getElementById('icon-popup-close');
+
+    showIconsBtn.addEventListener('click', async function () {
+      if (iconPopup.style.display === 'block') {
+        iconPopup.style.display = 'none';
+        showIconsBtn.textContent = 'アイコン一覧表示';
+        showIconsBtn.classList.remove('active');
         return;
       }
       const styles = await geolonia.japan.Map.getIconStyles('chizubouken-lab');
-      let html = '<strong>chizubouken-lab のアイコン一覧</strong><br><div style="display:flex;flex-wrap:wrap;gap:12px;">';
+      let html = '<div style="display:flex;flex-wrap:wrap;gap:12px;">';
       styles.forEach(style => {
         html += `<div style="display:inline-block;text-align:center;margin-bottom:8px;">
           <div style="width:${style.width};height:${style.height};background-image:${style.backgroundImage};background-position:${style.backgroundPosition};background-repeat:no-repeat;margin:auto;"></div>
@@ -889,8 +1084,17 @@
         </div>`;
       });
       html += '</div>';
-      popup.innerHTML = html;
-      popup.style.display = 'block';
+      iconPopupBody.innerHTML = html;
+      iconPopup.style.display = 'block';
+      showIconsBtn.textContent = 'アイコン一覧を非表示';
+      showIconsBtn.classList.add('active');
+    });
+
+    // ポップアップのバツボタン
+    iconPopupClose.addEventListener('click', function() {
+      iconPopup.style.display = 'none';
+      showIconsBtn.textContent = 'アイコン一覧表示';
+      showIconsBtn.classList.remove('active');
     });
   </script>
 </body>

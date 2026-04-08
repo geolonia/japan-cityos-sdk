@@ -4594,11 +4594,26 @@
          * @param styleUrlOrObject スタイルのURLまたはオブジェクト
          ****************/
         setBaseMapStyle(styleUrlOrObject) {
+            // 3D地形の状態を保持
+            const terrainState = this.getTerrain();
+            const hadTerrain = !!terrainState;
             this.setStyle(styleUrlOrObject, {
                 transformStyle: (previousStyle, nextStyle) => {
+                    var _a;
                     const newSources = mergeSourcesByLoadedIds(previousStyle.sources, nextStyle.sources, this.loadedSourceIds);
                     const newLayers = mergeLayersByLoadedIds(previousStyle.layers, nextStyle.layers, this.loadedSourceIds);
-                    return Object.assign(Object.assign(Object.assign({}, previousStyle), nextStyle), { sources: newSources, layers: newLayers });
+                    // terrain用のソースとレイヤーを保持
+                    if (hadTerrain) {
+                        const terrainSourceId = this.TERRAIN_SOURCE_ID;
+                        if (previousStyle.sources[terrainSourceId]) {
+                            newSources[terrainSourceId] = previousStyle.sources[terrainSourceId];
+                        }
+                        const hillshadeLayer = previousStyle.layers.find(l => l.id === GeoloniaMap.HILLSHADE_LAYER_ID);
+                        if (hillshadeLayer) {
+                            newLayers.push(hillshadeLayer);
+                        }
+                    }
+                    return Object.assign(Object.assign(Object.assign(Object.assign({}, previousStyle), nextStyle), { sources: newSources, layers: newLayers }), (hadTerrain ? { terrain: { source: this.TERRAIN_SOURCE_ID, exaggeration: (_a = terrainState.exaggeration) !== null && _a !== void 0 ? _a : 1 } } : {}));
                 }
             });
         }
