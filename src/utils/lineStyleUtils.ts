@@ -45,7 +45,7 @@ export function setLineStyle(
         map.setPaintProperty(layerId, paintProperty, value);
       } catch (e) {
         // プロパティが存在しない場合は無視（開発時のみログ出力）
-        if (process.env.NODE_ENV === 'development') {
+        if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'development') {
           console.warn(`setLineStyle: Failed to set ${paintProperty} on ${layerId}`, e);
         }
       }
