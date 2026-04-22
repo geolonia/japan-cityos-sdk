@@ -18,6 +18,7 @@ import { fetchJson } from './utils/fetchJson';
 import { setCircleStyle as _setCircleStyle, CircleStyleOptions } from './utils/circleStyleUtils';
 import { setFillStyle as applyFillStyle, FillStyleOptions } from './setFillStyle';
 import { setLineStyle, LineStyleOptions } from './utils/lineStyleUtils';
+import { baseMapStyleUrl } from './utils/baseMapStyleUtils';
 import { fetchTottoriDataIndex, addTottoriDataSource, addTottoriDataLayer, removeTottoriDataLayer, TottoriDataEntry } from './utils/tottoriDataUtils';
 
 declare global {
@@ -46,6 +47,8 @@ class GeoloniaMap extends maplibregl.Map {
     'basic': 'https://geoloniamaps.github.io/basic-v1/basic-v1',
   };
 
+  static baseMapStyleUrl: {[key: string]: string} = { ...baseMapStyleUrl };
+
   // 3D地形用のソース・レイヤーID（クラス内共通で利用）
   private readonly TERRAIN_SOURCE_ID = "dem";
   private static readonly HILLSHADE_LAYER_ID = "hillshading";
@@ -55,7 +58,7 @@ class GeoloniaMap extends maplibregl.Map {
   constructor(params: any) {
     const defaults = {
       container: params.container ?? 'map',
-      style: params.style ?? 'https://basic-v1-background-only.pages.dev/style.json',
+      style: params.style ?? GeoloniaMap.baseMapStyleUrl['basic'],
       center: params.lngLat ?? [139.692, 35.689],
       zoom: params.zoom ?? 12,
       hash: params.hash ?? false,
@@ -93,6 +96,13 @@ class GeoloniaMap extends maplibregl.Map {
    */
   static getNLNIData(): string[] {
     return getNLNIKeys();
+  }
+
+  /**
+   * 利用可能な背景地図スタイル名を取得する
+   */
+  static getBaseMapStyles(): string[] {
+    return Object.keys(GeoloniaMap.baseMapStyleUrl);
   }
 
   /**
