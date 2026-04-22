@@ -565,6 +565,8 @@
         document.getElementById('circle-opacity-val').textContent = e.target.value;
         updateCircleStyle();
       });
+      // UI初期値をロード直後のレイヤーに反映
+      updateCircleStyle();
 
       // setFillStyle
       function updateFillStyle() {
@@ -580,6 +582,8 @@
         updateFillStyle();
       });
       document.getElementById('fill-outline-color').addEventListener('input', updateFillStyle);
+      // UI初期値をロード直後のレイヤーに反映
+      updateFillStyle();
 
       // setLineStyle
       function updateLineStyle() {
@@ -598,6 +602,8 @@
         document.getElementById('line-opacity-val').textContent = e.target.value;
         updateLineStyle();
       });
+      // UI初期値をロード直後のレイヤーに反映
+      updateLineStyle();
 
 
       japan.on('click', (e) => {
