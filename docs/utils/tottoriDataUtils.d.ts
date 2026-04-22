@@ -15,12 +15,12 @@ export declare function fetchTottoriDataIndex(): Promise<TottoriDataEntry[]>;
  */
 export declare function getTileType(tileUrl: string): 'raster' | 'vector';
 /**
- * styleUrl から style.json を取得し、ソース設定（minzoom, maxzoom, bounds）を抽出する
+ * styleUrl から style.json を取得し、tileUrl に一致するソース設定（minzoom, maxzoom, bounds）を抽出する
  */
-export declare function fetchTottoriStyleSourceConfig(styleUrl: string): Promise<{
+export declare function fetchTottoriStyleSourceConfig(styleUrl: string, tileUrl: string): Promise<{
     minzoom?: number;
     maxzoom?: number;
-    bounds?: number[];
+    bounds?: [number, number, number, number];
 }>;
 /**
  * 鳥取県データのソースを追加する
