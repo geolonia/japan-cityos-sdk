@@ -11,7 +11,7 @@ export declare function buildJapaneseAdminsUrl(code: string): string;
 /**
  * 都道府県コードを指定して japanese-admins から都道府県境界の GeoJSON を取得する
  * @param prefCode 都道府県コード（2桁、例: '01'）
- * @returns Promise<GeoJSON.FeatureCollection | null> GeoJSON または null（取得失敗時）
+ * @returns Promise<GeoJSON.FeatureCollection | null> GeoJSON または null（取得失敗時・バリデーションエラー時）
  *
  * @example
  * const hokkaido = await fetchPrefectureGeojson('01'); // 北海道の境界を取得
@@ -20,7 +20,7 @@ export declare function fetchPrefectureGeojson(prefCode: string): Promise<GeoJSO
 /**
  * 市区町村コードを指定して japanese-admins から市区町村境界の GeoJSON を取得する
  * @param adminCode 市区町村コード（5桁、例: '01101'）
- * @returns Promise<GeoJSON.FeatureCollection | null> GeoJSON または null（取得失敗時）
+ * @returns Promise<GeoJSON.FeatureCollection | null> GeoJSON または null（取得失敗時・バリデーションエラー時）
  *
  * @example
  * const sapporoChuoku = await fetchMunicipalityGeojson('01101'); // 札幌市中央区の境界を取得
