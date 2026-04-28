@@ -18,6 +18,7 @@ import { setCircleStyle as _setCircleStyle, CircleStyleOptions } from './utils/c
 import { setFillStyle as applyFillStyle, FillStyleOptions } from './setFillStyle';
 import { setLineStyle, LineStyleOptions } from './utils/lineStyleUtils';
 import { fetchTottoriDataIndex, addTottoriDataSource, addTottoriDataLayer, removeTottoriDataLayer, TottoriDataEntry } from './utils/tottoriDataUtils';
+import { nearestPointOnSegment, nearestPointOnLine, bearingBetweenPoints, distanceBetweenPoints, collectLineFeatures } from './utils/geometryUtils';
 
 declare global {
   interface Window {
@@ -735,3 +736,10 @@ window.geolonia.API_KEY = parseApiKey(currentScript || undefined) || "";
 window.geolonia.japan = maplibregl;
 window.geolonia.japan.Map = GeoloniaMap;
 window.geolonia.japan.Popup = maplibregl.Popup;
+window.geolonia.japan.geometry = {
+  nearestPointOnSegment,
+  nearestPointOnLine,
+  bearingBetweenPoints,
+  distanceBetweenPoints,
+  collectLineFeatures,
+};
