@@ -47,6 +47,7 @@ export const nearestPointOnSegment = (
   a: [number, number],
   b: [number, number],
 ): NearestPointOnSegmentResult => {
+  const EPSILON = 1e-12;
   // 経度方向の補正係数（緯度によるメルカトル近似）
   const avgLat = (a[1] + b[1]) / 2;
   const cosLat = Math.cos((avgLat * Math.PI) / 180);
@@ -58,7 +59,7 @@ export const nearestPointOnSegment = (
   const dy = rawDy;
   const lenSq = dx * dx + dy * dy;
 
-  if (lenSq === 0) {
+  if (lenSq <= EPSILON) {
     const dxP = (p[0] - a[0]) * cosLat;
     const dyP = p[1] - a[1];
     const dist = Math.sqrt(dxP * dxP + dyP * dyP);
@@ -180,10 +181,14 @@ export const collectLineFeatures = (
     const { geometry } = feature;
 
     if (geometry.type === 'LineString') {
-      lines.push({ coordinates: geometry.coordinates, feature });
+      if (Array.isArray(geometry.coordinates)) {
+        lines.push({ coordinates: geometry.coordinates, feature });
+      }
     } else if (geometry.type === 'MultiLineString') {
       for (const coords of geometry.coordinates) {
-        lines.push({ coordinates: coords, feature });
+        if (Array.isArray(coords)) {
+          lines.push({ coordinates: coords, feature });
+        }
       }
     }
   }

@@ -90,25 +90,31 @@ describe('nearestPointOnLine', () => {
 });
 
 describe('bearingBetweenPoints', () => {
-  it('真北（同経度、北方向）', () => {
-    const from: [number, number] = [139.0, 35.0];
-    const to: [number, number] = [139.0, 36.0];
+  it.each([
+    {
+      name: '真北（同経度、北方向）',
+      from: [139.0, 35.0] as [number, number],
+      to: [139.0, 36.0] as [number, number],
+      expected: 0,
+      digits: 0,
+    },
+    {
+      name: '真東（同緯度、東方向）',
+      from: [139.0, 35.0] as [number, number],
+      to: [140.0, 35.0] as [number, number],
+      expected: 90,
+      digits: -1,
+    },
+    {
+      name: '真南（同経度、南方向）',
+      from: [139.0, 36.0] as [number, number],
+      to: [139.0, 35.0] as [number, number],
+      expected: 180,
+      digits: 0,
+    },
+  ])('$name', ({ from, to, expected, digits }) => {
     const bearing = bearingBetweenPoints(from, to);
-    expect(bearing).toBeCloseTo(0, 0);
-  });
-
-  it('真東（同緯度、東方向）', () => {
-    const from: [number, number] = [139.0, 35.0];
-    const to: [number, number] = [140.0, 35.0];
-    const bearing = bearingBetweenPoints(from, to);
-    expect(bearing).toBeCloseTo(90, -1); // 約90度（球面なので厳密には少しずれる）
-  });
-
-  it('真南（同経度、南方向）', () => {
-    const from: [number, number] = [139.0, 36.0];
-    const to: [number, number] = [139.0, 35.0];
-    const bearing = bearingBetweenPoints(from, to);
-    expect(bearing).toBeCloseTo(180, 0);
+    expect(bearing).toBeCloseTo(expected, digits);
   });
 
   it('同一地点の場合は0を返す', () => {
