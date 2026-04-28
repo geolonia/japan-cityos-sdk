@@ -47,23 +47,59 @@ export function getTileType(tileUrl: string): 'raster' | 'vector' {
 }
 
 /**
+ * styleUrl から style.json を取得し、tileUrl に一致するソース設定（minzoom, maxzoom, bounds）を抽出する
+ */
+export async function fetchTottoriStyleSourceConfig(styleUrl: string, tileUrl: string): Promise<{ minzoom?: number; maxzoom?: number; bounds?: [number, number, number, number] }> {
+  try {
+    const style = await fetchJson(styleUrl);
+    if (!style || !style.sources) { return {}; }
+    const normalizedTileUrl = tileUrl.split('?')[0].split('#')[0];
+    const src = Object.values(style.sources).find((candidate: any) => {
+      if (!candidate || !Array.isArray(candidate.tiles)) { return false; }
+      return candidate.tiles.some((u: string) => u.split('?')[0].split('#')[0] === normalizedTileUrl);
+    }) as any;
+    if (!src) { return {}; }
+    const config: { minzoom?: number; maxzoom?: number; bounds?: [number, number, number, number] } = {};
+    if (typeof src.minzoom === 'number') { config.minzoom = src.minzoom; }
+    if (typeof src.maxzoom === 'number') { config.maxzoom = src.maxzoom; }
+    if (
+      Array.isArray(src.bounds) &&
+      src.bounds.length === 4 &&
+      src.bounds.every((v: unknown) => typeof v === 'number' && Number.isFinite(v))
+    ) {
+      config.bounds = src.bounds as [number, number, number, number];
+    }
+    return config;
+  } catch {
+    return {};
+  }
+}
+
+/**
  * 鳥取県データのソースを追加する
  */
-export function addTottoriDataSource(map: maplibregl.Map, entry: TottoriDataEntry): string | undefined {
+export async function addTottoriDataSource(map: maplibregl.Map, entry: TottoriDataEntry): Promise<string | undefined> {
   const id = toSourceId(entry);
-  if (!map.getSource(id)) {
-    const tileType = getTileType(entry.tileUrl);
-    const source: any = {
-      type: tileType,
-      tiles: [entry.tileUrl],
-      attribution: '鳥取県スマートシティ',
-    };
-    if (tileType === 'raster') {
-      source.tileSize = 256;
-    }
-    map.addSource(id, source);
+  if (map.getSource(id)) {
     return id;
   }
+  const tileType = getTileType(entry.tileUrl);
+  const styleConfig = await fetchTottoriStyleSourceConfig(entry.styleUrl, entry.tileUrl);
+  const source: any = {
+    type: tileType,
+    tiles: [entry.tileUrl],
+    attribution: '鳥取県スマートシティ',
+  };
+  if (tileType === 'raster') {
+    source.tileSize = 256;
+  }
+  if (styleConfig.minzoom !== undefined) { source.minzoom = styleConfig.minzoom; }
+  if (styleConfig.maxzoom !== undefined) { source.maxzoom = styleConfig.maxzoom; }
+  if (styleConfig.bounds !== undefined) { source.bounds = styleConfig.bounds; }
+  if (!map.getSource(id)) {
+    map.addSource(id, source);
+  }
+  return id;
 }
 
 /**

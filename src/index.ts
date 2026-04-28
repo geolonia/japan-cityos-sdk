@@ -717,7 +717,7 @@ class GeoloniaMap extends MapsCoreGeoloniaMap {
       return;
     }
 
-    const sourceId = addTottoriDataSource(this, entry);
+    const sourceId = await addTottoriDataSource(this, entry);
     if (sourceId) {
       this.loadedSourceIds.add(sourceId);
     }

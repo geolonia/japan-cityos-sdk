@@ -15,9 +15,17 @@ export declare function fetchTottoriDataIndex(): Promise<TottoriDataEntry[]>;
  */
 export declare function getTileType(tileUrl: string): 'raster' | 'vector';
 /**
+ * styleUrl から style.json を取得し、tileUrl に一致するソース設定（minzoom, maxzoom, bounds）を抽出する
+ */
+export declare function fetchTottoriStyleSourceConfig(styleUrl: string, tileUrl: string): Promise<{
+    minzoom?: number;
+    maxzoom?: number;
+    bounds?: [number, number, number, number];
+}>;
+/**
  * 鳥取県データのソースを追加する
  */
-export declare function addTottoriDataSource(map: maplibregl.Map, entry: TottoriDataEntry): string | undefined;
+export declare function addTottoriDataSource(map: maplibregl.Map, entry: TottoriDataEntry): Promise<string | undefined>;
 /**
  * 鳥取県データのレイヤーを追加する
  */

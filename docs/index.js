@@ -5738,12 +5738,55 @@
         return normalized.endsWith('.pbf') ? 'vector' : 'raster';
     }
     /**
+     * styleUrl から style.json を取得し、tileUrl に一致するソース設定（minzoom, maxzoom, bounds）を抽出する
+     */
+    function fetchTottoriStyleSourceConfig(styleUrl, tileUrl) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const style = yield fetchJson(styleUrl);
+                if (!style || !style.sources) {
+                    return {};
+                }
+                const normalizedTileUrl = tileUrl.split('?')[0].split('#')[0];
+                const src = Object.values(style.sources).find((candidate) => {
+                    if (!candidate || !Array.isArray(candidate.tiles)) {
+                        return false;
+                    }
+                    return candidate.tiles.some((u) => u.split('?')[0].split('#')[0] === normalizedTileUrl);
+                });
+                if (!src) {
+                    return {};
+                }
+                const config = {};
+                if (typeof src.minzoom === 'number') {
+                    config.minzoom = src.minzoom;
+                }
+                if (typeof src.maxzoom === 'number') {
+                    config.maxzoom = src.maxzoom;
+                }
+                if (Array.isArray(src.bounds) &&
+                    src.bounds.length === 4 &&
+                    src.bounds.every((v) => typeof v === 'number' && Number.isFinite(v))) {
+                    config.bounds = src.bounds;
+                }
+                return config;
+            }
+            catch (_a) {
+                return {};
+            }
+        });
+    }
+    /**
      * 鳥取県データのソースを追加する
      */
     function addTottoriDataSource(map, entry) {
-        const id = toSourceId(entry);
-        if (!map.getSource(id)) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = toSourceId(entry);
+            if (map.getSource(id)) {
+                return id;
+            }
             const tileType = getTileType(entry.tileUrl);
+            const styleConfig = yield fetchTottoriStyleSourceConfig(entry.styleUrl, entry.tileUrl);
             const source = {
                 type: tileType,
                 tiles: [entry.tileUrl],
@@ -5752,9 +5795,20 @@
             if (tileType === 'raster') {
                 source.tileSize = 256;
             }
-            map.addSource(id, source);
+            if (styleConfig.minzoom !== undefined) {
+                source.minzoom = styleConfig.minzoom;
+            }
+            if (styleConfig.maxzoom !== undefined) {
+                source.maxzoom = styleConfig.maxzoom;
+            }
+            if (styleConfig.bounds !== undefined) {
+                source.bounds = styleConfig.bounds;
+            }
+            if (!map.getSource(id)) {
+                map.addSource(id, source);
+            }
             return id;
-        }
+        });
     }
     /**
      * 鳥取県データのレイヤーを追加する
@@ -6395,7 +6449,7 @@
                     console.warn(`鳥取県データ ID: ${dataId} が見つかりません`);
                     return;
                 }
-                const sourceId = addTottoriDataSource(this, entry);
+                const sourceId = yield addTottoriDataSource(this, entry);
                 if (sourceId) {
                     this.loadedSourceIds.add(sourceId);
                 }

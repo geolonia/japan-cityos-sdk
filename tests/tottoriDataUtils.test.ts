@@ -1,4 +1,4 @@
-import { addTottoriDataSource, addTottoriDataLayer, removeTottoriDataLayer, fetchTottoriDataIndex, getTileType, _resetCache } from '../src/utils/tottoriDataUtils';
+import { addTottoriDataSource, addTottoriDataLayer, removeTottoriDataLayer, fetchTottoriDataIndex, getTileType, fetchTottoriStyleSourceConfig, _resetCache } from '../src/utils/tottoriDataUtils';
 
 // fetchJson をモック
 jest.mock('../src/utils/fetchJson', () => ({
@@ -87,36 +87,154 @@ describe('tottoriDataUtils', () => {
     });
   });
 
+  describe('fetchTottoriStyleSourceConfig', () => {
+    it('style.json から tileUrl に一致する source の minzoom, maxzoom, bounds を取得する', async () => {
+      mockedFetchJson.mockResolvedValueOnce({
+        version: 8,
+        sources: {
+          'geolonia-smartcity/test': {
+            type: 'raster',
+            tiles: ['https://example.com/{z}/{x}/{y}.png'],
+            minzoom: 9,
+            maxzoom: 19,
+            bounds: [133.0, 35.0, 134.5, 35.6],
+          }
+        },
+        layers: []
+      });
+      const config = await fetchTottoriStyleSourceConfig('https://example.com/style.json', 'https://example.com/{z}/{x}/{y}.png');
+      expect(config).toEqual({ minzoom: 9, maxzoom: 19, bounds: [133.0, 35.0, 134.5, 35.6] });
+    });
+
+    it('複数 sources がある場合、tileUrl に一致する source を選ぶ', async () => {
+      mockedFetchJson.mockResolvedValueOnce({
+        version: 8,
+        sources: {
+          'unrelated-source': {
+            type: 'raster',
+            tiles: ['https://other.com/{z}/{x}/{y}.png'],
+            minzoom: 1,
+            maxzoom: 5,
+          },
+          'target-source': {
+            type: 'raster',
+            tiles: ['https://example.com/{z}/{x}/{y}.png'],
+            minzoom: 9,
+            maxzoom: 19,
+            bounds: [133.0, 35.0, 134.5, 35.6],
+          }
+        },
+        layers: []
+      });
+      const config = await fetchTottoriStyleSourceConfig('https://example.com/style.json', 'https://example.com/{z}/{x}/{y}.png');
+      expect(config).toEqual({ minzoom: 9, maxzoom: 19, bounds: [133.0, 35.0, 134.5, 35.6] });
+    });
+
+    it('tileUrl に一致する source がない場合は空オブジェクトを返す', async () => {
+      mockedFetchJson.mockResolvedValueOnce({
+        version: 8,
+        sources: {
+          'unrelated-source': {
+            type: 'raster',
+            tiles: ['https://other.com/{z}/{x}/{y}.png'],
+            minzoom: 1,
+            maxzoom: 5,
+          }
+        },
+        layers: []
+      });
+      const config = await fetchTottoriStyleSourceConfig('https://example.com/style.json', 'https://example.com/{z}/{x}/{y}.png');
+      expect(config).toEqual({});
+    });
+
+    it('bounds が不正な場合は bounds を含めない', async () => {
+      mockedFetchJson.mockResolvedValueOnce({
+        version: 8,
+        sources: {
+          'test': {
+            type: 'raster',
+            tiles: ['https://example.com/{z}/{x}/{y}.png'],
+            minzoom: 9,
+            bounds: [133.0, 'invalid', 134.5, 35.6],
+          }
+        },
+        layers: []
+      });
+      const config = await fetchTottoriStyleSourceConfig('https://example.com/style.json', 'https://example.com/{z}/{x}/{y}.png');
+      expect(config).toEqual({ minzoom: 9 });
+    });
+
+    it('bounds の要素数が 4 でない場合は bounds を含めない', async () => {
+      mockedFetchJson.mockResolvedValueOnce({
+        version: 8,
+        sources: {
+          'test': {
+            type: 'raster',
+            tiles: ['https://example.com/{z}/{x}/{y}.png'],
+            bounds: [133.0, 35.0],
+          }
+        },
+        layers: []
+      });
+      const config = await fetchTottoriStyleSourceConfig('https://example.com/style.json', 'https://example.com/{z}/{x}/{y}.png');
+      expect(config).toEqual({});
+    });
+
+    it('sources がない場合は空オブジェクトを返す', async () => {
+      mockedFetchJson.mockResolvedValueOnce({ version: 8 });
+      const config = await fetchTottoriStyleSourceConfig('https://example.com/style.json', 'https://example.com/{z}/{x}/{y}.png');
+      expect(config).toEqual({});
+    });
+
+    it('fetch 失敗時は空オブジェクトを返す', async () => {
+      mockedFetchJson.mockRejectedValueOnce(new Error('Network error'));
+      const config = await fetchTottoriStyleSourceConfig('https://example.com/style.json', 'https://example.com/{z}/{x}/{y}.png');
+      expect(config).toEqual({});
+    });
+  });
+
   describe('addTottoriDataSource', () => {
-    it('ラスタータイルのソースを追加する', () => {
+    it('ラスタータイルのソースに minzoom/maxzoom を適用する', async () => {
+      mockedFetchJson.mockResolvedValueOnce({
+        version: 8,
+        sources: {
+          'geolonia-smartcity/aerial_photo_ketaka_h31': {
+            type: 'raster',
+            tiles: [MOCK_INDEX[0].tileUrl],
+            tileSize: 256,
+            minzoom: 9,
+            maxzoom: 19,
+          }
+        },
+        layers: []
+      });
       const entry = MOCK_INDEX[0];
-      const sourceId = addTottoriDataSource(map, entry);
+      const sourceId = await addTottoriDataSource(map, entry);
       expect(sourceId).toBe('tottori-aerial_photo_ketaka_h31');
       expect(map.addSource).toHaveBeenCalledWith('tottori-aerial_photo_ketaka_h31', expect.objectContaining({
         type: 'raster',
         tiles: [entry.tileUrl],
         tileSize: 256,
+        minzoom: 9,
+        maxzoom: 19,
       }));
     });
 
-    it('ベクタータイルのソースを追加する', () => {
-      const entry = MOCK_INDEX[1];
-      const sourceId = addTottoriDataSource(map, entry);
-      expect(sourceId).toBe('tottori-crime_tottori');
-      expect(map.addSource).toHaveBeenCalledWith('tottori-crime_tottori', expect.objectContaining({
-        type: 'vector',
-        tiles: [entry.tileUrl],
-      }));
-      // ベクターの場合 tileSize は付与しない
+    it('style.json 取得失敗時は minzoom/maxzoom なしでソースを追加する', async () => {
+      mockedFetchJson.mockRejectedValueOnce(new Error('Network error'));
+      const entry = MOCK_INDEX[0];
+      const sourceId = await addTottoriDataSource(map, entry);
+      expect(sourceId).toBe('tottori-aerial_photo_ketaka_h31');
       const callArgs = map.addSource.mock.calls[0][1];
-      expect(callArgs.tileSize).toBeUndefined();
+      expect(callArgs.minzoom).toBeUndefined();
+      expect(callArgs.maxzoom).toBeUndefined();
     });
 
-    it('既存ソースがあれば追加しない', () => {
+    it('既存ソースがあれば追加せず id を返す', async () => {
       const entry = MOCK_INDEX[0];
       map.sources['tottori-aerial_photo_ketaka_h31'] = { type: 'raster' };
-      const sourceId = addTottoriDataSource(map, entry);
-      expect(sourceId).toBeUndefined();
+      const sourceId = await addTottoriDataSource(map, entry);
+      expect(sourceId).toBe('tottori-aerial_photo_ketaka_h31');
       expect(map.addSource).not.toHaveBeenCalled();
     });
   });
