@@ -8,6 +8,9 @@ module.exports = {
   testMatch: [
     '**/tests/**/*.test.ts',
   ],
+  moduleNameMapper: {
+    '\\.css$': '<rootDir>/tests/__mocks__/styleMock.js',
+  },
   globals: {
     'ts-jest': {
       tsconfig: 'tsconfig.json',
