@@ -55,17 +55,20 @@ class GeoloniaMap extends MapsCoreGeoloniaMap {
   private readonly TERRAIN_SOURCE_ID = "dem";
   private static readonly HILLSHADE_LAYER_ID = "hillshading";
 
+  // インスタンスごとの API キーと stage を保持
+  private apiKey: string;
+  private stage: string;
+
   constructor(params: any) {
-    // keyring に API キーと stage を設定
+    // API キーと stage を一時変数に保存（super() 呼び出し前に this にアクセスできないため）
     const apiKey = params.apiKey || window.geolonia.API_KEY || '';
+    const stage = params.stage || 'v1';
+
+    // keyring に API キーと stage を設定（maps-core との互換性のため一時的に設定）
     if (apiKey) {
       keyring.setApiKey(apiKey);
     }
-    if (params.stage) {
-      keyring.setStage(params.stage);
-    } else {
-      keyring.setStage('v1');  // デフォルトは v1
-    }
+    keyring.setStage(stage);
 
     const defaults = {
       container: params.container ?? 'map',
@@ -79,6 +82,10 @@ class GeoloniaMap extends MapsCoreGeoloniaMap {
     }
 
     super({...defaults, ...params});
+
+    // インスタンス変数に保存（super() 呼び出し後）
+    this.apiKey = apiKey;
+    this.stage = stage;
   }
 
   /**
@@ -335,7 +342,7 @@ class GeoloniaMap extends MapsCoreGeoloniaMap {
    ****************/
   async getElevation(lngLat: [number, number] = this.getCenter().toArray()): Promise<number | null> {
     if (!this.getTerrain()) {
-      addTerrainSource(this, keyring.apiKey);
+      addTerrainSource(this, this.apiKey);
       this.setTerrain({ source: this.TERRAIN_SOURCE_ID, exaggeration: 1 });
       await new Promise<void>(resolve => {
         this.once('styledata', () => resolve());

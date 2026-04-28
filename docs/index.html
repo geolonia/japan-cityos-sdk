@@ -701,8 +701,18 @@
       ]
     }
 
+    // APIキーを環境変数またはURLパラメータから取得
+    const apiKey =
+      window.geolonia?.API_KEY ||
+      new URLSearchParams(window.location.search).get('apiKey') ||
+      'YOUR_API_KEY'; // デフォルト値（実運用では必ず実際のキーに置き換えてください）
+
+    if (!apiKey || apiKey === 'YOUR_API_KEY') {
+      console.warn('Geolonia APIキーを設定してください（window.geolonia.API_KEY または ?apiKey= パラメータ）');
+    }
+
     const japan = new geolonia.japan.Map({
-      apiKey: 'e3b7017e263c4bb39267b11a469ba286',
+      apiKey,
       lngLat: [127.99866582363768, 26.47678028796848],
       zoom: 9.587623189139185,
       hash: true,
