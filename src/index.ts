@@ -1,5 +1,7 @@
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { GeoloniaMap as MapsCoreGeoloniaMap, keyring } from '@geolonia/maps-core';
+import '@geolonia/maps-core/css';
 import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey, removeLayersByLoadedIds, removeSourcesByLoadedIds, setSymbolIconSize as _setSymbolIconSize, updateLayer } from './utils/mapUtils';
 import Papa from 'papaparse';
 import { toQueryBox } from './toQueryBox';
@@ -27,7 +29,7 @@ declare global {
   }
 }
 	
-class GeoloniaMap extends maplibregl.Map {
+class GeoloniaMap extends MapsCoreGeoloniaMap {
   /**
    * 画像マーカー管理用配列
    */
@@ -53,9 +55,18 @@ class GeoloniaMap extends maplibregl.Map {
   private readonly TERRAIN_SOURCE_ID = "dem";
   private static readonly HILLSHADE_LAYER_ID = "hillshading";
 
-  private readonly API_KEY = window.geolonia.API_KEY || '';
-
   constructor(params: any) {
+    // keyring に API キーと stage を設定
+    const apiKey = params.apiKey || window.geolonia.API_KEY || '';
+    if (apiKey) {
+      keyring.setApiKey(apiKey);
+    }
+    if (params.stage) {
+      keyring.setStage(params.stage);
+    } else {
+      keyring.setStage('v1');  // デフォルトは v1
+    }
+
     const defaults = {
       container: params.container ?? 'map',
       style: params.style ?? GeoloniaMap.baseMapStyleUrl['basic'],
@@ -64,14 +75,7 @@ class GeoloniaMap extends maplibregl.Map {
       hash: params.hash ?? false,
       minZoom: params.minZoom ?? 8,
       maxZoom: params.maxZoom ?? 20,
-      transformRequest: (url: string, resourceType: string) => {
-        if (!window.geolonia.API_KEY) { return { url }; }
-        if ((resourceType === 'Tile' || resourceType === 'Source') && url.startsWith('https://tileserver.geolonia.com')) {
-          const updatedUrl = url.replace('YOUR-API-KEY', window.geolonia.API_KEY);
-          return { url: updatedUrl };
-        }
-        return { url };
-      }
+      // transformRequest は maps-core が自動処理するため削除
     }
 
     super({...defaults, ...params});
@@ -331,7 +335,7 @@ class GeoloniaMap extends maplibregl.Map {
    ****************/
   async getElevation(lngLat: [number, number] = this.getCenter().toArray()): Promise<number | null> {
     if (!this.getTerrain()) {
-      addTerrainSource(this, this.API_KEY);
+      addTerrainSource(this, keyring.apiKey);
       this.setTerrain({ source: this.TERRAIN_SOURCE_ID, exaggeration: 1 });
       await new Promise<void>(resolve => {
         this.once('styledata', () => resolve());
@@ -735,7 +739,7 @@ class GeoloniaMap extends maplibregl.Map {
    * 3D地形表示を有効にする
    */
   show3DTerrain() {
-    addTerrainSource(this, this.API_KEY);
+    addTerrainSource(this, keyring.apiKey);
     if (this.getLayer(HILLSHADE_LAYER_ID)) {
       this.removeLayer(HILLSHADE_LAYER_ID);
     }
@@ -767,6 +771,12 @@ class GeoloniaMap extends maplibregl.Map {
 const currentScript = document.currentScript as HTMLScriptElement | null;
 window.geolonia = window.geolonia || {};
 window.geolonia.API_KEY = parseApiKey(currentScript || undefined) || "";
+
+// keyring にも API キーを設定（maps-core との整合性を保つ）
+if (window.geolonia.API_KEY) {
+  keyring.setApiKey(window.geolonia.API_KEY);
+}
+
 window.geolonia.japan = maplibregl;
 window.geolonia.japan.Map = GeoloniaMap;
 window.geolonia.japan.Popup = maplibregl.Popup;

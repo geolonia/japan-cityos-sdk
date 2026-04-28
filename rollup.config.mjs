@@ -17,6 +17,7 @@ const config = {
       format: 'umd',
       sourcemap: true,
       name: 'City',
+      inlineDynamicImports: true,  // コード分割を無効化（UMD形式のため必要）
     },
   ],
   plugins: [
