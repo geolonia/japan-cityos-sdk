@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('stream')) :
-    typeof define === 'function' && define.amd ? define(['stream'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.require$$0));
-})(this, (function (require$$0) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('stream'), require('path'), require('url'), require('fs')) :
+    typeof define === 'function' && define.amd ? define(['stream', 'path', 'url', 'fs'], factory) :
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.require$$0, global.require$$1, global.require$$3, global.require$$0$1));
+})(this, (function (require$$0, require$$1, require$$3, require$$0$1) { 'use strict';
 
     function ___$insertStylesToHeader(css) {
       if (!css) {
@@ -18,6 +18,21 @@
       style.innerHTML = css;
       document.head.appendChild(style);
       return css
+    }
+
+    function _mergeNamespaces(n, m) {
+        m.forEach(function (e) {
+            e && typeof e !== 'string' && !Array.isArray(e) && Object.keys(e).forEach(function (k) {
+                if (k !== 'default' && !(k in n)) {
+                    var d = Object.getOwnPropertyDescriptor(e, k);
+                    Object.defineProperty(n, k, d.get ? d : {
+                        enumerable: true,
+                        get: function () { return e[k]; }
+                    });
+                }
+            });
+        });
+        return Object.freeze(n);
     }
 
     /******************************************************************************
@@ -44,6 +59,11 @@
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     }
+
+    typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+        var e = new Error(message);
+        return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+    };
 
     var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -116,6 +136,3327 @@
     var maplibregl = /*@__PURE__*/getDefaultExportFromCjs(maplibreGlExports);
 
     ___$insertStylesToHeader(".maplibregl-map {\n  font: 12px/20px Helvetica Neue, Arial, Helvetica, sans-serif;\n  overflow: hidden;\n  position: relative;\n  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);\n}\n\n.maplibregl-canvas {\n  left: 0;\n  position: absolute;\n  top: 0;\n}\n\n.maplibregl-map:fullscreen {\n  height: 100%;\n  width: 100%;\n}\n\n.maplibregl-ctrl-group button.maplibregl-ctrl-compass {\n  touch-action: none;\n}\n\n.maplibregl-canvas-container.maplibregl-interactive, .maplibregl-ctrl-group button.maplibregl-ctrl-compass {\n  cursor: grab;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  user-select: none;\n}\n\n.maplibregl-canvas-container.maplibregl-interactive.maplibregl-track-pointer {\n  cursor: pointer;\n}\n\n.maplibregl-canvas-container.maplibregl-interactive:active, .maplibregl-ctrl-group button.maplibregl-ctrl-compass:active {\n  cursor: grabbing;\n}\n\n.maplibregl-canvas-container.maplibregl-touch-zoom-rotate, .maplibregl-canvas-container.maplibregl-touch-zoom-rotate .maplibregl-canvas {\n  touch-action: pan-x pan-y;\n}\n\n.maplibregl-canvas-container.maplibregl-touch-drag-pan, .maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas {\n  touch-action: pinch-zoom;\n}\n\n.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan, .maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas {\n  touch-action: none;\n}\n\n.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures, .maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas {\n  touch-action: pan-x pan-y;\n}\n\n.maplibregl-ctrl-bottom-left, .maplibregl-ctrl-bottom-right, .maplibregl-ctrl-top-left, .maplibregl-ctrl-top-right {\n  pointer-events: none;\n  position: absolute;\n  z-index: 2;\n}\n\n.maplibregl-ctrl-top-left {\n  left: 0;\n  top: 0;\n}\n\n.maplibregl-ctrl-top-right {\n  right: 0;\n  top: 0;\n}\n\n.maplibregl-ctrl-bottom-left {\n  bottom: 0;\n  left: 0;\n}\n\n.maplibregl-ctrl-bottom-right {\n  bottom: 0;\n  right: 0;\n}\n\n.maplibregl-ctrl {\n  clear: both;\n  pointer-events: auto;\n  transform: translate(0);\n}\n\n.maplibregl-ctrl-top-left .maplibregl-ctrl {\n  float: left;\n  margin: 10px 0 0 10px;\n}\n\n.maplibregl-ctrl-top-right .maplibregl-ctrl {\n  float: right;\n  margin: 10px 10px 0 0;\n}\n\n.maplibregl-ctrl-bottom-left .maplibregl-ctrl {\n  float: left;\n  margin: 0 0 10px 10px;\n}\n\n.maplibregl-ctrl-bottom-right .maplibregl-ctrl {\n  float: right;\n  margin: 0 10px 10px 0;\n}\n\n.maplibregl-ctrl-group {\n  background: #fff;\n  border-radius: 4px;\n}\n\n.maplibregl-ctrl-group:not(:empty) {\n  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);\n}\n\n@media (forced-colors: active) {\n  .maplibregl-ctrl-group:not(:empty) {\n    box-shadow: 0 0 0 2px ButtonText;\n  }\n}\n.maplibregl-ctrl-group button {\n  background-color: transparent;\n  border: 0;\n  box-sizing: border-box;\n  cursor: pointer;\n  display: block;\n  height: 29px;\n  outline: none;\n  padding: 0;\n  width: 29px;\n}\n\n.maplibregl-ctrl-group button + button {\n  border-top: 1px solid #ddd;\n}\n\n.maplibregl-ctrl button .maplibregl-ctrl-icon {\n  background-position: 50%;\n  background-repeat: no-repeat;\n  display: block;\n  height: 100%;\n  width: 100%;\n}\n\n@media (forced-colors: active) {\n  .maplibregl-ctrl-icon {\n    background-color: transparent;\n  }\n  .maplibregl-ctrl-group button + button {\n    border-top: 1px solid ButtonText;\n  }\n}\n.maplibregl-ctrl button::-moz-focus-inner {\n  border: 0;\n  padding: 0;\n}\n\n.maplibregl-ctrl-attrib-button:focus, .maplibregl-ctrl-group button:focus {\n  box-shadow: 0 0 2px 2px #0096ff;\n}\n\n.maplibregl-ctrl button:disabled {\n  cursor: not-allowed;\n}\n\n.maplibregl-ctrl button:disabled .maplibregl-ctrl-icon {\n  opacity: 0.25;\n}\n\n@media (hover: hover) {\n  .maplibregl-ctrl button:not(:disabled):hover {\n    background-color: rgba(0, 0, 0, 0.05);\n  }\n}\n.maplibregl-ctrl button:not(:disabled):active {\n  background-color: rgba(0, 0, 0, 0.05);\n}\n\n.maplibregl-ctrl-group button:focus:focus-visible {\n  box-shadow: 0 0 2px 2px #0096ff;\n}\n\n.maplibregl-ctrl-group button:focus:not(:focus-visible) {\n  box-shadow: none;\n}\n\n.maplibregl-ctrl-group button:focus:first-child {\n  border-radius: 4px 4px 0 0;\n}\n\n.maplibregl-ctrl-group button:focus:last-child {\n  border-radius: 0 0 4px 4px;\n}\n\n.maplibregl-ctrl-group button:focus:only-child {\n  border-radius: inherit;\n}\n\n.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E\");\n}\n\n.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E\");\n}\n\n@media (forced-colors: active) {\n  .maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E\");\n  }\n  .maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E\");\n  }\n}\n@media (forced-colors: active) and (prefers-color-scheme: light) {\n  .maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E\");\n  }\n  .maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E\");\n  }\n}\n.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E\");\n}\n\n.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E\");\n}\n\n@media (forced-colors: active) {\n  .maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E\");\n  }\n  .maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E\");\n  }\n}\n@media (forced-colors: active) and (prefers-color-scheme: light) {\n  .maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E\");\n  }\n  .maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E\");\n  }\n}\n.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E\");\n}\n\n@media (forced-colors: active) {\n  .maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E\");\n  }\n}\n@media (forced-colors: active) and (prefers-color-scheme: light) {\n  .maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E\");\n  }\n}\n.maplibregl-ctrl button.maplibregl-ctrl-globe .maplibregl-ctrl-icon {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='none' stroke='%23333' viewBox='0 0 22 22'%3E%3Ccircle cx='11' cy='11' r='8.5'/%3E%3Cpath d='M17.5 11c0 4.819-3.02 8.5-6.5 8.5S4.5 15.819 4.5 11 7.52 2.5 11 2.5s6.5 3.681 6.5 8.5Z'/%3E%3Cpath d='M13.5 11c0 2.447-.331 4.64-.853 6.206-.262.785-.562 1.384-.872 1.777-.314.399-.58.517-.775.517s-.461-.118-.775-.517c-.31-.393-.61-.992-.872-1.777C8.831 15.64 8.5 13.446 8.5 11s.331-4.64.853-6.206c.262-.785.562-1.384.872-1.777.314-.399.58-.517.775-.517s.461.118.775.517c.31.393.61.992.872 1.777.522 1.565.853 3.76.853 6.206Z'/%3E%3Cpath d='M11 7.5c-1.909 0-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3 1.3 0 0 1-.224-.138q.07-.058.224-.138c.299-.151.763-.302 1.379-.434C7.378 5.666 9.091 5.5 11 5.5s3.622.166 4.845.428c.616.132 1.08.283 1.379.434.105.053.177.1.224.138q-.07.058-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428ZM4.486 6.436ZM11 16.5c-1.909 0-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3 1.3 0 0 1-.224-.138 1.3 1.3 0 0 1 .224-.138c.299-.151.763-.302 1.379-.434C7.378 14.666 9.091 14.5 11 14.5s3.622.166 4.845.428c.616.132 1.08.283 1.379.434.105.053.177.1.224.138a1.3 1.3 0 0 1-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm-6.514-1.064ZM11 12.5c-2.46 0-4.672-.222-6.255-.574-.796-.177-1.406-.38-1.805-.59a1.5 1.5 0 0 1-.39-.272.3.3 0 0 1-.047-.064.3.3 0 0 1 .048-.064c.066-.073.189-.167.389-.272.399-.21 1.009-.413 1.805-.59C6.328 9.722 8.54 9.5 11 9.5s4.672.222 6.256.574c.795.177 1.405.38 1.804.59.2.105.323.2.39.272a.3.3 0 0 1 .047.064.3.3 0 0 1-.048.064 1.4 1.4 0 0 1-.389.272c-.399.21-1.009.413-1.804.59-1.584.352-3.796.574-6.256.574Zm-8.501-1.51v.002zm0 .018v.002zm17.002.002v-.002zm0-.018v-.002z'/%3E%3C/svg%3E\");\n}\n\n.maplibregl-ctrl button.maplibregl-ctrl-globe-enabled .maplibregl-ctrl-icon {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='none' stroke='%2333b5e5' viewBox='0 0 22 22'%3E%3Ccircle cx='11' cy='11' r='8.5'/%3E%3Cpath d='M17.5 11c0 4.819-3.02 8.5-6.5 8.5S4.5 15.819 4.5 11 7.52 2.5 11 2.5s6.5 3.681 6.5 8.5Z'/%3E%3Cpath d='M13.5 11c0 2.447-.331 4.64-.853 6.206-.262.785-.562 1.384-.872 1.777-.314.399-.58.517-.775.517s-.461-.118-.775-.517c-.31-.393-.61-.992-.872-1.777C8.831 15.64 8.5 13.446 8.5 11s.331-4.64.853-6.206c.262-.785.562-1.384.872-1.777.314-.399.58-.517.775-.517s.461.118.775.517c.31.393.61.992.872 1.777.522 1.565.853 3.76.853 6.206Z'/%3E%3Cpath d='M11 7.5c-1.909 0-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3 1.3 0 0 1-.224-.138q.07-.058.224-.138c.299-.151.763-.302 1.379-.434C7.378 5.666 9.091 5.5 11 5.5s3.622.166 4.845.428c.616.132 1.08.283 1.379.434.105.053.177.1.224.138q-.07.058-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428ZM4.486 6.436ZM11 16.5c-1.909 0-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3 1.3 0 0 1-.224-.138 1.3 1.3 0 0 1 .224-.138c.299-.151.763-.302 1.379-.434C7.378 14.666 9.091 14.5 11 14.5s3.622.166 4.845.428c.616.132 1.08.283 1.379.434.105.053.177.1.224.138a1.3 1.3 0 0 1-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm-6.514-1.064ZM11 12.5c-2.46 0-4.672-.222-6.255-.574-.796-.177-1.406-.38-1.805-.59a1.5 1.5 0 0 1-.39-.272.3.3 0 0 1-.047-.064.3.3 0 0 1 .048-.064c.066-.073.189-.167.389-.272.399-.21 1.009-.413 1.805-.59C6.328 9.722 8.54 9.5 11 9.5s4.672.222 6.256.574c.795.177 1.405.38 1.804.59.2.105.323.2.39.272a.3.3 0 0 1 .047.064.3.3 0 0 1-.048.064 1.4 1.4 0 0 1-.389.272c-.399.21-1.009.413-1.804.59-1.584.352-3.796.574-6.256.574Zm-8.501-1.51v.002zm0 .018v.002zm17.002.002v-.002zm0-.018v-.002z'/%3E%3C/svg%3E\");\n}\n\n.maplibregl-ctrl button.maplibregl-ctrl-terrain .maplibregl-ctrl-icon {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='%23333' viewBox='0 0 22 22'%3E%3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E%3C/svg%3E\");\n}\n\n.maplibregl-ctrl button.maplibregl-ctrl-terrain-enabled .maplibregl-ctrl-icon {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='%2333b5e5' viewBox='0 0 22 22'%3E%3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E%3C/svg%3E\");\n}\n\n.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E\");\n}\n\n.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23aaa' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E\");\n}\n\n.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E\");\n}\n\n.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e58978' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E\");\n}\n\n.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E\");\n}\n\n.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e54e33' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E\");\n}\n\n.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-waiting .maplibregl-ctrl-icon {\n  animation: maplibregl-spin 2s linear infinite;\n}\n\n@media (forced-colors: active) {\n  .maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E\");\n  }\n  .maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23999' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E\");\n  }\n  .maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E\");\n  }\n  .maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e58978' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E\");\n  }\n  .maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E\");\n  }\n  .maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e54e33' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E\");\n  }\n}\n@media (forced-colors: active) and (prefers-color-scheme: light) {\n  .maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E\");\n  }\n  .maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23666' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E\");\n  }\n}\n@keyframes maplibregl-spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  to {\n    transform: rotate(1turn);\n  }\n}\na.maplibregl-ctrl-logo {\n  background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E\");\n  background-repeat: no-repeat;\n  cursor: pointer;\n  display: block;\n  height: 23px;\n  margin: 0 0 -4px -4px;\n  overflow: hidden;\n  width: 88px;\n}\n\na.maplibregl-ctrl-logo.maplibregl-compact {\n  width: 14px;\n}\n\n@media (forced-colors: active) {\n  a.maplibregl-ctrl-logo {\n    background-color: transparent;\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E\");\n  }\n}\n@media (forced-colors: active) and (prefers-color-scheme: light) {\n  a.maplibregl-ctrl-logo {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E\");\n  }\n}\n.maplibregl-ctrl.maplibregl-ctrl-attrib {\n  background-color: hsla(0, 0%, 100%, 0.5);\n  margin: 0;\n  padding: 0 5px;\n}\n\n@media screen {\n  .maplibregl-ctrl-attrib.maplibregl-compact {\n    background-color: #fff;\n    border-radius: 12px;\n    box-sizing: content-box;\n    color: #000;\n    margin: 10px;\n    min-height: 20px;\n    padding: 2px 24px 2px 0;\n    position: relative;\n  }\n  .maplibregl-ctrl-attrib.maplibregl-compact-show {\n    padding: 2px 28px 2px 8px;\n    visibility: visible;\n  }\n  .maplibregl-ctrl-bottom-left > .maplibregl-ctrl-attrib.maplibregl-compact-show, .maplibregl-ctrl-top-left > .maplibregl-ctrl-attrib.maplibregl-compact-show {\n    border-radius: 12px;\n    padding: 2px 8px 2px 28px;\n  }\n  .maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-inner {\n    display: none;\n  }\n  .maplibregl-ctrl-attrib-button {\n    background-color: hsla(0, 0%, 100%, 0.5);\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E\");\n    border: 0;\n    border-radius: 12px;\n    box-sizing: border-box;\n    cursor: pointer;\n    display: none;\n    height: 24px;\n    outline: none;\n    position: absolute;\n    right: 0;\n    top: 0;\n    width: 24px;\n  }\n  .maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button {\n    -webkit-appearance: none;\n    -moz-appearance: none;\n    appearance: none;\n    list-style: none;\n  }\n  .maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button::-webkit-details-marker {\n    display: none;\n  }\n  .maplibregl-ctrl-bottom-left .maplibregl-ctrl-attrib-button, .maplibregl-ctrl-top-left .maplibregl-ctrl-attrib-button {\n    left: 0;\n  }\n  .maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button, .maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner {\n    display: block;\n  }\n  .maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-button {\n    background-color: rgba(0, 0, 0, 0.05);\n  }\n  .maplibregl-ctrl-bottom-right > .maplibregl-ctrl-attrib.maplibregl-compact:after {\n    bottom: 0;\n    right: 0;\n  }\n  .maplibregl-ctrl-top-right > .maplibregl-ctrl-attrib.maplibregl-compact:after {\n    right: 0;\n    top: 0;\n  }\n  .maplibregl-ctrl-top-left > .maplibregl-ctrl-attrib.maplibregl-compact:after {\n    left: 0;\n    top: 0;\n  }\n  .maplibregl-ctrl-bottom-left > .maplibregl-ctrl-attrib.maplibregl-compact:after {\n    bottom: 0;\n    left: 0;\n  }\n}\n@media screen and (forced-colors: active) {\n  .maplibregl-ctrl-attrib.maplibregl-compact:after {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E\");\n  }\n}\n@media screen and (forced-colors: active) and (prefers-color-scheme: light) {\n  .maplibregl-ctrl-attrib.maplibregl-compact:after {\n    background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E\");\n  }\n}\n.maplibregl-ctrl-attrib a {\n  color: rgba(0, 0, 0, 0.75);\n  text-decoration: none;\n}\n\n.maplibregl-ctrl-attrib a:hover {\n  color: inherit;\n  text-decoration: underline;\n}\n\n.maplibregl-attrib-empty {\n  display: none;\n}\n\n.maplibregl-ctrl-scale {\n  background-color: hsla(0, 0%, 100%, 0.75);\n  border: 2px solid #333;\n  border-top: #333;\n  box-sizing: border-box;\n  color: #333;\n  font-size: 10px;\n  padding: 0 5px;\n}\n\n.maplibregl-popup {\n  display: flex;\n  left: 0;\n  pointer-events: none;\n  position: absolute;\n  top: 0;\n  will-change: transform;\n}\n\n.maplibregl-popup-anchor-top, .maplibregl-popup-anchor-top-left, .maplibregl-popup-anchor-top-right {\n  flex-direction: column;\n}\n\n.maplibregl-popup-anchor-bottom, .maplibregl-popup-anchor-bottom-left, .maplibregl-popup-anchor-bottom-right {\n  flex-direction: column-reverse;\n}\n\n.maplibregl-popup-anchor-left {\n  flex-direction: row;\n}\n\n.maplibregl-popup-anchor-right {\n  flex-direction: row-reverse;\n}\n\n.maplibregl-popup-tip {\n  border: 10px solid transparent;\n  height: 0;\n  width: 0;\n  z-index: 1;\n}\n\n.maplibregl-popup-anchor-top .maplibregl-popup-tip {\n  align-self: center;\n  border-bottom-color: #fff;\n  border-top: none;\n}\n\n.maplibregl-popup-anchor-top-left .maplibregl-popup-tip {\n  align-self: flex-start;\n  border-bottom-color: #fff;\n  border-left: none;\n  border-top: none;\n}\n\n.maplibregl-popup-anchor-top-right .maplibregl-popup-tip {\n  align-self: flex-end;\n  border-bottom-color: #fff;\n  border-right: none;\n  border-top: none;\n}\n\n.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {\n  align-self: center;\n  border-bottom: none;\n  border-top-color: #fff;\n}\n\n.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip {\n  align-self: flex-start;\n  border-bottom: none;\n  border-left: none;\n  border-top-color: #fff;\n}\n\n.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {\n  align-self: flex-end;\n  border-bottom: none;\n  border-right: none;\n  border-top-color: #fff;\n}\n\n.maplibregl-popup-anchor-left .maplibregl-popup-tip {\n  align-self: center;\n  border-left: none;\n  border-right-color: #fff;\n}\n\n.maplibregl-popup-anchor-right .maplibregl-popup-tip {\n  align-self: center;\n  border-left-color: #fff;\n  border-right: none;\n}\n\n.maplibregl-popup-close-button {\n  background-color: transparent;\n  border: 0;\n  border-radius: 0 3px 0 0;\n  cursor: pointer;\n  position: absolute;\n  right: 0;\n  top: 0;\n}\n\n.maplibregl-popup-close-button:hover {\n  background-color: rgba(0, 0, 0, 0.05);\n}\n\n.maplibregl-popup-content {\n  background: #fff;\n  border-radius: 3px;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);\n  padding: 15px 10px;\n  pointer-events: auto;\n  position: relative;\n}\n\n.maplibregl-popup-anchor-top-left .maplibregl-popup-content {\n  border-top-left-radius: 0;\n}\n\n.maplibregl-popup-anchor-top-right .maplibregl-popup-content {\n  border-top-right-radius: 0;\n}\n\n.maplibregl-popup-anchor-bottom-left .maplibregl-popup-content {\n  border-bottom-left-radius: 0;\n}\n\n.maplibregl-popup-anchor-bottom-right .maplibregl-popup-content {\n  border-bottom-right-radius: 0;\n}\n\n.maplibregl-popup-track-pointer {\n  display: none;\n}\n\n.maplibregl-popup-track-pointer * {\n  pointer-events: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  user-select: none;\n}\n\n.maplibregl-map:hover .maplibregl-popup-track-pointer {\n  display: flex;\n}\n\n.maplibregl-map:active .maplibregl-popup-track-pointer {\n  display: none;\n}\n\n.maplibregl-marker {\n  left: 0;\n  position: absolute;\n  top: 0;\n  transition: opacity 0.2s;\n  will-change: transform;\n}\n\n.maplibregl-user-location-dot, .maplibregl-user-location-dot:before {\n  background-color: #1da1f2;\n  border-radius: 50%;\n  height: 15px;\n  width: 15px;\n}\n\n.maplibregl-user-location-dot:before {\n  animation: maplibregl-user-location-dot-pulse 2s infinite;\n  content: \"\";\n  position: absolute;\n}\n\n.maplibregl-user-location-dot:after {\n  border: 2px solid #fff;\n  border-radius: 50%;\n  box-shadow: 0 0 3px rgba(0, 0, 0, 0.35);\n  box-sizing: border-box;\n  content: \"\";\n  height: 19px;\n  left: -2px;\n  position: absolute;\n  top: -2px;\n  width: 19px;\n}\n\n@keyframes maplibregl-user-location-dot-pulse {\n  0% {\n    opacity: 1;\n    transform: scale(1);\n  }\n  70% {\n    opacity: 0;\n    transform: scale(3);\n  }\n  to {\n    opacity: 0;\n    transform: scale(1);\n  }\n}\n.maplibregl-user-location-dot-stale {\n  background-color: #aaa;\n}\n\n.maplibregl-user-location-dot-stale:after {\n  display: none;\n}\n\n.maplibregl-user-location-accuracy-circle {\n  background-color: rgba(29, 161, 242, 0.2);\n  border-radius: 100%;\n  height: 1px;\n  width: 1px;\n}\n\n.maplibregl-crosshair, .maplibregl-crosshair .maplibregl-interactive, .maplibregl-crosshair .maplibregl-interactive:active {\n  cursor: crosshair;\n}\n\n.maplibregl-boxzoom {\n  background: #fff;\n  border: 2px dotted #202020;\n  height: 0;\n  left: 0;\n  opacity: 0.5;\n  position: absolute;\n  top: 0;\n  width: 0;\n}\n\n.maplibregl-cooperative-gesture-screen {\n  align-items: center;\n  background: rgba(0, 0, 0, 0.4);\n  color: #fff;\n  display: flex;\n  font-size: 1.4em;\n  inset: 0;\n  justify-content: center;\n  line-height: 1.2;\n  opacity: 0;\n  padding: 1rem;\n  pointer-events: none;\n  position: absolute;\n  transition: opacity 1s ease 1s;\n  z-index: 99999;\n}\n\n.maplibregl-cooperative-gesture-screen.maplibregl-show {\n  opacity: 1;\n  transition: opacity 0.05s;\n}\n\n.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message {\n  display: none;\n}\n\n@media (hover: none), (pointer: coarse) {\n  .maplibregl-cooperative-gesture-screen .maplibregl-desktop-message {\n    display: none;\n  }\n  .maplibregl-cooperative-gesture-screen .maplibregl-mobile-message {\n    display: block;\n  }\n}\n.maplibregl-pseudo-fullscreen {\n  height: 100% !important;\n  left: 0 !important;\n  position: fixed !important;\n  top: 0 !important;\n  width: 100% !important;\n  z-index: 99999;\n}");
+
+    // DEFLATE is a complex format; to read this code, you should probably check the RFC first:
+
+    // aliases for shorter compressed code (most minifers don't do this)
+    var u8 = Uint8Array, u16 = Uint16Array, i32 = Int32Array;
+    // fixed length extra bits
+    var fleb = new u8([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, /* unused */ 0, 0, /* impossible */ 0]);
+    // fixed distance extra bits
+    var fdeb = new u8([0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, /* unused */ 0, 0]);
+    // code length index map
+    var clim = new u8([16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]);
+    // get base, reverse index map from extra bits
+    var freb = function (eb, start) {
+        var b = new u16(31);
+        for (var i = 0; i < 31; ++i) {
+            b[i] = start += 1 << eb[i - 1];
+        }
+        // numbers here are at max 18 bits
+        var r = new i32(b[30]);
+        for (var i = 1; i < 30; ++i) {
+            for (var j = b[i]; j < b[i + 1]; ++j) {
+                r[j] = ((j - b[i]) << 5) | i;
+            }
+        }
+        return { b: b, r: r };
+    };
+    var _a = freb(fleb, 2), fl = _a.b, revfl = _a.r;
+    // we can ignore the fact that the other numbers are wrong; they never happen anyway
+    fl[28] = 258, revfl[258] = 28;
+    var _b = freb(fdeb, 0), fd = _b.b;
+    // map of value to reverse (assuming 16 bits)
+    var rev = new u16(32768);
+    for (var i$1 = 0; i$1 < 32768; ++i$1) {
+        // reverse table algorithm from SO
+        var x$2 = ((i$1 & 0xAAAA) >> 1) | ((i$1 & 0x5555) << 1);
+        x$2 = ((x$2 & 0xCCCC) >> 2) | ((x$2 & 0x3333) << 2);
+        x$2 = ((x$2 & 0xF0F0) >> 4) | ((x$2 & 0x0F0F) << 4);
+        rev[i$1] = (((x$2 & 0xFF00) >> 8) | ((x$2 & 0x00FF) << 8)) >> 1;
+    }
+    // create huffman tree from u8 "map": index -> code length for code index
+    // mb (max bits) must be at most 15
+    // TODO: optimize/split up?
+    var hMap = (function (cd, mb, r) {
+        var s = cd.length;
+        // index
+        var i = 0;
+        // u16 "map": index -> # of codes with bit length = index
+        var l = new u16(mb);
+        // length of cd must be 288 (total # of codes)
+        for (; i < s; ++i) {
+            if (cd[i])
+                ++l[cd[i] - 1];
+        }
+        // u16 "map": index -> minimum code for bit length = index
+        var le = new u16(mb);
+        for (i = 1; i < mb; ++i) {
+            le[i] = (le[i - 1] + l[i - 1]) << 1;
+        }
+        var co;
+        if (r) {
+            // u16 "map": index -> number of actual bits, symbol for code
+            co = new u16(1 << mb);
+            // bits to remove for reverser
+            var rvb = 15 - mb;
+            for (i = 0; i < s; ++i) {
+                // ignore 0 lengths
+                if (cd[i]) {
+                    // num encoding both symbol and bits read
+                    var sv = (i << 4) | cd[i];
+                    // free bits
+                    var r_1 = mb - cd[i];
+                    // start value
+                    var v = le[cd[i] - 1]++ << r_1;
+                    // m is end value
+                    for (var m = v | ((1 << r_1) - 1); v <= m; ++v) {
+                        // every 16 bit value starting with the code yields the same result
+                        co[rev[v] >> rvb] = sv;
+                    }
+                }
+            }
+        }
+        else {
+            co = new u16(s);
+            for (i = 0; i < s; ++i) {
+                if (cd[i]) {
+                    co[i] = rev[le[cd[i] - 1]++] >> (15 - cd[i]);
+                }
+            }
+        }
+        return co;
+    });
+    // fixed length tree
+    var flt = new u8(288);
+    for (var i$1 = 0; i$1 < 144; ++i$1)
+        flt[i$1] = 8;
+    for (var i$1 = 144; i$1 < 256; ++i$1)
+        flt[i$1] = 9;
+    for (var i$1 = 256; i$1 < 280; ++i$1)
+        flt[i$1] = 7;
+    for (var i$1 = 280; i$1 < 288; ++i$1)
+        flt[i$1] = 8;
+    // fixed distance tree
+    var fdt = new u8(32);
+    for (var i$1 = 0; i$1 < 32; ++i$1)
+        fdt[i$1] = 5;
+    // fixed length map
+    var flrm = /*#__PURE__*/ hMap(flt, 9, 1);
+    // fixed distance map
+    var fdrm = /*#__PURE__*/ hMap(fdt, 5, 1);
+    // find max of array
+    var max = function (a) {
+        var m = a[0];
+        for (var i = 1; i < a.length; ++i) {
+            if (a[i] > m)
+                m = a[i];
+        }
+        return m;
+    };
+    // read d, starting at bit p and mask with m
+    var bits = function (d, p, m) {
+        var o = (p / 8) | 0;
+        return ((d[o] | (d[o + 1] << 8)) >> (p & 7)) & m;
+    };
+    // read d, starting at bit p continuing for at least 16 bits
+    var bits16 = function (d, p) {
+        var o = (p / 8) | 0;
+        return ((d[o] | (d[o + 1] << 8) | (d[o + 2] << 16)) >> (p & 7));
+    };
+    // get end of byte
+    var shft = function (p) { return ((p + 7) / 8) | 0; };
+    // typed array slice - allows garbage collector to free original reference,
+    // while being more compatible than .slice
+    var slc = function (v, s, e) {
+        if (s == null || s < 0)
+            s = 0;
+        if (e == null || e > v.length)
+            e = v.length;
+        // can't use .constructor in case user-supplied
+        return new u8(v.subarray(s, e));
+    };
+    // error codes
+    var ec = [
+        'unexpected EOF',
+        'invalid block type',
+        'invalid length/literal',
+        'invalid distance',
+        'stream finished',
+        'no stream handler',
+        ,
+        'no callback',
+        'invalid UTF-8 data',
+        'extra field too long',
+        'date not in range 1980-2099',
+        'filename too long',
+        'stream finishing',
+        'invalid zip data'
+        // determined by unknown compression method
+    ];
+    var err = function (ind, msg, nt) {
+        var e = new Error(msg || ec[ind]);
+        e.code = ind;
+        if (Error.captureStackTrace)
+            Error.captureStackTrace(e, err);
+        if (!nt)
+            throw e;
+        return e;
+    };
+    // expands raw DEFLATE data
+    var inflt = function (dat, st, buf, dict) {
+        // source length       dict length
+        var sl = dat.length, dl = dict ? dict.length : 0;
+        if (!sl || st.f && !st.l)
+            return buf || new u8(0);
+        var noBuf = !buf;
+        // have to estimate size
+        var resize = noBuf || st.i != 2;
+        // no state
+        var noSt = st.i;
+        // Assumes roughly 33% compression ratio average
+        if (noBuf)
+            buf = new u8(sl * 3);
+        // ensure buffer can fit at least l elements
+        var cbuf = function (l) {
+            var bl = buf.length;
+            // need to increase size to fit
+            if (l > bl) {
+                // Double or set to necessary, whichever is greater
+                var nbuf = new u8(Math.max(bl * 2, l));
+                nbuf.set(buf);
+                buf = nbuf;
+            }
+        };
+        //  last chunk         bitpos           bytes
+        var final = st.f || 0, pos = st.p || 0, bt = st.b || 0, lm = st.l, dm = st.d, lbt = st.m, dbt = st.n;
+        // total bits
+        var tbts = sl * 8;
+        do {
+            if (!lm) {
+                // BFINAL - this is only 1 when last chunk is next
+                final = bits(dat, pos, 1);
+                // type: 0 = no compression, 1 = fixed huffman, 2 = dynamic huffman
+                var type = bits(dat, pos + 1, 3);
+                pos += 3;
+                if (!type) {
+                    // go to end of byte boundary
+                    var s = shft(pos) + 4, l = dat[s - 4] | (dat[s - 3] << 8), t = s + l;
+                    if (t > sl) {
+                        if (noSt)
+                            err(0);
+                        break;
+                    }
+                    // ensure size
+                    if (resize)
+                        cbuf(bt + l);
+                    // Copy over uncompressed data
+                    buf.set(dat.subarray(s, t), bt);
+                    // Get new bitpos, update byte count
+                    st.b = bt += l, st.p = pos = t * 8, st.f = final;
+                    continue;
+                }
+                else if (type == 1)
+                    lm = flrm, dm = fdrm, lbt = 9, dbt = 5;
+                else if (type == 2) {
+                    //  literal                            lengths
+                    var hLit = bits(dat, pos, 31) + 257, hcLen = bits(dat, pos + 10, 15) + 4;
+                    var tl = hLit + bits(dat, pos + 5, 31) + 1;
+                    pos += 14;
+                    // length+distance tree
+                    var ldt = new u8(tl);
+                    // code length tree
+                    var clt = new u8(19);
+                    for (var i = 0; i < hcLen; ++i) {
+                        // use index map to get real code
+                        clt[clim[i]] = bits(dat, pos + i * 3, 7);
+                    }
+                    pos += hcLen * 3;
+                    // code lengths bits
+                    var clb = max(clt), clbmsk = (1 << clb) - 1;
+                    // code lengths map
+                    var clm = hMap(clt, clb, 1);
+                    for (var i = 0; i < tl;) {
+                        var r = clm[bits(dat, pos, clbmsk)];
+                        // bits read
+                        pos += r & 15;
+                        // symbol
+                        var s = r >> 4;
+                        // code length to copy
+                        if (s < 16) {
+                            ldt[i++] = s;
+                        }
+                        else {
+                            //  copy   count
+                            var c = 0, n = 0;
+                            if (s == 16)
+                                n = 3 + bits(dat, pos, 3), pos += 2, c = ldt[i - 1];
+                            else if (s == 17)
+                                n = 3 + bits(dat, pos, 7), pos += 3;
+                            else if (s == 18)
+                                n = 11 + bits(dat, pos, 127), pos += 7;
+                            while (n--)
+                                ldt[i++] = c;
+                        }
+                    }
+                    //    length tree                 distance tree
+                    var lt = ldt.subarray(0, hLit), dt = ldt.subarray(hLit);
+                    // max length bits
+                    lbt = max(lt);
+                    // max dist bits
+                    dbt = max(dt);
+                    lm = hMap(lt, lbt, 1);
+                    dm = hMap(dt, dbt, 1);
+                }
+                else
+                    err(1);
+                if (pos > tbts) {
+                    if (noSt)
+                        err(0);
+                    break;
+                }
+            }
+            // Make sure the buffer can hold this + the largest possible addition
+            // Maximum chunk size (practically, theoretically infinite) is 2^17
+            if (resize)
+                cbuf(bt + 131072);
+            var lms = (1 << lbt) - 1, dms = (1 << dbt) - 1;
+            var lpos = pos;
+            for (;; lpos = pos) {
+                // bits read, code
+                var c = lm[bits16(dat, pos) & lms], sym = c >> 4;
+                pos += c & 15;
+                if (pos > tbts) {
+                    if (noSt)
+                        err(0);
+                    break;
+                }
+                if (!c)
+                    err(2);
+                if (sym < 256)
+                    buf[bt++] = sym;
+                else if (sym == 256) {
+                    lpos = pos, lm = null;
+                    break;
+                }
+                else {
+                    var add = sym - 254;
+                    // no extra bits needed if less
+                    if (sym > 264) {
+                        // index
+                        var i = sym - 257, b = fleb[i];
+                        add = bits(dat, pos, (1 << b) - 1) + fl[i];
+                        pos += b;
+                    }
+                    // dist
+                    var d = dm[bits16(dat, pos) & dms], dsym = d >> 4;
+                    if (!d)
+                        err(3);
+                    pos += d & 15;
+                    var dt = fd[dsym];
+                    if (dsym > 3) {
+                        var b = fdeb[dsym];
+                        dt += bits16(dat, pos) & (1 << b) - 1, pos += b;
+                    }
+                    if (pos > tbts) {
+                        if (noSt)
+                            err(0);
+                        break;
+                    }
+                    if (resize)
+                        cbuf(bt + 131072);
+                    var end = bt + add;
+                    if (bt < dt) {
+                        var shift = dl - dt, dend = Math.min(dt, end);
+                        if (shift + bt < 0)
+                            err(3);
+                        for (; bt < dend; ++bt)
+                            buf[bt] = dict[shift + bt];
+                    }
+                    for (; bt < end; ++bt)
+                        buf[bt] = buf[bt - dt];
+                }
+            }
+            st.l = lm, st.p = lpos, st.b = bt, st.f = final;
+            if (lm)
+                final = 1, st.m = lbt, st.d = dm, st.n = dbt;
+        } while (!final);
+        // don't reallocate for streams or user buffers
+        return bt != buf.length && noBuf ? slc(buf, 0, bt) : buf.subarray(0, bt);
+    };
+    // empty
+    var et$1 = /*#__PURE__*/ new u8(0);
+    // gzip footer: -8 to -4 = CRC, -4 to -0 is length
+    // gzip start
+    var gzs = function (d) {
+        if (d[0] != 31 || d[1] != 139 || d[2] != 8)
+            err(6, 'invalid gzip data');
+        var flg = d[3];
+        var st = 10;
+        if (flg & 4)
+            st += (d[10] | d[11] << 8) + 2;
+        for (var zs = (flg >> 3 & 1) + (flg >> 4 & 1); zs > 0; zs -= !d[st++])
+            ;
+        return st + (flg & 2);
+    };
+    // gzip length
+    var gzl = function (d) {
+        var l = d.length;
+        return (d[l - 4] | d[l - 3] << 8 | d[l - 2] << 16 | d[l - 1] << 24) >>> 0;
+    };
+    // zlib start
+    var zls = function (d, dict) {
+        if ((d[0] & 15) != 8 || (d[0] >> 4) > 7 || ((d[0] << 8 | d[1]) % 31))
+            err(6, 'invalid zlib data');
+        if ((d[1] >> 5 & 1) == +!dict)
+            err(6, 'invalid zlib data: ' + (d[1] & 32 ? 'need' : 'unexpected') + ' dictionary');
+        return (d[1] >> 3 & 4) + 2;
+    };
+    /**
+     * Expands DEFLATE data with no wrapper
+     * @param data The data to decompress
+     * @param opts The decompression options
+     * @returns The decompressed version of the data
+     */
+    function inflateSync(data, opts) {
+        return inflt(data, { i: 2 }, opts && opts.out, opts && opts.dictionary);
+    }
+    /**
+     * Expands GZIP data
+     * @param data The data to decompress
+     * @param opts The decompression options
+     * @returns The decompressed version of the data
+     */
+    function gunzipSync(data, opts) {
+        var st = gzs(data);
+        if (st + 8 > data.length)
+            err(6, 'invalid gzip data');
+        return inflt(data.subarray(st, -8), { i: 2 }, opts && opts.out || new u8(gzl(data)), opts && opts.dictionary);
+    }
+    /**
+     * Expands Zlib data
+     * @param data The data to decompress
+     * @param opts The decompression options
+     * @returns The decompressed version of the data
+     */
+    function unzlibSync(data, opts) {
+        return inflt(data.subarray(zls(data, opts && opts.dictionary), -4), { i: 2 }, opts && opts.out, opts && opts.dictionary);
+    }
+    /**
+     * Expands compressed GZIP, Zlib, or raw DEFLATE data, automatically detecting the format
+     * @param data The data to decompress
+     * @param opts The decompression options
+     * @returns The decompressed version of the data
+     */
+    function decompressSync(data, opts) {
+        return (data[0] == 31 && data[1] == 139 && data[2] == 8)
+            ? gunzipSync(data, opts)
+            : ((data[0] & 15) != 8 || (data[0] >> 4) > 7 || ((data[0] << 8 | data[1]) % 31))
+                ? inflateSync(data, opts)
+                : unzlibSync(data, opts);
+    }
+    // text decoder
+    var td = typeof TextDecoder != 'undefined' && /*#__PURE__*/ new TextDecoder();
+    // text decoder stream
+    var tds = 0;
+    try {
+        td.decode(et$1, { stream: true });
+        tds = 1;
+    }
+    catch (e) { }
+
+    var z$1=Object.defineProperty;var B$1=Math.pow;var d$1=(i,t)=>z$1(i,"name",{value:t,configurable:!0});var m$1=(i,t,e)=>new Promise((r,n)=>{var s=c=>{try{a(e.next(c));}catch(u){n(u);}},o=c=>{try{a(e.throw(c));}catch(u){n(u);}},a=c=>c.done?r(c.value):Promise.resolve(c.value).then(s,o);a((e=e.apply(i,t)).next());});d$1((i,t)=>{let e=!1,r="",n=L.GridLayer.extend({createTile:d$1((s,o)=>{let a=document.createElement("img"),c=new AbortController,u=c.signal;return a.cancel=()=>{c.abort();},e||(i.getHeader().then(l=>{l.tileType===1||l.tileType===6?console.error("Error: archive contains vector tiles, but leafletRasterLayer is for displaying raster tiles. See https://github.com/protomaps/PMTiles/tree/main/js for details."):l.tileType===2?r="image/png":l.tileType===3?r="image/jpeg":l.tileType===4?r="image/webp":l.tileType===5&&(r="image/avif");}),e=!0),i.getZxy(s.z,s.x,s.y,u).then(l=>{if(l){let f=new Blob([l.data],{type:r}),y=window.URL.createObjectURL(f);a.src=y;}else a.style.display="none";a.cancel=void 0,o(void 0,a);}).catch(l=>{if(l.name!=="AbortError")throw l}),a},"createTile"),_removeTile:d$1(function(s){let o=this._tiles[s];o&&(o.el.cancel&&o.el.cancel(),o.el.src&&window.URL.revokeObjectURL(o.el.src),o.el.width=0,o.el.height=0,o.el.deleted=!0,L.DomUtil.remove(o.el),delete this._tiles[s],this.fire("tileunload",{tile:o.el,coords:this._keyToTileCoords(s)}));},"_removeTile")});return new n(t)},"leafletRasterLayer");var W$1=d$1(i=>(t,e)=>{if(e instanceof AbortController)return i(t,e);let r=new AbortController;return i(t,r).then(n=>e(void 0,n.data,n.cacheControl||"",n.expires||""),n=>e(n)).catch(n=>e(n)),{cancel:d$1(()=>r.abort(),"cancel")}},"v3compat"),E$1=class E{constructor(t){this.tilev4=d$1((t,e)=>m$1(this,null,function*(){if(t.type==="json"){let y=t.url.substr(10),p=this.tiles.get(y);if(p||(p=new w$1(y),this.tiles.set(y,p)),this.metadata){let j=yield p.getTileJson(t.url);return e.signal.throwIfAborted(),{data:j}}let h=yield p.getHeader();return e.signal.throwIfAborted(),(h.minLon>=h.maxLon||h.minLat>=h.maxLat)&&console.error(`Bounds of PMTiles archive ${h.minLon},${h.minLat},${h.maxLon},${h.maxLat} are not valid.`),{data:{tiles:[`${t.url}/{z}/{x}/{y}`],minzoom:h.minZoom,maxzoom:h.maxZoom,bounds:[h.minLon,h.minLat,h.maxLon,h.maxLat]}}}let r=new RegExp(/pmtiles:\/\/(.+)\/(\d+)\/(\d+)\/(\d+)/),n=t.url.match(r);if(!n)throw new Error("Invalid PMTiles protocol URL");let s=n[1],o=this.tiles.get(s);o||(o=new w$1(s),this.tiles.set(s,o));let a=n[2],c=n[3],u=n[4],l=yield o==null?void 0:o.getZxy(+a,+c,+u,e.signal);if(e.signal.throwIfAborted(),l)return {data:new Uint8Array(l.data),cacheControl:l.cacheControl,expires:l.expires};let f=yield o.getHeader();if(f.tileType===1||f.tileType===6){if(this.errorOnMissingTile)throw new Error("Tile not found.");return {data:new Uint8Array}}return {data:null}}),"tilev4");this.tile=W$1(this.tilev4);this.tiles=new Map,this.metadata=(t==null?void 0:t.metadata)||!1,this.errorOnMissingTile=(t==null?void 0:t.errorOnMissingTile)||!1;}add(t){this.tiles.set(t.source.getKey(),t);}get(t){return this.tiles.get(t)}};d$1(E$1,"Protocol");var S$1=E$1;function b$1(i,t){return (t>>>0)*4294967296+(i>>>0)}d$1(b$1,"toNum");function N$1(i,t){let e=t.buf,r=e[t.pos++],n=(r&112)>>4;if(r<128||(r=e[t.pos++],n|=(r&127)<<3,r<128)||(r=e[t.pos++],n|=(r&127)<<10,r<128)||(r=e[t.pos++],n|=(r&127)<<17,r<128)||(r=e[t.pos++],n|=(r&127)<<24,r<128)||(r=e[t.pos++],n|=(r&1)<<31,r<128))return b$1(i,n);throw new Error("Expected varint not more than 10 bytes")}d$1(N$1,"readVarintRemainder");function x$1(i){let t=i.buf,e=t[i.pos++],r=e&127;return e<128||(e=t[i.pos++],r|=(e&127)<<7,e<128)||(e=t[i.pos++],r|=(e&127)<<14,e<128)||(e=t[i.pos++],r|=(e&127)<<21,e<128)?r:(e=t[i.pos],r|=(e&15)<<28,N$1(r,i))}d$1(x$1,"readVarint");function Z$1(i,t,e,r,n){return n===0?r!==0?[i-1-e,i-1-t]:[e,t]:[t,e]}d$1(Z$1,"rotate");function q$1(i,t,e){if(i>26)throw new Error("Tile zoom level exceeds max safe number limit (26)");if(t>=1<<i||e>=1<<i)throw new Error("tile x/y outside zoom level bounds");let r=((1<<i)*(1<<i)-1)/3,n=i-1,[s,o]=[t,e];for(let a=1<<n;a>0;a>>=1){let c=s&a,u=o&a;r+=(3*c^u)*(1<<n),[s,o]=Z$1(a,s,o,c,u),n--;}return r}d$1(q$1,"zxyToTileId");function G$1(i){let t=3*i+1;return t<4294967296?31-Math.clz32(t):63-Math.clz32(t/4294967296)}d$1(G$1,"tileIdToZ");function oe(i){let t=G$1(i)>>1;if(t>26)throw new Error("Tile zoom level exceeds max safe number limit (26)");let e=((1<<t)*(1<<t)-1)/3,r=i-e,n=0,s=0,o=1<<t;for(let a=1;a<o;a<<=1){let c=a&r/2,u=a&(r^c);[n,s]=Z$1(a,n,s,c,u),r=r/2,n+=c,s+=u;}return [t,n,s]}d$1(oe,"tileIdToZxy");var J$1=(s=>(s[s.Unknown=0]="Unknown",s[s.None=1]="None",s[s.Gzip=2]="Gzip",s[s.Brotli=3]="Brotli",s[s.Zstd=4]="Zstd",s))(J$1||{});function D$1(i,t){return m$1(this,null,function*(){if(t===1||t===0)return i;if(t===2){if(typeof globalThis.DecompressionStream=="undefined")return decompressSync(new Uint8Array(i));let e=new Response(i).body;if(!e)throw new Error("Failed to read response stream");let r=e.pipeThrough(new globalThis.DecompressionStream("gzip"));return new Response(r).arrayBuffer()}throw new Error("Compression method not supported")})}d$1(D$1,"defaultDecompress");var O$1=(a=>(a[a.Unknown=0]="Unknown",a[a.Mvt=1]="Mvt",a[a.Png=2]="Png",a[a.Jpeg=3]="Jpeg",a[a.Webp=4]="Webp",a[a.Avif=5]="Avif",a[a.Mlt=6]="Mlt",a))(O$1||{});function _$1(i){return i===1?".mvt":i===2?".png":i===3?".jpg":i===4?".webp":i===5?".avif":i===6?".mlt":""}d$1(_$1,"tileTypeExt");var Y$1=127;function Q$1(i,t){let e=0,r=i.length-1;for(;e<=r;){let n=r+e>>1,s=t-i[n].tileId;if(s>0)e=n+1;else if(s<0)r=n-1;else return i[n]}return r>=0&&(i[r].runLength===0||t-i[r].tileId<i[r].runLength)?i[r]:null}d$1(Q$1,"findTile");var A$1=class A{constructor(t){this.file=t;}getKey(){return this.file.name}getBytes(t,e){return m$1(this,null,function*(){return {data:yield this.file.slice(t,t+e).arrayBuffer()}})}};d$1(A$1,"FileSource");var P$1=class P{constructor(t,e=new Headers,r=void 0){var a,c;this.url=t,this.customHeaders=e,this.credentials=r,this.mustReload=!1;let n="";"navigator"in globalThis&&(n=(c=(a=globalThis.navigator)==null?void 0:a.userAgent)!=null?c:"");let s=n.indexOf("Windows")>-1,o=/Chrome|Chromium|Edg|OPR|Brave/.test(n);this.chromeWindowsNoCache=!1,s&&o&&(this.chromeWindowsNoCache=!0);}getKey(){return this.url}setHeaders(t){this.customHeaders=t;}getBytes(t,e,r,n){return m$1(this,null,function*(){let s,o;r?o=r:(s=new AbortController,o=s.signal);let a=new Headers(this.customHeaders);a.set("range",`bytes=${t}-${t+e-1}`);let c;this.mustReload?c="reload":this.chromeWindowsNoCache&&(c="no-store");let u=yield fetch(this.url,{signal:o,cache:c,headers:a,credentials:this.credentials});if(t===0&&u.status===416){let p=u.headers.get("Content-Range");if(!p||!p.startsWith("bytes */"))throw new Error("Missing content-length on 416 response");let h=+p.substr(8);a.set("range",`bytes=0-${h-1}`),u=yield fetch(this.url,{signal:o,cache:"reload",headers:a,credentials:this.credentials});}let l=u.headers.get("Etag");if(l!=null&&l.startsWith("W/")&&(l=null),u.status===416||n&&l&&l!==n)throw this.mustReload=!0,new v$1(`Server returned non-matching ETag ${n} after one retry. Check browser extensions and servers for issues that may affect correct ETag headers.`);if(u.status>=300)throw new Error(`Bad response code: ${u.status}`);let f=u.headers.get("Content-Length");if(u.status===200&&(!f||+f>e))throw s&&s.abort(),new Error("Server returned no content-length header or content-length exceeding request. Check that your storage backend supports HTTP Byte Serving.");return {data:yield u.arrayBuffer(),etag:l||void 0,cacheControl:u.headers.get("Cache-Control")||void 0,expires:u.headers.get("Expires")||void 0}})}};d$1(P$1,"FetchSource");var T$1=P$1;function g$1(i,t){let e=i.getUint32(t+4,!0),r=i.getUint32(t+0,!0);return e*B$1(2,32)+r}d$1(g$1,"getUint64");function X$1(i,t){let e=new DataView(i),r=e.getUint8(7);if(r>3)throw new Error(`Archive is spec version ${r} but this library supports up to spec version 3`);return {specVersion:r,rootDirectoryOffset:g$1(e,8),rootDirectoryLength:g$1(e,16),jsonMetadataOffset:g$1(e,24),jsonMetadataLength:g$1(e,32),leafDirectoryOffset:g$1(e,40),leafDirectoryLength:g$1(e,48),tileDataOffset:g$1(e,56),tileDataLength:g$1(e,64),numAddressedTiles:g$1(e,72),numTileEntries:g$1(e,80),numTileContents:g$1(e,88),clustered:e.getUint8(96)===1,internalCompression:e.getUint8(97),tileCompression:e.getUint8(98),tileType:e.getUint8(99),minZoom:e.getUint8(100),maxZoom:e.getUint8(101),minLon:e.getInt32(102,!0)/1e7,minLat:e.getInt32(106,!0)/1e7,maxLon:e.getInt32(110,!0)/1e7,maxLat:e.getInt32(114,!0)/1e7,centerZoom:e.getUint8(118),centerLon:e.getInt32(119,!0)/1e7,centerLat:e.getInt32(123,!0)/1e7,etag:t}}d$1(X$1,"bytesToHeader");function I$1(i){let t={buf:new Uint8Array(i),pos:0},e=x$1(t),r=[],n=0;for(let s=0;s<e;s++){let o=x$1(t);r.push({tileId:n+o,offset:0,length:0,runLength:1}),n+=o;}for(let s=0;s<e;s++)r[s].runLength=x$1(t);for(let s=0;s<e;s++)r[s].length=x$1(t);for(let s=0;s<e;s++){let o=x$1(t);o===0&&s>0?r[s].offset=r[s-1].offset+r[s-1].length:r[s].offset=o-1;}return r}d$1(I$1,"deserializeIndex");var R$1=class R extends Error{};d$1(R$1,"EtagMismatch");var v$1=R$1;function V$1(i,t){return m$1(this,null,function*(){let e=yield i.getBytes(0,16384);if(new DataView(e.data).getUint16(0,!0)!==19792)throw new Error("Wrong magic number for PMTiles archive");let n=e.data.slice(0,Y$1),s=X$1(n,e.etag),o=e.data.slice(s.rootDirectoryOffset,s.rootDirectoryOffset+s.rootDirectoryLength),a=`${i.getKey()}|${s.etag||""}|${s.rootDirectoryOffset}|${s.rootDirectoryLength}`,c=I$1(yield t(o,s.internalCompression));return [s,[a,c.length,c]]})}d$1(V$1,"getHeaderAndRoot");function K$1(i,t,e,r,n){return m$1(this,null,function*(){let s=yield i.getBytes(e,r,void 0,n.etag),o=yield t(s.data,n.internalCompression),a=I$1(o);if(a.length===0)throw new Error("Empty directory is invalid");return a})}d$1(K$1,"getDirectory");var U$1=class U{constructor(t=100,e=!0,r=D$1){this.cache=new Map,this.maxCacheEntries=t,this.counter=1,this.decompress=r;}getHeader(t){return m$1(this,null,function*(){let e=t.getKey(),r=this.cache.get(e);if(r)return r.lastUsed=this.counter++,r.data;let n=yield V$1(t,this.decompress);return n[1]&&this.cache.set(n[1][0],{lastUsed:this.counter++,data:n[1][2]}),this.cache.set(e,{lastUsed:this.counter++,data:n[0]}),this.prune(),n[0]})}getDirectory(t,e,r,n){return m$1(this,null,function*(){let s=`${t.getKey()}|${n.etag||""}|${e}|${r}`,o=this.cache.get(s);if(o)return o.lastUsed=this.counter++,o.data;let a=yield K$1(t,this.decompress,e,r,n);return this.cache.set(s,{lastUsed:this.counter++,data:a}),this.prune(),a})}prune(){if(this.cache.size>this.maxCacheEntries){let t=1/0,e;this.cache.forEach((r,n)=>{r.lastUsed<t&&(t=r.lastUsed,e=n);}),e&&this.cache.delete(e);}}invalidate(t){return m$1(this,null,function*(){this.cache.delete(t.getKey());})}};d$1(U$1,"ResolvedValueCache");var M$1=class M{constructor(t=100,e=!0,r=D$1){this.cache=new Map,this.invalidations=new Map,this.maxCacheEntries=t,this.counter=1,this.decompress=r;}getHeader(t){return m$1(this,null,function*(){let e=t.getKey(),r=this.cache.get(e);if(r)return r.lastUsed=this.counter++,yield r.data;let n=new Promise((s,o)=>{V$1(t,this.decompress).then(a=>{a[1]&&this.cache.set(a[1][0],{lastUsed:this.counter++,data:Promise.resolve(a[1][2])}),s(a[0]),this.prune();}).catch(a=>{o(a);});});return this.cache.set(e,{lastUsed:this.counter++,data:n}),n})}getDirectory(t,e,r,n){return m$1(this,null,function*(){let s=`${t.getKey()}|${n.etag||""}|${e}|${r}`,o=this.cache.get(s);if(o)return o.lastUsed=this.counter++,yield o.data;let a=new Promise((c,u)=>{K$1(t,this.decompress,e,r,n).then(l=>{c(l),this.prune();}).catch(l=>{u(l);});});return this.cache.set(s,{lastUsed:this.counter++,data:a}),a})}prune(){if(this.cache.size>=this.maxCacheEntries){let t=1/0,e;this.cache.forEach((r,n)=>{r.lastUsed<t&&(t=r.lastUsed,e=n);}),e&&this.cache.delete(e);}}invalidate(t){return m$1(this,null,function*(){let e=t.getKey();if(this.invalidations.get(e))return yield this.invalidations.get(e);this.cache.delete(t.getKey());let r=new Promise((n,s)=>{this.getHeader(t).then(o=>{n(),this.invalidations.delete(e);}).catch(o=>{s(o);});});this.invalidations.set(e,r);})}};d$1(M$1,"SharedPromiseCache");var C$1=M$1,H$1=class H{constructor(t,e,r){typeof t=="string"?this.source=new T$1(t):this.source=t,r?this.decompress=r:this.decompress=D$1,e?this.cache=e:this.cache=new C$1;}getHeader(){return m$1(this,null,function*(){return yield this.cache.getHeader(this.source)})}getZxyAttempt(t,e,r,n){return m$1(this,null,function*(){let s=q$1(t,e,r),o=yield this.cache.getHeader(this.source);if(t<o.minZoom||t>o.maxZoom)return;let a=o.rootDirectoryOffset,c=o.rootDirectoryLength;for(let u=0;u<=3;u++){let l=yield this.cache.getDirectory(this.source,a,c,o),f=Q$1(l,s);if(f){if(f.runLength>0){let y=yield this.source.getBytes(o.tileDataOffset+f.offset,f.length,n,o.etag);return {data:yield this.decompress(y.data,o.tileCompression),cacheControl:y.cacheControl,expires:y.expires}}a=o.leafDirectoryOffset+f.offset,c=f.length;}else return}throw new Error("Maximum directory depth exceeded")})}getZxy(t,e,r,n){return m$1(this,null,function*(){try{return yield this.getZxyAttempt(t,e,r,n)}catch(s){if(s instanceof v$1)return this.cache.invalidate(this.source),yield this.getZxyAttempt(t,e,r,n);throw s}})}getMetadataAttempt(){return m$1(this,null,function*(){let t=yield this.cache.getHeader(this.source),e=yield this.source.getBytes(t.jsonMetadataOffset,t.jsonMetadataLength,void 0,t.etag),r=yield this.decompress(e.data,t.internalCompression),n=new TextDecoder("utf-8");return JSON.parse(n.decode(r))})}getMetadata(){return m$1(this,null,function*(){try{return yield this.getMetadataAttempt()}catch(t){if(t instanceof v$1)return this.cache.invalidate(this.source),yield this.getMetadataAttempt();throw t}})}getTileJson(t){return m$1(this,null,function*(){let e=yield this.getHeader(),r=yield this.getMetadata(),n=_$1(e.tileType);return {tilejson:"3.0.0",scheme:"xyz",tiles:[`${t}/{z}/{x}/{y}${n}`],vector_layers:r.vector_layers,attribution:r.attribution,description:r.description,name:r.name,version:r.version,bounds:[e.minLon,e.minLat,e.maxLon,e.maxLat],center:[e.centerLon,e.centerLat,e.centerZoom],minzoom:e.minZoom,maxzoom:e.maxZoom}})}};d$1(H$1,"PMTiles");var w$1=H$1;
+
+    // This file is autogenerated. It's used to publish ESM to npm.
+    function _typeof(obj) {
+      "@babel/helpers - typeof";
+
+      return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+        return typeof obj;
+      } : function (obj) {
+        return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      }, _typeof(obj);
+    }
+
+    // https://github.com/bgrins/TinyColor
+    // Brian Grinstead, MIT License
+
+    var trimLeft = /^\s+/;
+    var trimRight = /\s+$/;
+    function tinycolor(color, opts) {
+      color = color ? color : "";
+      opts = opts || {};
+
+      // If input is already a tinycolor, return itself
+      if (color instanceof tinycolor) {
+        return color;
+      }
+      // If we are called as a function, call using new instead
+      if (!(this instanceof tinycolor)) {
+        return new tinycolor(color, opts);
+      }
+      var rgb = inputToRGB(color);
+      this._originalInput = color, this._r = rgb.r, this._g = rgb.g, this._b = rgb.b, this._a = rgb.a, this._roundA = Math.round(100 * this._a) / 100, this._format = opts.format || rgb.format;
+      this._gradientType = opts.gradientType;
+
+      // Don't let the range of [0,255] come back in [0,1].
+      // Potentially lose a little bit of precision here, but will fix issues where
+      // .5 gets interpreted as half of the total, instead of half of 1
+      // If it was supposed to be 128, this was already taken care of by `inputToRgb`
+      if (this._r < 1) this._r = Math.round(this._r);
+      if (this._g < 1) this._g = Math.round(this._g);
+      if (this._b < 1) this._b = Math.round(this._b);
+      this._ok = rgb.ok;
+    }
+    tinycolor.prototype = {
+      isDark: function isDark() {
+        return this.getBrightness() < 128;
+      },
+      isLight: function isLight() {
+        return !this.isDark();
+      },
+      isValid: function isValid() {
+        return this._ok;
+      },
+      getOriginalInput: function getOriginalInput() {
+        return this._originalInput;
+      },
+      getFormat: function getFormat() {
+        return this._format;
+      },
+      getAlpha: function getAlpha() {
+        return this._a;
+      },
+      getBrightness: function getBrightness() {
+        //http://www.w3.org/TR/AERT#color-contrast
+        var rgb = this.toRgb();
+        return (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+      },
+      getLuminance: function getLuminance() {
+        //http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef
+        var rgb = this.toRgb();
+        var RsRGB, GsRGB, BsRGB, R, G, B;
+        RsRGB = rgb.r / 255;
+        GsRGB = rgb.g / 255;
+        BsRGB = rgb.b / 255;
+        if (RsRGB <= 0.03928) R = RsRGB / 12.92;else R = Math.pow((RsRGB + 0.055) / 1.055, 2.4);
+        if (GsRGB <= 0.03928) G = GsRGB / 12.92;else G = Math.pow((GsRGB + 0.055) / 1.055, 2.4);
+        if (BsRGB <= 0.03928) B = BsRGB / 12.92;else B = Math.pow((BsRGB + 0.055) / 1.055, 2.4);
+        return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+      },
+      setAlpha: function setAlpha(value) {
+        this._a = boundAlpha(value);
+        this._roundA = Math.round(100 * this._a) / 100;
+        return this;
+      },
+      toHsv: function toHsv() {
+        var hsv = rgbToHsv(this._r, this._g, this._b);
+        return {
+          h: hsv.h * 360,
+          s: hsv.s,
+          v: hsv.v,
+          a: this._a
+        };
+      },
+      toHsvString: function toHsvString() {
+        var hsv = rgbToHsv(this._r, this._g, this._b);
+        var h = Math.round(hsv.h * 360),
+          s = Math.round(hsv.s * 100),
+          v = Math.round(hsv.v * 100);
+        return this._a == 1 ? "hsv(" + h + ", " + s + "%, " + v + "%)" : "hsva(" + h + ", " + s + "%, " + v + "%, " + this._roundA + ")";
+      },
+      toHsl: function toHsl() {
+        var hsl = rgbToHsl(this._r, this._g, this._b);
+        return {
+          h: hsl.h * 360,
+          s: hsl.s,
+          l: hsl.l,
+          a: this._a
+        };
+      },
+      toHslString: function toHslString() {
+        var hsl = rgbToHsl(this._r, this._g, this._b);
+        var h = Math.round(hsl.h * 360),
+          s = Math.round(hsl.s * 100),
+          l = Math.round(hsl.l * 100);
+        return this._a == 1 ? "hsl(" + h + ", " + s + "%, " + l + "%)" : "hsla(" + h + ", " + s + "%, " + l + "%, " + this._roundA + ")";
+      },
+      toHex: function toHex(allow3Char) {
+        return rgbToHex(this._r, this._g, this._b, allow3Char);
+      },
+      toHexString: function toHexString(allow3Char) {
+        return "#" + this.toHex(allow3Char);
+      },
+      toHex8: function toHex8(allow4Char) {
+        return rgbaToHex(this._r, this._g, this._b, this._a, allow4Char);
+      },
+      toHex8String: function toHex8String(allow4Char) {
+        return "#" + this.toHex8(allow4Char);
+      },
+      toRgb: function toRgb() {
+        return {
+          r: Math.round(this._r),
+          g: Math.round(this._g),
+          b: Math.round(this._b),
+          a: this._a
+        };
+      },
+      toRgbString: function toRgbString() {
+        return this._a == 1 ? "rgb(" + Math.round(this._r) + ", " + Math.round(this._g) + ", " + Math.round(this._b) + ")" : "rgba(" + Math.round(this._r) + ", " + Math.round(this._g) + ", " + Math.round(this._b) + ", " + this._roundA + ")";
+      },
+      toPercentageRgb: function toPercentageRgb() {
+        return {
+          r: Math.round(bound01(this._r, 255) * 100) + "%",
+          g: Math.round(bound01(this._g, 255) * 100) + "%",
+          b: Math.round(bound01(this._b, 255) * 100) + "%",
+          a: this._a
+        };
+      },
+      toPercentageRgbString: function toPercentageRgbString() {
+        return this._a == 1 ? "rgb(" + Math.round(bound01(this._r, 255) * 100) + "%, " + Math.round(bound01(this._g, 255) * 100) + "%, " + Math.round(bound01(this._b, 255) * 100) + "%)" : "rgba(" + Math.round(bound01(this._r, 255) * 100) + "%, " + Math.round(bound01(this._g, 255) * 100) + "%, " + Math.round(bound01(this._b, 255) * 100) + "%, " + this._roundA + ")";
+      },
+      toName: function toName() {
+        if (this._a === 0) {
+          return "transparent";
+        }
+        if (this._a < 1) {
+          return false;
+        }
+        return hexNames[rgbToHex(this._r, this._g, this._b, true)] || false;
+      },
+      toFilter: function toFilter(secondColor) {
+        var hex8String = "#" + rgbaToArgbHex(this._r, this._g, this._b, this._a);
+        var secondHex8String = hex8String;
+        var gradientType = this._gradientType ? "GradientType = 1, " : "";
+        if (secondColor) {
+          var s = tinycolor(secondColor);
+          secondHex8String = "#" + rgbaToArgbHex(s._r, s._g, s._b, s._a);
+        }
+        return "progid:DXImageTransform.Microsoft.gradient(" + gradientType + "startColorstr=" + hex8String + ",endColorstr=" + secondHex8String + ")";
+      },
+      toString: function toString(format) {
+        var formatSet = !!format;
+        format = format || this._format;
+        var formattedString = false;
+        var hasAlpha = this._a < 1 && this._a >= 0;
+        var needsAlphaFormat = !formatSet && hasAlpha && (format === "hex" || format === "hex6" || format === "hex3" || format === "hex4" || format === "hex8" || format === "name");
+        if (needsAlphaFormat) {
+          // Special case for "transparent", all other non-alpha formats
+          // will return rgba when there is transparency.
+          if (format === "name" && this._a === 0) {
+            return this.toName();
+          }
+          return this.toRgbString();
+        }
+        if (format === "rgb") {
+          formattedString = this.toRgbString();
+        }
+        if (format === "prgb") {
+          formattedString = this.toPercentageRgbString();
+        }
+        if (format === "hex" || format === "hex6") {
+          formattedString = this.toHexString();
+        }
+        if (format === "hex3") {
+          formattedString = this.toHexString(true);
+        }
+        if (format === "hex4") {
+          formattedString = this.toHex8String(true);
+        }
+        if (format === "hex8") {
+          formattedString = this.toHex8String();
+        }
+        if (format === "name") {
+          formattedString = this.toName();
+        }
+        if (format === "hsl") {
+          formattedString = this.toHslString();
+        }
+        if (format === "hsv") {
+          formattedString = this.toHsvString();
+        }
+        return formattedString || this.toHexString();
+      },
+      clone: function clone() {
+        return tinycolor(this.toString());
+      },
+      _applyModification: function _applyModification(fn, args) {
+        var color = fn.apply(null, [this].concat([].slice.call(args)));
+        this._r = color._r;
+        this._g = color._g;
+        this._b = color._b;
+        this.setAlpha(color._a);
+        return this;
+      },
+      lighten: function lighten() {
+        return this._applyModification(_lighten, arguments);
+      },
+      brighten: function brighten() {
+        return this._applyModification(_brighten, arguments);
+      },
+      darken: function darken() {
+        return this._applyModification(_darken, arguments);
+      },
+      desaturate: function desaturate() {
+        return this._applyModification(_desaturate, arguments);
+      },
+      saturate: function saturate() {
+        return this._applyModification(_saturate, arguments);
+      },
+      greyscale: function greyscale() {
+        return this._applyModification(_greyscale, arguments);
+      },
+      spin: function spin() {
+        return this._applyModification(_spin, arguments);
+      },
+      _applyCombination: function _applyCombination(fn, args) {
+        return fn.apply(null, [this].concat([].slice.call(args)));
+      },
+      analogous: function analogous() {
+        return this._applyCombination(_analogous, arguments);
+      },
+      complement: function complement() {
+        return this._applyCombination(_complement, arguments);
+      },
+      monochromatic: function monochromatic() {
+        return this._applyCombination(_monochromatic, arguments);
+      },
+      splitcomplement: function splitcomplement() {
+        return this._applyCombination(_splitcomplement, arguments);
+      },
+      // Disabled until https://github.com/bgrins/TinyColor/issues/254
+      // polyad: function (number) {
+      //   return this._applyCombination(polyad, [number]);
+      // },
+      triad: function triad() {
+        return this._applyCombination(polyad, [3]);
+      },
+      tetrad: function tetrad() {
+        return this._applyCombination(polyad, [4]);
+      }
+    };
+
+    // If input is an object, force 1 into "1.0" to handle ratios properly
+    // String input requires "1.0" as input, so 1 will be treated as 1
+    tinycolor.fromRatio = function (color, opts) {
+      if (_typeof(color) == "object") {
+        var newColor = {};
+        for (var i in color) {
+          if (color.hasOwnProperty(i)) {
+            if (i === "a") {
+              newColor[i] = color[i];
+            } else {
+              newColor[i] = convertToPercentage(color[i]);
+            }
+          }
+        }
+        color = newColor;
+      }
+      return tinycolor(color, opts);
+    };
+
+    // Given a string or object, convert that input to RGB
+    // Possible string inputs:
+    //
+    //     "red"
+    //     "#f00" or "f00"
+    //     "#ff0000" or "ff0000"
+    //     "#ff000000" or "ff000000"
+    //     "rgb 255 0 0" or "rgb (255, 0, 0)"
+    //     "rgb 1.0 0 0" or "rgb (1, 0, 0)"
+    //     "rgba (255, 0, 0, 1)" or "rgba 255, 0, 0, 1"
+    //     "rgba (1.0, 0, 0, 1)" or "rgba 1.0, 0, 0, 1"
+    //     "hsl(0, 100%, 50%)" or "hsl 0 100% 50%"
+    //     "hsla(0, 100%, 50%, 1)" or "hsla 0 100% 50%, 1"
+    //     "hsv(0, 100%, 100%)" or "hsv 0 100% 100%"
+    //
+    function inputToRGB(color) {
+      var rgb = {
+        r: 0,
+        g: 0,
+        b: 0
+      };
+      var a = 1;
+      var s = null;
+      var v = null;
+      var l = null;
+      var ok = false;
+      var format = false;
+      if (typeof color == "string") {
+        color = stringInputToObject(color);
+      }
+      if (_typeof(color) == "object") {
+        if (isValidCSSUnit(color.r) && isValidCSSUnit(color.g) && isValidCSSUnit(color.b)) {
+          rgb = rgbToRgb(color.r, color.g, color.b);
+          ok = true;
+          format = String(color.r).substr(-1) === "%" ? "prgb" : "rgb";
+        } else if (isValidCSSUnit(color.h) && isValidCSSUnit(color.s) && isValidCSSUnit(color.v)) {
+          s = convertToPercentage(color.s);
+          v = convertToPercentage(color.v);
+          rgb = hsvToRgb(color.h, s, v);
+          ok = true;
+          format = "hsv";
+        } else if (isValidCSSUnit(color.h) && isValidCSSUnit(color.s) && isValidCSSUnit(color.l)) {
+          s = convertToPercentage(color.s);
+          l = convertToPercentage(color.l);
+          rgb = hslToRgb(color.h, s, l);
+          ok = true;
+          format = "hsl";
+        }
+        if (color.hasOwnProperty("a")) {
+          a = color.a;
+        }
+      }
+      a = boundAlpha(a);
+      return {
+        ok: ok,
+        format: color.format || format,
+        r: Math.min(255, Math.max(rgb.r, 0)),
+        g: Math.min(255, Math.max(rgb.g, 0)),
+        b: Math.min(255, Math.max(rgb.b, 0)),
+        a: a
+      };
+    }
+
+    // Conversion Functions
+    // --------------------
+
+    // `rgbToHsl`, `rgbToHsv`, `hslToRgb`, `hsvToRgb` modified from:
+    // <http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript>
+
+    // `rgbToRgb`
+    // Handle bounds / percentage checking to conform to CSS color spec
+    // <http://www.w3.org/TR/css3-color/>
+    // *Assumes:* r, g, b in [0, 255] or [0, 1]
+    // *Returns:* { r, g, b } in [0, 255]
+    function rgbToRgb(r, g, b) {
+      return {
+        r: bound01(r, 255) * 255,
+        g: bound01(g, 255) * 255,
+        b: bound01(b, 255) * 255
+      };
+    }
+
+    // `rgbToHsl`
+    // Converts an RGB color value to HSL.
+    // *Assumes:* r, g, and b are contained in [0, 255] or [0, 1]
+    // *Returns:* { h, s, l } in [0,1]
+    function rgbToHsl(r, g, b) {
+      r = bound01(r, 255);
+      g = bound01(g, 255);
+      b = bound01(b, 255);
+      var max = Math.max(r, g, b),
+        min = Math.min(r, g, b);
+      var h,
+        s,
+        l = (max + min) / 2;
+      if (max == min) {
+        h = s = 0; // achromatic
+      } else {
+        var d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r:
+            h = (g - b) / d + (g < b ? 6 : 0);
+            break;
+          case g:
+            h = (b - r) / d + 2;
+            break;
+          case b:
+            h = (r - g) / d + 4;
+            break;
+        }
+        h /= 6;
+      }
+      return {
+        h: h,
+        s: s,
+        l: l
+      };
+    }
+
+    // `hslToRgb`
+    // Converts an HSL color value to RGB.
+    // *Assumes:* h is contained in [0, 1] or [0, 360] and s and l are contained [0, 1] or [0, 100]
+    // *Returns:* { r, g, b } in the set [0, 255]
+    function hslToRgb(h, s, l) {
+      var r, g, b;
+      h = bound01(h, 360);
+      s = bound01(s, 100);
+      l = bound01(l, 100);
+      function hue2rgb(p, q, t) {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1 / 6) return p + (q - p) * 6 * t;
+        if (t < 1 / 2) return q;
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+        return p;
+      }
+      if (s === 0) {
+        r = g = b = l; // achromatic
+      } else {
+        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        var p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1 / 3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1 / 3);
+      }
+      return {
+        r: r * 255,
+        g: g * 255,
+        b: b * 255
+      };
+    }
+
+    // `rgbToHsv`
+    // Converts an RGB color value to HSV
+    // *Assumes:* r, g, and b are contained in the set [0, 255] or [0, 1]
+    // *Returns:* { h, s, v } in [0,1]
+    function rgbToHsv(r, g, b) {
+      r = bound01(r, 255);
+      g = bound01(g, 255);
+      b = bound01(b, 255);
+      var max = Math.max(r, g, b),
+        min = Math.min(r, g, b);
+      var h,
+        s,
+        v = max;
+      var d = max - min;
+      s = max === 0 ? 0 : d / max;
+      if (max == min) {
+        h = 0; // achromatic
+      } else {
+        switch (max) {
+          case r:
+            h = (g - b) / d + (g < b ? 6 : 0);
+            break;
+          case g:
+            h = (b - r) / d + 2;
+            break;
+          case b:
+            h = (r - g) / d + 4;
+            break;
+        }
+        h /= 6;
+      }
+      return {
+        h: h,
+        s: s,
+        v: v
+      };
+    }
+
+    // `hsvToRgb`
+    // Converts an HSV color value to RGB.
+    // *Assumes:* h is contained in [0, 1] or [0, 360] and s and v are contained in [0, 1] or [0, 100]
+    // *Returns:* { r, g, b } in the set [0, 255]
+    function hsvToRgb(h, s, v) {
+      h = bound01(h, 360) * 6;
+      s = bound01(s, 100);
+      v = bound01(v, 100);
+      var i = Math.floor(h),
+        f = h - i,
+        p = v * (1 - s),
+        q = v * (1 - f * s),
+        t = v * (1 - (1 - f) * s),
+        mod = i % 6,
+        r = [v, q, p, p, t, v][mod],
+        g = [t, v, v, q, p, p][mod],
+        b = [p, p, t, v, v, q][mod];
+      return {
+        r: r * 255,
+        g: g * 255,
+        b: b * 255
+      };
+    }
+
+    // `rgbToHex`
+    // Converts an RGB color to hex
+    // Assumes r, g, and b are contained in the set [0, 255]
+    // Returns a 3 or 6 character hex
+    function rgbToHex(r, g, b, allow3Char) {
+      var hex = [pad2(Math.round(r).toString(16)), pad2(Math.round(g).toString(16)), pad2(Math.round(b).toString(16))];
+
+      // Return a 3 character hex if possible
+      if (allow3Char && hex[0].charAt(0) == hex[0].charAt(1) && hex[1].charAt(0) == hex[1].charAt(1) && hex[2].charAt(0) == hex[2].charAt(1)) {
+        return hex[0].charAt(0) + hex[1].charAt(0) + hex[2].charAt(0);
+      }
+      return hex.join("");
+    }
+
+    // `rgbaToHex`
+    // Converts an RGBA color plus alpha transparency to hex
+    // Assumes r, g, b are contained in the set [0, 255] and
+    // a in [0, 1]. Returns a 4 or 8 character rgba hex
+    function rgbaToHex(r, g, b, a, allow4Char) {
+      var hex = [pad2(Math.round(r).toString(16)), pad2(Math.round(g).toString(16)), pad2(Math.round(b).toString(16)), pad2(convertDecimalToHex(a))];
+
+      // Return a 4 character hex if possible
+      if (allow4Char && hex[0].charAt(0) == hex[0].charAt(1) && hex[1].charAt(0) == hex[1].charAt(1) && hex[2].charAt(0) == hex[2].charAt(1) && hex[3].charAt(0) == hex[3].charAt(1)) {
+        return hex[0].charAt(0) + hex[1].charAt(0) + hex[2].charAt(0) + hex[3].charAt(0);
+      }
+      return hex.join("");
+    }
+
+    // `rgbaToArgbHex`
+    // Converts an RGBA color to an ARGB Hex8 string
+    // Rarely used, but required for "toFilter()"
+    function rgbaToArgbHex(r, g, b, a) {
+      var hex = [pad2(convertDecimalToHex(a)), pad2(Math.round(r).toString(16)), pad2(Math.round(g).toString(16)), pad2(Math.round(b).toString(16))];
+      return hex.join("");
+    }
+
+    // `equals`
+    // Can be called with any tinycolor input
+    tinycolor.equals = function (color1, color2) {
+      if (!color1 || !color2) return false;
+      return tinycolor(color1).toRgbString() == tinycolor(color2).toRgbString();
+    };
+    tinycolor.random = function () {
+      return tinycolor.fromRatio({
+        r: Math.random(),
+        g: Math.random(),
+        b: Math.random()
+      });
+    };
+
+    // Modification Functions
+    // ----------------------
+    // Thanks to less.js for some of the basics here
+    // <https://github.com/cloudhead/less.js/blob/master/lib/less/functions.js>
+
+    function _desaturate(color, amount) {
+      amount = amount === 0 ? 0 : amount || 10;
+      var hsl = tinycolor(color).toHsl();
+      hsl.s -= amount / 100;
+      hsl.s = clamp01(hsl.s);
+      return tinycolor(hsl);
+    }
+    function _saturate(color, amount) {
+      amount = amount === 0 ? 0 : amount || 10;
+      var hsl = tinycolor(color).toHsl();
+      hsl.s += amount / 100;
+      hsl.s = clamp01(hsl.s);
+      return tinycolor(hsl);
+    }
+    function _greyscale(color) {
+      return tinycolor(color).desaturate(100);
+    }
+    function _lighten(color, amount) {
+      amount = amount === 0 ? 0 : amount || 10;
+      var hsl = tinycolor(color).toHsl();
+      hsl.l += amount / 100;
+      hsl.l = clamp01(hsl.l);
+      return tinycolor(hsl);
+    }
+    function _brighten(color, amount) {
+      amount = amount === 0 ? 0 : amount || 10;
+      var rgb = tinycolor(color).toRgb();
+      rgb.r = Math.max(0, Math.min(255, rgb.r - Math.round(255 * -(amount / 100))));
+      rgb.g = Math.max(0, Math.min(255, rgb.g - Math.round(255 * -(amount / 100))));
+      rgb.b = Math.max(0, Math.min(255, rgb.b - Math.round(255 * -(amount / 100))));
+      return tinycolor(rgb);
+    }
+    function _darken(color, amount) {
+      amount = amount === 0 ? 0 : amount || 10;
+      var hsl = tinycolor(color).toHsl();
+      hsl.l -= amount / 100;
+      hsl.l = clamp01(hsl.l);
+      return tinycolor(hsl);
+    }
+
+    // Spin takes a positive or negative amount within [-360, 360] indicating the change of hue.
+    // Values outside of this range will be wrapped into this range.
+    function _spin(color, amount) {
+      var hsl = tinycolor(color).toHsl();
+      var hue = (hsl.h + amount) % 360;
+      hsl.h = hue < 0 ? 360 + hue : hue;
+      return tinycolor(hsl);
+    }
+
+    // Combination Functions
+    // ---------------------
+    // Thanks to jQuery xColor for some of the ideas behind these
+    // <https://github.com/infusion/jQuery-xcolor/blob/master/jquery.xcolor.js>
+
+    function _complement(color) {
+      var hsl = tinycolor(color).toHsl();
+      hsl.h = (hsl.h + 180) % 360;
+      return tinycolor(hsl);
+    }
+    function polyad(color, number) {
+      if (isNaN(number) || number <= 0) {
+        throw new Error("Argument to polyad must be a positive number");
+      }
+      var hsl = tinycolor(color).toHsl();
+      var result = [tinycolor(color)];
+      var step = 360 / number;
+      for (var i = 1; i < number; i++) {
+        result.push(tinycolor({
+          h: (hsl.h + i * step) % 360,
+          s: hsl.s,
+          l: hsl.l
+        }));
+      }
+      return result;
+    }
+    function _splitcomplement(color) {
+      var hsl = tinycolor(color).toHsl();
+      var h = hsl.h;
+      return [tinycolor(color), tinycolor({
+        h: (h + 72) % 360,
+        s: hsl.s,
+        l: hsl.l
+      }), tinycolor({
+        h: (h + 216) % 360,
+        s: hsl.s,
+        l: hsl.l
+      })];
+    }
+    function _analogous(color, results, slices) {
+      results = results || 6;
+      slices = slices || 30;
+      var hsl = tinycolor(color).toHsl();
+      var part = 360 / slices;
+      var ret = [tinycolor(color)];
+      for (hsl.h = (hsl.h - (part * results >> 1) + 720) % 360; --results;) {
+        hsl.h = (hsl.h + part) % 360;
+        ret.push(tinycolor(hsl));
+      }
+      return ret;
+    }
+    function _monochromatic(color, results) {
+      results = results || 6;
+      var hsv = tinycolor(color).toHsv();
+      var h = hsv.h,
+        s = hsv.s,
+        v = hsv.v;
+      var ret = [];
+      var modification = 1 / results;
+      while (results--) {
+        ret.push(tinycolor({
+          h: h,
+          s: s,
+          v: v
+        }));
+        v = (v + modification) % 1;
+      }
+      return ret;
+    }
+
+    // Utility Functions
+    // ---------------------
+
+    tinycolor.mix = function (color1, color2, amount) {
+      amount = amount === 0 ? 0 : amount || 50;
+      var rgb1 = tinycolor(color1).toRgb();
+      var rgb2 = tinycolor(color2).toRgb();
+      var p = amount / 100;
+      var rgba = {
+        r: (rgb2.r - rgb1.r) * p + rgb1.r,
+        g: (rgb2.g - rgb1.g) * p + rgb1.g,
+        b: (rgb2.b - rgb1.b) * p + rgb1.b,
+        a: (rgb2.a - rgb1.a) * p + rgb1.a
+      };
+      return tinycolor(rgba);
+    };
+
+    // Readability Functions
+    // ---------------------
+    // <http://www.w3.org/TR/2008/REC-WCAG20-20081211/#contrast-ratiodef (WCAG Version 2)
+
+    // `contrast`
+    // Analyze the 2 colors and returns the color contrast defined by (WCAG Version 2)
+    tinycolor.readability = function (color1, color2) {
+      var c1 = tinycolor(color1);
+      var c2 = tinycolor(color2);
+      return (Math.max(c1.getLuminance(), c2.getLuminance()) + 0.05) / (Math.min(c1.getLuminance(), c2.getLuminance()) + 0.05);
+    };
+
+    // `isReadable`
+    // Ensure that foreground and background color combinations meet WCAG2 guidelines.
+    // The third argument is an optional Object.
+    //      the 'level' property states 'AA' or 'AAA' - if missing or invalid, it defaults to 'AA';
+    //      the 'size' property states 'large' or 'small' - if missing or invalid, it defaults to 'small'.
+    // If the entire object is absent, isReadable defaults to {level:"AA",size:"small"}.
+
+    // *Example*
+    //    tinycolor.isReadable("#000", "#111") => false
+    //    tinycolor.isReadable("#000", "#111",{level:"AA",size:"large"}) => false
+    tinycolor.isReadable = function (color1, color2, wcag2) {
+      var readability = tinycolor.readability(color1, color2);
+      var wcag2Parms, out;
+      out = false;
+      wcag2Parms = validateWCAG2Parms(wcag2);
+      switch (wcag2Parms.level + wcag2Parms.size) {
+        case "AAsmall":
+        case "AAAlarge":
+          out = readability >= 4.5;
+          break;
+        case "AAlarge":
+          out = readability >= 3;
+          break;
+        case "AAAsmall":
+          out = readability >= 7;
+          break;
+      }
+      return out;
+    };
+
+    // `mostReadable`
+    // Given a base color and a list of possible foreground or background
+    // colors for that base, returns the most readable color.
+    // Optionally returns Black or White if the most readable color is unreadable.
+    // *Example*
+    //    tinycolor.mostReadable(tinycolor.mostReadable("#123", ["#124", "#125"],{includeFallbackColors:false}).toHexString(); // "#112255"
+    //    tinycolor.mostReadable(tinycolor.mostReadable("#123", ["#124", "#125"],{includeFallbackColors:true}).toHexString();  // "#ffffff"
+    //    tinycolor.mostReadable("#a8015a", ["#faf3f3"],{includeFallbackColors:true,level:"AAA",size:"large"}).toHexString(); // "#faf3f3"
+    //    tinycolor.mostReadable("#a8015a", ["#faf3f3"],{includeFallbackColors:true,level:"AAA",size:"small"}).toHexString(); // "#ffffff"
+    tinycolor.mostReadable = function (baseColor, colorList, args) {
+      var bestColor = null;
+      var bestScore = 0;
+      var readability;
+      var includeFallbackColors, level, size;
+      args = args || {};
+      includeFallbackColors = args.includeFallbackColors;
+      level = args.level;
+      size = args.size;
+      for (var i = 0; i < colorList.length; i++) {
+        readability = tinycolor.readability(baseColor, colorList[i]);
+        if (readability > bestScore) {
+          bestScore = readability;
+          bestColor = tinycolor(colorList[i]);
+        }
+      }
+      if (tinycolor.isReadable(baseColor, bestColor, {
+        level: level,
+        size: size
+      }) || !includeFallbackColors) {
+        return bestColor;
+      } else {
+        args.includeFallbackColors = false;
+        return tinycolor.mostReadable(baseColor, ["#fff", "#000"], args);
+      }
+    };
+
+    // Big List of Colors
+    // ------------------
+    // <https://www.w3.org/TR/css-color-4/#named-colors>
+    var names = tinycolor.names = {
+      aliceblue: "f0f8ff",
+      antiquewhite: "faebd7",
+      aqua: "0ff",
+      aquamarine: "7fffd4",
+      azure: "f0ffff",
+      beige: "f5f5dc",
+      bisque: "ffe4c4",
+      black: "000",
+      blanchedalmond: "ffebcd",
+      blue: "00f",
+      blueviolet: "8a2be2",
+      brown: "a52a2a",
+      burlywood: "deb887",
+      burntsienna: "ea7e5d",
+      cadetblue: "5f9ea0",
+      chartreuse: "7fff00",
+      chocolate: "d2691e",
+      coral: "ff7f50",
+      cornflowerblue: "6495ed",
+      cornsilk: "fff8dc",
+      crimson: "dc143c",
+      cyan: "0ff",
+      darkblue: "00008b",
+      darkcyan: "008b8b",
+      darkgoldenrod: "b8860b",
+      darkgray: "a9a9a9",
+      darkgreen: "006400",
+      darkgrey: "a9a9a9",
+      darkkhaki: "bdb76b",
+      darkmagenta: "8b008b",
+      darkolivegreen: "556b2f",
+      darkorange: "ff8c00",
+      darkorchid: "9932cc",
+      darkred: "8b0000",
+      darksalmon: "e9967a",
+      darkseagreen: "8fbc8f",
+      darkslateblue: "483d8b",
+      darkslategray: "2f4f4f",
+      darkslategrey: "2f4f4f",
+      darkturquoise: "00ced1",
+      darkviolet: "9400d3",
+      deeppink: "ff1493",
+      deepskyblue: "00bfff",
+      dimgray: "696969",
+      dimgrey: "696969",
+      dodgerblue: "1e90ff",
+      firebrick: "b22222",
+      floralwhite: "fffaf0",
+      forestgreen: "228b22",
+      fuchsia: "f0f",
+      gainsboro: "dcdcdc",
+      ghostwhite: "f8f8ff",
+      gold: "ffd700",
+      goldenrod: "daa520",
+      gray: "808080",
+      green: "008000",
+      greenyellow: "adff2f",
+      grey: "808080",
+      honeydew: "f0fff0",
+      hotpink: "ff69b4",
+      indianred: "cd5c5c",
+      indigo: "4b0082",
+      ivory: "fffff0",
+      khaki: "f0e68c",
+      lavender: "e6e6fa",
+      lavenderblush: "fff0f5",
+      lawngreen: "7cfc00",
+      lemonchiffon: "fffacd",
+      lightblue: "add8e6",
+      lightcoral: "f08080",
+      lightcyan: "e0ffff",
+      lightgoldenrodyellow: "fafad2",
+      lightgray: "d3d3d3",
+      lightgreen: "90ee90",
+      lightgrey: "d3d3d3",
+      lightpink: "ffb6c1",
+      lightsalmon: "ffa07a",
+      lightseagreen: "20b2aa",
+      lightskyblue: "87cefa",
+      lightslategray: "789",
+      lightslategrey: "789",
+      lightsteelblue: "b0c4de",
+      lightyellow: "ffffe0",
+      lime: "0f0",
+      limegreen: "32cd32",
+      linen: "faf0e6",
+      magenta: "f0f",
+      maroon: "800000",
+      mediumaquamarine: "66cdaa",
+      mediumblue: "0000cd",
+      mediumorchid: "ba55d3",
+      mediumpurple: "9370db",
+      mediumseagreen: "3cb371",
+      mediumslateblue: "7b68ee",
+      mediumspringgreen: "00fa9a",
+      mediumturquoise: "48d1cc",
+      mediumvioletred: "c71585",
+      midnightblue: "191970",
+      mintcream: "f5fffa",
+      mistyrose: "ffe4e1",
+      moccasin: "ffe4b5",
+      navajowhite: "ffdead",
+      navy: "000080",
+      oldlace: "fdf5e6",
+      olive: "808000",
+      olivedrab: "6b8e23",
+      orange: "ffa500",
+      orangered: "ff4500",
+      orchid: "da70d6",
+      palegoldenrod: "eee8aa",
+      palegreen: "98fb98",
+      paleturquoise: "afeeee",
+      palevioletred: "db7093",
+      papayawhip: "ffefd5",
+      peachpuff: "ffdab9",
+      peru: "cd853f",
+      pink: "ffc0cb",
+      plum: "dda0dd",
+      powderblue: "b0e0e6",
+      purple: "800080",
+      rebeccapurple: "663399",
+      red: "f00",
+      rosybrown: "bc8f8f",
+      royalblue: "4169e1",
+      saddlebrown: "8b4513",
+      salmon: "fa8072",
+      sandybrown: "f4a460",
+      seagreen: "2e8b57",
+      seashell: "fff5ee",
+      sienna: "a0522d",
+      silver: "c0c0c0",
+      skyblue: "87ceeb",
+      slateblue: "6a5acd",
+      slategray: "708090",
+      slategrey: "708090",
+      snow: "fffafa",
+      springgreen: "00ff7f",
+      steelblue: "4682b4",
+      tan: "d2b48c",
+      teal: "008080",
+      thistle: "d8bfd8",
+      tomato: "ff6347",
+      turquoise: "40e0d0",
+      violet: "ee82ee",
+      wheat: "f5deb3",
+      white: "fff",
+      whitesmoke: "f5f5f5",
+      yellow: "ff0",
+      yellowgreen: "9acd32"
+    };
+
+    // Make it easy to access colors via `hexNames[hex]`
+    var hexNames = tinycolor.hexNames = flip(names);
+
+    // Utilities
+    // ---------
+
+    // `{ 'name1': 'val1' }` becomes `{ 'val1': 'name1' }`
+    function flip(o) {
+      var flipped = {};
+      for (var i in o) {
+        if (o.hasOwnProperty(i)) {
+          flipped[o[i]] = i;
+        }
+      }
+      return flipped;
+    }
+
+    // Return a valid alpha value [0,1] with all invalid values being set to 1
+    function boundAlpha(a) {
+      a = parseFloat(a);
+      if (isNaN(a) || a < 0 || a > 1) {
+        a = 1;
+      }
+      return a;
+    }
+
+    // Take input from [0, n] and return it as [0, 1]
+    function bound01(n, max) {
+      if (isOnePointZero(n)) n = "100%";
+      var processPercent = isPercentage(n);
+      n = Math.min(max, Math.max(0, parseFloat(n)));
+
+      // Automatically convert percentage into number
+      if (processPercent) {
+        n = parseInt(n * max, 10) / 100;
+      }
+
+      // Handle floating point rounding errors
+      if (Math.abs(n - max) < 0.000001) {
+        return 1;
+      }
+
+      // Convert into [0, 1] range if it isn't already
+      return n % max / parseFloat(max);
+    }
+
+    // Force a number between 0 and 1
+    function clamp01(val) {
+      return Math.min(1, Math.max(0, val));
+    }
+
+    // Parse a base-16 hex value into a base-10 integer
+    function parseIntFromHex(val) {
+      return parseInt(val, 16);
+    }
+
+    // Need to handle 1.0 as 100%, since once it is a number, there is no difference between it and 1
+    // <http://stackoverflow.com/questions/7422072/javascript-how-to-detect-number-as-a-decimal-including-1-0>
+    function isOnePointZero(n) {
+      return typeof n == "string" && n.indexOf(".") != -1 && parseFloat(n) === 1;
+    }
+
+    // Check to see if string passed in is a percentage
+    function isPercentage(n) {
+      return typeof n === "string" && n.indexOf("%") != -1;
+    }
+
+    // Force a hex value to have 2 characters
+    function pad2(c) {
+      return c.length == 1 ? "0" + c : "" + c;
+    }
+
+    // Replace a decimal with it's percentage value
+    function convertToPercentage(n) {
+      if (n <= 1) {
+        n = n * 100 + "%";
+      }
+      return n;
+    }
+
+    // Converts a decimal to a hex value
+    function convertDecimalToHex(d) {
+      return Math.round(parseFloat(d) * 255).toString(16);
+    }
+    // Converts a hex value to a decimal
+    function convertHexToDecimal(h) {
+      return parseIntFromHex(h) / 255;
+    }
+    var matchers = function () {
+      // <http://www.w3.org/TR/css3-values/#integers>
+      var CSS_INTEGER = "[-\\+]?\\d+%?";
+
+      // <http://www.w3.org/TR/css3-values/#number-value>
+      var CSS_NUMBER = "[-\\+]?\\d*\\.\\d+%?";
+
+      // Allow positive/negative integer/number.  Don't capture the either/or, just the entire outcome.
+      var CSS_UNIT = "(?:" + CSS_NUMBER + ")|(?:" + CSS_INTEGER + ")";
+
+      // Actual matching.
+      // Parentheses and commas are optional, but not required.
+      // Whitespace can take the place of commas or opening paren
+      var PERMISSIVE_MATCH3 = "[\\s|\\(]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")\\s*\\)?";
+      var PERMISSIVE_MATCH4 = "[\\s|\\(]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")\\s*\\)?";
+      return {
+        CSS_UNIT: new RegExp(CSS_UNIT),
+        rgb: new RegExp("rgb" + PERMISSIVE_MATCH3),
+        rgba: new RegExp("rgba" + PERMISSIVE_MATCH4),
+        hsl: new RegExp("hsl" + PERMISSIVE_MATCH3),
+        hsla: new RegExp("hsla" + PERMISSIVE_MATCH4),
+        hsv: new RegExp("hsv" + PERMISSIVE_MATCH3),
+        hsva: new RegExp("hsva" + PERMISSIVE_MATCH4),
+        hex3: /^#?([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
+        hex6: /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+        hex4: /^#?([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
+        hex8: /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
+      };
+    }();
+
+    // `isValidCSSUnit`
+    // Take in a single string / number and check to see if it looks like a CSS unit
+    // (see `matchers` above for definition).
+    function isValidCSSUnit(color) {
+      return !!matchers.CSS_UNIT.exec(color);
+    }
+
+    // `stringInputToObject`
+    // Permissive string parsing.  Take in a number of formats, and output an object
+    // based on detected format.  Returns `{ r, g, b }` or `{ h, s, l }` or `{ h, s, v}`
+    function stringInputToObject(color) {
+      color = color.replace(trimLeft, "").replace(trimRight, "").toLowerCase();
+      var named = false;
+      if (names[color]) {
+        color = names[color];
+        named = true;
+      } else if (color == "transparent") {
+        return {
+          r: 0,
+          g: 0,
+          b: 0,
+          a: 0,
+          format: "name"
+        };
+      }
+
+      // Try to match string input using regular expressions.
+      // Keep most of the number bounding out of this function - don't worry about [0,1] or [0,100] or [0,360]
+      // Just return an object and let the conversion functions handle that.
+      // This way the result will be the same whether the tinycolor is initialized with string or object.
+      var match;
+      if (match = matchers.rgb.exec(color)) {
+        return {
+          r: match[1],
+          g: match[2],
+          b: match[3]
+        };
+      }
+      if (match = matchers.rgba.exec(color)) {
+        return {
+          r: match[1],
+          g: match[2],
+          b: match[3],
+          a: match[4]
+        };
+      }
+      if (match = matchers.hsl.exec(color)) {
+        return {
+          h: match[1],
+          s: match[2],
+          l: match[3]
+        };
+      }
+      if (match = matchers.hsla.exec(color)) {
+        return {
+          h: match[1],
+          s: match[2],
+          l: match[3],
+          a: match[4]
+        };
+      }
+      if (match = matchers.hsv.exec(color)) {
+        return {
+          h: match[1],
+          s: match[2],
+          v: match[3]
+        };
+      }
+      if (match = matchers.hsva.exec(color)) {
+        return {
+          h: match[1],
+          s: match[2],
+          v: match[3],
+          a: match[4]
+        };
+      }
+      if (match = matchers.hex8.exec(color)) {
+        return {
+          r: parseIntFromHex(match[1]),
+          g: parseIntFromHex(match[2]),
+          b: parseIntFromHex(match[3]),
+          a: convertHexToDecimal(match[4]),
+          format: named ? "name" : "hex8"
+        };
+      }
+      if (match = matchers.hex6.exec(color)) {
+        return {
+          r: parseIntFromHex(match[1]),
+          g: parseIntFromHex(match[2]),
+          b: parseIntFromHex(match[3]),
+          format: named ? "name" : "hex"
+        };
+      }
+      if (match = matchers.hex4.exec(color)) {
+        return {
+          r: parseIntFromHex(match[1] + "" + match[1]),
+          g: parseIntFromHex(match[2] + "" + match[2]),
+          b: parseIntFromHex(match[3] + "" + match[3]),
+          a: convertHexToDecimal(match[4] + "" + match[4]),
+          format: named ? "name" : "hex8"
+        };
+      }
+      if (match = matchers.hex3.exec(color)) {
+        return {
+          r: parseIntFromHex(match[1] + "" + match[1]),
+          g: parseIntFromHex(match[2] + "" + match[2]),
+          b: parseIntFromHex(match[3] + "" + match[3]),
+          format: named ? "name" : "hex"
+        };
+      }
+      return false;
+    }
+    function validateWCAG2Parms(parms) {
+      // return valid WCAG2 parms for isReadable.
+      // If input parms are invalid, return {"level":"AA", "size":"small"}
+      var level, size;
+      parms = parms || {
+        level: "AA",
+        size: "small"
+      };
+      level = (parms.level || "AA").toUpperCase();
+      size = (parms.size || "small").toLowerCase();
+      if (level !== "AA" && level !== "AAA") {
+        level = "AA";
+      }
+      if (size !== "small" && size !== "large") {
+        size = "small";
+      }
+      return {
+        level: level,
+        size: size
+      };
+    }
+
+    // index.ts
+    function feature(geom, properties, options = {}) {
+      const feat = { type: "Feature" };
+      if (options.id === 0 || options.id) {
+        feat.id = options.id;
+      }
+      if (options.bbox) {
+        feat.bbox = options.bbox;
+      }
+      feat.properties = properties || {};
+      feat.geometry = geom;
+      return feat;
+    }
+    function point(coordinates, properties, options = {}) {
+      if (!coordinates) {
+        throw new Error("coordinates is required");
+      }
+      if (!Array.isArray(coordinates)) {
+        throw new Error("coordinates must be an Array");
+      }
+      if (coordinates.length < 2) {
+        throw new Error("coordinates must be at least 2 numbers long");
+      }
+      if (!isNumber(coordinates[0]) || !isNumber(coordinates[1])) {
+        throw new Error("coordinates must contain numbers");
+      }
+      const geom = {
+        type: "Point",
+        coordinates
+      };
+      return feature(geom, properties, options);
+    }
+    function isNumber(num) {
+      return !isNaN(num) && num !== null && !Array.isArray(num);
+    }
+
+    // index.ts
+    function coordEach(geojson, callback, excludeWrapCoord) {
+      if (geojson === null) return;
+      var j, k, l, geometry, stopG, coords, geometryMaybeCollection, wrapShrink = 0, coordIndex = 0, isGeometryCollection, type = geojson.type, isFeatureCollection = type === "FeatureCollection", isFeature = type === "Feature", stop = isFeatureCollection ? geojson.features.length : 1;
+      for (var featureIndex = 0; featureIndex < stop; featureIndex++) {
+        geometryMaybeCollection = isFeatureCollection ? (
+          // @ts-expect-error: Known type conflict
+          geojson.features[featureIndex].geometry
+        ) : isFeature ? (
+          // @ts-expect-error: Known type conflict
+          geojson.geometry
+        ) : geojson;
+        isGeometryCollection = geometryMaybeCollection ? geometryMaybeCollection.type === "GeometryCollection" : false;
+        stopG = isGeometryCollection ? geometryMaybeCollection.geometries.length : 1;
+        for (var geomIndex = 0; geomIndex < stopG; geomIndex++) {
+          var multiFeatureIndex = 0;
+          var geometryIndex = 0;
+          geometry = isGeometryCollection ? geometryMaybeCollection.geometries[geomIndex] : geometryMaybeCollection;
+          if (geometry === null) continue;
+          coords = geometry.coordinates;
+          var geomType = geometry.type;
+          wrapShrink = excludeWrapCoord && (geomType === "Polygon" || geomType === "MultiPolygon") ? 1 : 0;
+          switch (geomType) {
+            case null:
+              break;
+            case "Point":
+              if (
+                // @ts-expect-error: Known type conflict
+                callback(
+                  coords,
+                  coordIndex,
+                  featureIndex,
+                  multiFeatureIndex,
+                  geometryIndex
+                ) === false
+              )
+                return false;
+              coordIndex++;
+              multiFeatureIndex++;
+              break;
+            case "LineString":
+            case "MultiPoint":
+              for (j = 0; j < coords.length; j++) {
+                if (
+                  // @ts-expect-error: Known type conflict
+                  callback(
+                    coords[j],
+                    coordIndex,
+                    featureIndex,
+                    multiFeatureIndex,
+                    geometryIndex
+                  ) === false
+                )
+                  return false;
+                coordIndex++;
+                if (geomType === "MultiPoint") multiFeatureIndex++;
+              }
+              if (geomType === "LineString") multiFeatureIndex++;
+              break;
+            case "Polygon":
+            case "MultiLineString":
+              for (j = 0; j < coords.length; j++) {
+                for (k = 0; k < coords[j].length - wrapShrink; k++) {
+                  if (
+                    // @ts-expect-error: Known type conflict
+                    callback(
+                      coords[j][k],
+                      coordIndex,
+                      featureIndex,
+                      multiFeatureIndex,
+                      geometryIndex
+                    ) === false
+                  )
+                    return false;
+                  coordIndex++;
+                }
+                if (geomType === "MultiLineString") multiFeatureIndex++;
+                if (geomType === "Polygon") geometryIndex++;
+              }
+              if (geomType === "Polygon") multiFeatureIndex++;
+              break;
+            case "MultiPolygon":
+              for (j = 0; j < coords.length; j++) {
+                geometryIndex = 0;
+                for (k = 0; k < coords[j].length; k++) {
+                  for (l = 0; l < coords[j][k].length - wrapShrink; l++) {
+                    if (
+                      // @ts-expect-error: Known type conflict
+                      callback(
+                        coords[j][k][l],
+                        coordIndex,
+                        featureIndex,
+                        multiFeatureIndex,
+                        geometryIndex
+                      ) === false
+                    )
+                      return false;
+                    coordIndex++;
+                  }
+                  geometryIndex++;
+                }
+                multiFeatureIndex++;
+              }
+              break;
+            case "GeometryCollection":
+              for (j = 0; j < geometry.geometries.length; j++)
+                if (
+                  // @ts-expect-error: Known type conflict
+                  coordEach(geometry.geometries[j], callback, excludeWrapCoord) === false
+                )
+                  return false;
+              break;
+            default:
+              throw new Error("Unknown Geometry Type");
+          }
+        }
+      }
+    }
+
+    // index.ts
+    function bbox(geojson, options = {}) {
+      if (geojson.bbox != null && true !== options.recompute) {
+        return geojson.bbox;
+      }
+      const result = [Infinity, Infinity, -Infinity, -Infinity];
+      coordEach(geojson, (coord) => {
+        if (result[0] > coord[0]) {
+          result[0] = coord[0];
+        }
+        if (result[1] > coord[1]) {
+          result[1] = coord[1];
+        }
+        if (result[2] < coord[0]) {
+          result[2] = coord[0];
+        }
+        if (result[3] < coord[1]) {
+          result[3] = coord[1];
+        }
+      });
+      return result;
+    }
+    var index_default$1 = bbox;
+
+    // index.ts
+    function center(geojson, options = {}) {
+      const ext = bbox(geojson);
+      const x = (ext[0] + ext[2]) / 2;
+      const y = (ext[1] + ext[3]) / 2;
+      return point([x, y], options.properties, options);
+    }
+    var index_default = center;
+
+    var __typeError = (msg) => {
+      throw TypeError(msg);
+    };
+    var __accessCheck = (obj, member, msg) => member.has(obj) || __typeError("Cannot " + msg);
+    var __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), getter ? getter.call(obj) : member.get(obj));
+    var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
+    var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
+    var _docStyle, _userSelect, _selectProp, _transformProp;
+    var _DOM = class _DOM {
+      static testProp(props) {
+        if (!__privateGet(_DOM, _docStyle)) return props[0];
+        for (let i = 0; i < props.length; i++) {
+          if (props[i] in __privateGet(_DOM, _docStyle)) {
+            return props[i];
+          }
+        }
+        return props[0];
+      }
+      static create(tagName, className, container) {
+        const el = window.document.createElement(tagName);
+        if (className !== void 0) el.className = className;
+        if (container) container.appendChild(el);
+        return el;
+      }
+      static createNS(namespaceURI, tagName) {
+        return window.document.createElementNS(namespaceURI, tagName);
+      }
+      static disableDrag() {
+        if (__privateGet(_DOM, _docStyle) && __privateGet(_DOM, _selectProp)) {
+          __privateSet(_DOM, _userSelect, __privateGet(_DOM, _docStyle)[__privateGet(_DOM, _selectProp)]);
+          __privateGet(_DOM, _docStyle)[__privateGet(_DOM, _selectProp)] = "none";
+        }
+      }
+      static enableDrag() {
+        if (__privateGet(_DOM, _docStyle) && __privateGet(_DOM, _selectProp)) {
+          __privateGet(_DOM, _docStyle)[__privateGet(_DOM, _selectProp)] = __privateGet(_DOM, _userSelect) ?? "";
+        }
+      }
+      static setTransform(el, value) {
+        el.style[__privateGet(_DOM, _transformProp)] = value;
+      }
+      static addEventListener(target, type, callback, options) {
+        if ("passive" in options) {
+          target.addEventListener(type, callback, options);
+        } else {
+          target.addEventListener(type, callback, options.capture);
+        }
+      }
+      static removeEventListener(target, type, callback, options) {
+        if ("passive" in options) {
+          target.removeEventListener(type, callback, options);
+        } else {
+          target.removeEventListener(type, callback, options.capture);
+        }
+      }
+      static mousePos(el, e) {
+        const rect = el.getBoundingClientRect();
+        return new maplibreGlExports.Point(
+          e.clientX - rect.left - el.clientLeft,
+          e.clientY - rect.top - el.clientTop
+        );
+      }
+      static touchPos(el, touches) {
+        const rect = el.getBoundingClientRect();
+        const points = [];
+        for (let i = 0; i < touches.length; i++) {
+          points.push(
+            new maplibreGlExports.Point(
+              touches[i].clientX - rect.left - el.clientLeft,
+              touches[i].clientY - rect.top - el.clientTop
+            )
+          );
+        }
+        return points;
+      }
+      static mouseButton(e) {
+        return e.button;
+      }
+      static remove(node) {
+        if (node.parentNode) {
+          node.parentNode.removeChild(node);
+        }
+      }
+    };
+    _docStyle = new WeakMap();
+    _userSelect = new WeakMap();
+    _selectProp = new WeakMap();
+    _transformProp = new WeakMap();
+    __privateAdd(_DOM, _docStyle, typeof window !== "undefined" && window.document && window.document.documentElement.style);
+    __privateAdd(_DOM, _userSelect);
+    __privateAdd(_DOM, _selectProp, _DOM.testProp([
+      "userSelect",
+      "MozUserSelect",
+      "WebkitUserSelect",
+      "msUserSelect"
+    ]));
+    __privateAdd(_DOM, _transformProp, _DOM.testProp([
+      "transform",
+      "WebkitTransform"
+    ]));
+    var DOM = _DOM;
+    function bindAll(fns, context) {
+      for (const fn of fns) {
+        if (typeof context[fn] === "function") {
+          context[fn] = context[fn].bind(
+            context
+          );
+        }
+      }
+    }
+
+    // src/lib/controls/attribution.ts
+    var ATTRIBUTION_CSS = `
+.maplibregl-ctrl {
+  font: 12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;
+  clear: both;
+  pointer-events: auto;
+  transform: translate(0);
+}
+.maplibregl-ctrl-attrib-button:focus,.maplibregl-ctrl-group button:focus {
+  box-shadow: 0 0 2px 2px #0096ff
+}
+.maplibregl-ctrl.maplibregl-ctrl-attrib {
+  background-color: hsla(0,0%,100%,.5);
+  margin: 0;
+  padding: 0 5px
+}
+@media screen {
+  .maplibregl-ctrl-attrib.maplibregl-compact {
+    background-color: #fff;
+    border-radius: 12px;
+    box-sizing: content-box;
+    min-height: 20px;
+    padding: 2px 24px 2px 0;
+    position: relative;
+    margin: 10px 10px 10px auto;
+    width: 0;
+  }
+  .maplibregl-ctrl-attrib.maplibregl-compact-show {
+    padding: 2px 28px 2px 8px;
+    visibility: visible;
+    width: auto;
+  }
+  .maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact-show,
+  .maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact-show {
+    border-radius: 12px;
+    padding: 2px 8px 2px 28px
+  }
+  .maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-inner {
+    display: none
+  }
+  .maplibregl-ctrl-attrib-button {
+    background-color: hsla(0,0%,100%,.5);
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='24' height='24' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg' fill-rule='evenodd'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E");
+    border: 0;
+    border-radius: 12px;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: none;
+    height: 24px;
+    outline: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 24px
+  }
+  .maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button {
+    appearance: none;
+    list-style: none
+  }
+  .maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button::-webkit-details-marker {
+    display: none
+  }
+  .maplibregl-ctrl-bottom-left .maplibregl-ctrl-attrib-button,
+  .maplibregl-ctrl-top-left .maplibregl-ctrl-attrib-button {
+    left: 0
+  }
+  .maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button,
+  .maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner {
+    display: block
+  }
+  .maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-button {
+    background-color: rgb(0 0 0/5%)
+  }
+  .maplibregl-ctrl-bottom-right>.maplibregl-ctrl-attrib.maplibregl-compact:after {
+    bottom: 0; right: 0
+  }
+  .maplibregl-ctrl-top-right>.maplibregl-ctrl-attrib.maplibregl-compact:after {
+    right: 0; top: 0
+  }
+  .maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact:after {
+    left: 0; top: 0
+  }
+  .maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact:after {
+    bottom: 0; left: 0
+  }
+}
+@media screen and (-ms-high-contrast:active) {
+  .maplibregl-ctrl-attrib.maplibregl-compact:after {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='24' height='24' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg' fill-rule='evenodd' fill='%23fff'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E")
+  }
+}
+@media screen and (-ms-high-contrast:black-on-white) {
+  .maplibregl-ctrl-attrib.maplibregl-compact:after {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='24' height='24' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg' fill-rule='evenodd'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E")
+  }
+}
+@media print {
+  .maplibregl-ctrl-attrib-button {
+    display: none !important;
+  }
+}
+.maplibregl-ctrl-attrib a {
+  color: rgba(0,0,0,.75);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.maplibregl-ctrl-attrib a:hover {
+  color: inherit;
+  text-decoration: underline
+}
+.maplibregl-attrib-empty {
+  display: none
+}
+`;
+    var CustomAttributionControl = class {
+      constructor(options = {}) {
+        this.options = options;
+        bindAll(
+          [
+            "_toggleAttribution",
+            "_updateData",
+            "_updateCompact",
+            "_updateCompactMinimize"
+          ],
+          this
+        );
+      }
+      getDefaultPosition() {
+        return "bottom-right";
+      }
+      onAdd(map) {
+        this._map = map;
+        this._compact = this.options.compact;
+        this._container = DOM.create("div");
+        const shadow = this._container.attachShadow({ mode: "open" });
+        this._shadowContainer = DOM.create(
+          "details",
+          "maplibregl-ctrl maplibregl-ctrl-attrib"
+        );
+        this._compactButton = DOM.create(
+          "summary",
+          "maplibregl-ctrl-attrib-button",
+          this._shadowContainer
+        );
+        this._compactButton.addEventListener("click", this._toggleAttribution);
+        this._setElementTitle(this._compactButton, "ToggleAttribution");
+        this._innerContainer = DOM.create(
+          "div",
+          "maplibregl-ctrl-attrib-inner",
+          this._shadowContainer
+        );
+        const style = document.createElement("style");
+        style.textContent = ATTRIBUTION_CSS;
+        this._updateAttributions();
+        this._updateCompact();
+        this._map.on("styledata", this._updateData);
+        this._map.on("sourcedata", this._updateData);
+        this._map.on("terrain", this._updateData);
+        this._map.on("resize", this._updateCompact);
+        this._map.on("drag", this._updateCompactMinimize);
+        shadow.appendChild(style);
+        shadow.appendChild(this._shadowContainer);
+        this.printQuery = window.matchMedia("print");
+        this.onMediaPrintChange = (e) => {
+          if (e.matches) {
+            this._shadowContainer?.setAttribute("open", "");
+            this._shadowContainer?.classList.remove("maplibregl-compact-show");
+          }
+        };
+        this.printQuery.addEventListener("change", this.onMediaPrintChange);
+        return this._container;
+      }
+      onRemove() {
+        if (this._container) {
+          DOM.remove(this._container);
+        }
+        if (this._map) {
+          this._map.off("styledata", this._updateData);
+          this._map.off("sourcedata", this._updateData);
+          this._map.off("terrain", this._updateData);
+          this._map.off("resize", this._updateCompact);
+          this._map.off("drag", this._updateCompactMinimize);
+        }
+        if (this.printQuery && this.onMediaPrintChange) {
+          this.printQuery.removeEventListener("change", this.onMediaPrintChange);
+        }
+        this._map = void 0;
+        this._compact = void 0;
+        this._attribHTML = void 0;
+      }
+      _setElementTitle(element, title) {
+        if (!this._map) return;
+        const str = this._map._getUIString(`AttributionControl.${title}`);
+        element.title = str;
+        element.setAttribute("aria-label", str);
+      }
+      _toggleAttribution() {
+        if (!this._shadowContainer) return;
+        if (this._shadowContainer.classList.contains("maplibregl-compact")) {
+          if (this._shadowContainer.classList.contains("maplibregl-compact-show")) {
+            this._shadowContainer.setAttribute("open", "");
+            this._shadowContainer.classList.remove("maplibregl-compact-show");
+          } else {
+            this._shadowContainer.classList.add("maplibregl-compact-show");
+            this._shadowContainer.removeAttribute("open");
+          }
+        }
+      }
+      _updateData(e) {
+        if (e && (e.sourceDataType === "metadata" || e.sourceDataType === "visibility" || e.dataType === "style" || e.type === "terrain")) {
+          this._updateAttributions();
+        }
+      }
+      _updateAttributions() {
+        if (!this._map?.style) return;
+        let attributions = [];
+        if (this.options.customAttribution) {
+          if (Array.isArray(this.options.customAttribution)) {
+            attributions = attributions.concat(
+              this.options.customAttribution.filter(
+                (attr) => typeof attr === "string"
+              )
+            );
+          } else if (typeof this.options.customAttribution === "string") {
+            attributions.push(this.options.customAttribution);
+          }
+        }
+        const sourceCaches = this._map.style.sourceCaches;
+        for (const id in sourceCaches) {
+          const sourceCache = sourceCaches[id];
+          if (sourceCache.used || sourceCache.usedForTerrain) {
+            const source = sourceCache.getSource();
+            if (source.attribution && attributions.indexOf(source.attribution) < 0) {
+              attributions.push(source.attribution);
+            }
+          }
+        }
+        attributions = attributions.filter((e) => String(e).trim());
+        attributions.sort((a, b) => a.length - b.length);
+        attributions = attributions.filter((attrib, i) => {
+          for (let j = i + 1; j < attributions.length; j++) {
+            if (attributions[j].indexOf(attrib) >= 0) {
+              return false;
+            }
+          }
+          return true;
+        });
+        const attribHTML = attributions.join(" | ");
+        if (attribHTML === this._attribHTML) return;
+        this._attribHTML = attribHTML;
+        if (attributions.length) {
+          if (this._innerContainer) this._innerContainer.innerHTML = attribHTML;
+          this._shadowContainer?.classList.remove("maplibregl-attrib-empty");
+        } else {
+          this._shadowContainer?.classList.add("maplibregl-attrib-empty");
+        }
+        this._updateCompact();
+      }
+      _updateCompact() {
+        if (!this._map || !this._shadowContainer) return;
+        if (this._map.getCanvasContainer().offsetWidth <= 640 || this._compact) {
+          if (this._compact === false) {
+            this._shadowContainer.setAttribute("open", "");
+          } else if (!this._shadowContainer.classList.contains("maplibregl-compact") && !this._shadowContainer.classList.contains("maplibregl-attrib-empty")) {
+            this._shadowContainer.setAttribute("open", "");
+            this._shadowContainer.classList.add(
+              "maplibregl-compact",
+              "maplibregl-compact-show"
+            );
+          }
+        } else {
+          this._shadowContainer.setAttribute("open", "");
+          if (this._shadowContainer.classList.contains("maplibregl-compact")) {
+            this._shadowContainer.classList.remove(
+              "maplibregl-compact",
+              "maplibregl-compact-show"
+            );
+          }
+        }
+      }
+      _updateCompactMinimize() {
+        if (!this._shadowContainer) return;
+        if (this._shadowContainer.classList.contains("maplibregl-compact")) {
+          if (this._shadowContainer.classList.contains("maplibregl-compact-show")) {
+            this._shadowContainer.classList.remove("maplibregl-compact-show");
+          }
+        }
+      }
+    };
+    var attribution_default = CustomAttributionControl;
+
+    // src/lib/controls/geolonia-logo.ts
+    var GeoloniaControl = class {
+      onAdd() {
+        this.container = document.createElement("div");
+        this.container.className = "maplibregl-ctrl";
+        const img = document.createElement("img");
+        img.src = "https://cdn.geolonia.com/logo/geolonia-symbol_1.png";
+        img.style.width = "16px";
+        img.style.height = "16px";
+        img.style.display = "block";
+        img.style.cursor = "pointer";
+        img.style.padding = "0";
+        img.style.margin = "0";
+        img.style.border = "none";
+        img.alt = "Geolonia";
+        const link = document.createElement("a");
+        link.href = "https://geolonia.com/";
+        link.appendChild(img);
+        link.title = "Powered by Geolonia";
+        this.container.appendChild(link);
+        return this.container;
+      }
+      onRemove() {
+        this.container.parentNode?.removeChild(this.container);
+      }
+      getDefaultPosition() {
+        return "bottom-left";
+      }
+    };
+    var MARKER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 67">
+  <path class="left" d="M26 0C11.664 0 0 11.663 0 26c0 22.14 26 41 26 41V26h0C26 11.663 26 0 26 0z" fill="#E4402F"/>
+  <path class="right" d="M26 0c14.336 0 26 11.663 26 26 0 22.14-26 41-26 41V26h0C26 11.663 26 0 26 0z" fill="#C1272D"/>
+  <circle cx="26" cy="26" r="9" fill="#FFF"/>
+</svg>`;
+    var DEFAULT_COLOR = "#E4402F";
+    var GeoloniaMarker = class extends maplibregl.Marker {
+      constructor(options = {}) {
+        if (!options.element) {
+          const markerElement = document.createElement("div");
+          markerElement.className = "geolonia-default-marker";
+          markerElement.innerHTML = MARKER_SVG;
+          markerElement.style.margin = "0";
+          markerElement.style.padding = "0";
+          markerElement.style.width = "26px";
+          markerElement.style.height = "34px";
+          const svg = markerElement.querySelector("svg");
+          if (svg) {
+            svg.style.width = "100%";
+            svg.style.height = "100%";
+          }
+          options.element = markerElement;
+          const color = options.color || DEFAULT_COLOR;
+          const left = markerElement.querySelector(".left");
+          const right = markerElement.querySelector(".right");
+          if (left) left.style.fill = color;
+          if (right) right.style.fill = tinycolor(color).darken().toString();
+          options.offset = [0, -15];
+        }
+        super(options);
+      }
+    };
+
+    // src/lib/keyring.ts
+    var _apiKey, _stage, _isGeoloniaStyle;
+    var Keyring = class {
+      constructor() {
+        __privateAdd(this, _apiKey, "");
+        __privateAdd(this, _stage, "dev");
+        __privateAdd(this, _isGeoloniaStyle, true);
+      }
+      get apiKey() {
+        return __privateGet(this, _apiKey);
+      }
+      get stage() {
+        return __privateGet(this, _stage);
+      }
+      get isGeoloniaStyle() {
+        return __privateGet(this, _isGeoloniaStyle);
+      }
+      set isGeoloniaStyle(value) {
+        __privateSet(this, _isGeoloniaStyle, value);
+      }
+      setApiKey(key) {
+        __privateSet(this, _apiKey, key);
+      }
+      setStage(stage) {
+        __privateSet(this, _stage, stage);
+      }
+      reset() {
+        __privateSet(this, _apiKey, "");
+        __privateSet(this, _stage, "dev");
+        __privateSet(this, _isGeoloniaStyle, true);
+      }
+      /**
+       * Check if the given style is a Geolonia style (requires API key)
+       */
+      isGeoloniaStyleCheck(style) {
+        if (!style || style === "") {
+          return true;
+        }
+        if (style.startsWith("https://cdn.geolonia.com/style/") || style.startsWith("https://api.geolonia.com/")) {
+          return true;
+        }
+        if (style.match(/^https?:\/\//)) {
+          return false;
+        }
+        if (style.startsWith("geolonia://")) {
+          return true;
+        }
+        if (style.match(/^[a-z][a-z0-9+.-]*:\/\//i)) {
+          return false;
+        }
+        if (style.endsWith(".json")) {
+          return false;
+        }
+        return true;
+      }
+    };
+    _apiKey = new WeakMap();
+    _stage = new WeakMap();
+    _isGeoloniaStyle = new WeakMap();
+    var keyring = new Keyring();
+
+    // src/lib/util.ts
+    function isURL(str) {
+      if (str.match(/^https?:\/\//)) {
+        return str;
+      }
+      if (str.match(/^\//) || str.match(/^\.\.?/)) {
+        try {
+          return new URL(str, globalThis.location?.href).href;
+        } catch {
+          return false;
+        }
+      }
+      return false;
+    }
+    function isGeoloniaTilesHost(url) {
+      try {
+        const urlObj = typeof url === "string" ? new URL(url) : url;
+        return urlObj.hostname === "tileserver.geolonia.com" || urlObj.hostname.endsWith(".tiles.geolonia.com");
+      } catch {
+        return false;
+      }
+    }
+    function getStyle(style, options) {
+      const lang = options.lang || "en";
+      const apiKey = options.apiKey || keyring.apiKey;
+      if (keyring.isGeoloniaStyleCheck(style) && !apiKey) {
+        throw new Error("[Geolonia] API key is required to use Geolonia styles.");
+      }
+      if (!style || style === "") {
+        return `https://cdn.geolonia.com/style/geolonia/basic-v2/${lang === "ja" || lang === "ja-jp" ? "ja" : "en"}.json`;
+      }
+      const styleUrl = isURL(style);
+      if (styleUrl) {
+        return styleUrl;
+      }
+      if (style.endsWith(".json")) {
+        try {
+          return new URL(style, globalThis.location?.href).href;
+        } catch {
+          return style;
+        }
+      }
+      return `https://cdn.geolonia.com/style/${style}/${lang === "ja" || lang === "ja-jp" ? "ja" : "en"}.json`;
+    }
+    function getLang() {
+      if (typeof globalThis.navigator === "undefined") {
+        return "en";
+      }
+      const lang = globalThis.navigator.languages?.[0]?.toLowerCase() || globalThis.navigator.language?.toLowerCase();
+      return lang === "ja" || lang === "ja-jp" ? "ja" : "en";
+    }
+    var sessionId = "";
+    function getSessionId(digit) {
+      if (sessionId) {
+        return sessionId;
+      }
+      const array = new Uint8Array(digit / 2);
+      crypto.getRandomValues(array);
+      sessionId = Array.from(
+        array,
+        (dec) => dec.toString(16).padStart(2, "0")
+      ).join("");
+      return sessionId;
+    }
+    function parseControlOption(value) {
+      if (typeof value === "boolean") {
+        return { enabled: value, position: void 0 };
+      }
+      if (typeof value === "string") {
+        const positions = ["top-right", "bottom-right", "bottom-left", "top-left"];
+        if (positions.includes(value.toLowerCase())) {
+          return { enabled: true, position: value.toLowerCase() };
+        }
+      }
+      return { enabled: false, position: void 0 };
+    }
+    function parseSimpleVector(attributeValue) {
+      if (/^(https?|geolonia):\/\//.test(attributeValue)) {
+        return attributeValue;
+      }
+      return `geolonia://tiles/custom/${attributeValue}`;
+    }
+    function handleRestrictedMode(map) {
+      if (!map._geolonia_restricted_mode_handled) {
+        map._geolonia_restricted_mode_handled = true;
+        const container = map.getContainer();
+        map.remove();
+        container.innerHTML = "";
+        container.classList.add("geolonia__restricted-mode-image-container");
+      }
+    }
+    function handleErrorMode(container) {
+      const errorContainer = document.createElement("div");
+      errorContainer.classList.add("geolonia__error-container");
+      const div = document.createElement("div");
+      const h2 = document.createElement("h2");
+      h2.textContent = "Geolonia Maps";
+      div.appendChild(h2);
+      div.classList.add("geolonia__error-message");
+      div.innerHTML += '<div class="geolonia__error-message-description">\u5730\u56F3\u306E\u521D\u671F\u5316\u306B\u5931\u6557\u3057\u307E\u3057\u305F\u3002\u7BA1\u7406\u8005\u306B\u304A\u554F\u3044\u5408\u308F\u305B\u4E0B\u3055\u3044\u3002</div>';
+      errorContainer.appendChild(div);
+      container.appendChild(errorContainer);
+    }
+    async function sanitizeDescription(description) {
+      const { default: sanitizeHtml } = await Promise.resolve().then(function () { return index$2; });
+      return sanitizeHtml(description, {
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+        allowedAttributes: {
+          ...sanitizeHtml.defaults.allowedAttributes,
+          "*": ["class"]
+        }
+      });
+    }
+    function loadImageCompatibility(promise, callback) {
+      promise.then((response) => {
+        callback(null, response.data, {
+          cacheControl: response.cacheControl,
+          expires: response.expires
+        });
+      }).catch((error) => {
+        callback(error);
+      });
+    }
+
+    // src/lib/simplestyle.ts
+    var textColor = "#000000";
+    var textHaloColor = "#FFFFFF";
+    var backgroundColor = "rgba(255, 0, 0, 0.4)";
+    var strokeColor = "#FFFFFF";
+    var template = {
+      type: "FeatureCollection",
+      features: []
+    };
+    var SimpleStyle = class {
+      constructor(geojson, options) {
+        this.callFitBounds = false;
+        this._eventHandlers = [];
+        this.setGeoJSON(geojson);
+        this.options = {
+          id: "geolonia-simple-style",
+          cluster: true,
+          heatmap: false,
+          // TODO: It should support heatmap.
+          clusterColor: "#ff0000",
+          ...options
+        };
+      }
+      updateData(geojson) {
+        this.setGeoJSON(geojson);
+        const features = this.geojson.features;
+        const polygonAndLines = features.filter(
+          (feature) => feature.geometry.type.toLowerCase() !== "point"
+        );
+        const points = features.filter(
+          (feature) => feature.geometry.type.toLowerCase() === "point"
+        );
+        this.map.getSource(this.options.id)?.setData({
+          type: "FeatureCollection",
+          features: polygonAndLines
+        });
+        this.map.getSource(`${this.options.id}-points`)?.setData(
+          {
+            type: "FeatureCollection",
+            features: points
+          }
+        );
+        return this;
+      }
+      addTo(map) {
+        this.map = map;
+        const features = this.geojson.features;
+        const polygonAndLines = features.filter(
+          (feature) => feature.geometry.type.toLowerCase() !== "point"
+        );
+        const points = features.filter(
+          (feature) => feature.geometry.type.toLowerCase() === "point"
+        );
+        this.map.addSource(this.options.id, {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: polygonAndLines
+          }
+        });
+        this.setPolygonGeometries();
+        this.setLineGeometries();
+        this.map.addSource(`${this.options.id}-points`, {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: points
+          },
+          cluster: this.options.cluster,
+          clusterMaxZoom: 14,
+          clusterRadius: 50
+        });
+        this.map.addLayer({
+          id: `${this.options.id}-polygon-symbol`,
+          type: "symbol",
+          source: this.options.id,
+          filter: ["==", "$type", "Polygon"],
+          paint: {
+            "text-color": ["string", ["get", "text-color"], textColor],
+            "text-halo-color": [
+              "string",
+              ["get", "text-halo-color"],
+              textHaloColor
+            ],
+            "text-halo-width": 1
+          },
+          layout: {
+            "text-field": ["get", "title"],
+            "text-font": ["Noto Sans Regular"],
+            "text-size": 12,
+            "text-max-width": 12,
+            "text-allow-overlap": false
+          }
+        });
+        this.map.addLayer({
+          id: `${this.options.id}-linestring-symbol`,
+          type: "symbol",
+          source: this.options.id,
+          filter: ["==", "$type", "LineString"],
+          paint: {
+            "text-color": ["string", ["get", "text-color"], textColor],
+            "text-halo-color": [
+              "string",
+              ["get", "text-halo-color"],
+              textHaloColor
+            ],
+            "text-halo-width": 1
+          },
+          layout: {
+            "symbol-placement": "line",
+            "text-field": ["get", "title"],
+            "text-font": ["Noto Sans Regular"],
+            "text-size": 12,
+            "text-max-width": 12,
+            "text-allow-overlap": false
+          }
+        });
+        this.setPointGeometries();
+        this.setCluster();
+        return this;
+      }
+      fitBounds(options = {}) {
+        this.callFitBounds = true;
+        const _options = {
+          duration: 3e3,
+          padding: 30,
+          ...options
+        };
+        const bounds = this.geojson.features.length > 0 ? index_default$1(this.geojson) : void 0;
+        if (bounds) {
+          window.requestAnimationFrame(() => {
+            this.map.fitBounds(bounds, _options);
+          });
+        }
+        return this;
+      }
+      /**
+       * Set polygon geometries.
+       */
+      setPolygonGeometries() {
+        this.map.addLayer({
+          id: `${this.options.id}-polygon`,
+          type: "fill",
+          source: this.options.id,
+          filter: ["==", "$type", "Polygon"],
+          paint: {
+            "fill-color": ["string", ["get", "fill"], backgroundColor],
+            "fill-opacity": ["number", ["get", "fill-opacity"], 1],
+            "fill-outline-color": ["string", ["get", "stroke"], strokeColor]
+          }
+        });
+        this.setPopup(this.map, `${this.options.id}-polygon`);
+      }
+      /**
+       * Set line geometries.
+       */
+      setLineGeometries() {
+        this.map.addLayer({
+          id: `${this.options.id}-linestring`,
+          type: "line",
+          source: this.options.id,
+          filter: ["==", "$type", "LineString"],
+          paint: {
+            "line-width": ["number", ["get", "stroke-width"], 2],
+            "line-color": ["string", ["get", "stroke"], backgroundColor],
+            "line-opacity": ["number", ["get", "stroke-opacity"], 1]
+          },
+          layout: {
+            "line-cap": "round",
+            "line-join": "round"
+          }
+        });
+        this.setPopup(this.map, `${this.options.id}-linestring`);
+      }
+      /**
+       * Setup point geometries.
+       */
+      setPointGeometries() {
+        this.map.addLayer({
+          id: `${this.options.id}-circle-points`,
+          type: "circle",
+          source: `${this.options.id}-points`,
+          filter: ["all", ["!has", "point_count"], ["!has", "marker-symbol"]],
+          paint: {
+            "circle-radius": [
+              "case",
+              ["==", "small", ["get", "marker-size"]],
+              7,
+              ["==", "large", ["get", "marker-size"]],
+              13,
+              9
+            ],
+            "circle-color": ["string", ["get", "marker-color"], backgroundColor],
+            "circle-opacity": ["number", ["get", "fill-opacity"], 1],
+            "circle-stroke-width": ["number", ["get", "stroke-width"], 1],
+            "circle-stroke-color": ["string", ["get", "stroke"], strokeColor],
+            "circle-stroke-opacity": ["number", ["get", "stroke-opacity"], 1]
+          }
+        });
+        this.map.addLayer({
+          id: `${this.options.id}-symbol-points`,
+          type: "symbol",
+          source: `${this.options.id}-points`,
+          filter: ["!", ["has", "point_count"]],
+          paint: {
+            "text-color": ["string", ["get", "text-color"], textColor],
+            "text-halo-color": [
+              "string",
+              ["get", "text-halo-color"],
+              textHaloColor
+            ],
+            "text-halo-width": 1
+          },
+          layout: {
+            "icon-image": ["get", "marker-symbol"],
+            "text-field": ["get", "title"],
+            "text-font": ["Noto Sans Regular"],
+            "text-size": 12,
+            "text-max-width": 12,
+            "text-allow-overlap": true,
+            "icon-allow-overlap": true,
+            "text-variable-anchor": ["top", "bottom", "left", "right"],
+            "text-radial-offset": [
+              "case",
+              ["==", "small", ["get", "marker-size"]],
+              1,
+              ["==", "large", ["get", "marker-size"]],
+              1.6,
+              1.2
+            ]
+          }
+        });
+        this.setPopup(this.map, `${this.options.id}-circle-points`);
+        this.setPopup(this.map, `${this.options.id}-symbol-points`);
+      }
+      async setPopup(map, source) {
+        const clickHandler = async (e) => {
+          if (!e.features?.[0]) return;
+          const center = index_default(e.features[0]).geometry.coordinates;
+          const description = e.features[0].properties?.description;
+          if (description) {
+            const sanitizedDescription = await sanitizeDescription(description);
+            new maplibregl.Popup().setLngLat(center).setHTML(sanitizedDescription).addTo(map);
+          }
+        };
+        const mouseEnterHandler = (e) => {
+          if (e.features?.[0]?.properties?.description) {
+            map.getCanvas().style.cursor = "pointer";
+          }
+        };
+        const mouseLeaveHandler = () => {
+          map.getCanvas().style.cursor = "";
+        };
+        map.on("click", source, clickHandler);
+        map.on("mouseenter", source, mouseEnterHandler);
+        map.on("mouseleave", source, mouseLeaveHandler);
+        this._eventHandlers.push(
+          { event: "click", layer: source, handler: clickHandler },
+          { event: "mouseenter", layer: source, handler: mouseEnterHandler },
+          { event: "mouseleave", layer: source, handler: mouseLeaveHandler }
+        );
+      }
+      /**
+       * Setup cluster markers
+       */
+      setCluster() {
+        this.map.addLayer({
+          id: `${this.options.id}-clusters`,
+          type: "circle",
+          source: `${this.options.id}-points`,
+          filter: ["has", "point_count"],
+          paint: {
+            "circle-radius": 20,
+            "circle-color": this.options.clusterColor,
+            "circle-opacity": 1
+          }
+        });
+        this.map.addLayer({
+          id: `${this.options.id}-cluster-count`,
+          type: "symbol",
+          source: `${this.options.id}-points`,
+          filter: ["has", "point_count"],
+          layout: {
+            "text-field": "{point_count_abbreviated}",
+            "text-size": 14,
+            "text-font": ["Noto Sans Regular"]
+          }
+        });
+        const clusterLayer = `${this.options.id}-clusters`;
+        const clusterClickHandler = async (e) => {
+          const features = this.map.queryRenderedFeatures(e.point, {
+            layers: [clusterLayer]
+          });
+          if (!features[0]) return;
+          const clusterId = features[0].properties?.cluster_id;
+          if (clusterId === void 0) return;
+          const source = this.map.getSource(
+            `${this.options.id}-points`
+          );
+          const zoom = await source.getClusterExpansionZoom(clusterId);
+          this.map.easeTo({
+            center: features[0].geometry.coordinates,
+            zoom
+          });
+        };
+        const clusterEnterHandler = () => {
+          this.map.getCanvas().style.cursor = "pointer";
+        };
+        const clusterLeaveHandler = () => {
+          this.map.getCanvas().style.cursor = "";
+        };
+        this.map.on("click", clusterLayer, clusterClickHandler);
+        this.map.on("mouseenter", clusterLayer, clusterEnterHandler);
+        this.map.on("mouseleave", clusterLayer, clusterLeaveHandler);
+        this._eventHandlers.push(
+          { event: "click", layer: clusterLayer, handler: clusterClickHandler },
+          {
+            event: "mouseenter",
+            layer: clusterLayer,
+            handler: clusterEnterHandler
+          },
+          {
+            event: "mouseleave",
+            layer: clusterLayer,
+            handler: clusterLeaveHandler
+          }
+        );
+      }
+      remove() {
+        if (!this.map) return this;
+        const id = this.options.id;
+        for (const { event, layer, handler } of this._eventHandlers) {
+          this.map.off(event, layer, handler);
+        }
+        this._eventHandlers = [];
+        const layerIds = [
+          `${id}-polygon-symbol`,
+          `${id}-linestring-symbol`,
+          `${id}-circle-points`,
+          `${id}-symbol-points`,
+          `${id}-polygon`,
+          `${id}-linestring`,
+          `${id}-clusters`,
+          `${id}-cluster-count`
+        ];
+        for (const layerId of layerIds) {
+          if (this.map.getLayer(layerId)) {
+            this.map.removeLayer(layerId);
+          }
+        }
+        for (const sourceId of [id, `${id}-points`]) {
+          if (this.map.getSource(sourceId)) {
+            this.map.removeSource(sourceId);
+          }
+        }
+        this.map.getCanvas().style.cursor = "";
+        return this;
+      }
+      setGeoJSON(geojson) {
+        if (typeof geojson === "string" && isURL(geojson)) {
+          this.geojson = template;
+          const fetchGeoJSON = async () => {
+            try {
+              const response = await window.fetch(geojson);
+              const data = response.ok ? await response.json() : template;
+              this.geojson = data;
+              this.updateData(data);
+              if (this.callFitBounds) {
+                this.fitBounds();
+                this.callFitBounds = false;
+              }
+            } catch (error) {
+              console.error("[Geolonia] Failed to load GeoJSON:", error);
+            }
+          };
+          this._loadingPromise = fetchGeoJSON();
+        } else if (typeof geojson !== "string") {
+          this.geojson = geojson;
+        }
+      }
+    };
+    var textColor2 = "#000000";
+    var textHaloColor2 = "#FFFFFF";
+    var backgroundColor2 = "rgba(255, 0, 0, 0.4)";
+    var strokeColor2 = "#FFFFFF";
+    var SimpleStyleVector = class {
+      constructor(url) {
+        this.url = url;
+        this.sourceName = "vt-geolonia-simple-style";
+      }
+      addTo(map) {
+        const container = map.getContainer();
+        if (!container.dataset || !container.dataset.lng && !container.dataset.lat) {
+          let initialZoomDone = false;
+          map.on("sourcedata", (event) => {
+            if (event.sourceId !== this.sourceName) {
+              return;
+            }
+            const source = map.getSource(event.sourceId);
+            const isLoaded = source?.loaded();
+            if (isLoaded !== true) {
+              return;
+            }
+            if (initialZoomDone) {
+              return;
+            }
+            initialZoomDone = true;
+            map.fitBounds(
+              source.bounds,
+              {
+                duration: 0,
+                padding: 30
+              }
+            );
+          });
+        }
+        map.addSource(this.sourceName, {
+          type: "vector",
+          url: this.url
+        });
+        this.setPolygonGeometries(map);
+        this.setLineGeometries(map);
+        map.addLayer({
+          id: "vt-geolonia-simple-style-polygon-symbol",
+          type: "symbol",
+          source: this.sourceName,
+          "source-layer": "g-simplestyle-v1",
+          filter: ["==", "$type", "Polygon"],
+          paint: {
+            "text-color": ["string", ["get", "text-color"], textColor2],
+            "text-halo-color": [
+              "string",
+              ["get", "text-halo-color"],
+              textHaloColor2
+            ],
+            "text-halo-width": 1
+          },
+          layout: {
+            "text-field": ["get", "title"],
+            "text-font": ["Noto Sans Regular"],
+            "text-size": 12,
+            "text-max-width": 12,
+            "text-allow-overlap": false
+          }
+        });
+        map.addLayer({
+          id: "vt-geolonia-simple-style-linestring-symbol",
+          type: "symbol",
+          source: this.sourceName,
+          "source-layer": "g-simplestyle-v1",
+          filter: ["==", "$type", "LineString"],
+          paint: {
+            "text-color": ["string", ["get", "text-color"], textColor2],
+            "text-halo-color": [
+              "string",
+              ["get", "text-halo-color"],
+              textHaloColor2
+            ],
+            "text-halo-width": 1
+          },
+          layout: {
+            "symbol-placement": "line",
+            "text-field": ["get", "title"],
+            "text-font": ["Noto Sans Regular"],
+            "text-size": 12,
+            "text-max-width": 12,
+            "text-allow-overlap": false
+          }
+        });
+        this.setPointGeometries(map);
+      }
+      /**
+       * Set polygon geometries.
+       *
+       * @param map
+       */
+      setPolygonGeometries(map) {
+        map.addLayer({
+          id: "vt-geolonia-simple-style-polygon",
+          type: "fill",
+          source: this.sourceName,
+          "source-layer": "g-simplestyle-v1",
+          filter: ["==", "$type", "Polygon"],
+          paint: {
+            "fill-color": ["string", ["get", "fill"], backgroundColor2],
+            "fill-opacity": ["number", ["get", "fill-opacity"], 1],
+            "fill-outline-color": ["string", ["get", "stroke"], strokeColor2]
+          }
+        });
+        this.setPopup(map, "vt-geolonia-simple-style-polygon");
+      }
+      /**
+       * Set line geometries.
+       *
+       * @param map
+       */
+      setLineGeometries(map) {
+        map.addLayer({
+          id: "vt-geolonia-simple-style-linestring",
+          type: "line",
+          source: this.sourceName,
+          "source-layer": "g-simplestyle-v1",
+          filter: ["==", "$type", "LineString"],
+          paint: {
+            "line-width": ["number", ["get", "stroke-width"], 2],
+            "line-color": ["string", ["get", "stroke"], backgroundColor2],
+            "line-opacity": ["number", ["get", "stroke-opacity"], 1]
+          },
+          layout: {
+            "line-cap": "round",
+            "line-join": "round"
+          }
+        });
+        this.setPopup(map, "vt-geolonia-simple-style-linestring");
+      }
+      /**
+       * Setup point geometries.
+       *
+       * @param map
+       */
+      setPointGeometries(map) {
+        map.addLayer({
+          id: "vt-circle-simple-style-points",
+          type: "circle",
+          source: this.sourceName,
+          "source-layer": "g-simplestyle-v1",
+          filter: ["all", ["==", "$type", "Point"], ["!has", "marker-symbol"]],
+          paint: {
+            "circle-radius": [
+              "case",
+              ["==", "small", ["get", "marker-size"]],
+              7,
+              ["==", "large", ["get", "marker-size"]],
+              13,
+              9
+            ],
+            "circle-color": ["string", ["get", "marker-color"], backgroundColor2],
+            "circle-opacity": ["number", ["get", "fill-opacity"], 1],
+            "circle-stroke-width": ["number", ["get", "stroke-width"], 1],
+            "circle-stroke-color": ["string", ["get", "stroke"], strokeColor2],
+            "circle-stroke-opacity": ["number", ["get", "stroke-opacity"], 1]
+          }
+        });
+        map.addLayer({
+          id: "vt-geolonia-simple-style-points",
+          type: "symbol",
+          source: this.sourceName,
+          "source-layer": "g-simplestyle-v1",
+          filter: ["==", "$type", "Point"],
+          paint: {
+            "text-color": ["string", ["get", "text-color"], textColor2],
+            "text-halo-color": [
+              "string",
+              ["get", "text-halo-color"],
+              textHaloColor2
+            ],
+            "text-halo-width": 1
+          },
+          layout: {
+            "icon-image": ["get", "marker-symbol"],
+            "text-field": ["get", "title"],
+            "text-font": ["Noto Sans Regular"],
+            "text-size": 12,
+            "text-anchor": "top",
+            "text-max-width": 12,
+            "text-offset": [
+              "case",
+              ["==", "small", ["get", "marker-size"]],
+              ["literal", [0, 1]],
+              ["==", "large", ["get", "marker-size"]],
+              ["literal", [0, 1.6]],
+              ["literal", [0, 1.2]]
+            ],
+            "text-allow-overlap": false
+          }
+        });
+        this.setPopup(map, "vt-circle-simple-style-points");
+        this.setPopup(map, "vt-geolonia-simple-style-points");
+      }
+      async setPopup(map, source) {
+        map.on("click", source, async (e) => {
+          if (!e.features?.[0]) return;
+          const center = index_default(e.features[0]).geometry.coordinates;
+          const description = e.features[0].properties?.description;
+          if (description) {
+            const sanitizedDescription = await sanitizeDescription(description);
+            new maplibregl.Popup().setLngLat(center).setHTML(sanitizedDescription).addTo(map);
+          }
+        });
+        map.on("mouseenter", source, (e) => {
+          if (e.features?.[0]?.properties?.description) {
+            map.getCanvas().style.cursor = "pointer";
+          }
+        });
+        map.on("mouseleave", source, () => {
+          map.getCanvas().style.cursor = "";
+        });
+      }
+    };
+    var simplestyle_vector_default = SimpleStyleVector;
+
+    // src/lib/geolonia-map.ts
+    var pmtilesRegistered = false;
+    function ensurePMTiles() {
+      if (pmtilesRegistered) return;
+      pmtilesRegistered = true;
+      const protocol = new S$1();
+      maplibregl.addProtocol("pmtiles", protocol.tile);
+    }
+    var GeoloniaMap$1 = class GeoloniaMap extends maplibregl.Map {
+      // biome-ignore lint/correctness/noUnreachableSuper: intentional singleton pattern - returns existing map instance before super()
+      constructor(options) {
+        ensurePMTiles();
+        if (options.apiKey) {
+          keyring.setApiKey(options.apiKey);
+        }
+        if (options.stage) {
+          keyring.setStage(options.stage);
+        }
+        const lang = options.lang === "auto" || !options.lang ? getLang() : options.lang;
+        const styleName = options.style || "geolonia/basic-v2";
+        keyring.isGeoloniaStyle = keyring.isGeoloniaStyleCheck(styleName);
+        const resolvedStyle = getStyle(styleName, {
+          lang,
+          apiKey: options.apiKey || keyring.apiKey
+        });
+        const container = typeof options.container === "string" ? document.querySelector(options.container) || document.getElementById(options.container) : options.container;
+        if (!container) {
+          throw new Error(
+            `[Geolonia] No HTML elements found. Please ensure the map container element exists.`
+          );
+        }
+        if (container.geoloniaMap) {
+          return container.geoloniaMap;
+        }
+        const apiKey = options.apiKey || keyring.apiKey;
+        const stage = options.stage || keyring.stage;
+        const apiUrl = `https://api.geolonia.com/${stage}`;
+        const sessionId2 = getSessionId(40);
+        const sourcesUrl = new URL(`${apiUrl}/sources`);
+        sourcesUrl.searchParams.set("key", apiKey);
+        sourcesUrl.searchParams.set("sessionId", sessionId2);
+        const userTransformRequest = options.transformRequest;
+        const transformRequest = (url, resourceType) => {
+          if (resourceType === "Source" && url.startsWith("https://api.geolonia.com")) {
+            return { url: sourcesUrl.toString() };
+          }
+          let transformedUrl = url;
+          if (url.startsWith("geolonia://")) {
+            const tilesMatch = url.match(
+              /^geolonia:\/\/tiles\/(?<username>.+)\/(?<customtileId>.+)/
+            );
+            if (tilesMatch?.groups) {
+              transformedUrl = `https://tileserver.geolonia.com/customtiles/${tilesMatch.groups.customtileId}/tiles.json`;
+            }
+          }
+          const transformedUrlObj = new URL(transformedUrl);
+          const geoloniaTilesHost = isGeoloniaTilesHost(transformedUrlObj);
+          if (resourceType === "Source" && geoloniaTilesHost) {
+            if (stage === "dev" && transformedUrlObj.hostname === "tileserver.geolonia.com") {
+              transformedUrlObj.hostname = "tileserver-dev.geolonia.com";
+            }
+            transformedUrlObj.searchParams.set("sessionId", sessionId2);
+            transformedUrlObj.searchParams.set("key", apiKey);
+            return { url: transformedUrlObj.toString() };
+          }
+          if ((resourceType === "SpriteJSON" || resourceType === "SpriteImage") && transformedUrl.match(
+            /^https:\/\/api\.geolonia\.com\/(dev|v1)\/sprites\//
+          )) {
+            const pathParts = transformedUrlObj.pathname.split("/");
+            pathParts[1] = stage;
+            transformedUrlObj.pathname = pathParts.join("/");
+            transformedUrlObj.searchParams.set("key", apiKey);
+            return { url: transformedUrlObj.toString() };
+          }
+          if (typeof userTransformRequest === "function") {
+            return userTransformRequest(transformedUrl, resourceType);
+          }
+          return void 0;
+        };
+        let loading;
+        const showLoader = options.loader !== false;
+        if (showLoader) {
+          loading = document.createElement("div");
+          loading.className = "loading-geolonia-map";
+          loading.innerHTML = `<div class="lds-grid"><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div><div></div><div></div></div>`;
+          container.appendChild(loading);
+        }
+        const mapOptions = {
+          ...options,
+          container,
+          style: resolvedStyle,
+          hash: options.hash ?? false,
+          localIdeographFontFamily: options.localIdeographFontFamily ?? "sans-serif",
+          attributionControl: false,
+          transformRequest
+        };
+        for (const key of [
+          "apiKey",
+          "stage",
+          "lang",
+          "marker",
+          "markerColor",
+          "openPopup",
+          "customMarker",
+          "customMarkerOffset",
+          "loader",
+          "gestureHandling",
+          "navigationControl",
+          "geolocateControl",
+          "fullscreenControl",
+          "scaleControl",
+          "geoloniaControl",
+          "geojson",
+          "cluster",
+          "clusterColor",
+          "simpleVector",
+          "3d"
+        ]) {
+          delete mapOptions[key];
+        }
+        try {
+          super(mapOptions);
+        } catch (error) {
+          handleErrorMode(container);
+          throw error;
+        }
+        this.geoloniaSourcesUrl = sourcesUrl;
+        this.__styleExtensionLoadRequired = true;
+        const geoloniaCtrl = parseControlOption(options.geoloniaControl ?? true);
+        this.addControl(
+          new GeoloniaControl(),
+          geoloniaCtrl.position
+        );
+        this.addControl(new attribution_default(), "bottom-right");
+        const fullscreen = parseControlOption(options.fullscreenControl ?? false);
+        if (fullscreen.enabled) {
+          this.addControl(
+            new maplibreGlExports.FullscreenControl(),
+            fullscreen.position
+          );
+        }
+        const nav = parseControlOption(options.navigationControl ?? true);
+        if (nav.enabled) {
+          this.addControl(new maplibreGlExports.NavigationControl(), nav.position);
+        }
+        const geolocate = parseControlOption(options.geolocateControl ?? false);
+        if (geolocate.enabled) {
+          this.addControl(
+            new maplibreGlExports.GeolocateControl({}),
+            geolocate.position
+          );
+        }
+        const scale = parseControlOption(options.scaleControl ?? false);
+        if (scale.enabled) {
+          this.addControl(new maplibreGlExports.ScaleControl({}), scale.position);
+        }
+        this.on("load", (event) => {
+          const map = event.target;
+          if (loading) {
+            try {
+              container.removeChild(loading);
+            } catch {
+            }
+          }
+          if (options.gestureHandling !== false) {
+            Promise.resolve().then(function () { return index; }).then(({ default: GestureHandling }) => {
+              const body = document.body;
+              const html = document.documentElement;
+              const isScrollable = body.scrollHeight > body.clientHeight || html.scrollHeight > html.clientHeight;
+              if (isScrollable) {
+                map.addControl(new GestureHandling({ lang }));
+              }
+            }).catch(() => {
+            });
+          }
+          if (options.marker && options.center) {
+            const c = options.center;
+            const center = Array.isArray(c) ? [c[0], c[1]] : "lng" in c ? [c.lng, c.lat] : [c.lon, c.lat];
+            let marker;
+            if (options.customMarker) {
+              const customEl = document.querySelector(
+                options.customMarker
+              );
+              if (customEl) {
+                customEl.style.display = "block";
+                marker = new GeoloniaMarker({
+                  element: customEl,
+                  offset: options.customMarkerOffset || [0, 0]
+                }).setLngLat(center).addTo(map);
+              } else {
+                marker = new GeoloniaMarker({ color: options.markerColor }).setLngLat(center).addTo(map);
+              }
+            } else {
+              marker = new GeoloniaMarker({ color: options.markerColor }).setLngLat(center).addTo(map);
+            }
+            const content = container.dataset?.popupContent;
+            if (content) {
+              const popup = new maplibreGlExports.Popup({ offset: [0, -25] }).setHTML(content);
+              marker.setPopup(popup);
+              if (options.openPopup) {
+                marker.togglePopup();
+              }
+            } else if (options.openPopup) ;
+            marker.getElement().classList.add("geolonia-clickable-marker");
+          }
+        });
+        this.on("styledata", async () => {
+          if (!this.__styleExtensionLoadRequired) {
+            return;
+          }
+          this.__styleExtensionLoadRequired = false;
+          if (options.simpleVector) {
+            const url = parseSimpleVector(options.simpleVector);
+            new simplestyle_vector_default(url).addTo(this);
+          }
+          if (options.geojson) {
+            const ss = new SimpleStyle(options.geojson, {
+              cluster: options.cluster !== false,
+              clusterColor: options.clusterColor || "#ff0000"
+            });
+            ss.addTo(this);
+            if (!options.center) {
+              ss.fitBounds();
+            }
+          }
+          if (options["3d"] === true) {
+            const style = this.getStyle();
+            if (style?.layers) {
+              for (const layer of style.layers) {
+                const metadata = layer.metadata;
+                if (metadata?.["visible-on-3d"]) {
+                  this.setLayoutProperty(layer.id, "visibility", "visible");
+                }
+                if (metadata?.["hide-on-3d"]) {
+                  this.setLayoutProperty(layer.id, "visibility", "none");
+                }
+              }
+            }
+          }
+        });
+        this.on("error", async (error) => {
+          if (error.error && error.error.status === 402) {
+            handleRestrictedMode(this);
+          }
+        });
+        container.geoloniaMap = this;
+        return this;
+      }
+      setStyle(style, options = {}) {
+        if (style !== null && typeof style === "string") {
+          style = getStyle(style, { lang: getLang(), apiKey: keyring.apiKey });
+        }
+        this.__styleExtensionLoadRequired = true;
+        super.setStyle.call(this, style, options);
+        return this;
+      }
+      remove() {
+        const container = this.getContainer();
+        super.remove.call(this);
+        delete container.geoloniaMap;
+      }
+      loadImage(url, callback) {
+        const promise = super.loadImage(url);
+        if (callback) {
+          loadImageCompatibility(promise, callback);
+        } else {
+          return promise;
+        }
+      }
+    };
+
+    ___$insertStylesToHeader(".geolonia-clickable-marker {\n  cursor: pointer;\n}\n\n/* Make fullscreen mode works with ie11 */\n.geolonia:-ms-fullscreen {\n  width: 100%;\n  height: 100%;\n}\n\n/**\n * Styles for loading effect.\n */\n.loading-geolonia-map {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  background-color: rgba(255, 255, 255, 0.5);\n  z-index: 9999;\n  justify-content: center;\n  align-items: center;\n  display: flex;\n}\n\n.loading-geolonia-map .lds-grid {\n  display: inline-block;\n  position: relative;\n  width: 80px;\n  height: 80px;\n}\n\n.loading-geolonia-map .lds-grid div {\n  position: absolute;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: #999999;\n  animation: lds-grid 1.2s linear infinite;\n}\n\n.loading-geolonia-map .lds-grid div:nth-child(1) {\n  top: 8px;\n  left: 8px;\n  animation-delay: 0s;\n}\n\n.loading-geolonia-map .lds-grid div:nth-child(2) {\n  top: 8px;\n  left: 32px;\n  animation-delay: -0.4s;\n}\n\n.loading-geolonia-map .lds-grid div:nth-child(3) {\n  top: 8px;\n  left: 56px;\n  animation-delay: -0.8s;\n}\n\n.loading-geolonia-map .lds-grid div:nth-child(4) {\n  top: 32px;\n  left: 8px;\n  animation-delay: -0.4s;\n}\n\n.loading-geolonia-map .lds-grid div:nth-child(5) {\n  top: 32px;\n  left: 32px;\n  animation-delay: -0.8s;\n}\n\n.loading-geolonia-map .lds-grid div:nth-child(6) {\n  top: 32px;\n  left: 56px;\n  animation-delay: -1.2s;\n}\n\n.loading-geolonia-map .lds-grid div:nth-child(7) {\n  top: 56px;\n  left: 8px;\n  animation-delay: -0.8s;\n}\n\n.loading-geolonia-map .lds-grid div:nth-child(8) {\n  top: 56px;\n  left: 32px;\n  animation-delay: -1.2s;\n}\n\n.loading-geolonia-map .lds-grid div:nth-child(9) {\n  top: 56px;\n  left: 56px;\n  animation-delay: -1.6s;\n}\n\n@keyframes lds-grid {\n  0%, 100% {\n    opacity: 1;\n  }\n  50% {\n    opacity: 0.5;\n  }\n}\n/* Style for restricted mode */\n.geolonia__restricted-mode-image-container {\n  background-image: url(\"https://geolonia.github.io/embed/restricted.jpg\");\n  background-position: center center;\n  background-size: cover;\n}\n\n/* Style for error message */\n.geolonia__error-container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: 100%;\n  width: 100%;\n  background-color: #dedede;\n  z-index: 9999;\n  position: absolute;\n}\n\n.geolonia__error-message {\n  max-width: 300px;\n  background-color: #ffffff;\n  margin: 10px;\n  padding: 0.75rem 1.25rem;\n  border-radius: 6px;\n  position: absolute;\n  z-index: 99999;\n  word-wrap: break-word;\n  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1019607843);\n}\n\n.geolonia__error-message-description {\n  margin: 15px 0;\n}\n\n/* CSS for Attribution */\n/* Fix: https://github.com/geolonia/embed/issues/291 */\n.maplibregl-map {\n  display: block !important;\n}\n\n.maplibregl-ctrl-attrib-inner {\n  display: block !important;\n}\n\n.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-inner {\n  display: none !important;\n}\n\n.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner,\n.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button {\n  display: block !important;\n}\n\n/* End: CSS for Attribution */\n@media print {\n  .maplibregl-control-container button {\n    display: none;\n  }\n}");
 
     const DEFAULT_CIRCLE_COLOR = '#FF0000';
     const DEFAULT_MARKER_NAME = 'default-marker';
@@ -2356,13 +5697,13 @@
         return queryBox;
     }
 
-    function t(t,e,s,i){return new(s||(s=Promise))((function(r,n){function o(t){try{c(i.next(t));}catch(t){n(t);}}function a(t){try{c(i.throw(t));}catch(t){n(t);}}function c(t){var e;t.done?r(t.value):(e=t.value,e instanceof s?e:new s((function(t){t(e);}))).then(o,a);}c((i=i.apply(t,e||[])).next());}))}function e(t){return t&&t.__esModule&&Object.prototype.hasOwnProperty.call(t,"default")?t.default:t}"function"==typeof SuppressedError&&SuppressedError;var s,i={},r={},n={};var o,a,c,h={};function l(){if(o)return h;o=1,Object.defineProperty(h,"__esModule",{value:!0});return h.default={"〇":0,"一":1,"二":2,"三":3,"四":4,"五":5,"六":6,"七":7,"八":8,"九":9,"０":0,"１":1,"２":2,"３":3,"４":4,"５":5,"６":6,"７":7,"８":8,"９":9},h}function d(){return a||(a=1,function(t){Object.defineProperty(t,"__esModule",{value:!0}),t.zen2han=t.n2kan=t.kan2n=t.splitLargeNumber=t.normalize=t.smallNumbers=t.largeNumbers=void 0;const e=(s||(s=1,Object.defineProperty(n,"__esModule",{value:!0}),n.default={"零":"〇","壱":"一","壹":"一","弐":"二","弍":"二","貳":"二","貮":"二","参":"三","參":"三","肆":"四","伍":"五","陸":"六","漆":"七","捌":"八","玖":"九","拾":"十","廿":"二十","陌":"百","佰":"百","阡":"千","仟":"千","萬":"万"}),n),i=l();function r(e){if(e.match(/^[0-9]+$/))return Number(e);let s=o(e),r=0;for(const e in t.smallNumbers){const n=new RegExp(`(.*)${e}`),o=s.match(n);if(o){let n=1;o[1]&&(n=o[1].match(/^[0-9]+$/)?Number(o[1]):i.default[o[1]]),r+=n*t.smallNumbers[e],s=s.replace(o[0],"");}}if(s)if(s.match(/^[0-9]+$/))r+=Number(s);else for(let t=0;t<s.length;t++){const e=s[t],n=s.length-t-1;r+=i.default[e]*10**n;}return r}function o(t){return t.replace(/[０-９]/g,(t=>String.fromCharCode(t.charCodeAt(0)-65248)))}t.largeNumbers={"兆":1e12,"億":1e8,"万":1e4},t.smallNumbers={"千":1e3,"百":100,"十":10},t.normalize=function(t){for(const s in e.default){const i=new RegExp(s,"g");t=t.replace(i,e.default[s]);}return t},t.splitLargeNumber=function(e){let s=e;const i={};for(const e in t.largeNumbers){const t=new RegExp(`(.+)${e}`),n=s.match(t);n?(i[e]=r(n[1]),s=s.replace(n[0],"")):i[e]=0;}return i["千"]=s?r(s):0,i},t.kan2n=r,t.n2kan=function(e){const s=Object.keys(i.default);let r=e,n="";for(const e in t.smallNumbers){const i=Math.floor(r/t.smallNumbers[e]);i&&(r-=i*t.smallNumbers[e],n=1===i?`${n}${e}`:`${n}${s[i]}${e}`);}return r&&(n=`${n}${s[r]}`),n},t.zen2han=o;}(r)),r}var u=function(){if(c)return i;c=1,Object.defineProperty(i,"__esModule",{value:!0}),i.findKanjiNumbers=i.number2kanji=i.kanji2number=void 0;const t=d(),e=l();return i.kanji2number=function(s){if((s=(0, t.normalize)(s)).match("〇")||s.match(/^[〇一二三四五六七八九]+$/)){for(const t in e.default){const i=new RegExp(t,"g");s=s.replace(i,e.default[t].toString());}return Number(s)}{let e=0;const i=(0, t.splitLargeNumber)(s);for(const s in t.largeNumbers)if(i[s]){e+=t.largeNumbers[s]*i[s];}if(!Number.isInteger(e)||!Number.isInteger(i["千"]))throw new TypeError("The attribute of kanji2number() must be a Japanese numeral as integer.");return e+i["千"]}},i.number2kanji=function(s){if(!s.toString().match(/^[0-9]+$/))throw new TypeError("The attribute of number2kanji() must be integer.");Object.keys(e.default);let i=s,r="";for(const e in t.largeNumbers){const s=Math.floor(i/t.largeNumbers[e]);s&&(i-=s*t.largeNumbers[e],r=`${r}${(0, t.n2kan)(s)}${e}`);}return i&&(r=`${r}${(0, t.n2kan)(i)}`),r||"〇"},i.findKanjiNumbers=function(t){const e="([0-9０-９]*)|([〇一二三四五六七八九壱壹弐弍貳貮参參肆伍陸漆捌玖]*)",s=`((${e})(千|阡|仟))?((${e})(百|陌|佰))?((${e})(十|拾))?(${e})?`,i=new RegExp(`((${s}兆)?(${s}億)?(${s}(万|萬))?${s})`,"g"),r=t.match(i);return r?r.filter((t=>!(t.match(/^[0-9０-９]+$/)||!t.length||"兆"===t||"億"===t||"万"===t||"萬"===t))):[]},i}();const f={japaneseAddressesApi:"https://japanese-addresses-v2.geoloniamaps.com/api/ja",cacheSize:1e3},p=(t,e)=>{const s=e||{};let i=new URL(`${f.japaneseAddressesApi}${t}`).toString();f.geoloniaApiKey&&(i+=`?geolonia-api-key=${f.geoloniaApiKey}`);const r={};let n;if(void 0!==s.length&&void 0!==s.offset&&(r.Range=`bytes=${s.offset}-${s.offset+s.length-1}`),"undefined"!=typeof fetch)n=fetch;else {if("undefined"==typeof window)throw new Error("fetch is not available in this environment");n=window.fetch;}return n(i,{headers:r})},g=t=>{const e=u.findKanjiNumbers(t);for(let s=0;s<e.length;s++)try{t=t.replace(e[s],u.kanji2number(e[s]));}catch(t){}return t},m=t=>t.replace(/[Ａ-Ｚａ-ｚ０-９]/g,(t=>String.fromCharCode(t.charCodeAt(0)-65248))),v=[{pref:"香川県",city:"仲多度郡まんのう町",town:"勝浦",pattern:"^字?家[6六]",result:"家六"},{pref:"愛知県",city:"あま市",town:"西今宿",pattern:"^字?梶村[1一]",result:"梶村一"},{pref:"香川県",city:"丸亀市",town:"原田町",pattern:"^字?東三分[1一]",result:"東三分一"}],_=[[{src:"亞",dst:"亜"},{src:"圍",dst:"囲"},{src:"壹",dst:"壱"},{src:"榮",dst:"栄"},{src:"驛",dst:"駅"},{src:"應",dst:"応"},{src:"櫻",dst:"桜"},{src:"假",dst:"仮"},{src:"會",dst:"会"},{src:"懷",dst:"懐"},{src:"覺",dst:"覚"},{src:"樂",dst:"楽"},{src:"陷",dst:"陥"},{src:"歡",dst:"歓"},{src:"氣",dst:"気"},{src:"戲",dst:"戯"},{src:"據",dst:"拠"},{src:"挾",dst:"挟"},{src:"區",dst:"区"},{src:"徑",dst:"径"},{src:"溪",dst:"渓"},{src:"輕",dst:"軽"},{src:"藝",dst:"芸"},{src:"儉",dst:"倹"},{src:"圈",dst:"圏"},{src:"權",dst:"権"},{src:"嚴",dst:"厳"},{src:"恆",dst:"恒"},{src:"國",dst:"国"},{src:"齋",dst:"斎"},{src:"雜",dst:"雑"},{src:"蠶",dst:"蚕"},{src:"殘",dst:"残"},{src:"兒",dst:"児"},{src:"實",dst:"実"},{src:"釋",dst:"釈"},{src:"從",dst:"従"},{src:"縱",dst:"縦"},{src:"敍",dst:"叙"},{src:"燒",dst:"焼"},{src:"條",dst:"条"},{src:"剩",dst:"剰"},{src:"壤",dst:"壌"},{src:"釀",dst:"醸"},{src:"眞",dst:"真"},{src:"盡",dst:"尽"},{src:"醉",dst:"酔"},{src:"髓",dst:"髄"},{src:"聲",dst:"声"},{src:"竊",dst:"窃"},{src:"淺",dst:"浅"},{src:"錢",dst:"銭"},{src:"禪",dst:"禅"},{src:"爭",dst:"争"},{src:"插",dst:"挿"},{src:"騷",dst:"騒"},{src:"屬",dst:"属"},{src:"對",dst:"対"},{src:"滯",dst:"滞"},{src:"擇",dst:"択"},{src:"單",dst:"単"},{src:"斷",dst:"断"},{src:"癡",dst:"痴"},{src:"鑄",dst:"鋳"},{src:"敕",dst:"勅"},{src:"鐵",dst:"鉄"},{src:"傳",dst:"伝"},{src:"黨",dst:"党"},{src:"鬪",dst:"闘"},{src:"屆",dst:"届"},{src:"腦",dst:"脳"},{src:"廢",dst:"廃"},{src:"發",dst:"発"},{src:"蠻",dst:"蛮"},{src:"拂",dst:"払"},{src:"邊",dst:"辺"},{src:"瓣",dst:"弁"},{src:"寶",dst:"宝"},{src:"沒",dst:"没"},{src:"滿",dst:"満"},{src:"藥",dst:"薬"},{src:"餘",dst:"余"},{src:"樣",dst:"様"},{src:"亂",dst:"乱"},{src:"兩",dst:"両"},{src:"禮",dst:"礼"},{src:"靈",dst:"霊"},{src:"爐",dst:"炉"},{src:"灣",dst:"湾"},{src:"惡",dst:"悪"},{src:"醫",dst:"医"},{src:"飮",dst:"飲"},{src:"營",dst:"営"},{src:"圓",dst:"円"},{src:"歐",dst:"欧"},{src:"奧",dst:"奥"},{src:"價",dst:"価"},{src:"繪",dst:"絵"},{src:"擴",dst:"拡"},{src:"學",dst:"学"},{src:"罐",dst:"缶"},{src:"勸",dst:"勧"},{src:"觀",dst:"観"},{src:"歸",dst:"帰"},{src:"犧",dst:"犠"},{src:"擧",dst:"挙"},{src:"狹",dst:"狭"},{src:"驅",dst:"駆"},{src:"莖",dst:"茎"},{src:"經",dst:"経"},{src:"繼",dst:"継"},{src:"缺",dst:"欠"},{src:"劍",dst:"剣"},{src:"檢",dst:"検"},{src:"顯",dst:"顕"},{src:"廣",dst:"広"},{src:"鑛",dst:"鉱"},{src:"碎",dst:"砕"},{src:"劑",dst:"剤"},{src:"參",dst:"参"},{src:"慘",dst:"惨"},{src:"絲",dst:"糸"},{src:"辭",dst:"辞"},{src:"舍",dst:"舎"},{src:"壽",dst:"寿"},{src:"澁",dst:"渋"},{src:"肅",dst:"粛"},{src:"將",dst:"将"},{src:"證",dst:"証"},{src:"乘",dst:"乗"},{src:"疊",dst:"畳"},{src:"孃",dst:"嬢"},{src:"觸",dst:"触"},{src:"寢",dst:"寝"},{src:"圖",dst:"図"},{src:"穗",dst:"穂"},{src:"樞",dst:"枢"},{src:"齊",dst:"斉"},{src:"攝",dst:"摂"},{src:"戰",dst:"戦"},{src:"潛",dst:"潜"},{src:"雙",dst:"双"},{src:"莊",dst:"荘"},{src:"裝",dst:"装"},{src:"藏",dst:"蔵"},{src:"續",dst:"続"},{src:"體",dst:"体"},{src:"臺",dst:"台"},{src:"澤",dst:"沢"},{src:"膽",dst:"胆"},{src:"彈",dst:"弾"},{src:"蟲",dst:"虫"},{src:"廳",dst:"庁"},{src:"鎭",dst:"鎮"},{src:"點",dst:"点"},{src:"燈",dst:"灯"},{src:"盜",dst:"盗"},{src:"獨",dst:"独"},{src:"貳",dst:"弐"},{src:"霸",dst:"覇"},{src:"賣",dst:"売"},{src:"髮",dst:"髪"},{src:"祕",dst:"秘"},{src:"佛",dst:"仏"},{src:"變",dst:"変"},{src:"辯",dst:"弁"},{src:"豐",dst:"豊"},{src:"飜",dst:"翻"},{src:"默",dst:"黙"},{src:"與",dst:"与"},{src:"譽",dst:"誉"},{src:"謠",dst:"謡"},{src:"覽",dst:"覧"},{src:"獵",dst:"猟"},{src:"勵",dst:"励"},{src:"齡",dst:"齢"},{src:"勞",dst:"労"},{src:"壓",dst:"圧"},{src:"爲",dst:"為"},{src:"隱",dst:"隠"},{src:"衞",dst:"衛"},{src:"鹽",dst:"塩"},{src:"毆",dst:"殴"},{src:"穩",dst:"穏"},{src:"畫",dst:"画"},{src:"壞",dst:"壊"},{src:"殼",dst:"殻"},{src:"嶽",dst:"岳"},{src:"卷",dst:"巻"},{src:"關",dst:"関"},{src:"顏",dst:"顔"},{src:"僞",dst:"偽"},{src:"舊",dst:"旧"},{src:"峽",dst:"峡"},{src:"曉",dst:"暁"},{src:"勳",dst:"勲"},{src:"惠",dst:"恵"},{src:"螢",dst:"蛍"},{src:"鷄",dst:"鶏"},{src:"縣",dst:"県"},{src:"險",dst:"険"},{src:"獻",dst:"献"},{src:"驗",dst:"験"},{src:"效",dst:"効"},{src:"號",dst:"号"},{src:"濟",dst:"済"},{src:"册",dst:"冊"},{src:"棧",dst:"桟"},{src:"贊",dst:"賛"},{src:"齒",dst:"歯"},{src:"濕",dst:"湿"},{src:"寫",dst:"写"},{src:"收",dst:"収"},{src:"獸",dst:"獣"},{src:"處",dst:"処"},{src:"稱",dst:"称"},{src:"奬",dst:"奨"},{src:"淨",dst:"浄"},{src:"繩",dst:"縄"},{src:"讓",dst:"譲"},{src:"囑",dst:"嘱"},{src:"愼",dst:"慎"},{src:"粹",dst:"粋"},{src:"隨",dst:"随"},{src:"數",dst:"数"},{src:"靜",dst:"静"},{src:"專",dst:"専"},{src:"踐",dst:"践"},{src:"纖",dst:"繊"},{src:"壯",dst:"壮"},{src:"搜",dst:"捜"},{src:"總",dst:"総"},{src:"臟",dst:"臓"},{src:"墮",dst:"堕"},{src:"帶",dst:"帯"},{src:"瀧",dst:"滝"},{src:"擔",dst:"担"},{src:"團",dst:"団"},{src:"遲",dst:"遅"},{src:"晝",dst:"昼"},{src:"聽",dst:"聴"},{src:"遞",dst:"逓"},{src:"轉",dst:"転"},{src:"當",dst:"当"},{src:"稻",dst:"稲"},{src:"讀",dst:"読"},{src:"惱",dst:"悩"},{src:"拜",dst:"拝"},{src:"麥",dst:"麦"},{src:"拔",dst:"抜"},{src:"濱",dst:"浜"},{src:"竝",dst:"並"},{src:"辨",dst:"弁"},{src:"舖",dst:"舗"},{src:"襃",dst:"褒"},{src:"萬",dst:"万"},{src:"譯",dst:"訳"},{src:"豫",dst:"予"},{src:"搖",dst:"揺"},{src:"來",dst:"来"},{src:"龍",dst:"竜"},{src:"壘",dst:"塁"},{src:"隸",dst:"隷"},{src:"戀",dst:"恋"},{src:"樓",dst:"楼"},{src:"鰺",dst:"鯵"},{src:"鶯",dst:"鴬"},{src:"蠣",dst:"蛎"},{src:"攪",dst:"撹"},{src:"竈",dst:"竃"},{src:"灌",dst:"潅"},{src:"諫",dst:"諌"},{src:"頸",dst:"頚"},{src:"礦",dst:"砿"},{src:"蘂",dst:"蕊"},{src:"靱",dst:"靭"},{src:"賤",dst:"賎"},{src:"壺",dst:"壷"},{src:"礪",dst:"砺"},{src:"檮",dst:"梼"},{src:"濤",dst:"涛"},{src:"邇",dst:"迩"},{src:"蠅",dst:"蝿"},{src:"檜",dst:"桧"},{src:"儘",dst:"侭"},{src:"藪",dst:"薮"},{src:"籠",dst:"篭"},{src:"彌",dst:"弥"},{src:"麩",dst:"麸"},{src:"驒",dst:"騨"}]].flat().reduce(((t,e)=>{const s=`(${e.src}|${e.dst})`;return Object.assign(Object.assign({},t),{[e.src]:s,[e.dst]:s})}),{}),y=new RegExp(Array.from(new Set(Object.values(_))).join("|"),"g"),b=t=>{let e=t;return e=e.replace(/三栄町|四谷三栄町/g,"(三栄町|四谷三栄町)").replace(/鬮野川|くじ野川|くじの川/g,"(鬮野川|くじ野川|くじの川)").replace(/柿碕町|柿さき町/g,"(柿碕町|柿さき町)").replace(/通り|とおり/g,"(通り|とおり)").replace(/埠頭|ふ頭/g,"(埠頭|ふ頭)").replace(/番町|番丁/g,"(番町|番丁)").replace(/大冝|大宜/g,"(大冝|大宜)").replace(/穝|さい/g,"(穝|さい)").replace(/杁|えぶり/g,"(杁|えぶり)").replace(/薭|稗|ひえ|ヒエ/g,"(薭|稗|ひえ|ヒエ)").replace(/[之ノの]/g,"[之ノの]").replace(/[ヶケが]/g,"[ヶケが]").replace(/[ヵカか力]/g,"[ヵカか力]").replace(/[ッツっつ]/g,"[ッツっつ]").replace(/[ニ二]/g,"[ニ二]").replace(/[ハ八]/g,"[ハ八]").replace(/塚|塚/g,"(塚|塚)").replace(/釜|竈/g,"(釜|竈)").replace(/條|条/g,"(條|条)").replace(/狛|拍/g,"(狛|拍)").replace(/藪|薮/g,"(藪|薮)").replace(/渕|淵/g,"(渕|淵)").replace(/エ|ヱ|え/g,"(エ|ヱ|え)").replace(/曾|曽/g,"(曾|曽)").replace(/舟|船/g,"(舟|船)").replace(/莵|菟/g,"(莵|菟)").replace(/市|巿/g,"(市|巿)").replace(/崎|﨑/g,"(崎|﨑)"),e=e.replace(y,(t=>_[t])),e};var w,k={exports:{}};
+    function t(t,e,s,i){return new(s||(s=Promise))((function(r,n){function o(t){try{c(i.next(t));}catch(t){n(t);}}function a(t){try{c(i.throw(t));}catch(t){n(t);}}function c(t){var e;t.done?r(t.value):(e=t.value,e instanceof s?e:new s((function(t){t(e);}))).then(o,a);}c((i=i.apply(t,e||[])).next());}))}function e(t){return t&&t.__esModule&&Object.prototype.hasOwnProperty.call(t,"default")?t.default:t}"function"==typeof SuppressedError&&SuppressedError;var s,i={},r={},n={};var o,a,c,h={};function l(){if(o)return h;o=1,Object.defineProperty(h,"__esModule",{value:!0});return h.default={"〇":0,"一":1,"二":2,"三":3,"四":4,"五":5,"六":6,"七":7,"八":8,"九":9,"０":0,"１":1,"２":2,"３":3,"４":4,"５":5,"６":6,"７":7,"８":8,"９":9},h}function d(){return a||(a=1,function(t){Object.defineProperty(t,"__esModule",{value:!0}),t.zen2han=t.n2kan=t.kan2n=t.splitLargeNumber=t.normalize=t.smallNumbers=t.largeNumbers=void 0;const e=(s||(s=1,Object.defineProperty(n,"__esModule",{value:!0}),n.default={"零":"〇","壱":"一","壹":"一","弐":"二","弍":"二","貳":"二","貮":"二","参":"三","參":"三","肆":"四","伍":"五","陸":"六","漆":"七","捌":"八","玖":"九","拾":"十","廿":"二十","陌":"百","佰":"百","阡":"千","仟":"千","萬":"万"}),n),i=l();function r(e){if(e.match(/^[0-9]+$/))return Number(e);let s=o(e),r=0;for(const e in t.smallNumbers){const n=new RegExp(`(.*)${e}`),o=s.match(n);if(o){let n=1;o[1]&&(n=o[1].match(/^[0-9]+$/)?Number(o[1]):i.default[o[1]]),r+=n*t.smallNumbers[e],s=s.replace(o[0],"");}}if(s)if(s.match(/^[0-9]+$/))r+=Number(s);else for(let t=0;t<s.length;t++){const e=s[t],n=s.length-t-1;r+=i.default[e]*10**n;}return r}function o(t){return t.replace(/[０-９]/g,(t=>String.fromCharCode(t.charCodeAt(0)-65248)))}t.largeNumbers={"兆":1e12,"億":1e8,"万":1e4},t.smallNumbers={"千":1e3,"百":100,"十":10},t.normalize=function(t){for(const s in e.default){const i=new RegExp(s,"g");t=t.replace(i,e.default[s]);}return t},t.splitLargeNumber=function(e){let s=e;const i={};for(const e in t.largeNumbers){const t=new RegExp(`(.+)${e}`),n=s.match(t);n?(i[e]=r(n[1]),s=s.replace(n[0],"")):i[e]=0;}return i["千"]=s?r(s):0,i},t.kan2n=r,t.n2kan=function(e){const s=Object.keys(i.default);let r=e,n="";for(const e in t.smallNumbers){const i=Math.floor(r/t.smallNumbers[e]);i&&(r-=i*t.smallNumbers[e],n=1===i?`${n}${e}`:`${n}${s[i]}${e}`);}return r&&(n=`${n}${s[r]}`),n},t.zen2han=o;}(r)),r}var u=function(){if(c)return i;c=1,Object.defineProperty(i,"__esModule",{value:!0}),i.findKanjiNumbers=i.number2kanji=i.kanji2number=void 0;const t=d(),e=l();return i.kanji2number=function(s){if((s=(0, t.normalize)(s)).match("〇")||s.match(/^[〇一二三四五六七八九]+$/)){for(const t in e.default){const i=new RegExp(t,"g");s=s.replace(i,e.default[t].toString());}return Number(s)}{let e=0;const i=(0, t.splitLargeNumber)(s);for(const s in t.largeNumbers)if(i[s]){e+=t.largeNumbers[s]*i[s];}if(!Number.isInteger(e)||!Number.isInteger(i["千"]))throw new TypeError("The attribute of kanji2number() must be a Japanese numeral as integer.");return e+i["千"]}},i.number2kanji=function(s){if(!s.toString().match(/^[0-9]+$/))throw new TypeError("The attribute of number2kanji() must be integer.");Object.keys(e.default);let i=s,r="";for(const e in t.largeNumbers){const s=Math.floor(i/t.largeNumbers[e]);s&&(i-=s*t.largeNumbers[e],r=`${r}${(0, t.n2kan)(s)}${e}`);}return i&&(r=`${r}${(0, t.n2kan)(i)}`),r||"〇"},i.findKanjiNumbers=function(t){const e="([0-9０-９]*)|([〇一二三四五六七八九壱壹弐弍貳貮参參肆伍陸漆捌玖]*)",s=`((${e})(千|阡|仟))?((${e})(百|陌|佰))?((${e})(十|拾))?(${e})?`,i=new RegExp(`((${s}兆)?(${s}億)?(${s}(万|萬))?${s})`,"g"),r=t.match(i);return r?r.filter((t=>!(t.match(/^[0-9０-９]+$/)||!t.length||"兆"===t||"億"===t||"万"===t||"萬"===t))):[]},i}();const f={japaneseAddressesApi:"https://japanese-addresses-v2.geoloniamaps.com/api/ja",cacheSize:1e3},p$1=(t,e)=>{const s=e||{};let i=new URL(`${f.japaneseAddressesApi}${t}`).toString();f.geoloniaApiKey&&(i+=`?geolonia-api-key=${f.geoloniaApiKey}`);const r={};let n;if(void 0!==s.length&&void 0!==s.offset&&(r.Range=`bytes=${s.offset}-${s.offset+s.length-1}`),"undefined"!=typeof fetch)n=fetch;else {if("undefined"==typeof window)throw new Error("fetch is not available in this environment");n=window.fetch;}return n(i,{headers:r})},g=t=>{const e=u.findKanjiNumbers(t);for(let s=0;s<e.length;s++)try{t=t.replace(e[s],u.kanji2number(e[s]));}catch(t){}return t},m=t=>t.replace(/[Ａ-Ｚａ-ｚ０-９]/g,(t=>String.fromCharCode(t.charCodeAt(0)-65248))),v=[{pref:"香川県",city:"仲多度郡まんのう町",town:"勝浦",pattern:"^字?家[6六]",result:"家六"},{pref:"愛知県",city:"あま市",town:"西今宿",pattern:"^字?梶村[1一]",result:"梶村一"},{pref:"香川県",city:"丸亀市",town:"原田町",pattern:"^字?東三分[1一]",result:"東三分一"}],_=[[{src:"亞",dst:"亜"},{src:"圍",dst:"囲"},{src:"壹",dst:"壱"},{src:"榮",dst:"栄"},{src:"驛",dst:"駅"},{src:"應",dst:"応"},{src:"櫻",dst:"桜"},{src:"假",dst:"仮"},{src:"會",dst:"会"},{src:"懷",dst:"懐"},{src:"覺",dst:"覚"},{src:"樂",dst:"楽"},{src:"陷",dst:"陥"},{src:"歡",dst:"歓"},{src:"氣",dst:"気"},{src:"戲",dst:"戯"},{src:"據",dst:"拠"},{src:"挾",dst:"挟"},{src:"區",dst:"区"},{src:"徑",dst:"径"},{src:"溪",dst:"渓"},{src:"輕",dst:"軽"},{src:"藝",dst:"芸"},{src:"儉",dst:"倹"},{src:"圈",dst:"圏"},{src:"權",dst:"権"},{src:"嚴",dst:"厳"},{src:"恆",dst:"恒"},{src:"國",dst:"国"},{src:"齋",dst:"斎"},{src:"雜",dst:"雑"},{src:"蠶",dst:"蚕"},{src:"殘",dst:"残"},{src:"兒",dst:"児"},{src:"實",dst:"実"},{src:"釋",dst:"釈"},{src:"從",dst:"従"},{src:"縱",dst:"縦"},{src:"敍",dst:"叙"},{src:"燒",dst:"焼"},{src:"條",dst:"条"},{src:"剩",dst:"剰"},{src:"壤",dst:"壌"},{src:"釀",dst:"醸"},{src:"眞",dst:"真"},{src:"盡",dst:"尽"},{src:"醉",dst:"酔"},{src:"髓",dst:"髄"},{src:"聲",dst:"声"},{src:"竊",dst:"窃"},{src:"淺",dst:"浅"},{src:"錢",dst:"銭"},{src:"禪",dst:"禅"},{src:"爭",dst:"争"},{src:"插",dst:"挿"},{src:"騷",dst:"騒"},{src:"屬",dst:"属"},{src:"對",dst:"対"},{src:"滯",dst:"滞"},{src:"擇",dst:"択"},{src:"單",dst:"単"},{src:"斷",dst:"断"},{src:"癡",dst:"痴"},{src:"鑄",dst:"鋳"},{src:"敕",dst:"勅"},{src:"鐵",dst:"鉄"},{src:"傳",dst:"伝"},{src:"黨",dst:"党"},{src:"鬪",dst:"闘"},{src:"屆",dst:"届"},{src:"腦",dst:"脳"},{src:"廢",dst:"廃"},{src:"發",dst:"発"},{src:"蠻",dst:"蛮"},{src:"拂",dst:"払"},{src:"邊",dst:"辺"},{src:"瓣",dst:"弁"},{src:"寶",dst:"宝"},{src:"沒",dst:"没"},{src:"滿",dst:"満"},{src:"藥",dst:"薬"},{src:"餘",dst:"余"},{src:"樣",dst:"様"},{src:"亂",dst:"乱"},{src:"兩",dst:"両"},{src:"禮",dst:"礼"},{src:"靈",dst:"霊"},{src:"爐",dst:"炉"},{src:"灣",dst:"湾"},{src:"惡",dst:"悪"},{src:"醫",dst:"医"},{src:"飮",dst:"飲"},{src:"營",dst:"営"},{src:"圓",dst:"円"},{src:"歐",dst:"欧"},{src:"奧",dst:"奥"},{src:"價",dst:"価"},{src:"繪",dst:"絵"},{src:"擴",dst:"拡"},{src:"學",dst:"学"},{src:"罐",dst:"缶"},{src:"勸",dst:"勧"},{src:"觀",dst:"観"},{src:"歸",dst:"帰"},{src:"犧",dst:"犠"},{src:"擧",dst:"挙"},{src:"狹",dst:"狭"},{src:"驅",dst:"駆"},{src:"莖",dst:"茎"},{src:"經",dst:"経"},{src:"繼",dst:"継"},{src:"缺",dst:"欠"},{src:"劍",dst:"剣"},{src:"檢",dst:"検"},{src:"顯",dst:"顕"},{src:"廣",dst:"広"},{src:"鑛",dst:"鉱"},{src:"碎",dst:"砕"},{src:"劑",dst:"剤"},{src:"參",dst:"参"},{src:"慘",dst:"惨"},{src:"絲",dst:"糸"},{src:"辭",dst:"辞"},{src:"舍",dst:"舎"},{src:"壽",dst:"寿"},{src:"澁",dst:"渋"},{src:"肅",dst:"粛"},{src:"將",dst:"将"},{src:"證",dst:"証"},{src:"乘",dst:"乗"},{src:"疊",dst:"畳"},{src:"孃",dst:"嬢"},{src:"觸",dst:"触"},{src:"寢",dst:"寝"},{src:"圖",dst:"図"},{src:"穗",dst:"穂"},{src:"樞",dst:"枢"},{src:"齊",dst:"斉"},{src:"攝",dst:"摂"},{src:"戰",dst:"戦"},{src:"潛",dst:"潜"},{src:"雙",dst:"双"},{src:"莊",dst:"荘"},{src:"裝",dst:"装"},{src:"藏",dst:"蔵"},{src:"續",dst:"続"},{src:"體",dst:"体"},{src:"臺",dst:"台"},{src:"澤",dst:"沢"},{src:"膽",dst:"胆"},{src:"彈",dst:"弾"},{src:"蟲",dst:"虫"},{src:"廳",dst:"庁"},{src:"鎭",dst:"鎮"},{src:"點",dst:"点"},{src:"燈",dst:"灯"},{src:"盜",dst:"盗"},{src:"獨",dst:"独"},{src:"貳",dst:"弐"},{src:"霸",dst:"覇"},{src:"賣",dst:"売"},{src:"髮",dst:"髪"},{src:"祕",dst:"秘"},{src:"佛",dst:"仏"},{src:"變",dst:"変"},{src:"辯",dst:"弁"},{src:"豐",dst:"豊"},{src:"飜",dst:"翻"},{src:"默",dst:"黙"},{src:"與",dst:"与"},{src:"譽",dst:"誉"},{src:"謠",dst:"謡"},{src:"覽",dst:"覧"},{src:"獵",dst:"猟"},{src:"勵",dst:"励"},{src:"齡",dst:"齢"},{src:"勞",dst:"労"},{src:"壓",dst:"圧"},{src:"爲",dst:"為"},{src:"隱",dst:"隠"},{src:"衞",dst:"衛"},{src:"鹽",dst:"塩"},{src:"毆",dst:"殴"},{src:"穩",dst:"穏"},{src:"畫",dst:"画"},{src:"壞",dst:"壊"},{src:"殼",dst:"殻"},{src:"嶽",dst:"岳"},{src:"卷",dst:"巻"},{src:"關",dst:"関"},{src:"顏",dst:"顔"},{src:"僞",dst:"偽"},{src:"舊",dst:"旧"},{src:"峽",dst:"峡"},{src:"曉",dst:"暁"},{src:"勳",dst:"勲"},{src:"惠",dst:"恵"},{src:"螢",dst:"蛍"},{src:"鷄",dst:"鶏"},{src:"縣",dst:"県"},{src:"險",dst:"険"},{src:"獻",dst:"献"},{src:"驗",dst:"験"},{src:"效",dst:"効"},{src:"號",dst:"号"},{src:"濟",dst:"済"},{src:"册",dst:"冊"},{src:"棧",dst:"桟"},{src:"贊",dst:"賛"},{src:"齒",dst:"歯"},{src:"濕",dst:"湿"},{src:"寫",dst:"写"},{src:"收",dst:"収"},{src:"獸",dst:"獣"},{src:"處",dst:"処"},{src:"稱",dst:"称"},{src:"奬",dst:"奨"},{src:"淨",dst:"浄"},{src:"繩",dst:"縄"},{src:"讓",dst:"譲"},{src:"囑",dst:"嘱"},{src:"愼",dst:"慎"},{src:"粹",dst:"粋"},{src:"隨",dst:"随"},{src:"數",dst:"数"},{src:"靜",dst:"静"},{src:"專",dst:"専"},{src:"踐",dst:"践"},{src:"纖",dst:"繊"},{src:"壯",dst:"壮"},{src:"搜",dst:"捜"},{src:"總",dst:"総"},{src:"臟",dst:"臓"},{src:"墮",dst:"堕"},{src:"帶",dst:"帯"},{src:"瀧",dst:"滝"},{src:"擔",dst:"担"},{src:"團",dst:"団"},{src:"遲",dst:"遅"},{src:"晝",dst:"昼"},{src:"聽",dst:"聴"},{src:"遞",dst:"逓"},{src:"轉",dst:"転"},{src:"當",dst:"当"},{src:"稻",dst:"稲"},{src:"讀",dst:"読"},{src:"惱",dst:"悩"},{src:"拜",dst:"拝"},{src:"麥",dst:"麦"},{src:"拔",dst:"抜"},{src:"濱",dst:"浜"},{src:"竝",dst:"並"},{src:"辨",dst:"弁"},{src:"舖",dst:"舗"},{src:"襃",dst:"褒"},{src:"萬",dst:"万"},{src:"譯",dst:"訳"},{src:"豫",dst:"予"},{src:"搖",dst:"揺"},{src:"來",dst:"来"},{src:"龍",dst:"竜"},{src:"壘",dst:"塁"},{src:"隸",dst:"隷"},{src:"戀",dst:"恋"},{src:"樓",dst:"楼"},{src:"鰺",dst:"鯵"},{src:"鶯",dst:"鴬"},{src:"蠣",dst:"蛎"},{src:"攪",dst:"撹"},{src:"竈",dst:"竃"},{src:"灌",dst:"潅"},{src:"諫",dst:"諌"},{src:"頸",dst:"頚"},{src:"礦",dst:"砿"},{src:"蘂",dst:"蕊"},{src:"靱",dst:"靭"},{src:"賤",dst:"賎"},{src:"壺",dst:"壷"},{src:"礪",dst:"砺"},{src:"檮",dst:"梼"},{src:"濤",dst:"涛"},{src:"邇",dst:"迩"},{src:"蠅",dst:"蝿"},{src:"檜",dst:"桧"},{src:"儘",dst:"侭"},{src:"藪",dst:"薮"},{src:"籠",dst:"篭"},{src:"彌",dst:"弥"},{src:"麩",dst:"麸"},{src:"驒",dst:"騨"}]].flat().reduce(((t,e)=>{const s=`(${e.src}|${e.dst})`;return Object.assign(Object.assign({},t),{[e.src]:s,[e.dst]:s})}),{}),y=new RegExp(Array.from(new Set(Object.values(_))).join("|"),"g"),b=t=>{let e=t;return e=e.replace(/三栄町|四谷三栄町/g,"(三栄町|四谷三栄町)").replace(/鬮野川|くじ野川|くじの川/g,"(鬮野川|くじ野川|くじの川)").replace(/柿碕町|柿さき町/g,"(柿碕町|柿さき町)").replace(/通り|とおり/g,"(通り|とおり)").replace(/埠頭|ふ頭/g,"(埠頭|ふ頭)").replace(/番町|番丁/g,"(番町|番丁)").replace(/大冝|大宜/g,"(大冝|大宜)").replace(/穝|さい/g,"(穝|さい)").replace(/杁|えぶり/g,"(杁|えぶり)").replace(/薭|稗|ひえ|ヒエ/g,"(薭|稗|ひえ|ヒエ)").replace(/[之ノの]/g,"[之ノの]").replace(/[ヶケが]/g,"[ヶケが]").replace(/[ヵカか力]/g,"[ヵカか力]").replace(/[ッツっつ]/g,"[ッツっつ]").replace(/[ニ二]/g,"[ニ二]").replace(/[ハ八]/g,"[ハ八]").replace(/塚|塚/g,"(塚|塚)").replace(/釜|竈/g,"(釜|竈)").replace(/條|条/g,"(條|条)").replace(/狛|拍/g,"(狛|拍)").replace(/藪|薮/g,"(藪|薮)").replace(/渕|淵/g,"(渕|淵)").replace(/エ|ヱ|え/g,"(エ|ヱ|え)").replace(/曾|曽/g,"(曾|曽)").replace(/舟|船/g,"(舟|船)").replace(/莵|菟/g,"(莵|菟)").replace(/市|巿/g,"(市|巿)").replace(/崎|﨑/g,"(崎|﨑)"),e=e.replace(y,(t=>_[t])),e};var w,k={exports:{}};
     /* @license
     Papa Parse
     v5.4.1
     https://github.com/mholt/PapaParse
     License: MIT
-    */var S=e((w||(w=1,k.exports=function t(){var e="undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==e?e:{},s=!e.document&&!!e.postMessage,i=e.IS_PAPA_WORKER||!1,r={},n=0,o={parse:function(s,i){var a=(i=i||{}).dynamicTyping||!1;if(w(a)&&(i.dynamicTypingFunction=a,a={}),i.dynamicTyping=a,i.transform=!!w(i.transform)&&i.transform,i.worker&&o.WORKERS_SUPPORTED){var c=function(){if(!o.WORKERS_SUPPORTED)return !1;var s,i,a=(s=e.URL||e.webkitURL||null,i=t.toString(),o.BLOB_URL||(o.BLOB_URL=s.createObjectURL(new Blob(["var global = (function() { if (typeof self !== 'undefined') { return self; } if (typeof window !== 'undefined') { return window; } if (typeof global !== 'undefined') { return global; } return {}; })(); global.IS_PAPA_WORKER=true; ","(",i,")();"],{type:"text/javascript"})))),c=new e.Worker(a);return c.onmessage=m,c.id=n++,r[c.id]=c}();return c.userStep=i.step,c.userChunk=i.chunk,c.userComplete=i.complete,c.userError=i.error,i.step=w(i.step),i.chunk=w(i.chunk),i.complete=w(i.complete),i.error=w(i.error),delete i.worker,void c.postMessage({input:s,config:i,workerId:c.id})}var f=null;return o.NODE_STREAM_INPUT,"string"==typeof s?(s=function(t){return 65279===t.charCodeAt(0)?t.slice(1):t}(s),f=i.download?new h(i):new d(i)):!0===s.readable&&w(s.read)&&w(s.on)?f=new u(i):(e.File&&s instanceof File||s instanceof Object)&&(f=new l(i)),f.stream(s)},unparse:function(t,e){var s=!1,i=!0,r=",",n="\r\n",a='"',c=a+a,h=!1,l=null,d=!1;!function(){if("object"==typeof e){if("string"!=typeof e.delimiter||o.BAD_DELIMITERS.filter((function(t){return -1!==e.delimiter.indexOf(t)})).length||(r=e.delimiter),("boolean"==typeof e.quotes||"function"==typeof e.quotes||Array.isArray(e.quotes))&&(s=e.quotes),"boolean"!=typeof e.skipEmptyLines&&"string"!=typeof e.skipEmptyLines||(h=e.skipEmptyLines),"string"==typeof e.newline&&(n=e.newline),"string"==typeof e.quoteChar&&(a=e.quoteChar),"boolean"==typeof e.header&&(i=e.header),Array.isArray(e.columns)){if(0===e.columns.length)throw new Error("Option columns is empty");l=e.columns;}void 0!==e.escapeChar&&(c=e.escapeChar+a),("boolean"==typeof e.escapeFormulae||e.escapeFormulae instanceof RegExp)&&(d=e.escapeFormulae instanceof RegExp?e.escapeFormulae:/^[=+\-@\t\r].*$/);}}();var u=new RegExp(p(a),"g");if("string"==typeof t&&(t=JSON.parse(t)),Array.isArray(t)){if(!t.length||Array.isArray(t[0]))return f(null,t,h);if("object"==typeof t[0])return f(l||Object.keys(t[0]),t,h)}else if("object"==typeof t)return "string"==typeof t.data&&(t.data=JSON.parse(t.data)),Array.isArray(t.data)&&(t.fields||(t.fields=t.meta&&t.meta.fields||l),t.fields||(t.fields=Array.isArray(t.data[0])?t.fields:"object"==typeof t.data[0]?Object.keys(t.data[0]):[]),Array.isArray(t.data[0])||"object"==typeof t.data[0]||(t.data=[t.data])),f(t.fields||[],t.data||[],h);throw new Error("Unable to serialize unrecognized input");function f(t,e,s){var o="";"string"==typeof t&&(t=JSON.parse(t)),"string"==typeof e&&(e=JSON.parse(e));var a=Array.isArray(t)&&0<t.length,c=!Array.isArray(e[0]);if(a&&i){for(var h=0;h<t.length;h++)0<h&&(o+=r),o+=g(t[h],h);0<e.length&&(o+=n);}for(var l=0;l<e.length;l++){var d=a?t.length:e[l].length,u=!1,f=a?0===Object.keys(e[l]).length:0===e[l].length;if(s&&!a&&(u="greedy"===s?""===e[l].join("").trim():1===e[l].length&&0===e[l][0].length),"greedy"===s&&a){for(var p=[],m=0;m<d;m++){var v=c?t[m]:m;p.push(e[l][v]);}u=""===p.join("").trim();}if(!u){for(var _=0;_<d;_++){0<_&&!f&&(o+=r);var y=a&&c?t[_]:_;o+=g(e[l][y],_);}l<e.length-1&&(!s||0<d&&!f)&&(o+=n);}}return o}function g(t,e){if(null==t)return "";if(t.constructor===Date)return JSON.stringify(t).slice(1,25);var i=!1;d&&"string"==typeof t&&d.test(t)&&(t="'"+t,i=!0);var n=t.toString().replace(u,c);return (i=i||!0===s||"function"==typeof s&&s(t,e)||Array.isArray(s)&&s[e]||function(t,e){for(var s=0;s<e.length;s++)if(-1<t.indexOf(e[s]))return !0;return !1}(n,o.BAD_DELIMITERS)||-1<n.indexOf(r)||" "===n.charAt(0)||" "===n.charAt(n.length-1))?a+n+a:n}}};if(o.RECORD_SEP=String.fromCharCode(30),o.UNIT_SEP=String.fromCharCode(31),o.BYTE_ORDER_MARK="\ufeff",o.BAD_DELIMITERS=["\r","\n",'"',o.BYTE_ORDER_MARK],o.WORKERS_SUPPORTED=!s&&!!e.Worker,o.NODE_STREAM_INPUT=1,o.LocalChunkSize=10485760,o.RemoteChunkSize=5242880,o.DefaultDelimiter=",",o.Parser=g,o.ParserHandle=f,o.NetworkStreamer=h,o.FileStreamer=l,o.StringStreamer=d,o.ReadableStreamStreamer=u,e.jQuery){var a=e.jQuery;a.fn.parse=function(t){var s=t.config||{},i=[];return this.each((function(t){if("INPUT"!==a(this).prop("tagName").toUpperCase()||"file"!==a(this).attr("type").toLowerCase()||!e.FileReader||!this.files||0===this.files.length)return !0;for(var r=0;r<this.files.length;r++)i.push({file:this.files[r],inputElem:this,instanceConfig:a.extend({},s)});})),r(),this;function r(){if(0!==i.length){var e,s,r,c,h=i[0];if(w(t.before)){var l=t.before(h.file,h.inputElem);if("object"==typeof l){if("abort"===l.action)return e="AbortError",s=h.file,r=h.inputElem,c=l.reason,void(w(t.error)&&t.error({name:e},s,r,c));if("skip"===l.action)return void n();"object"==typeof l.config&&(h.instanceConfig=a.extend(h.instanceConfig,l.config));}else if("skip"===l)return void n()}var d=h.instanceConfig.complete;h.instanceConfig.complete=function(t){w(d)&&d(t,h.file,h.inputElem),n();},o.parse(h.file,h.instanceConfig);}else w(t.complete)&&t.complete();}function n(){i.splice(0,1),r();}};}function c(t){this._handle=null,this._finished=!1,this._completed=!1,this._halted=!1,this._input=null,this._baseIndex=0,this._partialLine="",this._rowCount=0,this._start=0,this._nextChunk=null,this.isFirstChunk=!0,this._completeResults={data:[],errors:[],meta:{}},function(t){var e=y(t);e.chunkSize=parseInt(e.chunkSize),t.step||t.chunk||(e.chunkSize=null),this._handle=new f(e),(this._handle.streamer=this)._config=e;}.call(this,t),this.parseChunk=function(t,s){if(this.isFirstChunk&&w(this._config.beforeFirstChunk)){var r=this._config.beforeFirstChunk(t);void 0!==r&&(t=r);}this.isFirstChunk=!1,this._halted=!1;var n=this._partialLine+t;this._partialLine="";var a=this._handle.parse(n,this._baseIndex,!this._finished);if(!this._handle.paused()&&!this._handle.aborted()){var c=a.meta.cursor;this._finished||(this._partialLine=n.substring(c-this._baseIndex),this._baseIndex=c),a&&a.data&&(this._rowCount+=a.data.length);var h=this._finished||this._config.preview&&this._rowCount>=this._config.preview;if(i)e.postMessage({results:a,workerId:o.WORKER_ID,finished:h});else if(w(this._config.chunk)&&!s){if(this._config.chunk(a,this._handle),this._handle.paused()||this._handle.aborted())return void(this._halted=!0);a=void 0,this._completeResults=void 0;}return this._config.step||this._config.chunk||(this._completeResults.data=this._completeResults.data.concat(a.data),this._completeResults.errors=this._completeResults.errors.concat(a.errors),this._completeResults.meta=a.meta),this._completed||!h||!w(this._config.complete)||a&&a.meta.aborted||(this._config.complete(this._completeResults,this._input),this._completed=!0),h||a&&a.meta.paused||this._nextChunk(),a}this._halted=!0;},this._sendError=function(t){w(this._config.error)?this._config.error(t):i&&this._config.error&&e.postMessage({workerId:o.WORKER_ID,error:t,finished:!1});};}function h(t){var e;(t=t||{}).chunkSize||(t.chunkSize=o.RemoteChunkSize),c.call(this,t),this._nextChunk=s?function(){this._readChunk(),this._chunkLoaded();}:function(){this._readChunk();},this.stream=function(t){this._input=t,this._nextChunk();},this._readChunk=function(){if(this._finished)this._chunkLoaded();else {if(e=new XMLHttpRequest,this._config.withCredentials&&(e.withCredentials=this._config.withCredentials),s||(e.onload=b(this._chunkLoaded,this),e.onerror=b(this._chunkError,this)),e.open(this._config.downloadRequestBody?"POST":"GET",this._input,!s),this._config.downloadRequestHeaders){var t=this._config.downloadRequestHeaders;for(var i in t)e.setRequestHeader(i,t[i]);}if(this._config.chunkSize){var r=this._start+this._config.chunkSize-1;e.setRequestHeader("Range","bytes="+this._start+"-"+r);}try{e.send(this._config.downloadRequestBody);}catch(t){this._chunkError(t.message);}s&&0===e.status&&this._chunkError();}},this._chunkLoaded=function(){4===e.readyState&&(e.status<200||400<=e.status?this._chunkError():(this._start+=this._config.chunkSize?this._config.chunkSize:e.responseText.length,this._finished=!this._config.chunkSize||this._start>=function(t){var e=t.getResponseHeader("Content-Range");return null===e?-1:parseInt(e.substring(e.lastIndexOf("/")+1))}(e),this.parseChunk(e.responseText)));},this._chunkError=function(t){var s=e.statusText||t;this._sendError(new Error(s));};}function l(t){var e,s;(t=t||{}).chunkSize||(t.chunkSize=o.LocalChunkSize),c.call(this,t);var i="undefined"!=typeof FileReader;this.stream=function(t){this._input=t,s=t.slice||t.webkitSlice||t.mozSlice,i?((e=new FileReader).onload=b(this._chunkLoaded,this),e.onerror=b(this._chunkError,this)):e=new FileReaderSync,this._nextChunk();},this._nextChunk=function(){this._finished||this._config.preview&&!(this._rowCount<this._config.preview)||this._readChunk();},this._readChunk=function(){var t=this._input;if(this._config.chunkSize){var r=Math.min(this._start+this._config.chunkSize,this._input.size);t=s.call(t,this._start,r);}var n=e.readAsText(t,this._config.encoding);i||this._chunkLoaded({target:{result:n}});},this._chunkLoaded=function(t){this._start+=this._config.chunkSize,this._finished=!this._config.chunkSize||this._start>=this._input.size,this.parseChunk(t.target.result);},this._chunkError=function(){this._sendError(e.error);};}function d(t){var e;c.call(this,t=t||{}),this.stream=function(t){return e=t,this._nextChunk()},this._nextChunk=function(){if(!this._finished){var t,s=this._config.chunkSize;return s?(t=e.substring(0,s),e=e.substring(s)):(t=e,e=""),this._finished=!e,this.parseChunk(t)}};}function u(t){c.call(this,t=t||{});var e=[],s=!0,i=!1;this.pause=function(){c.prototype.pause.apply(this,arguments),this._input.pause();},this.resume=function(){c.prototype.resume.apply(this,arguments),this._input.resume();},this.stream=function(t){this._input=t,this._input.on("data",this._streamData),this._input.on("end",this._streamEnd),this._input.on("error",this._streamError);},this._checkIsFinished=function(){i&&1===e.length&&(this._finished=!0);},this._nextChunk=function(){this._checkIsFinished(),e.length?this.parseChunk(e.shift()):s=!0;},this._streamData=b((function(t){try{e.push("string"==typeof t?t:t.toString(this._config.encoding)),s&&(s=!1,this._checkIsFinished(),this.parseChunk(e.shift()));}catch(t){this._streamError(t);}}),this),this._streamError=b((function(t){this._streamCleanUp(),this._sendError(t);}),this),this._streamEnd=b((function(){this._streamCleanUp(),i=!0,this._streamData("");}),this),this._streamCleanUp=b((function(){this._input.removeListener("data",this._streamData),this._input.removeListener("end",this._streamEnd),this._input.removeListener("error",this._streamError);}),this);}function f(t){var e,s,i,r=Math.pow(2,53),n=-r,a=/^\s*-?(\d+\.?|\.\d+|\d+\.\d+)([eE][-+]?\d+)?\s*$/,c=/^((\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z)))$/,h=this,l=0,d=0,u=!1,f=!1,m=[],v={data:[],errors:[],meta:{}};if(w(t.step)){var _=t.step;t.step=function(e){if(v=e,S())k();else {if(k(),0===v.data.length)return;l+=e.data.length,t.preview&&l>t.preview?s.abort():(v.data=v.data[0],_(v,h));}};}function b(e){return "greedy"===t.skipEmptyLines?""===e.join("").trim():1===e.length&&0===e[0].length}function k(){return v&&i&&(z("Delimiter","UndetectableDelimiter","Unable to auto-detect delimiting character; defaulted to '"+o.DefaultDelimiter+"'"),i=!1),t.skipEmptyLines&&(v.data=v.data.filter((function(t){return !b(t)}))),S()&&function(){if(v)if(Array.isArray(v.data[0])){for(var e=0;S()&&e<v.data.length;e++)v.data[e].forEach(s);v.data.splice(0,1);}else v.data.forEach(s);function s(e,s){w(t.transformHeader)&&(e=t.transformHeader(e,s)),m.push(e);}}(),function(){if(!v||!t.header&&!t.dynamicTyping&&!t.transform)return v;function e(e,s){var i,r=t.header?{}:[];for(i=0;i<e.length;i++){var n=i,o=e[i];t.header&&(n=i>=m.length?"__parsed_extra":m[i]),t.transform&&(o=t.transform(o,n)),o=x(n,o),"__parsed_extra"===n?(r[n]=r[n]||[],r[n].push(o)):r[n]=o;}return t.header&&(i>m.length?z("FieldMismatch","TooManyFields","Too many fields: expected "+m.length+" fields but parsed "+i,d+s):i<m.length&&z("FieldMismatch","TooFewFields","Too few fields: expected "+m.length+" fields but parsed "+i,d+s)),r}var s=1;return !v.data.length||Array.isArray(v.data[0])?(v.data=v.data.map(e),s=v.data.length):v.data=e(v.data,0),t.header&&v.meta&&(v.meta.fields=m),d+=s,v}()}function S(){return t.header&&0===m.length}function x(e,s){return i=e,t.dynamicTypingFunction&&void 0===t.dynamicTyping[i]&&(t.dynamicTyping[i]=t.dynamicTypingFunction(i)),!0===(t.dynamicTyping[i]||t.dynamicTyping)?"true"===s||"TRUE"===s||"false"!==s&&"FALSE"!==s&&(function(t){if(a.test(t)){var e=parseFloat(t);if(n<e&&e<r)return !0}return !1}(s)?parseFloat(s):c.test(s)?new Date(s):""===s?null:s):s;var i;}function z(t,e,s,i){var r={type:t,code:e,message:s};void 0!==i&&(r.row=i),v.errors.push(r);}this.parse=function(r,n,a){var c=t.quoteChar||'"';if(t.newline||(t.newline=function(t,e){t=t.substring(0,1048576);var s=new RegExp(p(e)+"([^]*?)"+p(e),"gm"),i=(t=t.replace(s,"")).split("\r"),r=t.split("\n"),n=1<r.length&&r[0].length<i[0].length;if(1===i.length||n)return "\n";for(var o=0,a=0;a<i.length;a++)"\n"===i[a][0]&&o++;return o>=i.length/2?"\r\n":"\r"}(r,c)),i=!1,t.delimiter)w(t.delimiter)&&(t.delimiter=t.delimiter(r),v.meta.delimiter=t.delimiter);else {var h=function(e,s,i,r,n){var a,c,h,l;n=n||[",","\t","|",";",o.RECORD_SEP,o.UNIT_SEP];for(var d=0;d<n.length;d++){var u=n[d],f=0,p=0,m=0;h=void 0;for(var v=new g({comments:r,delimiter:u,newline:s,preview:10}).parse(e),_=0;_<v.data.length;_++)if(i&&b(v.data[_]))m++;else {var y=v.data[_].length;p+=y,void 0!==h?0<y&&(f+=Math.abs(y-h),h=y):h=y;}0<v.data.length&&(p/=v.data.length-m),(void 0===c||f<=c)&&(void 0===l||l<p)&&1.99<p&&(c=f,a=u,l=p);}return {successful:!!(t.delimiter=a),bestDelimiter:a}}(r,t.newline,t.skipEmptyLines,t.comments,t.delimitersToGuess);h.successful?t.delimiter=h.bestDelimiter:(i=!0,t.delimiter=o.DefaultDelimiter),v.meta.delimiter=t.delimiter;}var l=y(t);return t.preview&&t.header&&l.preview++,e=r,s=new g(l),v=s.parse(e,n,a),k(),u?{meta:{paused:!0}}:v||{meta:{paused:!1}}},this.paused=function(){return u},this.pause=function(){u=!0,s.abort(),e=w(t.chunk)?"":e.substring(s.getCharIndex());},this.resume=function(){h.streamer._halted?(u=!1,h.streamer.parseChunk(e,!0)):setTimeout(h.resume,3);},this.aborted=function(){return f},this.abort=function(){f=!0,s.abort(),v.meta.aborted=!0,w(t.complete)&&t.complete(v),e="";};}function p(t){return t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}function g(t){var e,s=(t=t||{}).delimiter,i=t.newline,r=t.comments,n=t.step,a=t.preview,c=t.fastMode,h=e=void 0===t.quoteChar||null===t.quoteChar?'"':t.quoteChar;if(void 0!==t.escapeChar&&(h=t.escapeChar),("string"!=typeof s||-1<o.BAD_DELIMITERS.indexOf(s))&&(s=","),r===s)throw new Error("Comment character same as delimiter");!0===r?r="#":("string"!=typeof r||-1<o.BAD_DELIMITERS.indexOf(r))&&(r=!1),"\n"!==i&&"\r"!==i&&"\r\n"!==i&&(i="\n");var l=0,d=!1;this.parse=function(o,u,f){if("string"!=typeof o)throw new Error("Input must be a string");var g=o.length,m=s.length,v=i.length,_=r.length,y=w(n),b=[],k=[],S=[],x=l=0;if(!o)return K();if(t.header&&!u){var z=o.split(i)[0].split(s),E=[],A={},L=!1;for(var O in z){var T=z[O];w(t.transformHeader)&&(T=t.transformHeader(T,O));var F=T,R=A[T]||0;for(0<R&&(L=!0,F=T+"_"+R),A[T]=R+1;E.includes(F);)F=F+"_"+R;E.push(F);}if(L){var C=o.split(i);C[0]=E.join(s),o=C.join(i);}}if(c||!1!==c&&-1===o.indexOf(e)){for(var D=o.split(i),j=0;j<D.length;j++){if(S=D[j],l+=S.length,j!==D.length-1)l+=i.length;else if(f)return K();if(!r||S.substring(0,_)!==r){if(y){if(b=[],B(S.split(s)),H(),d)return K()}else B(S.split(s));if(a&&a<=j)return b=b.slice(0,a),K(!0)}}return K()}for(var $=o.indexOf(s,l),I=o.indexOf(i,l),M=new RegExp(p(h)+p(e),"g"),N=o.indexOf(e,l);;)if(o[l]!==e)if(r&&0===S.length&&o.substring(l,l+_)===r){if(-1===I)return K();l=I+v,I=o.indexOf(i,l),$=o.indexOf(s,l);}else if(-1!==$&&($<I||-1===I))S.push(o.substring(l,$)),l=$+m,$=o.indexOf(s,l);else {if(-1===I)break;if(S.push(o.substring(l,I)),q(I+v),y&&(H(),d))return K();if(a&&b.length>=a)return K(!0)}else for(N=l,l++;;){if(-1===(N=o.indexOf(e,N+1)))return f||k.push({type:"Quotes",code:"MissingQuotes",message:"Quoted field unterminated",row:b.length,index:l}),G();if(N===g-1)return G(o.substring(l,N).replace(M,e));if(e!==h||o[N+1]!==h){if(e===h||0===N||o[N-1]!==h){-1!==$&&$<N+1&&($=o.indexOf(s,N+1)),-1!==I&&I<N+1&&(I=o.indexOf(i,N+1));var U=P(-1===I?$:Math.min($,I));if(o.substr(N+1+U,m)===s){S.push(o.substring(l,N).replace(M,e)),o[l=N+1+U+m]!==e&&(N=o.indexOf(e,l)),$=o.indexOf(s,l),I=o.indexOf(i,l);break}var W=P(I);if(o.substring(N+1+W,N+1+W+v)===i){if(S.push(o.substring(l,N).replace(M,e)),q(N+1+W+v),$=o.indexOf(s,l),N=o.indexOf(e,l),y&&(H(),d))return K();if(a&&b.length>=a)return K(!0);break}k.push({type:"Quotes",code:"InvalidQuotes",message:"Trailing quote on quoted field is malformed",row:b.length,index:l}),N++;}}else N++;}return G();function B(t){b.push(t),x=l;}function P(t){var e=0;if(-1!==t){var s=o.substring(N+1,t);s&&""===s.trim()&&(e=s.length);}return e}function G(t){return f||(void 0===t&&(t=o.substring(l)),S.push(t),l=g,B(S),y&&H()),K()}function q(t){l=t,B(S),S=[],I=o.indexOf(i,l);}function K(t){return {data:b,errors:k,meta:{delimiter:s,linebreak:i,aborted:d,truncated:!!t,cursor:x+(u||0)}}}function H(){n(K()),b=[],k=[];}},this.abort=function(){d=!0;},this.getCharIndex=function(){return l};}function m(t){var e=t.data,s=r[e.workerId],i=!1;if(e.error)s.userError(e.error,e.file);else if(e.results&&e.results.data){var n={abort:function(){i=!0,v(e.workerId,{data:[],errors:[],meta:{aborted:!0}});},pause:_,resume:_};if(w(s.userStep)){for(var o=0;o<e.results.data.length&&(s.userStep({data:e.results.data[o],errors:e.results.errors,meta:e.results.meta},n),!i);o++);delete e.results;}else w(s.userChunk)&&(s.userChunk(e.results,n,e.file),delete e.results);}e.finished&&!i&&v(e.workerId,e.results);}function v(t,e){var s=r[t];w(s.userComplete)&&s.userComplete(e),s.terminate(),delete r[t];}function _(){throw new Error("Not implemented.")}function y(t){if("object"!=typeof t||null===t)return t;var e=Array.isArray(t)?[]:{};for(var s in t)e[s]=y(t[s]);return e}function b(t,e){return function(){t.apply(e,arguments);}}function w(t){return "function"==typeof t}return i&&(e.onmessage=function(t){var s=t.data;if(void 0===o.WORKER_ID&&s&&(o.WORKER_ID=s.workerId),"string"==typeof s.input)e.postMessage({workerId:o.WORKER_ID,results:o.parse(s.input,s.config),finished:!0});else if(e.File&&s.input instanceof File||s.input instanceof Object){var i=o.parse(s.input,s.config);i&&e.postMessage({workerId:o.WORKER_ID,results:i,finished:!0});}}),(h.prototype=Object.create(c.prototype)).constructor=h,(l.prototype=Object.create(c.prototype)).constructor=l,(d.prototype=Object.create(d.prototype)).constructor=d,(u.prototype=Object.create(c.prototype)).constructor=u,o}()),k.exports));const x="object"==typeof performance&&performance&&"function"==typeof performance.now?performance:Date,z=new Set,E="object"==typeof process&&process?process:{},A=(t,e,s,i)=>{"function"==typeof E.emitWarning?E.emitWarning(t,e,s,i):console.error(`[${s}] ${e}: ${t}`);};let L=globalThis.AbortController,O=globalThis.AbortSignal;if(void 0===L){O=class{onabort;_onabort=[];reason;aborted=!1;addEventListener(t,e){this._onabort.push(e);}},L=class{constructor(){e();}signal=new O;abort(t){if(!this.signal.aborted){this.signal.reason=t,this.signal.aborted=!0;for(const e of this.signal._onabort)e(t);this.signal.onabort?.(t);}}};let t="1"!==E.env?.LRU_CACHE_IGNORE_AC_WARNING;const e=()=>{t&&(t=!1,A("AbortController is not defined. If using lru-cache in node 14, load an AbortController polyfill from the `node-abort-controller` package. A minimal polyfill is provided for use by LRUCache.fetch(), but it should not be relied upon in other contexts (eg, passing it to other APIs that use AbortController/AbortSignal might have undesirable effects). You may disable this with LRU_CACHE_IGNORE_AC_WARNING=1 in the env.","NO_ABORT_CONTROLLER","ENOTSUP",e));};}const T=t=>t&&t===Math.floor(t)&&t>0&&isFinite(t),F=t=>T(t)?t<=Math.pow(2,8)?Uint8Array:t<=Math.pow(2,16)?Uint16Array:t<=Math.pow(2,32)?Uint32Array:t<=Number.MAX_SAFE_INTEGER?R:null:null;class R extends Array{constructor(t){super(t),this.fill(0);}}class C{heap;length;static#t=!1;static create(t){const e=F(t);if(!e)return [];C.#t=!0;const s=new C(t,e);return C.#t=!1,s}constructor(t,e){if(!C.#t)throw new TypeError("instantiate Stack using Stack.create(n)");this.heap=new e(t),this.length=0;}push(t){this.heap[this.length++]=t;}pop(){return this.heap[--this.length]}}class D{#e;#s;#i;#r;#n;#o;ttl;ttlResolution;ttlAutopurge;updateAgeOnGet;updateAgeOnHas;allowStale;noDisposeOnSet;noUpdateTTL;maxEntrySize;sizeCalculation;noDeleteOnFetchRejection;noDeleteOnStaleGet;allowStaleOnFetchAbort;allowStaleOnFetchRejection;ignoreFetchAbort;#a;#c;#h;#l;#d;#u;#f;#p;#g;#m;#v;#_;#y;#b;#w;#k;#S;static unsafeExposeInternals(t){return {starts:t.#y,ttls:t.#b,sizes:t.#_,keyMap:t.#h,keyList:t.#l,valList:t.#d,next:t.#u,prev:t.#f,get head(){return t.#p},get tail(){return t.#g},free:t.#m,isBackgroundFetch:e=>t.#x(e),backgroundFetch:(e,s,i,r)=>t.#z(e,s,i,r),moveToTail:e=>t.#E(e),indexes:e=>t.#A(e),rindexes:e=>t.#L(e),isStale:e=>t.#O(e)}}get max(){return this.#e}get maxSize(){return this.#s}get calculatedSize(){return this.#c}get size(){return this.#a}get fetchMethod(){return this.#n}get memoMethod(){return this.#o}get dispose(){return this.#i}get disposeAfter(){return this.#r}constructor(t){const{max:e=0,ttl:s,ttlResolution:i=1,ttlAutopurge:r,updateAgeOnGet:n,updateAgeOnHas:o,allowStale:a,dispose:c,disposeAfter:h,noDisposeOnSet:l,noUpdateTTL:d,maxSize:u=0,maxEntrySize:f=0,sizeCalculation:p,fetchMethod:g,memoMethod:m,noDeleteOnFetchRejection:v,noDeleteOnStaleGet:_,allowStaleOnFetchRejection:y,allowStaleOnFetchAbort:b,ignoreFetchAbort:w}=t;if(0!==e&&!T(e))throw new TypeError("max option must be a nonnegative integer");const k=e?F(e):Array;if(!k)throw new Error("invalid max value: "+e);if(this.#e=e,this.#s=u,this.maxEntrySize=f||this.#s,this.sizeCalculation=p,this.sizeCalculation){if(!this.#s&&!this.maxEntrySize)throw new TypeError("cannot set sizeCalculation without setting maxSize or maxEntrySize");if("function"!=typeof this.sizeCalculation)throw new TypeError("sizeCalculation set to non-function")}if(void 0!==m&&"function"!=typeof m)throw new TypeError("memoMethod must be a function if defined");if(this.#o=m,void 0!==g&&"function"!=typeof g)throw new TypeError("fetchMethod must be a function if specified");if(this.#n=g,this.#k=!!g,this.#h=new Map,this.#l=new Array(e).fill(void 0),this.#d=new Array(e).fill(void 0),this.#u=new k(e),this.#f=new k(e),this.#p=0,this.#g=0,this.#m=C.create(e),this.#a=0,this.#c=0,"function"==typeof c&&(this.#i=c),"function"==typeof h?(this.#r=h,this.#v=[]):(this.#r=void 0,this.#v=void 0),this.#w=!!this.#i,this.#S=!!this.#r,this.noDisposeOnSet=!!l,this.noUpdateTTL=!!d,this.noDeleteOnFetchRejection=!!v,this.allowStaleOnFetchRejection=!!y,this.allowStaleOnFetchAbort=!!b,this.ignoreFetchAbort=!!w,0!==this.maxEntrySize){if(0!==this.#s&&!T(this.#s))throw new TypeError("maxSize must be a positive integer if specified");if(!T(this.maxEntrySize))throw new TypeError("maxEntrySize must be a positive integer if specified");this.#T();}if(this.allowStale=!!a,this.noDeleteOnStaleGet=!!_,this.updateAgeOnGet=!!n,this.updateAgeOnHas=!!o,this.ttlResolution=T(i)||0===i?i:1,this.ttlAutopurge=!!r,this.ttl=s||0,this.ttl){if(!T(this.ttl))throw new TypeError("ttl must be a positive integer if specified");this.#F();}if(0===this.#e&&0===this.ttl&&0===this.#s)throw new TypeError("At least one of max, maxSize, or ttl is required");if(!this.ttlAutopurge&&!this.#e&&!this.#s){const t="LRU_CACHE_UNBOUNDED";if((t=>!z.has(t))(t)){z.add(t);A("TTL caching without ttlAutopurge, max, or maxSize can result in unbounded memory consumption.","UnboundedCacheWarning",t,D);}}}getRemainingTTL(t){return this.#h.has(t)?1/0:0}#F(){const t=new R(this.#e),e=new R(this.#e);this.#b=t,this.#y=e,this.#R=(s,i,r=x.now())=>{if(e[s]=0!==i?r:0,t[s]=i,0!==i&&this.ttlAutopurge){const t=setTimeout((()=>{this.#O(s)&&this.#C(this.#l[s],"expire");}),i+1);t.unref&&t.unref();}},this.#D=s=>{e[s]=0!==t[s]?x.now():0;},this.#j=(r,n)=>{if(t[n]){const o=t[n],a=e[n];if(!o||!a)return;r.ttl=o,r.start=a,r.now=s||i();const c=r.now-a;r.remainingTTL=o-c;}};let s=0;const i=()=>{const t=x.now();if(this.ttlResolution>0){s=t;const e=setTimeout((()=>s=0),this.ttlResolution);e.unref&&e.unref();}return t};this.getRemainingTTL=r=>{const n=this.#h.get(r);if(void 0===n)return 0;const o=t[n],a=e[n];if(!o||!a)return 1/0;return o-((s||i())-a)},this.#O=r=>{const n=e[r],o=t[r];return !!o&&!!n&&(s||i())-n>o};}#D=()=>{};#j=()=>{};#R=()=>{};#O=()=>!1;#T(){const t=new R(this.#e);this.#c=0,this.#_=t,this.#$=e=>{this.#c-=t[e],t[e]=0;},this.#I=(t,e,s,i)=>{if(this.#x(e))return 0;if(!T(s)){if(!i)throw new TypeError("invalid size value (must be positive integer). When maxSize or maxEntrySize is used, sizeCalculation or size must be set.");if("function"!=typeof i)throw new TypeError("sizeCalculation must be a function");if(s=i(e,t),!T(s))throw new TypeError("sizeCalculation return invalid (expect positive integer)")}return s},this.#M=(e,s,i)=>{if(t[e]=s,this.#s){const s=this.#s-t[e];for(;this.#c>s;)this.#N(!0);}this.#c+=t[e],i&&(i.entrySize=s,i.totalCalculatedSize=this.#c);};}#$=t=>{};#M=(t,e,s)=>{};#I=(t,e,s,i)=>{if(s||i)throw new TypeError("cannot set size without setting maxSize or maxEntrySize on cache");return 0};*#A({allowStale:t=this.allowStale}={}){if(this.#a)for(let e=this.#g;this.#U(e)&&(!t&&this.#O(e)||(yield e),e!==this.#p);)e=this.#f[e];}*#L({allowStale:t=this.allowStale}={}){if(this.#a)for(let e=this.#p;this.#U(e)&&(!t&&this.#O(e)||(yield e),e!==this.#g);)e=this.#u[e];}#U(t){return void 0!==t&&this.#h.get(this.#l[t])===t}*entries(){for(const t of this.#A())void 0===this.#d[t]||void 0===this.#l[t]||this.#x(this.#d[t])||(yield [this.#l[t],this.#d[t]]);}*rentries(){for(const t of this.#L())void 0===this.#d[t]||void 0===this.#l[t]||this.#x(this.#d[t])||(yield [this.#l[t],this.#d[t]]);}*keys(){for(const t of this.#A()){const e=this.#l[t];void 0===e||this.#x(this.#d[t])||(yield e);}}*rkeys(){for(const t of this.#L()){const e=this.#l[t];void 0===e||this.#x(this.#d[t])||(yield e);}}*values(){for(const t of this.#A()){void 0===this.#d[t]||this.#x(this.#d[t])||(yield this.#d[t]);}}*rvalues(){for(const t of this.#L()){void 0===this.#d[t]||this.#x(this.#d[t])||(yield this.#d[t]);}}[Symbol.iterator](){return this.entries()}[Symbol.toStringTag]="LRUCache";find(t,e={}){for(const s of this.#A()){const i=this.#d[s],r=this.#x(i)?i.__staleWhileFetching:i;if(void 0!==r&&t(r,this.#l[s],this))return this.get(this.#l[s],e)}}forEach(t,e=this){for(const s of this.#A()){const i=this.#d[s],r=this.#x(i)?i.__staleWhileFetching:i;void 0!==r&&t.call(e,r,this.#l[s],this);}}rforEach(t,e=this){for(const s of this.#L()){const i=this.#d[s],r=this.#x(i)?i.__staleWhileFetching:i;void 0!==r&&t.call(e,r,this.#l[s],this);}}purgeStale(){let t=!1;for(const e of this.#L({allowStale:!0}))this.#O(e)&&(this.#C(this.#l[e],"expire"),t=!0);return t}info(t){const e=this.#h.get(t);if(void 0===e)return;const s=this.#d[e],i=this.#x(s)?s.__staleWhileFetching:s;if(void 0===i)return;const r={value:i};if(this.#b&&this.#y){const t=this.#b[e],s=this.#y[e];if(t&&s){const e=t-(x.now()-s);r.ttl=e,r.start=Date.now();}}return this.#_&&(r.size=this.#_[e]),r}dump(){const t=[];for(const e of this.#A({allowStale:!0})){const s=this.#l[e],i=this.#d[e],r=this.#x(i)?i.__staleWhileFetching:i;if(void 0===r||void 0===s)continue;const n={value:r};if(this.#b&&this.#y){n.ttl=this.#b[e];const t=x.now()-this.#y[e];n.start=Math.floor(Date.now()-t);}this.#_&&(n.size=this.#_[e]),t.unshift([s,n]);}return t}load(t){this.clear();for(const[e,s]of t){if(s.start){const t=Date.now()-s.start;s.start=x.now()-t;}this.set(e,s.value,s);}}set(t,e,s={}){if(void 0===e)return this.delete(t),this;const{ttl:i=this.ttl,start:r,noDisposeOnSet:n=this.noDisposeOnSet,sizeCalculation:o=this.sizeCalculation,status:a}=s;let{noUpdateTTL:c=this.noUpdateTTL}=s;const h=this.#I(t,e,s.size||0,o);if(this.maxEntrySize&&h>this.maxEntrySize)return a&&(a.set="miss",a.maxEntrySizeExceeded=!0),this.#C(t,"set"),this;let l=0===this.#a?void 0:this.#h.get(t);if(void 0===l)l=0===this.#a?this.#g:0!==this.#m.length?this.#m.pop():this.#a===this.#e?this.#N(!1):this.#a,this.#l[l]=t,this.#d[l]=e,this.#h.set(t,l),this.#u[this.#g]=l,this.#f[l]=this.#g,this.#g=l,this.#a++,this.#M(l,h,a),a&&(a.set="add"),c=!1;else {this.#E(l);const s=this.#d[l];if(e!==s){if(this.#k&&this.#x(s)){s.__abortController.abort(new Error("replaced"));const{__staleWhileFetching:e}=s;void 0===e||n||(this.#w&&this.#i?.(e,t,"set"),this.#S&&this.#v?.push([e,t,"set"]));}else n||(this.#w&&this.#i?.(s,t,"set"),this.#S&&this.#v?.push([s,t,"set"]));if(this.#$(l),this.#M(l,h,a),this.#d[l]=e,a){a.set="replace";const t=s&&this.#x(s)?s.__staleWhileFetching:s;void 0!==t&&(a.oldValue=t);}}else a&&(a.set="update");}if(0===i||this.#b||this.#F(),this.#b&&(c||this.#R(l,i,r),a&&this.#j(a,l)),!n&&this.#S&&this.#v){const t=this.#v;let e;for(;e=t?.shift();)this.#r?.(...e);}return this}pop(){try{for(;this.#a;){const t=this.#d[this.#p];if(this.#N(!0),this.#x(t)){if(t.__staleWhileFetching)return t.__staleWhileFetching}else if(void 0!==t)return t}}finally{if(this.#S&&this.#v){const t=this.#v;let e;for(;e=t?.shift();)this.#r?.(...e);}}}#N(t){const e=this.#p,s=this.#l[e],i=this.#d[e];return this.#k&&this.#x(i)?i.__abortController.abort(new Error("evicted")):(this.#w||this.#S)&&(this.#w&&this.#i?.(i,s,"evict"),this.#S&&this.#v?.push([i,s,"evict"])),this.#$(e),t&&(this.#l[e]=void 0,this.#d[e]=void 0,this.#m.push(e)),1===this.#a?(this.#p=this.#g=0,this.#m.length=0):this.#p=this.#u[e],this.#h.delete(s),this.#a--,e}has(t,e={}){const{updateAgeOnHas:s=this.updateAgeOnHas,status:i}=e,r=this.#h.get(t);if(void 0!==r){const t=this.#d[r];if(this.#x(t)&&void 0===t.__staleWhileFetching)return !1;if(!this.#O(r))return s&&this.#D(r),i&&(i.has="hit",this.#j(i,r)),!0;i&&(i.has="stale",this.#j(i,r));}else i&&(i.has="miss");return !1}peek(t,e={}){const{allowStale:s=this.allowStale}=e,i=this.#h.get(t);if(void 0===i||!s&&this.#O(i))return;const r=this.#d[i];return this.#x(r)?r.__staleWhileFetching:r}#z(t,e,s,i){const r=void 0===e?void 0:this.#d[e];if(this.#x(r))return r;const n=new L,{signal:o}=s;o?.addEventListener("abort",(()=>n.abort(o.reason)),{signal:n.signal});const a={signal:n.signal,options:s,context:i},c=(i,r=!1)=>{const{aborted:o}=n.signal,c=s.ignoreFetchAbort&&void 0!==i;if(s.status&&(o&&!r?(s.status.fetchAborted=!0,s.status.fetchError=n.signal.reason,c&&(s.status.fetchAbortIgnored=!0)):s.status.fetchResolved=!0),o&&!c&&!r)return h(n.signal.reason);const d=l;return this.#d[e]===l&&(void 0===i?d.__staleWhileFetching?this.#d[e]=d.__staleWhileFetching:this.#C(t,"fetch"):(s.status&&(s.status.fetchUpdated=!0),this.set(t,i,a.options))),i},h=i=>{const{aborted:r}=n.signal,o=r&&s.allowStaleOnFetchAbort,a=o||s.allowStaleOnFetchRejection,c=a||s.noDeleteOnFetchRejection,h=l;if(this.#d[e]===l){!c||void 0===h.__staleWhileFetching?this.#C(t,"fetch"):o||(this.#d[e]=h.__staleWhileFetching);}if(a)return s.status&&void 0!==h.__staleWhileFetching&&(s.status.returnedStale=!0),h.__staleWhileFetching;if(h.__returned===h)throw i};s.status&&(s.status.fetchDispatched=!0);const l=new Promise(((e,i)=>{const o=this.#n?.(t,r,a);o&&o instanceof Promise&&o.then((t=>e(void 0===t?void 0:t)),i),n.signal.addEventListener("abort",(()=>{s.ignoreFetchAbort&&!s.allowStaleOnFetchAbort||(e(void 0),s.allowStaleOnFetchAbort&&(e=t=>c(t,!0)));}));})).then(c,(t=>(s.status&&(s.status.fetchRejected=!0,s.status.fetchError=t),h(t)))),d=Object.assign(l,{__abortController:n,__staleWhileFetching:r,__returned:void 0});return void 0===e?(this.set(t,d,{...a.options,status:void 0}),e=this.#h.get(t)):this.#d[e]=d,d}#x(t){if(!this.#k)return !1;const e=t;return !!e&&e instanceof Promise&&e.hasOwnProperty("__staleWhileFetching")&&e.__abortController instanceof L}async fetch(t,e={}){const{allowStale:s=this.allowStale,updateAgeOnGet:i=this.updateAgeOnGet,noDeleteOnStaleGet:r=this.noDeleteOnStaleGet,ttl:n=this.ttl,noDisposeOnSet:o=this.noDisposeOnSet,size:a=0,sizeCalculation:c=this.sizeCalculation,noUpdateTTL:h=this.noUpdateTTL,noDeleteOnFetchRejection:l=this.noDeleteOnFetchRejection,allowStaleOnFetchRejection:d=this.allowStaleOnFetchRejection,ignoreFetchAbort:u=this.ignoreFetchAbort,allowStaleOnFetchAbort:f=this.allowStaleOnFetchAbort,context:p,forceRefresh:g=!1,status:m,signal:v}=e;if(!this.#k)return m&&(m.fetch="get"),this.get(t,{allowStale:s,updateAgeOnGet:i,noDeleteOnStaleGet:r,status:m});const _={allowStale:s,updateAgeOnGet:i,noDeleteOnStaleGet:r,ttl:n,noDisposeOnSet:o,size:a,sizeCalculation:c,noUpdateTTL:h,noDeleteOnFetchRejection:l,allowStaleOnFetchRejection:d,allowStaleOnFetchAbort:f,ignoreFetchAbort:u,status:m,signal:v};let y=this.#h.get(t);if(void 0===y){m&&(m.fetch="miss");const e=this.#z(t,y,_,p);return e.__returned=e}{const e=this.#d[y];if(this.#x(e)){const t=s&&void 0!==e.__staleWhileFetching;return m&&(m.fetch="inflight",t&&(m.returnedStale=!0)),t?e.__staleWhileFetching:e.__returned=e}const r=this.#O(y);if(!g&&!r)return m&&(m.fetch="hit"),this.#E(y),i&&this.#D(y),m&&this.#j(m,y),e;const n=this.#z(t,y,_,p),o=void 0!==n.__staleWhileFetching&&s;return m&&(m.fetch=r?"stale":"refresh",o&&r&&(m.returnedStale=!0)),o?n.__staleWhileFetching:n.__returned=n}}async forceFetch(t,e={}){const s=await this.fetch(t,e);if(void 0===s)throw new Error("fetch() returned undefined");return s}memo(t,e={}){const s=this.#o;if(!s)throw new Error("no memoMethod provided to constructor");const{context:i,forceRefresh:r,...n}=e,o=this.get(t,n);if(!r&&void 0!==o)return o;const a=s(t,o,{options:n,context:i});return this.set(t,a,n),a}get(t,e={}){const{allowStale:s=this.allowStale,updateAgeOnGet:i=this.updateAgeOnGet,noDeleteOnStaleGet:r=this.noDeleteOnStaleGet,status:n}=e,o=this.#h.get(t);if(void 0!==o){const e=this.#d[o],a=this.#x(e);return n&&this.#j(n,o),this.#O(o)?(n&&(n.get="stale"),a?(n&&s&&void 0!==e.__staleWhileFetching&&(n.returnedStale=!0),s?e.__staleWhileFetching:void 0):(r||this.#C(t,"expire"),n&&s&&(n.returnedStale=!0),s?e:void 0)):(n&&(n.get="hit"),a?e.__staleWhileFetching:(this.#E(o),i&&this.#D(o),e))}n&&(n.get="miss");}#W(t,e){this.#f[e]=t,this.#u[t]=e;}#E(t){t!==this.#g&&(t===this.#p?this.#p=this.#u[t]:this.#W(this.#f[t],this.#u[t]),this.#W(this.#g,t),this.#g=t);}delete(t){return this.#C(t,"delete")}#C(t,e){let s=!1;if(0!==this.#a){const i=this.#h.get(t);if(void 0!==i)if(s=!0,1===this.#a)this.#B(e);else {this.#$(i);const s=this.#d[i];if(this.#x(s)?s.__abortController.abort(new Error("deleted")):(this.#w||this.#S)&&(this.#w&&this.#i?.(s,t,e),this.#S&&this.#v?.push([s,t,e])),this.#h.delete(t),this.#l[i]=void 0,this.#d[i]=void 0,i===this.#g)this.#g=this.#f[i];else if(i===this.#p)this.#p=this.#u[i];else {const t=this.#f[i];this.#u[t]=this.#u[i];const e=this.#u[i];this.#f[e]=this.#f[i];}this.#a--,this.#m.push(i);}}if(this.#S&&this.#v?.length){const t=this.#v;let e;for(;e=t?.shift();)this.#r?.(...e);}return s}clear(){return this.#B("delete")}#B(t){for(const e of this.#L({allowStale:!0})){const s=this.#d[e];if(this.#x(s))s.__abortController.abort(new Error("deleted"));else {const i=this.#l[e];this.#w&&this.#i?.(s,i,t),this.#S&&this.#v?.push([s,i,t]);}}if(this.#h.clear(),this.#d.fill(void 0),this.#l.fill(void 0),this.#b&&this.#y&&(this.#b.fill(0),this.#y.fill(0)),this.#_&&this.#_.fill(0),this.#p=0,this.#g=0,this.#m.length=0,this.#c=0,this.#a=0,this.#S&&this.#v){const t=this.#v;let e;for(;e=t?.shift();)this.#r?.(...e);}}}function j(t){return t.pref}function $(t){return `${t.county||""}${t.city}${t.ward||""}`}function I(t){return `${t.oaza_cho||""}${t.chome||""}${t.koaza||""}`}function M(t){return [t.blk_num,t.rsdt_num,t.rsdt_num2].filter(Boolean).join("-")}function N(t){return [t.prc_num1,t.prc_num2,t.prc_num3].filter(Boolean).join("-")}const U=new D({max:f.cacheSize});function W(e,s){return t(this,void 0,void 0,(function*(){let t=U.get(e);return void 0!==t||(t=yield s(),U.set(e,t)),t}))}let B;const P=new Map;let G;const q={};let K;const H=t=>G=t,Q=t=>{const e=P.get(t.code);if(void 0!==e)return e;const s=t.cities;s.sort(((t,e)=>$(t).length-$(e).length));const i=s.map((t=>{const e=$(t);let s=`^${b(e)}`;return e.match(/(町|村)$/)&&(s=`^${b(e).replace(/(.+?)郡/,"($1郡)?")}`),[t,s]}));return P.set(t.code,i),i};function J(e,s,i,r,n){return t(this,void 0,void 0,(function*(){const t=j(s),o=$(i);return (yield p(["",encodeURI(t),encodeURI(`${o}-${e}.txt?v=${n}`)].join("/"),{offset:r.start,length:r.length})).text()}))}function V(t){const e=t.indexOf("\n"),s=t.slice(e+1),i=S.parse(s,{header:!0}).data,r=[];for(const t of i){const e=t.lng&&t.lat?[parseFloat(t.lng),parseFloat(t.lat)]:void 0;"blk_num"in t?r.push({blk_num:t.blk_num,rsdt_num:t.rsdt_num,rsdt_num2:t.rsdt_num2,point:e}):"prc_num1"in t&&r.push({prc_num1:t.prc_num1,prc_num2:t.prc_num2,prc_num3:t.prc_num3,point:e});}return r}const Y=t=>{const e=t.match(/.町/g);if(!e)return !1;return u.findKanjiNumbers(e[0]).length>0},Z=(e,s,i)=>t(void 0,void 0,void 0,(function*(){return W(`${e.code}-${s.code}`,(()=>t(void 0,void 0,void 0,(function*(){const r=yield ((e,s,i)=>t(void 0,void 0,void 0,(function*(){const t=j(e),r=$(s),n=`${t}-${r}`,o=q[n];if(void 0!==o)return o;const a=yield p(["",encodeURI(t),encodeURI(r)+`.json?v=${i}`].join("/"),{}),c=yield a.json();return q[n]=c})))(e,s,i),n=r.data,o=new Set(n.map((t=>I(t)))),a=[],c="京都市"===s.city;for(const t of n){a.push(t);const e=I(t);if(-1===e.indexOf("町"))continue;const s=e.replace(/(?!^町)町/g,"");c||o.has(s)||o.has(`大字${s}`)||Y(e)||a.push({machiaza_id:t.machiaza_id,point:t.point,oaza_cho:s,originalTown:t});}a.sort(((t,e)=>{let s=I(t).length,i=I(e).length;return I(t).startsWith("大字")&&(s-=2),I(e).startsWith("大字")&&(i-=2),i-s}));const h=a.map((t=>{const e=b(I(t).replace(/[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━]/g,"[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━]").replace(/大?字/g,"(大?字)?").replace(/([壱一二三四五六七八九十]+|[１２３４５６７８９０]+)(丁目?|番(町|丁)|条|軒|線|(の|ノ)町|地割|号)/g,(t=>{const e=[];if(e.push(t.toString().replace(/(丁目?|番(町|丁)|条|軒|線|(の|ノ)町|地割|号)/,"")),t.match(/^壱/))e.push("一"),e.push("1"),e.push("１");else {const s=t.replace(/([一二三四五六七八九十]+)/g,(t=>g(t))).replace(/([１２３４５６７８９０]+)/g,(t=>u.kanji2number(t).toString())).replace(/(丁目?|番(町|丁)|条|軒|線|(の|ノ)町|地割|号)/,"");e.push(s.toString());}return `(${e.join("|")})((丁|町)目?|番(町|丁)|条|軒|線|の町?|地割|号|[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━])`})));return ["originalTown"in t?t.originalTown:t,e]}));for(const t of a){const e=I(t).match(/([^一二三四五六七八九十]+)([一二三四五六七八九十]+)(丁目?)/);if(!e)continue;const s=e[1],i=e[2],r=b(`^${s}(${i}|${g(i)})`);h.push([t,r]);}return h}))))}));function X(t){return {lat:t.point[1],lng:t.point[0],level:1}}function tt(t){return {lat:t.point[1],lng:t.point[0],level:2}}function et(t){if(t.point)return {lat:t.point[1],lng:t.point[0],level:3}}function st(t){if(t.point)return {lat:t.point[1],lng:t.point[0],level:8}}function it(t,e){return t?e?t.level>e.level?t:e:t:e}function rt(t){if(!t)return;const e=Object.assign({},t);return delete e.cities,e}function nt(t){if(!t)return;const e=Object.assign({},t);return delete e.csv_ranges,e}const ot=f,at={level:8},ct=(e,s,i,r)=>t(void 0,void 0,void 0,(function*(){e=e.trim().replace(/^大字/,"");const t=yield Z(s,i,r),n=["^"];"京都市"===i.city&&n.push(".*");for(const s of n)for(const[i,r]of t){const t=new RegExp(`${s}${r}`),n=e.match(t);if(n)return {town:i,other:e.substring(n[0].length)}}}));function ht(e,s,i,r,n){return t(this,void 0,void 0,(function*(){const o=e.match(/^([1-9][0-9]*)(?:-([1-9][0-9]*))?(?:-([1-9][0-9]*))?/);if(!o)return {rest:e};if(r.rsdt){const a=yield ((e,s,i,r)=>t(void 0,void 0,void 0,(function*(){var n;const o=null===(n=i.csv_ranges)||void 0===n?void 0:n.住居表示;return o?yield W(`住居表示-${e.code}-${s.code}-${I(i)}`,(()=>t(void 0,void 0,void 0,(function*(){const t=V(yield J("住居表示",e,s,o,r));return t.sort(((t,e)=>{const s=[t.blk_num,t.rsdt_num,t.rsdt_num2].filter((t=>!!t)).join("-"),i=[e.blk_num,e.rsdt_num,e.rsdt_num2].filter((t=>!!t)).join("-");return i.length-s.length})),t})))):[]})))(s,i,r,n);for(const t of a){const s=M(t);if(o[0]===s)return {rsdt:t,rest:e.substring(s.length)}}}else {const a=yield ((e,s,i,r)=>t(void 0,void 0,void 0,(function*(){var n;const o=null===(n=i.csv_ranges)||void 0===n?void 0:n.地番;return o?yield W(`地番-${e.code}-${s.code}-${I(i)}`,(()=>t(void 0,void 0,void 0,(function*(){const t=V(yield J("地番",e,s,o,r));return t.sort(((t,e)=>{const s=[t.prc_num1,t.prc_num2,t.prc_num3].filter((t=>!!t)).join("-"),i=[e.prc_num1,e.prc_num2,e.prc_num3].filter((t=>!!t)).join("-");return i.length-s.length})),t})))):[]})))(s,i,r,n);for(const t of a){const s=N(t);if(o[0]===s)return {chiban:t,rest:e.substring(s.length)}}}return {rest:e}}))}const ut=(e,...s)=>t(void 0,[e,...s],void 0,(function*(e,s=at){var i;const r=Object.assign(Object.assign({},at),s);null!==(i=r.geoloniaApiKey)&&void 0!==i||(r.geoloniaApiKey=ot.geoloniaApiKey);let n=e.normalize("NFC").replace(/　/g," ").replace(/ +/g," ").replace(/([０-９Ａ-Ｚａ-ｚ]+)/g,(t=>m(t))).replace(/([0-9０-９一二三四五六七八九〇十百千][-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━])|([-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━])[0-9０-９一二三四五六七八九〇十]/g,(t=>t.replace(/[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━]/g,"-"))).replace(/(.+)(丁目?|番(町|地|丁)|条|軒|線|(の|ノ)町|地割)/,(t=>t.replace(/ /g,""))).replace(/(.+)((郡.+(町|村))|((市|巿).+(区|區)))/,(t=>t.replace(/ /g,""))).replace(/.+?[0-9一二三四五六七八九〇十百千]-/,(t=>t.replace(/ /g,"")));let o,a,c,h,l,d=0;const f=yield t(void 0,void 0,void 0,(function*(){if(void 0!==G)return G;const t=yield p(".json",{}),e=yield t.json();return H(e)})),_=f.meta.updated,y=(t=>{if(B)return B;const e=t.data;return B=e.map((t=>{const e=t.pref.replace(/(都|道|府|県)$/,"");return [t,`^${e}(都|道|府|県)?`]})),B})(f),b=(t=>{if(void 0!==K)return K;const e=t.data,s=e.map((t=>t.pref.replace(/[都|道|府|県]$/,"")));K=[];for(const t of e)for(const e of t.cities){const i=$(e);for(let e=0;e<s.length;e++)0===i.indexOf(s[e])&&K.push([`${t.pref}${i}`,`^${i}`]);}return K})(f);for(const[t,e]of b){if(n.match(e)){n=n.replace(new RegExp(e),t);break}}for(const[t,e]of y){const s=n.match(e);if(s){o=t,n=n.substring(s[0].length),h=X(o);break}}if(!o){const t=[];for(const e of f.data){const s=Q(e);n=n.trim();for(const[i,r]of s){const s=n.match(r);s&&t.push({pref:e,city:i,other:n.substring(s[0].length)});}}if(1===t.length)o=t[0].pref;else for(const e of t){const t=yield ct(e.other,e.pref,e.city,_);t&&(o=e.pref,a=e.city,c=t.town,n=t.other,h=it(h,et(c)));}}if(o&&r.level>=2){const t=Q(o);n=n.trim();for(const[e,s]of t){const t=n.match(s);if(t){a=e,h=it(h,tt(a)),n=n.substring(t[0].length);break}}}if(o&&a&&r.level>=3){const t=yield ct(n,o,a,_);t&&(c=t.town,n=t.other,h=it(h,et(c))),c&&(n=n.replace(/^-/,"").replace(/([0-9]+)(丁目)/g,(t=>t.replace(/([0-9]+)/g,(t=>u.number2kanji(Number(t)))))).replace(/(([0-9]+|[〇一二三四五六七八九十百千]+)(番地?)([0-9]+|[〇一二三四五六七八九十百千]+)号)\s*(.+)/,"$1 $5").replace(/([0-9]+|[〇一二三四五六七八九十百千]+)\s*(番地?)\s*([0-9]+|[〇一二三四五六七八九十百千]+)\s*号?/,"$1-$3").replace(/([0-9]+|[〇一二三四五六七八九十百千]+)番(地|$)/,"$1").replace(/([0-9]+|[〇一二三四五六七八九十百千]+)の/g,"$1-").replace(/([0-9]+|[〇一二三四五六七八九十百千]+)[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━]/g,(t=>g(t).replace(/[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━]/g,"-"))).replace(/[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━]([0-9]+|[〇一二三四五六七八九十百千]+)/g,(t=>g(t).replace(/[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━]/g,"-"))).replace(/([0-9]+|[〇一二三四五六七八九十百千]+)-/,(t=>g(t))).replace(/-([0-9]+|[〇一二三四五六七八九十百千]+)/,(t=>g(t))).replace(/-[^0-9]([0-9]+|[〇一二三四五六七八九十百千]+)/,(t=>g(m(t)))).replace(/([0-9]+|[〇一二三四五六七八九十百千]+)$/,(t=>g(t))).trim());}if(n=((t,e,s,i)=>{let r=i;for(let i=0;i<v.length;i++){const n=v[i];n.pref===t&&n.city===e&&n.town===s&&(r=r.replace(new RegExp(n.pattern),n.result));}return r})(o?j(o):"",a?$(a):"",c?I(c):"",n),o&&(d+=1),a&&(d+=1),c&&(d+=1),r.level<=3||d<3){return {pref:o?j(o):void 0,city:a?$(a):void 0,town:c?I(c):void 0,other:n,level:d,point:h,metadata:{input:e,prefecture:rt(o),city:a,machiAza:nt(c)}}}const w=yield ht(n,o,a,c,_);w.rsdt?(l=M(w.rsdt),n=w.rest,h=it(h,st(w.rsdt)),d=8):w.chiban&&(l=N(w.chiban),n=w.rest,h=it(h,st(w.chiban)),d=8);return {pref:o?j(o):void 0,city:a?$(a):void 0,town:c?I(c):void 0,addr:l,level:d,point:h,other:n,metadata:{input:e,prefecture:rt(o),city:a,machiAza:nt(c),rsdt:w.rsdt,chiban:w.chiban}}}));
+    */var S=e((w||(w=1,k.exports=function t(){var e="undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==e?e:{},s=!e.document&&!!e.postMessage,i=e.IS_PAPA_WORKER||!1,r={},n=0,o={parse:function(s,i){var a=(i=i||{}).dynamicTyping||!1;if(w(a)&&(i.dynamicTypingFunction=a,a={}),i.dynamicTyping=a,i.transform=!!w(i.transform)&&i.transform,i.worker&&o.WORKERS_SUPPORTED){var c=function(){if(!o.WORKERS_SUPPORTED)return !1;var s,i,a=(s=e.URL||e.webkitURL||null,i=t.toString(),o.BLOB_URL||(o.BLOB_URL=s.createObjectURL(new Blob(["var global = (function() { if (typeof self !== 'undefined') { return self; } if (typeof window !== 'undefined') { return window; } if (typeof global !== 'undefined') { return global; } return {}; })(); global.IS_PAPA_WORKER=true; ","(",i,")();"],{type:"text/javascript"})))),c=new e.Worker(a);return c.onmessage=m,c.id=n++,r[c.id]=c}();return c.userStep=i.step,c.userChunk=i.chunk,c.userComplete=i.complete,c.userError=i.error,i.step=w(i.step),i.chunk=w(i.chunk),i.complete=w(i.complete),i.error=w(i.error),delete i.worker,void c.postMessage({input:s,config:i,workerId:c.id})}var f=null;return o.NODE_STREAM_INPUT,"string"==typeof s?(s=function(t){return 65279===t.charCodeAt(0)?t.slice(1):t}(s),f=i.download?new h(i):new d(i)):!0===s.readable&&w(s.read)&&w(s.on)?f=new u(i):(e.File&&s instanceof File||s instanceof Object)&&(f=new l(i)),f.stream(s)},unparse:function(t,e){var s=!1,i=!0,r=",",n="\r\n",a='"',c=a+a,h=!1,l=null,d=!1;!function(){if("object"==typeof e){if("string"!=typeof e.delimiter||o.BAD_DELIMITERS.filter((function(t){return -1!==e.delimiter.indexOf(t)})).length||(r=e.delimiter),("boolean"==typeof e.quotes||"function"==typeof e.quotes||Array.isArray(e.quotes))&&(s=e.quotes),"boolean"!=typeof e.skipEmptyLines&&"string"!=typeof e.skipEmptyLines||(h=e.skipEmptyLines),"string"==typeof e.newline&&(n=e.newline),"string"==typeof e.quoteChar&&(a=e.quoteChar),"boolean"==typeof e.header&&(i=e.header),Array.isArray(e.columns)){if(0===e.columns.length)throw new Error("Option columns is empty");l=e.columns;}void 0!==e.escapeChar&&(c=e.escapeChar+a),("boolean"==typeof e.escapeFormulae||e.escapeFormulae instanceof RegExp)&&(d=e.escapeFormulae instanceof RegExp?e.escapeFormulae:/^[=+\-@\t\r].*$/);}}();var u=new RegExp(p(a),"g");if("string"==typeof t&&(t=JSON.parse(t)),Array.isArray(t)){if(!t.length||Array.isArray(t[0]))return f(null,t,h);if("object"==typeof t[0])return f(l||Object.keys(t[0]),t,h)}else if("object"==typeof t)return "string"==typeof t.data&&(t.data=JSON.parse(t.data)),Array.isArray(t.data)&&(t.fields||(t.fields=t.meta&&t.meta.fields||l),t.fields||(t.fields=Array.isArray(t.data[0])?t.fields:"object"==typeof t.data[0]?Object.keys(t.data[0]):[]),Array.isArray(t.data[0])||"object"==typeof t.data[0]||(t.data=[t.data])),f(t.fields||[],t.data||[],h);throw new Error("Unable to serialize unrecognized input");function f(t,e,s){var o="";"string"==typeof t&&(t=JSON.parse(t)),"string"==typeof e&&(e=JSON.parse(e));var a=Array.isArray(t)&&0<t.length,c=!Array.isArray(e[0]);if(a&&i){for(var h=0;h<t.length;h++)0<h&&(o+=r),o+=g(t[h],h);0<e.length&&(o+=n);}for(var l=0;l<e.length;l++){var d=a?t.length:e[l].length,u=!1,f=a?0===Object.keys(e[l]).length:0===e[l].length;if(s&&!a&&(u="greedy"===s?""===e[l].join("").trim():1===e[l].length&&0===e[l][0].length),"greedy"===s&&a){for(var p=[],m=0;m<d;m++){var v=c?t[m]:m;p.push(e[l][v]);}u=""===p.join("").trim();}if(!u){for(var _=0;_<d;_++){0<_&&!f&&(o+=r);var y=a&&c?t[_]:_;o+=g(e[l][y],_);}l<e.length-1&&(!s||0<d&&!f)&&(o+=n);}}return o}function g(t,e){if(null==t)return "";if(t.constructor===Date)return JSON.stringify(t).slice(1,25);var i=!1;d&&"string"==typeof t&&d.test(t)&&(t="'"+t,i=!0);var n=t.toString().replace(u,c);return (i=i||!0===s||"function"==typeof s&&s(t,e)||Array.isArray(s)&&s[e]||function(t,e){for(var s=0;s<e.length;s++)if(-1<t.indexOf(e[s]))return !0;return !1}(n,o.BAD_DELIMITERS)||-1<n.indexOf(r)||" "===n.charAt(0)||" "===n.charAt(n.length-1))?a+n+a:n}}};if(o.RECORD_SEP=String.fromCharCode(30),o.UNIT_SEP=String.fromCharCode(31),o.BYTE_ORDER_MARK="\ufeff",o.BAD_DELIMITERS=["\r","\n",'"',o.BYTE_ORDER_MARK],o.WORKERS_SUPPORTED=!s&&!!e.Worker,o.NODE_STREAM_INPUT=1,o.LocalChunkSize=10485760,o.RemoteChunkSize=5242880,o.DefaultDelimiter=",",o.Parser=g,o.ParserHandle=f,o.NetworkStreamer=h,o.FileStreamer=l,o.StringStreamer=d,o.ReadableStreamStreamer=u,e.jQuery){var a=e.jQuery;a.fn.parse=function(t){var s=t.config||{},i=[];return this.each((function(t){if("INPUT"!==a(this).prop("tagName").toUpperCase()||"file"!==a(this).attr("type").toLowerCase()||!e.FileReader||!this.files||0===this.files.length)return !0;for(var r=0;r<this.files.length;r++)i.push({file:this.files[r],inputElem:this,instanceConfig:a.extend({},s)});})),r(),this;function r(){if(0!==i.length){var e,s,r,c,h=i[0];if(w(t.before)){var l=t.before(h.file,h.inputElem);if("object"==typeof l){if("abort"===l.action)return e="AbortError",s=h.file,r=h.inputElem,c=l.reason,void(w(t.error)&&t.error({name:e},s,r,c));if("skip"===l.action)return void n();"object"==typeof l.config&&(h.instanceConfig=a.extend(h.instanceConfig,l.config));}else if("skip"===l)return void n()}var d=h.instanceConfig.complete;h.instanceConfig.complete=function(t){w(d)&&d(t,h.file,h.inputElem),n();},o.parse(h.file,h.instanceConfig);}else w(t.complete)&&t.complete();}function n(){i.splice(0,1),r();}};}function c(t){this._handle=null,this._finished=!1,this._completed=!1,this._halted=!1,this._input=null,this._baseIndex=0,this._partialLine="",this._rowCount=0,this._start=0,this._nextChunk=null,this.isFirstChunk=!0,this._completeResults={data:[],errors:[],meta:{}},function(t){var e=y(t);e.chunkSize=parseInt(e.chunkSize),t.step||t.chunk||(e.chunkSize=null),this._handle=new f(e),(this._handle.streamer=this)._config=e;}.call(this,t),this.parseChunk=function(t,s){if(this.isFirstChunk&&w(this._config.beforeFirstChunk)){var r=this._config.beforeFirstChunk(t);void 0!==r&&(t=r);}this.isFirstChunk=!1,this._halted=!1;var n=this._partialLine+t;this._partialLine="";var a=this._handle.parse(n,this._baseIndex,!this._finished);if(!this._handle.paused()&&!this._handle.aborted()){var c=a.meta.cursor;this._finished||(this._partialLine=n.substring(c-this._baseIndex),this._baseIndex=c),a&&a.data&&(this._rowCount+=a.data.length);var h=this._finished||this._config.preview&&this._rowCount>=this._config.preview;if(i)e.postMessage({results:a,workerId:o.WORKER_ID,finished:h});else if(w(this._config.chunk)&&!s){if(this._config.chunk(a,this._handle),this._handle.paused()||this._handle.aborted())return void(this._halted=!0);a=void 0,this._completeResults=void 0;}return this._config.step||this._config.chunk||(this._completeResults.data=this._completeResults.data.concat(a.data),this._completeResults.errors=this._completeResults.errors.concat(a.errors),this._completeResults.meta=a.meta),this._completed||!h||!w(this._config.complete)||a&&a.meta.aborted||(this._config.complete(this._completeResults,this._input),this._completed=!0),h||a&&a.meta.paused||this._nextChunk(),a}this._halted=!0;},this._sendError=function(t){w(this._config.error)?this._config.error(t):i&&this._config.error&&e.postMessage({workerId:o.WORKER_ID,error:t,finished:!1});};}function h(t){var e;(t=t||{}).chunkSize||(t.chunkSize=o.RemoteChunkSize),c.call(this,t),this._nextChunk=s?function(){this._readChunk(),this._chunkLoaded();}:function(){this._readChunk();},this.stream=function(t){this._input=t,this._nextChunk();},this._readChunk=function(){if(this._finished)this._chunkLoaded();else {if(e=new XMLHttpRequest,this._config.withCredentials&&(e.withCredentials=this._config.withCredentials),s||(e.onload=b(this._chunkLoaded,this),e.onerror=b(this._chunkError,this)),e.open(this._config.downloadRequestBody?"POST":"GET",this._input,!s),this._config.downloadRequestHeaders){var t=this._config.downloadRequestHeaders;for(var i in t)e.setRequestHeader(i,t[i]);}if(this._config.chunkSize){var r=this._start+this._config.chunkSize-1;e.setRequestHeader("Range","bytes="+this._start+"-"+r);}try{e.send(this._config.downloadRequestBody);}catch(t){this._chunkError(t.message);}s&&0===e.status&&this._chunkError();}},this._chunkLoaded=function(){4===e.readyState&&(e.status<200||400<=e.status?this._chunkError():(this._start+=this._config.chunkSize?this._config.chunkSize:e.responseText.length,this._finished=!this._config.chunkSize||this._start>=function(t){var e=t.getResponseHeader("Content-Range");return null===e?-1:parseInt(e.substring(e.lastIndexOf("/")+1))}(e),this.parseChunk(e.responseText)));},this._chunkError=function(t){var s=e.statusText||t;this._sendError(new Error(s));};}function l(t){var e,s;(t=t||{}).chunkSize||(t.chunkSize=o.LocalChunkSize),c.call(this,t);var i="undefined"!=typeof FileReader;this.stream=function(t){this._input=t,s=t.slice||t.webkitSlice||t.mozSlice,i?((e=new FileReader).onload=b(this._chunkLoaded,this),e.onerror=b(this._chunkError,this)):e=new FileReaderSync,this._nextChunk();},this._nextChunk=function(){this._finished||this._config.preview&&!(this._rowCount<this._config.preview)||this._readChunk();},this._readChunk=function(){var t=this._input;if(this._config.chunkSize){var r=Math.min(this._start+this._config.chunkSize,this._input.size);t=s.call(t,this._start,r);}var n=e.readAsText(t,this._config.encoding);i||this._chunkLoaded({target:{result:n}});},this._chunkLoaded=function(t){this._start+=this._config.chunkSize,this._finished=!this._config.chunkSize||this._start>=this._input.size,this.parseChunk(t.target.result);},this._chunkError=function(){this._sendError(e.error);};}function d(t){var e;c.call(this,t=t||{}),this.stream=function(t){return e=t,this._nextChunk()},this._nextChunk=function(){if(!this._finished){var t,s=this._config.chunkSize;return s?(t=e.substring(0,s),e=e.substring(s)):(t=e,e=""),this._finished=!e,this.parseChunk(t)}};}function u(t){c.call(this,t=t||{});var e=[],s=!0,i=!1;this.pause=function(){c.prototype.pause.apply(this,arguments),this._input.pause();},this.resume=function(){c.prototype.resume.apply(this,arguments),this._input.resume();},this.stream=function(t){this._input=t,this._input.on("data",this._streamData),this._input.on("end",this._streamEnd),this._input.on("error",this._streamError);},this._checkIsFinished=function(){i&&1===e.length&&(this._finished=!0);},this._nextChunk=function(){this._checkIsFinished(),e.length?this.parseChunk(e.shift()):s=!0;},this._streamData=b((function(t){try{e.push("string"==typeof t?t:t.toString(this._config.encoding)),s&&(s=!1,this._checkIsFinished(),this.parseChunk(e.shift()));}catch(t){this._streamError(t);}}),this),this._streamError=b((function(t){this._streamCleanUp(),this._sendError(t);}),this),this._streamEnd=b((function(){this._streamCleanUp(),i=!0,this._streamData("");}),this),this._streamCleanUp=b((function(){this._input.removeListener("data",this._streamData),this._input.removeListener("end",this._streamEnd),this._input.removeListener("error",this._streamError);}),this);}function f(t){var e,s,i,r=Math.pow(2,53),n=-r,a=/^\s*-?(\d+\.?|\.\d+|\d+\.\d+)([eE][-+]?\d+)?\s*$/,c=/^((\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z))|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z)))$/,h=this,l=0,d=0,u=!1,f=!1,m=[],v={data:[],errors:[],meta:{}};if(w(t.step)){var _=t.step;t.step=function(e){if(v=e,S())k();else {if(k(),0===v.data.length)return;l+=e.data.length,t.preview&&l>t.preview?s.abort():(v.data=v.data[0],_(v,h));}};}function b(e){return "greedy"===t.skipEmptyLines?""===e.join("").trim():1===e.length&&0===e[0].length}function k(){return v&&i&&(z("Delimiter","UndetectableDelimiter","Unable to auto-detect delimiting character; defaulted to '"+o.DefaultDelimiter+"'"),i=!1),t.skipEmptyLines&&(v.data=v.data.filter((function(t){return !b(t)}))),S()&&function(){if(v)if(Array.isArray(v.data[0])){for(var e=0;S()&&e<v.data.length;e++)v.data[e].forEach(s);v.data.splice(0,1);}else v.data.forEach(s);function s(e,s){w(t.transformHeader)&&(e=t.transformHeader(e,s)),m.push(e);}}(),function(){if(!v||!t.header&&!t.dynamicTyping&&!t.transform)return v;function e(e,s){var i,r=t.header?{}:[];for(i=0;i<e.length;i++){var n=i,o=e[i];t.header&&(n=i>=m.length?"__parsed_extra":m[i]),t.transform&&(o=t.transform(o,n)),o=x(n,o),"__parsed_extra"===n?(r[n]=r[n]||[],r[n].push(o)):r[n]=o;}return t.header&&(i>m.length?z("FieldMismatch","TooManyFields","Too many fields: expected "+m.length+" fields but parsed "+i,d+s):i<m.length&&z("FieldMismatch","TooFewFields","Too few fields: expected "+m.length+" fields but parsed "+i,d+s)),r}var s=1;return !v.data.length||Array.isArray(v.data[0])?(v.data=v.data.map(e),s=v.data.length):v.data=e(v.data,0),t.header&&v.meta&&(v.meta.fields=m),d+=s,v}()}function S(){return t.header&&0===m.length}function x(e,s){return i=e,t.dynamicTypingFunction&&void 0===t.dynamicTyping[i]&&(t.dynamicTyping[i]=t.dynamicTypingFunction(i)),!0===(t.dynamicTyping[i]||t.dynamicTyping)?"true"===s||"TRUE"===s||"false"!==s&&"FALSE"!==s&&(function(t){if(a.test(t)){var e=parseFloat(t);if(n<e&&e<r)return !0}return !1}(s)?parseFloat(s):c.test(s)?new Date(s):""===s?null:s):s;var i;}function z(t,e,s,i){var r={type:t,code:e,message:s};void 0!==i&&(r.row=i),v.errors.push(r);}this.parse=function(r,n,a){var c=t.quoteChar||'"';if(t.newline||(t.newline=function(t,e){t=t.substring(0,1048576);var s=new RegExp(p(e)+"([^]*?)"+p(e),"gm"),i=(t=t.replace(s,"")).split("\r"),r=t.split("\n"),n=1<r.length&&r[0].length<i[0].length;if(1===i.length||n)return "\n";for(var o=0,a=0;a<i.length;a++)"\n"===i[a][0]&&o++;return o>=i.length/2?"\r\n":"\r"}(r,c)),i=!1,t.delimiter)w(t.delimiter)&&(t.delimiter=t.delimiter(r),v.meta.delimiter=t.delimiter);else {var h=function(e,s,i,r,n){var a,c,h,l;n=n||[",","\t","|",";",o.RECORD_SEP,o.UNIT_SEP];for(var d=0;d<n.length;d++){var u=n[d],f=0,p=0,m=0;h=void 0;for(var v=new g({comments:r,delimiter:u,newline:s,preview:10}).parse(e),_=0;_<v.data.length;_++)if(i&&b(v.data[_]))m++;else {var y=v.data[_].length;p+=y,void 0!==h?0<y&&(f+=Math.abs(y-h),h=y):h=y;}0<v.data.length&&(p/=v.data.length-m),(void 0===c||f<=c)&&(void 0===l||l<p)&&1.99<p&&(c=f,a=u,l=p);}return {successful:!!(t.delimiter=a),bestDelimiter:a}}(r,t.newline,t.skipEmptyLines,t.comments,t.delimitersToGuess);h.successful?t.delimiter=h.bestDelimiter:(i=!0,t.delimiter=o.DefaultDelimiter),v.meta.delimiter=t.delimiter;}var l=y(t);return t.preview&&t.header&&l.preview++,e=r,s=new g(l),v=s.parse(e,n,a),k(),u?{meta:{paused:!0}}:v||{meta:{paused:!1}}},this.paused=function(){return u},this.pause=function(){u=!0,s.abort(),e=w(t.chunk)?"":e.substring(s.getCharIndex());},this.resume=function(){h.streamer._halted?(u=!1,h.streamer.parseChunk(e,!0)):setTimeout(h.resume,3);},this.aborted=function(){return f},this.abort=function(){f=!0,s.abort(),v.meta.aborted=!0,w(t.complete)&&t.complete(v),e="";};}function p(t){return t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}function g(t){var e,s=(t=t||{}).delimiter,i=t.newline,r=t.comments,n=t.step,a=t.preview,c=t.fastMode,h=e=void 0===t.quoteChar||null===t.quoteChar?'"':t.quoteChar;if(void 0!==t.escapeChar&&(h=t.escapeChar),("string"!=typeof s||-1<o.BAD_DELIMITERS.indexOf(s))&&(s=","),r===s)throw new Error("Comment character same as delimiter");!0===r?r="#":("string"!=typeof r||-1<o.BAD_DELIMITERS.indexOf(r))&&(r=!1),"\n"!==i&&"\r"!==i&&"\r\n"!==i&&(i="\n");var l=0,d=!1;this.parse=function(o,u,f){if("string"!=typeof o)throw new Error("Input must be a string");var g=o.length,m=s.length,v=i.length,_=r.length,y=w(n),b=[],k=[],S=[],x=l=0;if(!o)return K();if(t.header&&!u){var z=o.split(i)[0].split(s),E=[],A={},L=!1;for(var O in z){var T=z[O];w(t.transformHeader)&&(T=t.transformHeader(T,O));var F=T,R=A[T]||0;for(0<R&&(L=!0,F=T+"_"+R),A[T]=R+1;E.includes(F);)F=F+"_"+R;E.push(F);}if(L){var C=o.split(i);C[0]=E.join(s),o=C.join(i);}}if(c||!1!==c&&-1===o.indexOf(e)){for(var D=o.split(i),j=0;j<D.length;j++){if(S=D[j],l+=S.length,j!==D.length-1)l+=i.length;else if(f)return K();if(!r||S.substring(0,_)!==r){if(y){if(b=[],B(S.split(s)),H(),d)return K()}else B(S.split(s));if(a&&a<=j)return b=b.slice(0,a),K(!0)}}return K()}for(var $=o.indexOf(s,l),I=o.indexOf(i,l),M=new RegExp(p(h)+p(e),"g"),N=o.indexOf(e,l);;)if(o[l]!==e)if(r&&0===S.length&&o.substring(l,l+_)===r){if(-1===I)return K();l=I+v,I=o.indexOf(i,l),$=o.indexOf(s,l);}else if(-1!==$&&($<I||-1===I))S.push(o.substring(l,$)),l=$+m,$=o.indexOf(s,l);else {if(-1===I)break;if(S.push(o.substring(l,I)),q(I+v),y&&(H(),d))return K();if(a&&b.length>=a)return K(!0)}else for(N=l,l++;;){if(-1===(N=o.indexOf(e,N+1)))return f||k.push({type:"Quotes",code:"MissingQuotes",message:"Quoted field unterminated",row:b.length,index:l}),G();if(N===g-1)return G(o.substring(l,N).replace(M,e));if(e!==h||o[N+1]!==h){if(e===h||0===N||o[N-1]!==h){-1!==$&&$<N+1&&($=o.indexOf(s,N+1)),-1!==I&&I<N+1&&(I=o.indexOf(i,N+1));var U=P(-1===I?$:Math.min($,I));if(o.substr(N+1+U,m)===s){S.push(o.substring(l,N).replace(M,e)),o[l=N+1+U+m]!==e&&(N=o.indexOf(e,l)),$=o.indexOf(s,l),I=o.indexOf(i,l);break}var W=P(I);if(o.substring(N+1+W,N+1+W+v)===i){if(S.push(o.substring(l,N).replace(M,e)),q(N+1+W+v),$=o.indexOf(s,l),N=o.indexOf(e,l),y&&(H(),d))return K();if(a&&b.length>=a)return K(!0);break}k.push({type:"Quotes",code:"InvalidQuotes",message:"Trailing quote on quoted field is malformed",row:b.length,index:l}),N++;}}else N++;}return G();function B(t){b.push(t),x=l;}function P(t){var e=0;if(-1!==t){var s=o.substring(N+1,t);s&&""===s.trim()&&(e=s.length);}return e}function G(t){return f||(void 0===t&&(t=o.substring(l)),S.push(t),l=g,B(S),y&&H()),K()}function q(t){l=t,B(S),S=[],I=o.indexOf(i,l);}function K(t){return {data:b,errors:k,meta:{delimiter:s,linebreak:i,aborted:d,truncated:!!t,cursor:x+(u||0)}}}function H(){n(K()),b=[],k=[];}},this.abort=function(){d=!0;},this.getCharIndex=function(){return l};}function m(t){var e=t.data,s=r[e.workerId],i=!1;if(e.error)s.userError(e.error,e.file);else if(e.results&&e.results.data){var n={abort:function(){i=!0,v(e.workerId,{data:[],errors:[],meta:{aborted:!0}});},pause:_,resume:_};if(w(s.userStep)){for(var o=0;o<e.results.data.length&&(s.userStep({data:e.results.data[o],errors:e.results.errors,meta:e.results.meta},n),!i);o++);delete e.results;}else w(s.userChunk)&&(s.userChunk(e.results,n,e.file),delete e.results);}e.finished&&!i&&v(e.workerId,e.results);}function v(t,e){var s=r[t];w(s.userComplete)&&s.userComplete(e),s.terminate(),delete r[t];}function _(){throw new Error("Not implemented.")}function y(t){if("object"!=typeof t||null===t)return t;var e=Array.isArray(t)?[]:{};for(var s in t)e[s]=y(t[s]);return e}function b(t,e){return function(){t.apply(e,arguments);}}function w(t){return "function"==typeof t}return i&&(e.onmessage=function(t){var s=t.data;if(void 0===o.WORKER_ID&&s&&(o.WORKER_ID=s.workerId),"string"==typeof s.input)e.postMessage({workerId:o.WORKER_ID,results:o.parse(s.input,s.config),finished:!0});else if(e.File&&s.input instanceof File||s.input instanceof Object){var i=o.parse(s.input,s.config);i&&e.postMessage({workerId:o.WORKER_ID,results:i,finished:!0});}}),(h.prototype=Object.create(c.prototype)).constructor=h,(l.prototype=Object.create(c.prototype)).constructor=l,(d.prototype=Object.create(d.prototype)).constructor=d,(u.prototype=Object.create(c.prototype)).constructor=u,o}()),k.exports));const x="object"==typeof performance&&performance&&"function"==typeof performance.now?performance:Date,z=new Set,E="object"==typeof process&&process?process:{},A=(t,e,s,i)=>{"function"==typeof E.emitWarning?E.emitWarning(t,e,s,i):console.error(`[${s}] ${e}: ${t}`);};let L$1=globalThis.AbortController,O=globalThis.AbortSignal;if(void 0===L$1){O=class{onabort;_onabort=[];reason;aborted=!1;addEventListener(t,e){this._onabort.push(e);}},L$1=class{constructor(){e();}signal=new O;abort(t){if(!this.signal.aborted){this.signal.reason=t,this.signal.aborted=!0;for(const e of this.signal._onabort)e(t);this.signal.onabort?.(t);}}};let t="1"!==E.env?.LRU_CACHE_IGNORE_AC_WARNING;const e=()=>{t&&(t=!1,A("AbortController is not defined. If using lru-cache in node 14, load an AbortController polyfill from the `node-abort-controller` package. A minimal polyfill is provided for use by LRUCache.fetch(), but it should not be relied upon in other contexts (eg, passing it to other APIs that use AbortController/AbortSignal might have undesirable effects). You may disable this with LRU_CACHE_IGNORE_AC_WARNING=1 in the env.","NO_ABORT_CONTROLLER","ENOTSUP",e));};}const T=t=>t&&t===Math.floor(t)&&t>0&&isFinite(t),F=t=>T(t)?t<=Math.pow(2,8)?Uint8Array:t<=Math.pow(2,16)?Uint16Array:t<=Math.pow(2,32)?Uint32Array:t<=Number.MAX_SAFE_INTEGER?R:null:null;class R extends Array{constructor(t){super(t),this.fill(0);}}class C{heap;length;static#t=!1;static create(t){const e=F(t);if(!e)return [];C.#t=!0;const s=new C(t,e);return C.#t=!1,s}constructor(t,e){if(!C.#t)throw new TypeError("instantiate Stack using Stack.create(n)");this.heap=new e(t),this.length=0;}push(t){this.heap[this.length++]=t;}pop(){return this.heap[--this.length]}}class D{#e;#s;#i;#r;#n;#o;ttl;ttlResolution;ttlAutopurge;updateAgeOnGet;updateAgeOnHas;allowStale;noDisposeOnSet;noUpdateTTL;maxEntrySize;sizeCalculation;noDeleteOnFetchRejection;noDeleteOnStaleGet;allowStaleOnFetchAbort;allowStaleOnFetchRejection;ignoreFetchAbort;#a;#c;#h;#l;#d;#u;#f;#p;#g;#m;#v;#_;#y;#b;#w;#k;#S;static unsafeExposeInternals(t){return {starts:t.#y,ttls:t.#b,sizes:t.#_,keyMap:t.#h,keyList:t.#l,valList:t.#d,next:t.#u,prev:t.#f,get head(){return t.#p},get tail(){return t.#g},free:t.#m,isBackgroundFetch:e=>t.#x(e),backgroundFetch:(e,s,i,r)=>t.#z(e,s,i,r),moveToTail:e=>t.#E(e),indexes:e=>t.#A(e),rindexes:e=>t.#L(e),isStale:e=>t.#O(e)}}get max(){return this.#e}get maxSize(){return this.#s}get calculatedSize(){return this.#c}get size(){return this.#a}get fetchMethod(){return this.#n}get memoMethod(){return this.#o}get dispose(){return this.#i}get disposeAfter(){return this.#r}constructor(t){const{max:e=0,ttl:s,ttlResolution:i=1,ttlAutopurge:r,updateAgeOnGet:n,updateAgeOnHas:o,allowStale:a,dispose:c,disposeAfter:h,noDisposeOnSet:l,noUpdateTTL:d,maxSize:u=0,maxEntrySize:f=0,sizeCalculation:p,fetchMethod:g,memoMethod:m,noDeleteOnFetchRejection:v,noDeleteOnStaleGet:_,allowStaleOnFetchRejection:y,allowStaleOnFetchAbort:b,ignoreFetchAbort:w}=t;if(0!==e&&!T(e))throw new TypeError("max option must be a nonnegative integer");const k=e?F(e):Array;if(!k)throw new Error("invalid max value: "+e);if(this.#e=e,this.#s=u,this.maxEntrySize=f||this.#s,this.sizeCalculation=p,this.sizeCalculation){if(!this.#s&&!this.maxEntrySize)throw new TypeError("cannot set sizeCalculation without setting maxSize or maxEntrySize");if("function"!=typeof this.sizeCalculation)throw new TypeError("sizeCalculation set to non-function")}if(void 0!==m&&"function"!=typeof m)throw new TypeError("memoMethod must be a function if defined");if(this.#o=m,void 0!==g&&"function"!=typeof g)throw new TypeError("fetchMethod must be a function if specified");if(this.#n=g,this.#k=!!g,this.#h=new Map,this.#l=new Array(e).fill(void 0),this.#d=new Array(e).fill(void 0),this.#u=new k(e),this.#f=new k(e),this.#p=0,this.#g=0,this.#m=C.create(e),this.#a=0,this.#c=0,"function"==typeof c&&(this.#i=c),"function"==typeof h?(this.#r=h,this.#v=[]):(this.#r=void 0,this.#v=void 0),this.#w=!!this.#i,this.#S=!!this.#r,this.noDisposeOnSet=!!l,this.noUpdateTTL=!!d,this.noDeleteOnFetchRejection=!!v,this.allowStaleOnFetchRejection=!!y,this.allowStaleOnFetchAbort=!!b,this.ignoreFetchAbort=!!w,0!==this.maxEntrySize){if(0!==this.#s&&!T(this.#s))throw new TypeError("maxSize must be a positive integer if specified");if(!T(this.maxEntrySize))throw new TypeError("maxEntrySize must be a positive integer if specified");this.#T();}if(this.allowStale=!!a,this.noDeleteOnStaleGet=!!_,this.updateAgeOnGet=!!n,this.updateAgeOnHas=!!o,this.ttlResolution=T(i)||0===i?i:1,this.ttlAutopurge=!!r,this.ttl=s||0,this.ttl){if(!T(this.ttl))throw new TypeError("ttl must be a positive integer if specified");this.#F();}if(0===this.#e&&0===this.ttl&&0===this.#s)throw new TypeError("At least one of max, maxSize, or ttl is required");if(!this.ttlAutopurge&&!this.#e&&!this.#s){const t="LRU_CACHE_UNBOUNDED";if((t=>!z.has(t))(t)){z.add(t);A("TTL caching without ttlAutopurge, max, or maxSize can result in unbounded memory consumption.","UnboundedCacheWarning",t,D);}}}getRemainingTTL(t){return this.#h.has(t)?1/0:0}#F(){const t=new R(this.#e),e=new R(this.#e);this.#b=t,this.#y=e,this.#R=(s,i,r=x.now())=>{if(e[s]=0!==i?r:0,t[s]=i,0!==i&&this.ttlAutopurge){const t=setTimeout((()=>{this.#O(s)&&this.#C(this.#l[s],"expire");}),i+1);t.unref&&t.unref();}},this.#D=s=>{e[s]=0!==t[s]?x.now():0;},this.#j=(r,n)=>{if(t[n]){const o=t[n],a=e[n];if(!o||!a)return;r.ttl=o,r.start=a,r.now=s||i();const c=r.now-a;r.remainingTTL=o-c;}};let s=0;const i=()=>{const t=x.now();if(this.ttlResolution>0){s=t;const e=setTimeout((()=>s=0),this.ttlResolution);e.unref&&e.unref();}return t};this.getRemainingTTL=r=>{const n=this.#h.get(r);if(void 0===n)return 0;const o=t[n],a=e[n];if(!o||!a)return 1/0;return o-((s||i())-a)},this.#O=r=>{const n=e[r],o=t[r];return !!o&&!!n&&(s||i())-n>o};}#D=()=>{};#j=()=>{};#R=()=>{};#O=()=>!1;#T(){const t=new R(this.#e);this.#c=0,this.#_=t,this.#$=e=>{this.#c-=t[e],t[e]=0;},this.#I=(t,e,s,i)=>{if(this.#x(e))return 0;if(!T(s)){if(!i)throw new TypeError("invalid size value (must be positive integer). When maxSize or maxEntrySize is used, sizeCalculation or size must be set.");if("function"!=typeof i)throw new TypeError("sizeCalculation must be a function");if(s=i(e,t),!T(s))throw new TypeError("sizeCalculation return invalid (expect positive integer)")}return s},this.#M=(e,s,i)=>{if(t[e]=s,this.#s){const s=this.#s-t[e];for(;this.#c>s;)this.#N(!0);}this.#c+=t[e],i&&(i.entrySize=s,i.totalCalculatedSize=this.#c);};}#$=t=>{};#M=(t,e,s)=>{};#I=(t,e,s,i)=>{if(s||i)throw new TypeError("cannot set size without setting maxSize or maxEntrySize on cache");return 0};*#A({allowStale:t=this.allowStale}={}){if(this.#a)for(let e=this.#g;this.#U(e)&&(!t&&this.#O(e)||(yield e),e!==this.#p);)e=this.#f[e];}*#L({allowStale:t=this.allowStale}={}){if(this.#a)for(let e=this.#p;this.#U(e)&&(!t&&this.#O(e)||(yield e),e!==this.#g);)e=this.#u[e];}#U(t){return void 0!==t&&this.#h.get(this.#l[t])===t}*entries(){for(const t of this.#A())void 0===this.#d[t]||void 0===this.#l[t]||this.#x(this.#d[t])||(yield [this.#l[t],this.#d[t]]);}*rentries(){for(const t of this.#L())void 0===this.#d[t]||void 0===this.#l[t]||this.#x(this.#d[t])||(yield [this.#l[t],this.#d[t]]);}*keys(){for(const t of this.#A()){const e=this.#l[t];void 0===e||this.#x(this.#d[t])||(yield e);}}*rkeys(){for(const t of this.#L()){const e=this.#l[t];void 0===e||this.#x(this.#d[t])||(yield e);}}*values(){for(const t of this.#A()){void 0===this.#d[t]||this.#x(this.#d[t])||(yield this.#d[t]);}}*rvalues(){for(const t of this.#L()){void 0===this.#d[t]||this.#x(this.#d[t])||(yield this.#d[t]);}}[Symbol.iterator](){return this.entries()}[Symbol.toStringTag]="LRUCache";find(t,e={}){for(const s of this.#A()){const i=this.#d[s],r=this.#x(i)?i.__staleWhileFetching:i;if(void 0!==r&&t(r,this.#l[s],this))return this.get(this.#l[s],e)}}forEach(t,e=this){for(const s of this.#A()){const i=this.#d[s],r=this.#x(i)?i.__staleWhileFetching:i;void 0!==r&&t.call(e,r,this.#l[s],this);}}rforEach(t,e=this){for(const s of this.#L()){const i=this.#d[s],r=this.#x(i)?i.__staleWhileFetching:i;void 0!==r&&t.call(e,r,this.#l[s],this);}}purgeStale(){let t=!1;for(const e of this.#L({allowStale:!0}))this.#O(e)&&(this.#C(this.#l[e],"expire"),t=!0);return t}info(t){const e=this.#h.get(t);if(void 0===e)return;const s=this.#d[e],i=this.#x(s)?s.__staleWhileFetching:s;if(void 0===i)return;const r={value:i};if(this.#b&&this.#y){const t=this.#b[e],s=this.#y[e];if(t&&s){const e=t-(x.now()-s);r.ttl=e,r.start=Date.now();}}return this.#_&&(r.size=this.#_[e]),r}dump(){const t=[];for(const e of this.#A({allowStale:!0})){const s=this.#l[e],i=this.#d[e],r=this.#x(i)?i.__staleWhileFetching:i;if(void 0===r||void 0===s)continue;const n={value:r};if(this.#b&&this.#y){n.ttl=this.#b[e];const t=x.now()-this.#y[e];n.start=Math.floor(Date.now()-t);}this.#_&&(n.size=this.#_[e]),t.unshift([s,n]);}return t}load(t){this.clear();for(const[e,s]of t){if(s.start){const t=Date.now()-s.start;s.start=x.now()-t;}this.set(e,s.value,s);}}set(t,e,s={}){if(void 0===e)return this.delete(t),this;const{ttl:i=this.ttl,start:r,noDisposeOnSet:n=this.noDisposeOnSet,sizeCalculation:o=this.sizeCalculation,status:a}=s;let{noUpdateTTL:c=this.noUpdateTTL}=s;const h=this.#I(t,e,s.size||0,o);if(this.maxEntrySize&&h>this.maxEntrySize)return a&&(a.set="miss",a.maxEntrySizeExceeded=!0),this.#C(t,"set"),this;let l=0===this.#a?void 0:this.#h.get(t);if(void 0===l)l=0===this.#a?this.#g:0!==this.#m.length?this.#m.pop():this.#a===this.#e?this.#N(!1):this.#a,this.#l[l]=t,this.#d[l]=e,this.#h.set(t,l),this.#u[this.#g]=l,this.#f[l]=this.#g,this.#g=l,this.#a++,this.#M(l,h,a),a&&(a.set="add"),c=!1;else {this.#E(l);const s=this.#d[l];if(e!==s){if(this.#k&&this.#x(s)){s.__abortController.abort(new Error("replaced"));const{__staleWhileFetching:e}=s;void 0===e||n||(this.#w&&this.#i?.(e,t,"set"),this.#S&&this.#v?.push([e,t,"set"]));}else n||(this.#w&&this.#i?.(s,t,"set"),this.#S&&this.#v?.push([s,t,"set"]));if(this.#$(l),this.#M(l,h,a),this.#d[l]=e,a){a.set="replace";const t=s&&this.#x(s)?s.__staleWhileFetching:s;void 0!==t&&(a.oldValue=t);}}else a&&(a.set="update");}if(0===i||this.#b||this.#F(),this.#b&&(c||this.#R(l,i,r),a&&this.#j(a,l)),!n&&this.#S&&this.#v){const t=this.#v;let e;for(;e=t?.shift();)this.#r?.(...e);}return this}pop(){try{for(;this.#a;){const t=this.#d[this.#p];if(this.#N(!0),this.#x(t)){if(t.__staleWhileFetching)return t.__staleWhileFetching}else if(void 0!==t)return t}}finally{if(this.#S&&this.#v){const t=this.#v;let e;for(;e=t?.shift();)this.#r?.(...e);}}}#N(t){const e=this.#p,s=this.#l[e],i=this.#d[e];return this.#k&&this.#x(i)?i.__abortController.abort(new Error("evicted")):(this.#w||this.#S)&&(this.#w&&this.#i?.(i,s,"evict"),this.#S&&this.#v?.push([i,s,"evict"])),this.#$(e),t&&(this.#l[e]=void 0,this.#d[e]=void 0,this.#m.push(e)),1===this.#a?(this.#p=this.#g=0,this.#m.length=0):this.#p=this.#u[e],this.#h.delete(s),this.#a--,e}has(t,e={}){const{updateAgeOnHas:s=this.updateAgeOnHas,status:i}=e,r=this.#h.get(t);if(void 0!==r){const t=this.#d[r];if(this.#x(t)&&void 0===t.__staleWhileFetching)return !1;if(!this.#O(r))return s&&this.#D(r),i&&(i.has="hit",this.#j(i,r)),!0;i&&(i.has="stale",this.#j(i,r));}else i&&(i.has="miss");return !1}peek(t,e={}){const{allowStale:s=this.allowStale}=e,i=this.#h.get(t);if(void 0===i||!s&&this.#O(i))return;const r=this.#d[i];return this.#x(r)?r.__staleWhileFetching:r}#z(t,e,s,i){const r=void 0===e?void 0:this.#d[e];if(this.#x(r))return r;const n=new L$1,{signal:o}=s;o?.addEventListener("abort",(()=>n.abort(o.reason)),{signal:n.signal});const a={signal:n.signal,options:s,context:i},c=(i,r=!1)=>{const{aborted:o}=n.signal,c=s.ignoreFetchAbort&&void 0!==i;if(s.status&&(o&&!r?(s.status.fetchAborted=!0,s.status.fetchError=n.signal.reason,c&&(s.status.fetchAbortIgnored=!0)):s.status.fetchResolved=!0),o&&!c&&!r)return h(n.signal.reason);const d=l;return this.#d[e]===l&&(void 0===i?d.__staleWhileFetching?this.#d[e]=d.__staleWhileFetching:this.#C(t,"fetch"):(s.status&&(s.status.fetchUpdated=!0),this.set(t,i,a.options))),i},h=i=>{const{aborted:r}=n.signal,o=r&&s.allowStaleOnFetchAbort,a=o||s.allowStaleOnFetchRejection,c=a||s.noDeleteOnFetchRejection,h=l;if(this.#d[e]===l){!c||void 0===h.__staleWhileFetching?this.#C(t,"fetch"):o||(this.#d[e]=h.__staleWhileFetching);}if(a)return s.status&&void 0!==h.__staleWhileFetching&&(s.status.returnedStale=!0),h.__staleWhileFetching;if(h.__returned===h)throw i};s.status&&(s.status.fetchDispatched=!0);const l=new Promise(((e,i)=>{const o=this.#n?.(t,r,a);o&&o instanceof Promise&&o.then((t=>e(void 0===t?void 0:t)),i),n.signal.addEventListener("abort",(()=>{s.ignoreFetchAbort&&!s.allowStaleOnFetchAbort||(e(void 0),s.allowStaleOnFetchAbort&&(e=t=>c(t,!0)));}));})).then(c,(t=>(s.status&&(s.status.fetchRejected=!0,s.status.fetchError=t),h(t)))),d=Object.assign(l,{__abortController:n,__staleWhileFetching:r,__returned:void 0});return void 0===e?(this.set(t,d,{...a.options,status:void 0}),e=this.#h.get(t)):this.#d[e]=d,d}#x(t){if(!this.#k)return !1;const e=t;return !!e&&e instanceof Promise&&e.hasOwnProperty("__staleWhileFetching")&&e.__abortController instanceof L$1}async fetch(t,e={}){const{allowStale:s=this.allowStale,updateAgeOnGet:i=this.updateAgeOnGet,noDeleteOnStaleGet:r=this.noDeleteOnStaleGet,ttl:n=this.ttl,noDisposeOnSet:o=this.noDisposeOnSet,size:a=0,sizeCalculation:c=this.sizeCalculation,noUpdateTTL:h=this.noUpdateTTL,noDeleteOnFetchRejection:l=this.noDeleteOnFetchRejection,allowStaleOnFetchRejection:d=this.allowStaleOnFetchRejection,ignoreFetchAbort:u=this.ignoreFetchAbort,allowStaleOnFetchAbort:f=this.allowStaleOnFetchAbort,context:p,forceRefresh:g=!1,status:m,signal:v}=e;if(!this.#k)return m&&(m.fetch="get"),this.get(t,{allowStale:s,updateAgeOnGet:i,noDeleteOnStaleGet:r,status:m});const _={allowStale:s,updateAgeOnGet:i,noDeleteOnStaleGet:r,ttl:n,noDisposeOnSet:o,size:a,sizeCalculation:c,noUpdateTTL:h,noDeleteOnFetchRejection:l,allowStaleOnFetchRejection:d,allowStaleOnFetchAbort:f,ignoreFetchAbort:u,status:m,signal:v};let y=this.#h.get(t);if(void 0===y){m&&(m.fetch="miss");const e=this.#z(t,y,_,p);return e.__returned=e}{const e=this.#d[y];if(this.#x(e)){const t=s&&void 0!==e.__staleWhileFetching;return m&&(m.fetch="inflight",t&&(m.returnedStale=!0)),t?e.__staleWhileFetching:e.__returned=e}const r=this.#O(y);if(!g&&!r)return m&&(m.fetch="hit"),this.#E(y),i&&this.#D(y),m&&this.#j(m,y),e;const n=this.#z(t,y,_,p),o=void 0!==n.__staleWhileFetching&&s;return m&&(m.fetch=r?"stale":"refresh",o&&r&&(m.returnedStale=!0)),o?n.__staleWhileFetching:n.__returned=n}}async forceFetch(t,e={}){const s=await this.fetch(t,e);if(void 0===s)throw new Error("fetch() returned undefined");return s}memo(t,e={}){const s=this.#o;if(!s)throw new Error("no memoMethod provided to constructor");const{context:i,forceRefresh:r,...n}=e,o=this.get(t,n);if(!r&&void 0!==o)return o;const a=s(t,o,{options:n,context:i});return this.set(t,a,n),a}get(t,e={}){const{allowStale:s=this.allowStale,updateAgeOnGet:i=this.updateAgeOnGet,noDeleteOnStaleGet:r=this.noDeleteOnStaleGet,status:n}=e,o=this.#h.get(t);if(void 0!==o){const e=this.#d[o],a=this.#x(e);return n&&this.#j(n,o),this.#O(o)?(n&&(n.get="stale"),a?(n&&s&&void 0!==e.__staleWhileFetching&&(n.returnedStale=!0),s?e.__staleWhileFetching:void 0):(r||this.#C(t,"expire"),n&&s&&(n.returnedStale=!0),s?e:void 0)):(n&&(n.get="hit"),a?e.__staleWhileFetching:(this.#E(o),i&&this.#D(o),e))}n&&(n.get="miss");}#W(t,e){this.#f[e]=t,this.#u[t]=e;}#E(t){t!==this.#g&&(t===this.#p?this.#p=this.#u[t]:this.#W(this.#f[t],this.#u[t]),this.#W(this.#g,t),this.#g=t);}delete(t){return this.#C(t,"delete")}#C(t,e){let s=!1;if(0!==this.#a){const i=this.#h.get(t);if(void 0!==i)if(s=!0,1===this.#a)this.#B(e);else {this.#$(i);const s=this.#d[i];if(this.#x(s)?s.__abortController.abort(new Error("deleted")):(this.#w||this.#S)&&(this.#w&&this.#i?.(s,t,e),this.#S&&this.#v?.push([s,t,e])),this.#h.delete(t),this.#l[i]=void 0,this.#d[i]=void 0,i===this.#g)this.#g=this.#f[i];else if(i===this.#p)this.#p=this.#u[i];else {const t=this.#f[i];this.#u[t]=this.#u[i];const e=this.#u[i];this.#f[e]=this.#f[i];}this.#a--,this.#m.push(i);}}if(this.#S&&this.#v?.length){const t=this.#v;let e;for(;e=t?.shift();)this.#r?.(...e);}return s}clear(){return this.#B("delete")}#B(t){for(const e of this.#L({allowStale:!0})){const s=this.#d[e];if(this.#x(s))s.__abortController.abort(new Error("deleted"));else {const i=this.#l[e];this.#w&&this.#i?.(s,i,t),this.#S&&this.#v?.push([s,i,t]);}}if(this.#h.clear(),this.#d.fill(void 0),this.#l.fill(void 0),this.#b&&this.#y&&(this.#b.fill(0),this.#y.fill(0)),this.#_&&this.#_.fill(0),this.#p=0,this.#g=0,this.#m.length=0,this.#c=0,this.#a=0,this.#S&&this.#v){const t=this.#v;let e;for(;e=t?.shift();)this.#r?.(...e);}}}function j(t){return t.pref}function $(t){return `${t.county||""}${t.city}${t.ward||""}`}function I(t){return `${t.oaza_cho||""}${t.chome||""}${t.koaza||""}`}function M(t){return [t.blk_num,t.rsdt_num,t.rsdt_num2].filter(Boolean).join("-")}function N(t){return [t.prc_num1,t.prc_num2,t.prc_num3].filter(Boolean).join("-")}const U=new D({max:f.cacheSize});function W(e,s){return t(this,void 0,void 0,(function*(){let t=U.get(e);return void 0!==t||(t=yield s(),U.set(e,t)),t}))}let B;const P=new Map;let G;const q={};let K;const H=t=>G=t,Q=t=>{const e=P.get(t.code);if(void 0!==e)return e;const s=t.cities;s.sort(((t,e)=>$(t).length-$(e).length));const i=s.map((t=>{const e=$(t);let s=`^${b(e)}`;return e.match(/(町|村)$/)&&(s=`^${b(e).replace(/(.+?)郡/,"($1郡)?")}`),[t,s]}));return P.set(t.code,i),i};function J(e,s,i,r,n){return t(this,void 0,void 0,(function*(){const t=j(s),o=$(i);return (yield p$1(["",encodeURI(t),encodeURI(`${o}-${e}.txt?v=${n}`)].join("/"),{offset:r.start,length:r.length})).text()}))}function V(t){const e=t.indexOf("\n"),s=t.slice(e+1),i=S.parse(s,{header:!0}).data,r=[];for(const t of i){const e=t.lng&&t.lat?[parseFloat(t.lng),parseFloat(t.lat)]:void 0;"blk_num"in t?r.push({blk_num:t.blk_num,rsdt_num:t.rsdt_num,rsdt_num2:t.rsdt_num2,point:e}):"prc_num1"in t&&r.push({prc_num1:t.prc_num1,prc_num2:t.prc_num2,prc_num3:t.prc_num3,point:e});}return r}const Y=t=>{const e=t.match(/.町/g);if(!e)return !1;return u.findKanjiNumbers(e[0]).length>0},Z=(e,s,i)=>t(void 0,void 0,void 0,(function*(){return W(`${e.code}-${s.code}`,(()=>t(void 0,void 0,void 0,(function*(){const r=yield ((e,s,i)=>t(void 0,void 0,void 0,(function*(){const t=j(e),r=$(s),n=`${t}-${r}`,o=q[n];if(void 0!==o)return o;const a=yield p$1(["",encodeURI(t),encodeURI(r)+`.json?v=${i}`].join("/"),{}),c=yield a.json();return q[n]=c})))(e,s,i),n=r.data,o=new Set(n.map((t=>I(t)))),a=[],c="京都市"===s.city;for(const t of n){a.push(t);const e=I(t);if(-1===e.indexOf("町"))continue;const s=e.replace(/(?!^町)町/g,"");c||o.has(s)||o.has(`大字${s}`)||Y(e)||a.push({machiaza_id:t.machiaza_id,point:t.point,oaza_cho:s,originalTown:t});}a.sort(((t,e)=>{let s=I(t).length,i=I(e).length;return I(t).startsWith("大字")&&(s-=2),I(e).startsWith("大字")&&(i-=2),i-s}));const h=a.map((t=>{const e=b(I(t).replace(/[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━]/g,"[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━]").replace(/大?字/g,"(大?字)?").replace(/([壱一二三四五六七八九十]+|[１２３４５６７８９０]+)(丁目?|番(町|丁)|条|軒|線|(の|ノ)町|地割|号)/g,(t=>{const e=[];if(e.push(t.toString().replace(/(丁目?|番(町|丁)|条|軒|線|(の|ノ)町|地割|号)/,"")),t.match(/^壱/))e.push("一"),e.push("1"),e.push("１");else {const s=t.replace(/([一二三四五六七八九十]+)/g,(t=>g(t))).replace(/([１２３４５６７８９０]+)/g,(t=>u.kanji2number(t).toString())).replace(/(丁目?|番(町|丁)|条|軒|線|(の|ノ)町|地割|号)/,"");e.push(s.toString());}return `(${e.join("|")})((丁|町)目?|番(町|丁)|条|軒|線|の町?|地割|号|[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━])`})));return ["originalTown"in t?t.originalTown:t,e]}));for(const t of a){const e=I(t).match(/([^一二三四五六七八九十]+)([一二三四五六七八九十]+)(丁目?)/);if(!e)continue;const s=e[1],i=e[2],r=b(`^${s}(${i}|${g(i)})`);h.push([t,r]);}return h}))))}));function X(t){return {lat:t.point[1],lng:t.point[0],level:1}}function tt(t){return {lat:t.point[1],lng:t.point[0],level:2}}function et(t){if(t.point)return {lat:t.point[1],lng:t.point[0],level:3}}function st(t){if(t.point)return {lat:t.point[1],lng:t.point[0],level:8}}function it(t,e){return t?e?t.level>e.level?t:e:t:e}function rt(t){if(!t)return;const e=Object.assign({},t);return delete e.cities,e}function nt(t){if(!t)return;const e=Object.assign({},t);return delete e.csv_ranges,e}const ot=f,at={level:8},ct=(e,s,i,r)=>t(void 0,void 0,void 0,(function*(){e=e.trim().replace(/^大字/,"");const t=yield Z(s,i,r),n=["^"];"京都市"===i.city&&n.push(".*");for(const s of n)for(const[i,r]of t){const t=new RegExp(`${s}${r}`),n=e.match(t);if(n)return {town:i,other:e.substring(n[0].length)}}}));function ht(e,s,i,r,n){return t(this,void 0,void 0,(function*(){const o=e.match(/^([1-9][0-9]*)(?:-([1-9][0-9]*))?(?:-([1-9][0-9]*))?/);if(!o)return {rest:e};if(r.rsdt){const a=yield ((e,s,i,r)=>t(void 0,void 0,void 0,(function*(){var n;const o=null===(n=i.csv_ranges)||void 0===n?void 0:n.住居表示;return o?yield W(`住居表示-${e.code}-${s.code}-${I(i)}`,(()=>t(void 0,void 0,void 0,(function*(){const t=V(yield J("住居表示",e,s,o,r));return t.sort(((t,e)=>{const s=[t.blk_num,t.rsdt_num,t.rsdt_num2].filter((t=>!!t)).join("-"),i=[e.blk_num,e.rsdt_num,e.rsdt_num2].filter((t=>!!t)).join("-");return i.length-s.length})),t})))):[]})))(s,i,r,n);for(const t of a){const s=M(t);if(o[0]===s)return {rsdt:t,rest:e.substring(s.length)}}}else {const a=yield ((e,s,i,r)=>t(void 0,void 0,void 0,(function*(){var n;const o=null===(n=i.csv_ranges)||void 0===n?void 0:n.地番;return o?yield W(`地番-${e.code}-${s.code}-${I(i)}`,(()=>t(void 0,void 0,void 0,(function*(){const t=V(yield J("地番",e,s,o,r));return t.sort(((t,e)=>{const s=[t.prc_num1,t.prc_num2,t.prc_num3].filter((t=>!!t)).join("-"),i=[e.prc_num1,e.prc_num2,e.prc_num3].filter((t=>!!t)).join("-");return i.length-s.length})),t})))):[]})))(s,i,r,n);for(const t of a){const s=N(t);if(o[0]===s)return {chiban:t,rest:e.substring(s.length)}}}return {rest:e}}))}const ut=(e,...s)=>t(void 0,[e,...s],void 0,(function*(e,s=at){var i;const r=Object.assign(Object.assign({},at),s);null!==(i=r.geoloniaApiKey)&&void 0!==i||(r.geoloniaApiKey=ot.geoloniaApiKey);let n=e.normalize("NFC").replace(/　/g," ").replace(/ +/g," ").replace(/([０-９Ａ-Ｚａ-ｚ]+)/g,(t=>m(t))).replace(/([0-9０-９一二三四五六七八九〇十百千][-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━])|([-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━])[0-9０-９一二三四五六七八九〇十]/g,(t=>t.replace(/[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━]/g,"-"))).replace(/(.+)(丁目?|番(町|地|丁)|条|軒|線|(の|ノ)町|地割)/,(t=>t.replace(/ /g,""))).replace(/(.+)((郡.+(町|村))|((市|巿).+(区|區)))/,(t=>t.replace(/ /g,""))).replace(/.+?[0-9一二三四五六七八九〇十百千]-/,(t=>t.replace(/ /g,"")));let o,a,c,h,l,d=0;const f=yield t(void 0,void 0,void 0,(function*(){if(void 0!==G)return G;const t=yield p$1(".json",{}),e=yield t.json();return H(e)})),_=f.meta.updated,y=(t=>{if(B)return B;const e=t.data;return B=e.map((t=>{const e=t.pref.replace(/(都|道|府|県)$/,"");return [t,`^${e}(都|道|府|県)?`]})),B})(f),b=(t=>{if(void 0!==K)return K;const e=t.data,s=e.map((t=>t.pref.replace(/[都|道|府|県]$/,"")));K=[];for(const t of e)for(const e of t.cities){const i=$(e);for(let e=0;e<s.length;e++)0===i.indexOf(s[e])&&K.push([`${t.pref}${i}`,`^${i}`]);}return K})(f);for(const[t,e]of b){if(n.match(e)){n=n.replace(new RegExp(e),t);break}}for(const[t,e]of y){const s=n.match(e);if(s){o=t,n=n.substring(s[0].length),h=X(o);break}}if(!o){const t=[];for(const e of f.data){const s=Q(e);n=n.trim();for(const[i,r]of s){const s=n.match(r);s&&t.push({pref:e,city:i,other:n.substring(s[0].length)});}}if(1===t.length)o=t[0].pref;else for(const e of t){const t=yield ct(e.other,e.pref,e.city,_);t&&(o=e.pref,a=e.city,c=t.town,n=t.other,h=it(h,et(c)));}}if(o&&r.level>=2){const t=Q(o);n=n.trim();for(const[e,s]of t){const t=n.match(s);if(t){a=e,h=it(h,tt(a)),n=n.substring(t[0].length);break}}}if(o&&a&&r.level>=3){const t=yield ct(n,o,a,_);t&&(c=t.town,n=t.other,h=it(h,et(c))),c&&(n=n.replace(/^-/,"").replace(/([0-9]+)(丁目)/g,(t=>t.replace(/([0-9]+)/g,(t=>u.number2kanji(Number(t)))))).replace(/(([0-9]+|[〇一二三四五六七八九十百千]+)(番地?)([0-9]+|[〇一二三四五六七八九十百千]+)号)\s*(.+)/,"$1 $5").replace(/([0-9]+|[〇一二三四五六七八九十百千]+)\s*(番地?)\s*([0-9]+|[〇一二三四五六七八九十百千]+)\s*号?/,"$1-$3").replace(/([0-9]+|[〇一二三四五六七八九十百千]+)番(地|$)/,"$1").replace(/([0-9]+|[〇一二三四五六七八九十百千]+)の/g,"$1-").replace(/([0-9]+|[〇一二三四五六七八九十百千]+)[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━]/g,(t=>g(t).replace(/[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━]/g,"-"))).replace(/[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━]([0-9]+|[〇一二三四五六七八九十百千]+)/g,(t=>g(t).replace(/[-－﹣−‐⁃‑‒–—﹘―⎯⏤ーｰ─━]/g,"-"))).replace(/([0-9]+|[〇一二三四五六七八九十百千]+)-/,(t=>g(t))).replace(/-([0-9]+|[〇一二三四五六七八九十百千]+)/,(t=>g(t))).replace(/-[^0-9]([0-9]+|[〇一二三四五六七八九十百千]+)/,(t=>g(m(t)))).replace(/([0-9]+|[〇一二三四五六七八九十百千]+)$/,(t=>g(t))).trim());}if(n=((t,e,s,i)=>{let r=i;for(let i=0;i<v.length;i++){const n=v[i];n.pref===t&&n.city===e&&n.town===s&&(r=r.replace(new RegExp(n.pattern),n.result));}return r})(o?j(o):"",a?$(a):"",c?I(c):"",n),o&&(d+=1),a&&(d+=1),c&&(d+=1),r.level<=3||d<3){return {pref:o?j(o):void 0,city:a?$(a):void 0,town:c?I(c):void 0,other:n,level:d,point:h,metadata:{input:e,prefecture:rt(o),city:a,machiAza:nt(c)}}}const w=yield ht(n,o,a,c,_);w.rsdt?(l=M(w.rsdt),n=w.rest,h=it(h,st(w.rsdt)),d=8):w.chiban&&(l=N(w.chiban),n=w.rest,h=it(h,st(w.chiban)),d=8);return {pref:o?j(o):void 0,city:a?$(a):void 0,town:c?I(c):void 0,addr:l,level:d,point:h,other:n,metadata:{input:e,prefecture:rt(o),city:a,machiAza:nt(c),rsdt:w.rsdt,chiban:w.chiban}}}));
 
     /**
      * 住所文字列から [lng, lat] 座標を解決する共通ヘルパー
@@ -4383,9 +7724,20 @@
         }
     }
 
-    class GeoloniaMap extends maplibregl.Map {
+    class GeoloniaMap extends GeoloniaMap$1 {
         constructor(params) {
             var _a, _b, _c, _d, _e, _f, _g;
+            // keyring に API キーと stage を設定
+            const apiKey = params.apiKey || window.geolonia.API_KEY || '';
+            if (apiKey) {
+                keyring.setApiKey(apiKey);
+            }
+            if (params.stage) {
+                keyring.setStage(params.stage);
+            }
+            else {
+                keyring.setStage('v1'); // デフォルトは v1
+            }
             const defaults = {
                 container: (_a = params.container) !== null && _a !== void 0 ? _a : 'map',
                 style: (_b = params.style) !== null && _b !== void 0 ? _b : GeoloniaMap.baseMapStyleUrl['basic'],
@@ -4394,16 +7746,7 @@
                 hash: (_e = params.hash) !== null && _e !== void 0 ? _e : false,
                 minZoom: (_f = params.minZoom) !== null && _f !== void 0 ? _f : 8,
                 maxZoom: (_g = params.maxZoom) !== null && _g !== void 0 ? _g : 20,
-                transformRequest: (url, resourceType) => {
-                    if (!window.geolonia.API_KEY) {
-                        return { url };
-                    }
-                    if ((resourceType === 'Tile' || resourceType === 'Source') && url.startsWith('https://tileserver.geolonia.com')) {
-                        const updatedUrl = url.replace('YOUR-API-KEY', window.geolonia.API_KEY);
-                        return { url: updatedUrl };
-                    }
-                    return { url };
-                }
+                // transformRequest は maps-core が自動処理するため削除
             };
             super(Object.assign(Object.assign({}, defaults), params));
             /**
@@ -4413,7 +7756,6 @@
             this.loadedSourceIds = new Set();
             // 3D地形用のソース・レイヤーID（クラス内共通で利用）
             this.TERRAIN_SOURCE_ID = "dem";
-            this.API_KEY = window.geolonia.API_KEY || '';
         }
         /**
          * osm poiレイヤー名を取得する（日本語キーのみ）
@@ -4644,7 +7986,7 @@
         getElevation(lngLat = this.getCenter().toArray()) {
             return __awaiter(this, void 0, void 0, function* () {
                 if (!this.getTerrain()) {
-                    addTerrainSource(this, this.API_KEY);
+                    addTerrainSource(this, keyring.apiKey);
                     this.setTerrain({ source: this.TERRAIN_SOURCE_ID, exaggeration: 1 });
                     yield new Promise(resolve => {
                         this.once('styledata', () => resolve());
@@ -5004,7 +8346,7 @@
          * 3D地形表示を有効にする
          */
         show3DTerrain() {
-            addTerrainSource(this, this.API_KEY);
+            addTerrainSource(this, keyring.apiKey);
             if (this.getLayer(HILLSHADE_LAYER_ID)) {
                 this.removeLayer(HILLSHADE_LAYER_ID);
             }
@@ -5046,9 +8388,14950 @@
     const currentScript = document.currentScript;
     window.geolonia = window.geolonia || {};
     window.geolonia.API_KEY = parseApiKey(currentScript || undefined) || "";
+    // keyring にも API キーを設定（maps-core との整合性を保つ）
+    if (window.geolonia.API_KEY) {
+        keyring.setApiKey(window.geolonia.API_KEY);
+    }
     window.geolonia.japan = maplibregl;
     window.geolonia.japan.Map = GeoloniaMap;
     window.geolonia.japan.Popup = maplibregl.Popup;
+
+    var commonjs = {};
+
+    var Parser$3 = {};
+
+    var Tokenizer$1 = {};
+
+    var decode$1 = {};
+
+    var decodeCodepoint = {};
+
+    (function (exports) {
+    	// Adapted from https://github.com/mathiasbynens/he/blob/36afe179392226cf1b6ccdb16ebbb7a5a844d93a/src/he.js#L106-L134
+    	var _a;
+    	Object.defineProperty(exports, "__esModule", { value: true });
+    	exports.fromCodePoint = void 0;
+    	exports.replaceCodePoint = replaceCodePoint;
+    	exports.decodeCodePoint = decodeCodePoint;
+    	const decodeMap = new Map([
+    	    [0, 65533],
+    	    // C1 Unicode control character reference replacements
+    	    [128, 8364],
+    	    [130, 8218],
+    	    [131, 402],
+    	    [132, 8222],
+    	    [133, 8230],
+    	    [134, 8224],
+    	    [135, 8225],
+    	    [136, 710],
+    	    [137, 8240],
+    	    [138, 352],
+    	    [139, 8249],
+    	    [140, 338],
+    	    [142, 381],
+    	    [145, 8216],
+    	    [146, 8217],
+    	    [147, 8220],
+    	    [148, 8221],
+    	    [149, 8226],
+    	    [150, 8211],
+    	    [151, 8212],
+    	    [152, 732],
+    	    [153, 8482],
+    	    [154, 353],
+    	    [155, 8250],
+    	    [156, 339],
+    	    [158, 382],
+    	    [159, 376],
+    	]);
+    	/**
+    	 * Polyfill for `String.fromCodePoint`. It is used to create a string from a Unicode code point.
+    	 */
+    	exports.fromCodePoint = 
+    	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, n/no-unsupported-features/es-builtins
+    	(_a = String.fromCodePoint) !== null && _a !== void 0 ? _a : ((codePoint) => {
+    	    let output = "";
+    	    if (codePoint > 65535) {
+    	        codePoint -= 65536;
+    	        output += String.fromCharCode(((codePoint >>> 10) & 1023) | 55296);
+    	        codePoint = 56320 | (codePoint & 1023);
+    	    }
+    	    output += String.fromCharCode(codePoint);
+    	    return output;
+    	});
+    	/**
+    	 * Replace the given code point with a replacement character if it is a
+    	 * surrogate or is outside the valid range. Otherwise return the code
+    	 * point unchanged.
+    	 */
+    	function replaceCodePoint(codePoint) {
+    	    var _a;
+    	    if ((codePoint >= 55296 && codePoint <= 57343) ||
+    	        codePoint > 1114111) {
+    	        return 65533;
+    	    }
+    	    return (_a = decodeMap.get(codePoint)) !== null && _a !== void 0 ? _a : codePoint;
+    	}
+    	/**
+    	 * Replace the code point if relevant, then convert it to a string.
+    	 *
+    	 * @deprecated Use `fromCodePoint(replaceCodePoint(codePoint))` instead.
+    	 * @param codePoint The code point to decode.
+    	 * @returns The decoded code point.
+    	 */
+    	function decodeCodePoint(codePoint) {
+    	    return (0, exports.fromCodePoint)(replaceCodePoint(codePoint));
+    	}
+    	
+    } (decodeCodepoint));
+
+    var decodeDataHtml$1 = {};
+
+    var decodeShared = {};
+
+    Object.defineProperty(decodeShared, "__esModule", { value: true });
+    decodeShared.decodeBase64 = decodeBase64;
+    /*
+     * Shared base64 decode helper for generated decode data.
+     * Assumes global atob is available.
+     */
+    function decodeBase64(input) {
+        const binary = 
+        // eslint-disable-next-line n/no-unsupported-features/node-builtins
+        typeof atob === "function"
+            ? // Browser (and Node >=16)
+                // eslint-disable-next-line n/no-unsupported-features/node-builtins
+                atob(input)
+            : // Older Node versions (<16)
+                // eslint-disable-next-line n/no-unsupported-features/node-builtins
+                typeof Buffer.from === "function"
+                    ? // eslint-disable-next-line n/no-unsupported-features/node-builtins
+                        Buffer.from(input, "base64").toString("binary")
+                    : // eslint-disable-next-line unicorn/no-new-buffer, n/no-deprecated-api
+                        new Buffer(input, "base64").toString("binary");
+        const evenLength = binary.length & ~1; // Round down to even length
+        const out = new Uint16Array(evenLength / 2);
+        for (let index = 0, outIndex = 0; index < evenLength; index += 2) {
+            const lo = binary.charCodeAt(index);
+            const hi = binary.charCodeAt(index + 1);
+            out[outIndex++] = lo | (hi << 8);
+        }
+        return out;
+    }
+
+    // Generated using scripts/write-decode-map.ts
+    Object.defineProperty(decodeDataHtml$1, "__esModule", { value: true });
+    decodeDataHtml$1.htmlDecodeTree = void 0;
+    const decode_shared_js_1$1 = decodeShared;
+    decodeDataHtml$1.htmlDecodeTree = (0, decode_shared_js_1$1.decodeBase64)("QR08ALkAAgH6AYsDNQR2BO0EPgXZBQEGLAbdBxMISQrvCmQLfQurDKQNLw4fD4YPpA+6D/IPAAAAAAAAAAAAAAAAKhBMEY8TmxUWF2EYLBkxGuAa3RsJHDscWR8YIC8jSCSIJcMl6ie3Ku8rEC0CLjoupS7kLgAIRU1hYmNmZ2xtbm9wcnN0dVQAWgBeAGUAaQBzAHcAfgCBAIQAhwCSAJoAoACsALMAbABpAGcAO4DGAMZAUAA7gCYAJkBjAHUAdABlADuAwQDBQHIiZXZlAAJhAAFpeW0AcgByAGMAO4DCAMJAEGRyAADgNdgE3XIAYQB2AGUAO4DAAMBA8CFoYZFj4SFjcgBhZAAAoFMqAAFncIsAjgBvAG4ABGFmAADgNdg43fAlbHlGdW5jdGlvbgCgYSBpAG4AZwA7gMUAxUAAAWNzpACoAHIAAOA12Jzc6SFnbgCgVCJpAGwAZABlADuAwwDDQG0AbAA7gMQAxEAABGFjZWZvcnN1xQDYANoA7QDxAPYA+QD8AAABY3LJAM8AayNzbGFzaAAAoBYidgHTANUAAKDnKmUAZAAAoAYjeQARZIABY3J0AOAA5QDrAGEidXNlAACgNSLuI291bGxpcwCgLCFhAJJjcgAA4DXYBd1wAGYAAOA12Dnd5SF2ZdhiYwDyAOoAbSJwZXEAAKBOIgAHSE9hY2RlZmhpbG9yc3UXARoBHwE6AVIBVQFiAWQBZgGCAakB6QHtAfIBYwB5ACdkUABZADuAqQCpQIABY3B5ACUBKAE1AfUhdGUGYWmg0iJ0KGFsRGlmZmVyZW50aWFsRAAAoEUhbCJleXMAAKAtIQACYWVpb0EBRAFKAU0B8iFvbgxhZABpAGwAO4DHAMdAcgBjAAhhbiJpbnQAAKAwIm8AdAAKYQABZG5ZAV0BaSJsbGEAuGB0I2VyRG90ALdg8gA5AWkAp2NyImNsZQAAAkRNUFRwAXQBeQF9AW8AdAAAoJkiaSJudXMAAKCWIuwhdXMAoJUiaSJtZXMAAKCXIm8AAAFjc4cBlAFrKndpc2VDb250b3VySW50ZWdyYWwAAKAyImUjQ3VybHkAAAFEUZwBpAFvJXVibGVRdW90ZQAAoB0gdSJvdGUAAKAZIAACbG5wdbABtgHNAdgBbwBuAGWgNyIAoHQqgAFnaXQAvAHBAcUB8iJ1ZW50AKBhIm4AdAAAoC8i7yV1ckludGVncmFsAKAuIgABZnLRAdMBAKACIe8iZHVjdACgECJuLnRlckNsb2Nrd2lzZUNvbnRvdXJJbnRlZ3JhbAAAoDMi7yFzcwCgLypjAHIAAOA12J7ccABDoNMiYQBwAACgTSKABURKU1phY2VmaW9zAAsCEgIVAhgCGwIsAjQCOQI9AnMCfwNvoEUh9CJyYWhkAKARKWMAeQACZGMAeQAFZGMAeQAPZIABZ3JzACECJQIoAuchZXIAoCEgcgAAoKEhaAB2AACg5CoAAWF5MAIzAvIhb24OYRRkbAB0oAciYQCUY3IAAOA12AfdAAFhZkECawIAAWNtRQJnAvIjaXRpY2FsAAJBREdUUAJUAl8CYwJjInV0ZQC0YG8AdAFZAloC2WJiJGxlQWN1dGUA3WJyImF2ZQBgYGkibGRlANxi7yFuZACgxCJmJWVyZW50aWFsRAAAoEYhcAR9AgAAAAAAAIECjgIAABoDZgAA4DXYO91EoagAhQKJAm8AdAAAoNwgcSJ1YWwAAKBQIuIhbGUAA0NETFJVVpkCqAK1Au8C/wIRA28AbgB0AG8AdQByAEkAbgB0AGUAZwByAGEA7ADEAW8AdAKvAgAAAACwAqhgbiNBcnJvdwAAoNMhAAFlb7kC0AJmAHQAgAFBUlQAwQLGAs0CciJyb3cAAKDQIekkZ2h0QXJyb3cAoNQhZQDlACsCbgBnAAABTFLWAugC5SFmdAABQVLcAuECciJyb3cAAKD4J+kkZ2h0QXJyb3cAoPon6SRnaHRBcnJvdwCg+SdpImdodAAAAUFU9gL7AnIicm93AACg0iFlAGUAAKCoInAAQQIGAwAAAAALA3Iicm93AACg0SFvJHduQXJyb3cAAKDVIWUlcnRpY2FsQmFyAACgJSJuAAADQUJMUlRhJAM2AzoDWgNxA3oDciJyb3cAAKGTIUJVLAMwA2EAcgAAoBMpcCNBcnJvdwAAoPUhciJldmUAEWPlIWZ00gJDAwAASwMAAFIDaSVnaHRWZWN0b3IAAKBQKWUkZVZlY3RvcgAAoF4p5SJjdG9yQqC9IWEAcgAAoFYpaSJnaHQA1AFiAwAAaQNlJGVWZWN0b3IAAKBfKeUiY3RvckKgwSFhAHIAAKBXKWUAZQBBoKQiciJyb3cAAKCnIXIAcgBvAPcAtAIAAWN0gwOHA3IAAOA12J/c8iFvaxBhAAhOVGFjZGZnbG1vcHFzdHV4owOlA6kDsAO/A8IDxgPNA9ID8gP9AwEEFAQeBCAEJQRHAEphSAA7gNAA0EBjAHUAdABlADuAyQDJQIABYWl5ALYDuQO+A/Ihb24aYXIAYwA7gMoAykAtZG8AdAAWYXIAAOA12AjdcgBhAHYAZQA7gMgAyEDlIm1lbnQAoAgiAAFhcNYD2QNjAHIAEmF0AHkAUwLhAwAAAADpA20lYWxsU3F1YXJlAACg+yVlJ3J5U21hbGxTcXVhcmUAAKCrJQABZ3D2A/kDbwBuABhhZgAA4DXYPN3zImlsb26VY3UAAAFhaQYEDgRsAFSgdSppImxkZQAAoEIi7CNpYnJpdW0AoMwhAAFjaRgEGwRyAACgMCFtAACgcyphAJdjbQBsADuAywDLQAABaXApBC0E8yF0cwCgAyLvJG5lbnRpYWxFAKBHIYACY2Zpb3MAPQQ/BEMEXQRyBHkAJGRyAADgNdgJ3WwibGVkAFMCTAQAAAAAVARtJWFsbFNxdWFyZQAAoPwlZSdyeVNtYWxsU3F1YXJlAACgqiVwA2UEAABpBAAAAABtBGYAAOA12D3dwSFsbACgACLyI2llcnRyZgCgMSFjAPIAcQQABkpUYWJjZGZnb3JzdIgEiwSOBJMElwSkBKcEqwStBLIE5QTqBGMAeQADZDuAPgA+QO0hbWFkoJMD3GNyImV2ZQAeYYABZWl5AJ0EoASjBOQhaWwiYXIAYwAcYRNkbwB0ACBhcgAA4DXYCt0AoNkicABmAADgNdg+3eUiYXRlcgADRUZHTFNUvwTIBM8E1QTZBOAEcSJ1YWwATKBlIuUhc3MAoNsidSRsbEVxdWFsAACgZyJyI2VhdGVyAACgoirlIXNzAKB3IuwkYW50RXF1YWwAoH4qaSJsZGUAAKBzImMAcgAA4DXYotwAoGsiAARBYWNmaW9zdfkE/QQFBQgFCwUTBSIFKwVSIkRjeQAqZAABY3QBBQQFZQBrAMdiXmDpIXJjJGFyAACgDCFsJWJlcnRTcGFjZQAAoAsh8AEYBQAAGwVmAACgDSHpJXpvbnRhbExpbmUAoAAlAAFjdCYFKAXyABIF8iFvayZhbQBwAEQBMQU5BW8AdwBuAEgAdQBtAPAAAAFxInVhbAAAoE8iAAdFSk9hY2RmZ21ub3N0dVMFVgVZBVwFYwVtBXAFcwV6BZAFtgXFBckFzQVjAHkAFWTsIWlnMmFjAHkAAWRjAHUAdABlADuAzQDNQAABaXlnBWwFcgBjADuAzgDOQBhkbwB0ADBhcgAAoBEhcgBhAHYAZQA7gMwAzEAAoREhYXB/BYsFAAFjZ4MFhQVyACphaSNuYXJ5SQAAoEghbABpAGUA8wD6AvQBlQUAAKUFZaAsIgABZ3KaBZ4F8iFhbACgKyLzI2VjdGlvbgCgwiJpI3NpYmxlAAABQ1SsBbEFbyJtbWEAAKBjIGkibWVzAACgYiCAAWdwdAC8Bb8FwwVvAG4ALmFmAADgNdhA3WEAmWNjAHIAAKAQIWkibGRlAChh6wHSBQAA1QVjAHkABmRsADuAzwDPQIACY2Zvc3UA4QXpBe0F8gX9BQABaXnlBegFcgBjADRhGWRyAADgNdgN3XAAZgAA4DXYQd3jAfcFAAD7BXIAAOA12KXc8iFjeQhk6yFjeQRkgANISmFjZm9zAAwGDwYSBhUGHQYhBiYGYwB5ACVkYwB5AAxk8CFwYZpjAAFleRkGHAbkIWlsNmEaZHIAAOA12A7dcABmAADgNdhC3WMAcgAA4DXYptyABUpUYWNlZmxtb3N0AD0GQAZDBl4GawZkB2gHcAd0B80H2gdjAHkACWQ7gDwAPECAAmNtbnByAEwGTwZSBlUGWwb1IXRlOWHiIWRhm2NnAACg6ifsI2FjZXRyZgCgEiFyAACgniGAAWFleQBkBmcGagbyIW9uPWHkIWlsO2EbZAABZnNvBjQHdAAABUFDREZSVFVWYXKABp4GpAbGBssG3AYDByEHwQIqBwABbnKEBowGZyVsZUJyYWNrZXQAAKDoJ/Ihb3cAoZAhQlKTBpcGYQByAACg5CHpJGdodEFycm93AKDGIWUjaWxpbmcAAKAII28A9QGqBgAAsgZiJWxlQnJhY2tldAAAoOYnbgDUAbcGAAC+BmUkZVZlY3RvcgAAoGEp5SJjdG9yQqDDIWEAcgAAoFkpbCJvb3IAAKAKI2kiZ2h0AAABQVbSBtcGciJyb3cAAKCUIeUiY3RvcgCgTikAAWVy4AbwBmUAAKGjIkFW5gbrBnIicm93AACgpCHlImN0b3IAoFopaSNhbmdsZQBCorIi+wYAAAAA/wZhAHIAAKDPKXEidWFsAACgtCJwAIABRFRWAAoHEQcYB+8kd25WZWN0b3IAoFEpZSRlVmVjdG9yAACgYCnlImN0b3JCoL8hYQByAACgWCnlImN0b3JCoLwhYQByAACgUilpAGcAaAB0AGEAcgByAG8A9wDMAnMAAANFRkdMU1Q/B0cHTgdUB1gHXwfxJXVhbEdyZWF0ZXIAoNoidSRsbEVxdWFsAACgZiJyI2VhdGVyAACgdiLlIXNzAKChKuwkYW50RXF1YWwAoH0qaSJsZGUAAKByInIAAOA12A/dZaDYIuYjdGFycm93AKDaIWkiZG90AD9hgAFucHcAege1B7kHZwAAAkxSbHKCB5QHmwerB+UhZnQAAUFSiAeNB3Iicm93AACg9SfpJGdodEFycm93AKD3J+kkZ2h0QXJyb3cAoPYn5SFmdAABYXLcAqEHaQBnAGgAdABhAHIAcgBvAPcA5wJpAGcAaAB0AGEAcgByAG8A9wDuAmYAAOA12EPdZQByAAABTFK/B8YHZSRmdEFycm93AACgmSHpJGdodEFycm93AKCYIYABY2h0ANMH1QfXB/IAWgYAoLAh8iFva0FhAKBqIgAEYWNlZmlvc3XpB+wH7gf/BwMICQgOCBEIcAAAoAUpeQAcZAABZGzyB/kHaSR1bVNwYWNlAACgXyBsI2ludHJmAACgMyFyAADgNdgQ3e4jdXNQbHVzAKATInAAZgAA4DXYRN1jAPIA/gecY4AESmFjZWZvc3R1ACEIJAgoCDUIgQiFCDsKQApHCmMAeQAKZGMidXRlAENhgAFhZXkALggxCDQI8iFvbkdh5CFpbEVhHWSAAWdzdwA7CGEIfQjhInRpdmWAAU1UVgBECEwIWQhlJWRpdW1TcGFjZQAAoAsgaABpAAABY25SCFMIawBTAHAAYQBjAOUASwhlAHIAeQBUAGgAaQDuAFQI9CFlZAABR0xnCHUIcgBlAGEAdABlAHIARwByAGUAYQB0AGUA8gDrBGUAcwBzAEwAZQBzAPMA2wdMImluZQAKYHIAAOA12BHdAAJCbnB0jAiRCJkInAhyImVhawAAoGAgwiZyZWFraW5nU3BhY2WgYGYAAKAVIUOq7CqzCMIIzQgAAOcIGwkAAAAAAAAtCQAAbwkAAIcJAACdCcAJGQoAADQKAAFvdbYIvAjuI2dydWVudACgYiJwIkNhcAAAoG0ibyh1YmxlVmVydGljYWxCYXIAAKAmIoABbHF4ANII1wjhCOUibWVudACgCSL1IWFsVKBgImkibGRlAADgQiI4A2kic3RzAACgBCJyI2VhdGVyAACjbyJFRkdMU1T1CPoIAgkJCQ0JFQlxInVhbAAAoHEidSRsbEVxdWFsAADgZyI4A3IjZWF0ZXIAAOBrIjgD5SFzcwCgeSLsJGFudEVxdWFsAOB+KjgDaSJsZGUAAKB1IvUhbXBEASAJJwnvI3duSHVtcADgTiI4A3EidWFsAADgTyI4A2UAAAFmczEJRgn0JFRyaWFuZ2xlQqLqIj0JAAAAAEIJYQByAADgzyk4A3EidWFsAACg7CJzAICibiJFR0xTVABRCVYJXAlhCWkJcSJ1YWwAAKBwInIjZWF0ZXIAAKB4IuUhc3MA4GoiOAPsJGFudEVxdWFsAOB9KjgDaSJsZGUAAKB0IuUic3RlZAABR0x1CX8J8iZlYXRlckdyZWF0ZXIA4KIqOAPlI3NzTGVzcwDgoSo4A/IjZWNlZGVzAKGAIkVTjwmVCXEidWFsAADgryo4A+wkYW50RXF1YWwAoOAiAAFlaaAJqQl2JmVyc2VFbGVtZW50AACgDCLnJWh0VHJpYW5nbGVCousitgkAAAAAuwlhAHIAAODQKTgDcSJ1YWwAAKDtIgABcXXDCeAJdSNhcmVTdQAAAWJwywnVCfMhZXRF4I8iOANxInVhbAAAoOIi5SJyc2V0ReCQIjgDcSJ1YWwAAKDjIoABYmNwAOYJ8AkNCvMhZXRF4IIi0iBxInVhbAAAoIgi4yJlZWRzgKGBIkVTVAD6CQAKBwpxInVhbAAA4LAqOAPsJGFudEVxdWFsAKDhImkibGRlAADgfyI4A+UicnNldEXggyLSIHEidWFsAACgiSJpImxkZQCAoUEiRUZUACIKJwouCnEidWFsAACgRCJ1JGxsRXF1YWwAAKBHImkibGRlAACgSSJlJXJ0aWNhbEJhcgAAoCQiYwByAADgNdip3GkAbABkAGUAO4DRANFAnWMAB0VhY2RmZ21vcHJzdHV2XgphCmgKcgp2CnoKgQqRCpYKqwqtCrsKyArNCuwhaWdSYWMAdQB0AGUAO4DTANNAAAFpeWwKcQpyAGMAO4DUANRAHmRiImxhYwBQYXIAAOA12BLdcgBhAHYAZQA7gNIA0kCAAWFlaQCHCooKjQpjAHIATGFnAGEAqWNjInJvbgCfY3AAZgAA4DXYRt3lI25DdXJseQABRFGeCqYKbyV1YmxlUXVvdGUAAKAcIHUib3RlAACgGCAAoFQqAAFjbLEKtQpyAADgNdiq3GEAcwBoADuA2ADYQGkAbAHACsUKZABlADuA1QDVQGUAcwAAoDcqbQBsADuA1gDWQGUAcgAAAUJQ0wrmCgABYXLXCtoKcgAAoD4gYQBjAAABZWvgCuIKAKDeI2UAdAAAoLQjYSVyZW50aGVzaXMAAKDcI4AEYWNmaGlsb3JzAP0KAwsFCwkLCwsMCxELIwtaC3IjdGlhbEQAAKACInkAH2RyAADgNdgT3WkApmOgY/Ujc01pbnVzsWAAAWlwFQsgC24AYwBhAHIAZQBwAGwAYQBuAOUACgVmAACgGSGAobsqZWlvACoLRQtJC+MiZWRlc4CheiJFU1QANAs5C0ALcSJ1YWwAAKCvKuwkYW50RXF1YWwAoHwiaSJsZGUAAKB+Im0AZQAAoDMgAAFkcE0LUQv1IWN0AKAPIm8jcnRpb24AYaA3ImwAAKAdIgABY2leC2ILcgAA4DXYq9yoYwACVWZvc2oLbwtzC3cLTwBUADuAIgAiQHIAAOA12BTdcABmAACgGiFjAHIAAOA12KzcAAZCRWFjZWZoaW9yc3WPC5MLlwupC7YL2AvbC90LhQyTDJoMowzhIXJyAKAQKUcAO4CuAK5AgAFjbnIAnQugC6ML9SF0ZVRhZwAAoOsncgB0oKAhbAAAoBYpgAFhZXkArwuyC7UL8iFvblhh5CFpbFZhIGR2oBwhZSJyc2UAAAFFVb8LzwsAAWxxwwvIC+UibWVudACgCyL1JGlsaWJyaXVtAKDLIXAmRXF1aWxpYnJpdW0AAKBvKXIAAKAcIW8AoWPnIWh0AARBQ0RGVFVWYewLCgwQDDIMNwxeDHwM9gIAAW5y8Av4C2clbGVCcmFja2V0AACg6SfyIW93AKGSIUJM/wsDDGEAcgAAoOUhZSRmdEFycm93AACgxCFlI2lsaW5nAACgCSNvAPUBFgwAAB4MYiVsZUJyYWNrZXQAAKDnJ24A1AEjDAAAKgxlJGVWZWN0b3IAAKBdKeUiY3RvckKgwiFhAHIAAKBVKWwib29yAACgCyMAAWVyOwxLDGUAAKGiIkFWQQxGDHIicm93AACgpiHlImN0b3IAoFspaSNhbmdsZQBCorMiVgwAAAAAWgxhAHIAAKDQKXEidWFsAACgtSJwAIABRFRWAGUMbAxzDO8kd25WZWN0b3IAoE8pZSRlVmVjdG9yAACgXCnlImN0b3JCoL4hYQByAACgVCnlImN0b3JCoMAhYQByAACgUykAAXB1iQyMDGYAAKAdIe4kZEltcGxpZXMAoHAp6SRnaHRhcnJvdwCg2yEAAWNongyhDHIAAKAbIQCgsSHsJGVEZWxheWVkAKD0KYAGSE9hY2ZoaW1vcXN0dQC/DMgMzAzQDOIM5gwKDQ0NFA0ZDU8NVA1YDQABQ2PDDMYMyCFjeSlkeQAoZEYiVGN5ACxkYyJ1dGUAWmEAorwqYWVpedgM2wzeDOEM8iFvbmBh5CFpbF5hcgBjAFxhIWRyAADgNdgW3e8hcnQAAkRMUlXvDPYM/QwEDW8kd25BcnJvdwAAoJMhZSRmdEFycm93AACgkCHpJGdodEFycm93AKCSIXAjQXJyb3cAAKCRIechbWGjY+EkbGxDaXJjbGUAoBgicABmAADgNdhK3XICHw0AAAAAIg10AACgGiLhIXJlgKGhJUlTVQAqDTINSg3uJXRlcnNlY3Rpb24AoJMidQAAAWJwNw1ADfMhZXRFoI8icSJ1YWwAAKCRIuUicnNldEWgkCJxInVhbAAAoJIibiJpb24AAKCUImMAcgAA4DXYrtxhAHIAAKDGIgACYmNtcF8Nag2ODZANc6DQImUAdABFoNAicSJ1YWwAAKCGIgABY2huDYkNZSJlZHMAgKF7IkVTVAB4DX0NhA1xInVhbAAAoLAq7CRhbnRFcXVhbACgfSJpImxkZQAAoH8iVABoAGEA9ADHCwCgESIAodEiZXOVDZ8NciJzZXQARaCDInEidWFsAACghyJlAHQAAKDRIoAFSFJTYWNmaGlvcnMAtQ27Db8NyA3ODdsN3w3+DRgOHQ4jDk8AUgBOADuA3gDeQMEhREUAoCIhAAFIY8MNxg1jAHkAC2R5ACZkAAFidcwNzQ0JYKRjgAFhZXkA1A3XDdoN8iFvbmRh5CFpbGJhImRyAADgNdgX3QABZWnjDe4N8gHoDQAA7Q3lImZvcmUAoDQiYQCYYwABY27yDfkNayNTcGFjZQAA4F8gCiDTInBhY2UAoAkg7CFkZYChPCJFRlQABw4MDhMOcSJ1YWwAAKBDInUkbGxFcXVhbAAAoEUiaSJsZGUAAKBIInAAZgAA4DXYS93pI3BsZURvdACg2yAAAWN0Jw4rDnIAAOA12K/c8iFva2Zh4QpFDlYOYA5qDgAAbg5yDgAAAAAAAAAAAAB5DnwOqA6zDgAADg8RDxYPGg8AAWNySA5ODnUAdABlADuA2gDaQHIAb6CfIeMhaXIAoEkpcgDjAVsOAABdDnkADmR2AGUAbGEAAWl5Yw5oDnIAYwA7gNsA20AjZGIibGFjAHBhcgAA4DXYGN1yAGEAdgBlADuA2QDZQOEhY3JqYQABZGl/Dp8OZQByAAABQlCFDpcOAAFhcokOiw5yAF9gYQBjAAABZWuRDpMOAKDfI2UAdAAAoLUjYSVyZW50aGVzaXMAAKDdI28AbgBQoMMi7CF1cwCgjiIAAWdwqw6uDm8AbgByYWYAAOA12EzdAARBREVUYWRwc78O0g7ZDuEOBQPqDvMOBw9yInJvdwDCoZEhyA4AAMwOYQByAACgEilvJHduQXJyb3cAAKDFIW8kd25BcnJvdwAAoJUhcSV1aWxpYnJpdW0AAKBuKWUAZQBBoKUiciJyb3cAAKClIW8AdwBuAGEAcgByAG8A9wAQA2UAcgAAAUxS+Q4AD2UkZnRBcnJvdwAAoJYh6SRnaHRBcnJvdwCglyFpAGyg0gNvAG4ApWPpIW5nbmFjAHIAAOA12LDcaSJsZGUAaGFtAGwAO4DcANxAgAREYmNkZWZvc3YALQ8xDzUPNw89D3IPdg97D4AP4SFzaACgqyJhAHIAAKDrKnkAEmThIXNobKCpIgCg5ioAAWVyQQ9DDwCgwSKAAWJ0eQBJD00Paw9hAHIAAKAWIGmgFiDjIWFsAAJCTFNUWA9cD18PZg9hAHIAAKAjIukhbmV8YGUkcGFyYXRvcgAAoFgnaSJsZGUAAKBAItQkaGluU3BhY2UAoAogcgAA4DXYGd1wAGYAAOA12E3dYwByAADgNdix3GQiYXNoAACgqiKAAmNlZm9zAI4PkQ+VD5kPng/pIXJjdGHkIWdlAKDAInIAAOA12BrdcABmAADgNdhO3WMAcgAA4DXYstwAAmZpb3OqD64Prw+0D3IAAOA12BvdnmNwAGYAAOA12E/dYwByAADgNdiz3IAEQUlVYWNmb3N1AMgPyw/OD9EP2A/gD+QP6Q/uD2MAeQAvZGMAeQAHZGMAeQAuZGMAdQB0AGUAO4DdAN1AAAFpedwP3w9yAGMAdmErZHIAAOA12BzdcABmAADgNdhQ3WMAcgAA4DXYtNxtAGwAeGEABEhhY2RlZm9z/g8BEAUQDRAQEB0QIBAkEGMAeQAWZGMidXRlAHlhAAFheQkQDBDyIW9ufWEXZG8AdAB7YfIBFRAAABwQbwBXAGkAZAB0AOgAVAhhAJZjcgAAoCghcABmAACgJCFjAHIAAOA12LXc4QtCEEkQTRAAAGcQbRByEAAAAAAAAAAAeRCKEJcQ8hD9EAAAGxEhETIROREAAD4RYwB1AHQAZQA7gOEA4UByImV2ZQADYYCiPiJFZGl1eQBWEFkQWxBgEGUQAOA+IjMDAKA/InIAYwA7gOIA4kB0AGUAO4C0ALRAMGRsAGkAZwA7gOYA5kByoGEgAOA12B7dcgBhAHYAZQA7gOAA4EAAAWVwfBCGEAABZnCAEIQQ8yF5bQCgNSHoAIMQaABhALFjAAFhcI0QWwAAAWNskRCTEHIAAWFnAACgPypkApwQAAAAALEQAKInImFkc3ajEKcQqRCuEG4AZAAAoFUqAKBcKmwib3BlAACgWCoAoFoqAKMgImVsbXJzersQvRDAEN0Q5RDtEACgpCllAACgICJzAGQAYaAhImEEzhDQENIQ1BDWENgQ2hDcEACgqCkAoKkpAKCqKQCgqykAoKwpAKCtKQCgrikAoK8pdAB2oB8iYgBkoL4iAKCdKQABcHTpEOwQaAAAoCIixWDhIXJyAKB8IwABZ3D1EPgQbwBuAAVhZgAA4DXYUt0Ao0giRWFlaW9wBxEJEQ0RDxESERQRAKBwKuMhaXIAoG8qAKBKImQAAKBLInMAJ2DyIW94ZaBIIvEADhFpAG4AZwA7gOUA5UCAAWN0eQAmESoRKxFyAADgNdi23CpgbQBwAGWgSCLxAPgBaQBsAGQAZQA7gOMA40BtAGwAO4DkAORAAAFjaUERRxFvAG4AaQBuAPQA6AFuAHQAAKARKgAITmFiY2RlZmlrbG5vcHJzdWQRaBGXEZ8RpxGrEdIR1hErEjASexKKEn0RThNbE3oTbwB0AACg7SoAAWNybBGJEWsAAAJjZXBzdBF4EX0RghHvIW5nAKBMInAjc2lsb24A9mNyImltZQAAoDUgaQBtAGWgPSJxAACgzSJ2AY0RkRFlAGUAAKC9ImUAZABnoAUjZQAAoAUjcgBrAHSgtSPiIXJrAKC2IwABb3mjEaYRbgDnAHcRMWTxIXVvAKAeIIACY21wcnQAtBG5Eb4RwRHFEeEhdXPloDUi5ABwInR5dgAAoLApcwDpAH0RbgBvAPUA6gCAAWFodwDLEcwRzhGyYwCgNiHlIWVuAKBsInIAAOA12B/dZwCAA2Nvc3R1dncA4xHyEQUSEhIhEiYSKRKAAWFpdQDpEesR7xHwAKMFcgBjAACg7yVwAACgwyKAAWRwdAD4EfwRABJvAHQAAKAAKuwhdXMAoAEqaSJtZXMAAKACKnECCxIAAAAADxLjIXVwAKAGKmEAcgAAoAUm8iNpYW5nbGUAAWR1GhIeEu8hd24AoL0lcAAAoLMlcCJsdXMAAKAEKmUA5QBCD+UAkg9hInJvdwAAoA0pgAFha28ANhJoEncSAAFjbjoSZRJrAIABbHN0AEESRxJNEm8jemVuZ2UAAKDrKXEAdQBhAHIA5QBcBPIjaWFuZ2xlgKG0JWRscgBYElwSYBLvIXduAKC+JeUhZnQAoMIlaSJnaHQAAKC4JWsAAKAjJLEBbRIAAHUSsgFxEgAAcxIAoJIlAKCRJTQAAKCTJWMAawAAoIglAAFlb38ShxJx4D0A5SD1IWl2AOBhIuUgdAAAoBAjAAJwdHd4kRKVEpsSnxJmAADgNdhT3XSgpSJvAG0AAKClIvQhaWUAoMgiAAZESFVWYmRobXB0dXayEsES0RLgEvcS+xIKExoTHxMjEygTNxMAAkxSbHK5ErsSvRK/EgCgVyUAoFQlAKBWJQCgUyUAolAlRFVkdckSyxLNEs8SAKBmJQCgaSUAoGQlAKBnJQACTFJsctgS2hLcEt4SAKBdJQCgWiUAoFwlAKBZJQCjUSVITFJobHLrEu0S7xLxEvMS9RIAoGwlAKBjJQCgYCUAoGslAKBiJQCgXyVvAHgAAKDJKQACTFJscgITBBMGEwgTAKBVJQCgUiUAoBAlAKAMJQCiACVEVWR1EhMUExYTGBMAoGUlAKBoJQCgLCUAoDQlaSJudXMAAKCfIuwhdXMAoJ4iaSJtZXMAAKCgIgACTFJsci8TMRMzEzUTAKBbJQCgWCUAoBglAKAUJQCjAiVITFJobHJCE0QTRhNIE0oTTBMAoGolAKBhJQCgXiUAoDwlAKAkJQCgHCUAAWV2UhNVE3YA5QD5AGIAYQByADuApgCmQAACY2Vpb2ITZhNqE24TcgAA4DXYt9xtAGkAAKBPIG0A5aA9IogRbAAAoVwAYmh0E3YTAKDFKfMhdWIAoMgnbAF+E4QTbABloCIgdAAAoCIgcAAAoU4iRWWJE4sTAKCuKvGgTyI8BeEMqRMAAN8TABQDFB8UAAAjFDQUAAAAAIUUAAAAAI0UAAAAANcU4xT3FPsUAACIFQAAlhWAAWNwcgCuE7ET1RP1IXRlB2GAoikiYWJjZHMAuxO/E8QTzhPSE24AZAAAoEQqciJjdXAAAKBJKgABYXXIE8sTcAAAoEsqcAAAoEcqbwB0AACgQCoA4CkiAP4AAWVv2RPcE3QAAKBBIO4ABAUAAmFlaXXlE+8T9RP4E/AB6hMAAO0TcwAAoE0qbwBuAA1hZABpAGwAO4DnAOdAcgBjAAlhcABzAHOgTCptAACgUCpvAHQAC2GAAWRtbgAIFA0UEhRpAGwAO4C4ALhAcCJ0eXYAAKCyKXQAAIGiADtlGBQZFKJAcgBkAG8A9ABiAXIAAOA12CDdgAFjZWkAKBQqFDIUeQBHZGMAawBtoBMn4SFyawCgEyfHY3IAAKPLJUVjZWZtcz8UQRRHFHcUfBSAFACgwykAocYCZWxGFEkUcQAAoFciZQBhAlAUAAAAAGAUciJyb3cAAAFsclYUWhTlIWZ0AKC6IWkiZ2h0AACguyGAAlJTYWNkAGgUaRRrFG8UcxSuYACgyCRzAHQAAKCbIukhcmMAoJoi4SFzaACgnSJuImludAAAoBAqaQBkAACg7yrjIWlyAKDCKfUhYnN1oGMmaQB0AACgYybsApMUmhS2FAAAwxRvAG4AZaA6APGgVCKrAG0CnxQAAAAAoxRhAHSgLABAYAChASJmbKcUqRTuABMNZQAAAW14rhSyFOUhbnQAoAEiZQDzANIB5wG6FAAAwBRkoEUibwB0AACgbSpuAPQAzAGAAWZyeQDIFMsUzhQA4DXYVN1vAOQA1wEAgakAO3MeAdMUcgAAoBchAAFhb9oU3hRyAHIAAKC1IXMAcwAAoBcnAAFjdeYU6hRyAADgNdi43AABYnDuFPIUZaDPKgCg0SploNAqAKDSKuQhb3QAoO8igANkZWxwcnZ3AAYVEBUbFSEVRBVlFYQV4SFycgABbHIMFQ4VAKA4KQCgNSlwAhYVAAAAABkVcgAAoN4iYwAAoN8i4SFycnCgtiEAoD0pgKIqImJjZG9zACsVMBU6FT4VQRVyImNhcAAAoEgqAAFhdTQVNxVwAACgRipwAACgSipvAHQAAKCNInIAAKBFKgDgKiIA/gACYWxydksVURVuFXMVcgByAG2gtyEAoDwpeQCAAWV2dwBYFWUVaRVxAHACXxUAAAAAYxVyAGUA4wAXFXUA4wAZFWUAZQAAoM4iZSJkZ2UAAKDPImUAbgA7gKQApEBlI2Fycm93AAABbHJ7FX8V5SFmdACgtiFpImdodAAAoLchZQDkAG0VAAFjaYsVkRVvAG4AaQBuAPQAkwFuAHQAAKAxImwiY3R5AACgLSOACUFIYWJjZGVmaGlqbG9yc3R1d3oAuBW7Fb8V1RXgFegV+RUKFhUWHxZUFlcWZRbFFtsW7xb7FgUXChdyAPIAtAJhAHIAAKBlKQACZ2xyc8YVyhXOFdAV5yFlcgCgICDlIXRoAKA4IfIA9QxoAHagECAAoKMiawHZFd4VYSJyb3cAAKAPKWEA4wBfAgABYXnkFecV8iFvbg9hNGQAoUYhYW/tFfQVAAFnciEC8RVyAACgyiF0InNlcQAAoHcqgAFnbG0A/xUCFgUWO4CwALBAdABhALRjcCJ0eXYAAKCxKQABaXIOFhIW8yFodACgfykA4DXYId1hAHIAAAFschsWHRYAoMMhAKDCIYACYWVnc3YAKBauAjYWOhY+Fm0AAKHEIm9zLhY0Fm4AZABzoMQi9SFpdACgZiZhIm1tYQDdY2kAbgAAoPIiAKH3AGlvQxZRFmQAZQAAgfcAO29KFksW90BuI3RpbWVzAACgxyJuAPgAUBZjAHkAUmRjAG8CXhYAAAAAYhZyAG4AAKAeI28AcAAAoA0jgAJscHR1dwBuFnEWdRaSFp4W7CFhciRgZgAA4DXYVd0AotkCZW1wc30WhBaJFo0WcQBkoFAibwB0AACgUSJpIm51cwAAoDgi7CF1cwCgFCLxInVhcmUAoKEiYgBsAGUAYgBhAHIAdwBlAGQAZwDlANcAbgCAAWFkaAClFqoWtBZyAHIAbwD3APUMbwB3AG4AYQByAHIAbwB3APMA8xVhI3Jwb29uAAABbHK8FsAWZQBmAPQAHBZpAGcAaAD0AB4WYgHJFs8WawBhAHIAbwD3AJILbwLUFgAAAADYFnIAbgAAoB8jbwBwAACgDCOAAWNvdADhFukW7BYAAXJ55RboFgDgNdi53FVkbAAAoPYp8iFvaxFhAAFkcvMW9xZvAHQAAKDxImkA5qC/JVsSAAFhaP8WAhdyAPIANQNhAPIA1wvhIm5nbGUAoKYpAAFjaQ4XEBd5AF9k5yJyYXJyAKD/JwAJRGFjZGVmZ2xtbm9wcXJzdHV4MRc4F0YXWxcyBF4XaRd5F40XrBe0F78X2RcVGCEYLRg1GEAYAAFEbzUXgRZvAPQA+BUAAWNzPBdCF3UAdABlADuA6QDpQPQhZXIAoG4qAAJhaW95TRdQF1YXWhfyIW9uG2FyAGOgViI7gOoA6kDsIW9uAKBVIk1kbwB0ABdhAAFEcmIXZhdvAHQAAKBSIgDgNdgi3XKhmipuF3QXYQB2AGUAO4DoAOhAZKCWKm8AdAAAoJgqgKGZKmlscwCAF4UXhxfuInRlcnMAoOcjAKATIWSglSpvAHQAAKCXKoABYXBzAJMXlheiF2MAcgATYXQAeQBzogUinxcAAAAAoRdlAHQAAKAFInAAMaADIDMBqRerFwCgBCAAoAUgAAFnc7AXsRdLYXAAAKACIAABZ3C4F7sXbwBuABlhZgAA4DXYVt2AAWFscwDFF8sXzxdyAHOg1SJsAACg4yl1AHMAAKBxKmkAAKG1A2x21RfYF28AbgC1Y/VjAAJjc3V24BfoF/0XEBgAAWlv5BdWF3IAYwAAoFYiaQLuFwAAAADwF+0ADQThIW50AAFnbPUX+Rd0AHIAAKCWKuUhc3MAoJUqgAFhZWkAAxgGGAoYbABzAD1gcwB0AACgXyJ2AESgYSJEAACgeCrwImFyc2wAoOUpAAFEYRkYHRhvAHQAAKBTInIAcgAAoHEpgAFjZGkAJxgqGO0XcgAAoC8hbwD0AIwCAAFhaDEYMhi3YzuA8ADwQAABbXI5GD0YbAA7gOsA60BvAACgrCCAAWNpcABGGEgYSxhsACFgcwD0ACwEAAFlb08YVxhjAHQAYQB0AGkAbwDuABoEbgBlAG4AdABpAGEAbADlADME4Ql1GAAAgRgAAIMYiBgAAAAAoRilGAAAqhgAALsYvhjRGAAA1xgnGWwAbABpAG4AZwBkAG8AdABzAGUA8QBlF3kARGRtImFsZQAAoEAmgAFpbHIAjRiRGJ0Y7CFpZwCgA/tpApcYAAAAAJoYZwAAoAD7aQBnAACgBPsA4DXYI93sIWlnAKAB++whaWcA4GYAagCAAWFsdACvGLIYthh0AACgbSZpAGcAAKAC+24AcwAAoLElbwBmAJJh8AHCGAAAxhhmAADgNdhX3QABYWvJGMwYbADsAGsEdqDUIgCg2SphI3J0aW50AACgDSoAAWFv2hgiGQABY3PeGB8ZsQPnGP0YBRkSGRUZAAAdGbID7xjyGPQY9xj5GAAA+xg7gL0AvUAAoFMhO4C8ALxAAKBVIQCgWSEAoFshswEBGQAAAxkAoFQhAKBWIbQCCxkOGQAAAAAQGTuAvgC+QACgVyEAoFwhNQAAoFghtgEZGQAAGxkAoFohAKBdITgAAKBeIWwAAKBEIHcAbgAAoCIjYwByAADgNdi73IAIRWFiY2RlZmdpamxub3JzdHYARhlKGVoZXhlmGWkZkhmWGZkZnRmgGa0ZxhnLGc8Z4BkjGmygZyIAoIwqgAFjbXAAUBlTGVgZ9SF0ZfVhbQBhAOSgswM6FgCghipyImV2ZQAfYQABaXliGWUZcgBjAB1hM2RvAHQAIWGAoWUibHFzAMYEcBl6GfGhZSLOBAAAdhlsAGEAbgD0AN8EgKF+KmNkbACBGYQZjBljAACgqSpvAHQAb6CAKmyggioAoIQqZeDbIgD+cwAAoJQqcgAA4DXYJN3noGsirATtIWVsAKA3IWMAeQBTZIChdyJFYWoApxmpGasZAKCSKgCgpSoAoKQqAAJFYWVztBm2Gb0ZwhkAoGkicABwoIoq8iFveACgiipxoIgq8aCIKrUZaQBtAACg5yJwAGYAAOA12FjdYQB2AOUAYwIAAWNp0xnWGXIAAKAKIW0AAKFzImVs3BneGQCgjioAoJAqAIM+ADtjZGxxco0E6xn0GfgZ/BkBGgABY2nvGfEZAKCnKnIAAKB6Km8AdAAAoNci0CFhcgCglSl1ImVzdAAAoHwqgAJhZGVscwAKGvQZFhrVBCAa8AEPGgAAFBpwAHIAbwD4AFkZcgAAoHgpcQAAAWxxxAQbGmwAZQBzAPMASRlpAO0A5AQAAWVuJxouGnIjdG5lcXEAAOBpIgD+xQAsGgAFQWFiY2Vma29zeUAaQxpmGmoabRqDGocalhrCGtMacgDyAMwCAAJpbG1yShpOGlAaVBpyAHMA8ABxD2YAvWBpAGwA9AASBQABZHJYGlsaYwB5AEpkAKGUIWN3YBpkGmkAcgAAoEgpAKCtIWEAcgAAoA8h6SFyYyVhgAFhbHIAcxp7Gn8a8iF0c3WgZSZpAHQAAKBlJuwhaXAAoCYg4yFvbgCguSJyAADgNdgl3XMAAAFld4wakRphInJvdwAAoCUpYSJyb3cAAKAmKYACYW1vcHIAnxqjGqcauhq+GnIAcgAAoP8h9CFodACgOyJrAAABbHKsGrMaZSRmdGFycm93AACgqSHpJGdodGFycm93AKCqIWYAAOA12Fnd4iFhcgCgFSCAAWNsdADIGswa0BpyAADgNdi93GEAcwDoAGka8iFvaydhAAFicNca2xr1IWxsAKBDIOghZW4AoBAg4Qr2GgAA/RoAAAgbExsaGwAAIRs7GwAAAAA+G2IbmRuVG6sbAACyG80b0htjAHUAdABlADuA7QDtQAChYyBpeQEbBhtyAGMAO4DuAO5AOGQAAWN4CxsNG3kANWRjAGwAO4ChAKFAAAFmcssCFhsA4DXYJt1yAGEAdgBlADuA7ADsQIChSCFpbm8AJxsyGzYbAAFpbisbLxtuAHQAAKAMKnQAAKAtIuYhaW4AoNwpdABhAACgKSHsIWlnM2GAAWFvcABDG1sbXhuAAWNndABJG0sbWRtyACthgAFlbHAAcQVRG1UbaQBuAOUAyAVhAHIA9AByBWgAMWFmAACgtyJlAGQAtWEAoggiY2ZvdGkbbRt1G3kb4SFyZQCgBSFpAG4AdKAeImkAZQAAoN0pZABvAPQAWxsAoisiY2VscIEbhRuPG5QbYQBsAACguiIAAWdyiRuNG2UAcgDzACMQ4wCCG2EicmhrAACgFyryIW9kAKA8KgACY2dwdJ8boRukG6gbeQBRZG8AbgAvYWYAAOA12FrdYQC5Y3UAZQBzAHQAO4C/AL9AAAFjabUbuRtyAADgNdi+3G4AAKIIIkVkc3bCG8QbyBvQAwCg+SJvAHQAAKD1Inag9CIAoPMiaaBiIOwhZGUpYesB1hsAANkbYwB5AFZkbAA7gO8A70AAA2NmbW9zdeYb7hvyG/Ub+hsFHAABaXnqG+0bcgBjADVhOWRyAADgNdgn3eEhdGg3YnAAZgAA4DXYW93jAf8bAAADHHIAAOA12L/c8iFjeVhk6yFjeVRkAARhY2ZnaGpvcxUcGhwiHCYcKhwtHDAcNRzwIXBhdqC6A/BjAAFleR4cIRzkIWlsN2E6ZHIAAOA12CjdciJlZW4AOGFjAHkARWRjAHkAXGRwAGYAAOA12FzdYwByAADgNdjA3IALQUJFSGFiY2RlZmdoamxtbm9wcnN0dXYAXhxtHHEcdRx5HN8cBx0dHTwd3B3tHfEdAR4EHh0eLB5FHrwewx7hHgkfPR9LH4ABYXJ0AGQcZxxpHHIA8gBvB/IAxQLhIWlsAKAbKeEhcnIAoA4pZ6BmIgCgiyphAHIAAKBiKWMJjRwAAJAcAACVHAAAAAAAAAAAAACZHJwcAACmHKgcrRwAANIc9SF0ZTph7SJwdHl2AKC0KXIAYQDuAFoG4iFkYbtjZwAAoegnZGyhHKMcAKCRKeUAiwYAoIUqdQBvADuAqwCrQHIAgKOQIWJmaGxwc3QAuhy/HMIcxBzHHMoczhxmoOQhcwAAoB8pcwAAoB0p6wCyGnAAAKCrIWwAAKA5KWkAbQAAoHMpbAAAoKIhAKGrKmFl1hzaHGkAbAAAoBkpc6CtKgDgrSoA/oABYWJyAOUc6RztHHIAcgAAoAwpcgBrAACgcicAAWFr8Rz4HGMAAAFla/Yc9xx7YFtgAAFlc/wc/hwAoIspbAAAAWR1Ax0FHQCgjykAoI0pAAJhZXV5Dh0RHRodHB3yIW9uPmEAAWRpFR0YHWkAbAA8YewAowbiAPccO2QAAmNxcnMkHScdLB05HWEAAKA2KXUAbwDyoBwgqhEAAWR1MB00HeghYXIAoGcpcyJoYXIAAKBLKWgAAKCyIQCiZCJmZ3FzRB1FB5Qdnh10AIACYWhscnQATh1WHWUdbB2NHXIicm93AHSgkCFhAOkAzxxhI3Jwb29uAAABZHVeHWId7yF3bgCgvSFwAACgvCHlJGZ0YXJyb3dzAKDHIWkiZ2h0AIABYWhzAHUdex2DHXIicm93APOglCGdBmEAcgBwAG8AbwBuAPMAzgtxAHUAaQBnAGEAcgByAG8A9wBlGugkcmVldGltZXMAoMsi8aFkIk0HAACaHWwAYQBuAPQAXgcAon0qY2Rnc6YdqR2xHbcdYwAAoKgqbwB0AG+gfypyoIEqAKCDKmXg2iIA/nMAAKCTKoACYWRlZ3MAwB3GHcod1h3ZHXAAcAByAG8A+ACmHG8AdAAAoNYicQAAAWdxzx3SHXQA8gBGB2cAdADyAHQcdADyAFMHaQDtAGMHgAFpbHIA4h3mHeod8yFodACgfClvAG8A8gDKBgDgNdgp3UWgdiIAoJEqYQH1Hf4dcgAAAWR1YB35HWygvCEAoGopbABrAACghCVjAHkAWWQAomoiYWNodAweDx4VHhkecgDyAGsdbwByAG4AZQDyAGAW4SFyZACgaylyAGkAAKD6JQABaW8hHiQe5CFvdEBh9SFzdGGgsCPjIWhlAKCwIwACRWFlczMeNR48HkEeAKBoInAAcKCJKvIhb3gAoIkqcaCHKvGghyo0HmkAbQAAoOYiAARhYm5vcHR3elIeXB5fHoUelh6mHqsetB4AAW5yVh5ZHmcAAKDsJ3IAAKD9IXIA6wCwBmcAgAFsbXIAZh52Hnse5SFmdAABYXKIB2weaQBnAGgAdABhAHIAcgBvAPcAkwfhInBzdG8AoPwnaQBnAGgAdABhAHIAcgBvAPcAmgdwI2Fycm93AAABbHKNHpEeZQBmAPQAxhxpImdodAAAoKwhgAFhZmwAnB6fHqIecgAAoIUpAOA12F3ddQBzAACgLSppIm1lcwAAoDQqYQGvHrMecwB0AACgFyLhAIoOZaHKJbkeRhLuIWdlAKDKJWEAcgBsoCgAdAAAoJMpgAJhY2htdADMHs8e1R7bHt0ecgDyAJ0GbwByAG4AZQDyANYWYQByAGSgyyEAoG0pAKAOIHIAaQAAoL8iAANhY2hpcXTrHu8e1QfzHv0eBh/xIXVvAKA5IHIAAOA12MHcbQDloXIi+h4AAPweAKCNKgCgjyoAAWJ19xwBH28AcqAYIACgGiDyIW9rQmEAhDwAO2NkaGlscXJCBhcfxh0gHyQfKB8sHzEfAAFjaRsfHR8AoKYqcgAAoHkqcgBlAOUAkx3tIWVzAKDJIuEhcnIAoHYpdSJlc3QAAKB7KgABUGk1HzkfYQByAACglillocMlAgdfEnIAAAFkdUIfRx9zImhhcgAAoEop6CFhcgCgZikAAWVuTx9WH3IjdG5lcXEAAOBoIgD+xQBUHwAHRGFjZGVmaGlsbm9wc3VuH3Ifoh+rH68ftx+7H74f5h/uH/MfBwj/HwsgxCFvdACgOiIAAmNscHJ5H30fiR+eH3IAO4CvAK9AAAFldIEfgx8AoEImZaAgJ3MAZQAAoCAnc6CmIXQAbwCAoaYhZGx1AJQfmB+cH28AdwDuAHkDZQBmAPQA6gbwAOkO6yFlcgCgriUAAW95ph+qH+0hbWEAoCkqPGThIXNoAKAUIOElc3VyZWRhbmdsZQCgISJyAADgNdgq3W8AAKAnIYABY2RuAMQfyR/bH3IAbwA7gLUAtUBhoiMi0B8AANMf1x9zAPQAKxFpAHIAAKDwKm8AdAA7gLcAt0B1AHMA4qESIh4TAADjH3WgOCIAoCoqYwHqH+0fcAAAoNsq8gB+GnAAbAB1APMACAgAAWRw9x/7H+UhbHMAoKciZgAA4DXYXt0AAWN0AyAHIHIAAOA12MLc8CFvcwCgPiJsobwDECAVIPQiaW1hcACguCJhAPAAEyAADEdMUlZhYmNkZWZnaGlqbG1vcHJzdHV2dzwgRyBmIG0geSCqILgg2iDeIBEhFSEyIUMhTSFQIZwhnyHSIQAiIyKLIrEivyIUIwABZ3RAIEMgAODZIjgD9uBrItIgBwmAAWVsdABNIF8gYiBmAHQAAAFhclMgWCByInJvdwAAoM0h6SRnaHRhcnJvdwCgziEA4NgiOAP24Goi0iBfCekkZ2h0YXJyb3cAoM8hAAFEZHEgdSDhIXNoAKCvIuEhc2gAoK4igAJiY25wdACCIIYgiSCNIKIgbABhAACgByL1IXRlRGFnAADgICLSIACiSSJFaW9wlSCYIJwgniAA4HAqOANkAADgSyI4A3MASWFyAG8A+AAyCnUAcgBhoG4mbADzoG4mmwjzAa8gAACzIHAAO4CgAKBAbQBwAOXgTiI4AyoJgAJhZW91eQDBIMogzSDWINkg8AHGIAAAyCAAoEMqbwBuAEhh5CFpbEZhbgBnAGSgRyJvAHQAAOBtKjgDcAAAoEIqPWThIXNoAKATIACjYCJBYWRxc3jpIO0g+SD+IAIhDCFyAHIAAKDXIXIAAAFocvIg9SBrAACgJClvoJch9wAGD28AdAAA4FAiOAN1AGkA9gC7CAABZWkGIQohYQByAACgKCntAN8I6SFzdPOgBCLlCHIAAOA12CvdAAJFZXN0/wgcISshLiHxoXEiIiEAABMJ8aFxIgAJAAAnIWwAYQBuAPQAEwlpAO0AGQlyoG8iAKBvIoABQWFwADghOyE/IXIA8gBeIHIAcgAAoK4hYQByAACg8ipzogsiSiEAAAAAxwtkoPwiAKD6ImMAeQBaZIADQUVhZGVzdABcIV8hYiFmIWkhkyGWIXIA8gBXIADgZiI4A3IAcgAAoJohcgAAoCUggKFwImZxcwBwIYQhjiF0AAABYXJ1IXohcgByAG8A9wBlIWkAZwBoAHQAYQByAHIAbwD3AD4h8aFwImAhAACKIWwAYQBuAPQAZwlz4H0qOAMAoG4iaQDtAG0JcqBuImkA5aDqIkUJaQDkADoKAAFwdKMhpyFmAADgNdhf3YCBrAA7aW4AriGvIcchrEBuAIChCSJFZHYAtyG6Ib8hAOD5IjgDbwB0AADg9SI4A+EB1gjEIcYhAKD3IgCg9iJpAHagDCLhAagJzyHRIQCg/iIAoP0igAFhb3IA2CHsIfEhcgCAoSYiYXN0AOAh5SHpIWwAbABlAOwAywhsAADg/SrlIADgAiI4A2wiaW50AACgFCrjoYAi9yEAAPohdQDlAJsJY+CvKjgDZaCAIvEAkwkAAkFhaXQHIgoiFyIeInIA8gBsIHIAcgAAoZshY3cRIhQiAOAzKTgDAOCdITgDZyRodGFycm93AACgmyFyAGkA5aDrIr4JgANjaGltcHF1AC8iPCJHIpwhTSJQIloigKGBImNlcgA2Iv0JOSJ1AOUABgoA4DXYw9zvIXJ0bQKdIQAAAABEImEAcgDhAOEhbQBloEEi8aBEIiYKYQDyAMsIcwB1AAABYnBWIlgi5QDUCeUA3wmAAWJjcABgInMieCKAoYQiRWVzAGci7glqIgDgxSo4A2UAdABl4IIi0iBxAPGgiCJoImMAZaCBIvEA/gmAoYUiRWVzAH8iFgqCIgDgxio4A2UAdABl4IMi0iBxAPGgiSKAIgACZ2lscpIilCKaIpwi7AAMCWwAZABlADuA8QDxQOcAWwlpI2FuZ2xlAAABbHKkIqoi5SFmdGWg6iLxAEUJaSJnaHQAZaDrIvEAvgltoL0DAKEjAGVzuCK8InIAbwAAoBYhcAAAoAcggARESGFkZ2lscnMAziLSItYi2iLeIugi7SICIw8j4SFzaACgrSLhIXJyAKAEKXAAAOBNItIg4SFzaACgrCIAAWV04iLlIgDgZSLSIADgPgDSIG4iZmluAACg3imAAUFldADzIvci+iJyAHIAAKACKQDgZCLSIHLgPADSIGkAZQAA4LQi0iAAAUF0BiMKI3IAcgAAoAMp8iFpZQDgtSLSIGkAbQAA4Dwi0iCAAUFhbgAaIx4jKiNyAHIAAKDWIXIAAAFociMjJiNrAACgIylvoJYh9wD/DuUhYXIAoCcpUxJqFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVCMAAF4jaSN/I4IjjSOeI8AUAAAAAKYjwCMAANoj3yMAAO8jHiQvJD8kRCQAAWNzVyNsFHUAdABlADuA8wDzQAABaXlhI2cjcgBjoJoiO4D0APRAPmSAAmFiaW9zAHEjdCN3I3EBeiNzAOgAdhTsIWFjUWF2AACgOCrvIWxkAKC8KewhaWdTYQABY3KFI4kjaQByAACgvykA4DXYLN1vA5QjAAAAAJYjAACcI24A22JhAHYAZQA7gPIA8kAAoMEpAAFibaEjjAphAHIAAKC1KQACYWNpdKwjryO6I70jcgDyAFkUAAFpcrMjtiNyAACgvinvIXNzAKC7KW4A5QDZCgCgwCmAAWFlaQDFI8gjyyNjAHIATWFnAGEAyWOAAWNkbgDRI9Qj1iPyIW9uv2MAoLYpdQDzAHgBcABmAADgNdhg3YABYWVsAOQj5yPrI3IAAKC3KXIAcAAAoLkpdQDzAHwBAKMoImFkaW9zdvkj/CMPJBMkFiQbJHIA8gBeFIChXSplZm0AAyQJJAwkcgBvoDQhZgAAoDQhO4CqAKpAO4C6ALpA5yFvZgCgtiJyAACgVipsIm9wZQAAoFcqAKBbKoABY2xvACMkJSQrJPIACCRhAHMAaAA7gPgA+EBsAACgmCJpAGwBMyQ4JGQAZQA7gPUA9UBlAHMAYaCXInMAAKA2Km0AbAA7gPYA9kDiIWFyAKA9I+EKXiQAAHokAAB8JJQkAACYJKkkAAAAALUkEQsAAPAkAAAAAAQleiUAAIMlcgCAoSUiYXN0AGUkbyQBCwCBtgA7bGokayS2QGwAZQDsABgDaQJ1JAAAAAB4JG0AAKDzKgCg/Sp5AD9kcgCAAmNpbXB0AIUkiCSLJJkSjyRuAHQAJWBvAGQALmBpAGwAAKAwIOUhbmsAoDEgcgAA4DXYLd2AAWltbwCdJKAkpCR2oMYD1WNtAGEA9AD+B24AZQAAoA4m9KHAA64kAAC0JGMjaGZvcmsAAKDUItZjAAFhdbgkxCRuAAABY2u9JMIkawBooA8hAKAOIfYAaRpzAACkKwBhYmNkZW1zdNMkIRPXJNsk4STjJOck6yTjIWlyAKAjKmkAcgAAoCIqAAFvdYsW3yQAoCUqAKByKm4AO4CxALFAaQBtAACgJip3AG8AAKAnKoABaXB1APUk+iT+JO4idGludACgFSpmAADgNdhh3W4AZAA7gKMAo0CApHoiRWFjZWlub3N1ABMlFSUYJRslTCVRJVklSSV1JQCgsypwAACgtyp1AOUAPwtjoK8qgKJ6ImFjZW5zACclLSU0JTYlSSVwAHAAcgBvAPgAFyV1AHIAbAB5AGUA8QA/C/EAOAuAAWFlcwA8JUElRSXwInByb3gAoLkqcQBxAACgtSppAG0AAKDoImkA7QBEC20AZQDzoDIgIguAAUVhcwBDJVclRSXwAEAlgAFkZnAATwtfJXElgAFhbHMAZSVpJW0l7CFhcgCgLiPpIW5lAKASI/UhcmYAoBMjdKAdIu8AWQvyIWVsAKCwIgABY2l9JYElcgAA4DXYxdzIY24iY3NwAACgCCAAA2Zpb3BzdZElKxuVJZolnyWkJXIAAOA12C7dcABmAADgNdhi3XIiaW1lAACgVyBjAHIAAOA12MbcgAFhZW8AqiW6JcAldAAAAWVpryW2JXIAbgBpAG8AbgDzABkFbgB0AACgFipzAHQAZaA/APEACRj0AG0LgApBQkhhYmNkZWZoaWxtbm9wcnN0dXgA4yXyJfYl+iVpJpAmpia9JtUm5ib4JlonaCdxJ3UnnietJ7EnyCfiJ+cngAFhcnQA6SXsJe4lcgDyAJkM8gD6AuEhaWwAoBwpYQByAPIA3BVhAHIAAKBkKYADY2RlbnFydAAGJhAmEyYYJiYmKyZaJgABZXUKJg0mAOA9IjEDdABlAFVhaQDjACAN7SJwdHl2AKCzKWcAgKHpJ2RlbAAgJiImJCYAoJIpAKClKeUA9wt1AG8AO4C7ALtAcgAApZIhYWJjZmhscHN0dz0mQCZFJkcmSiZMJk4mUSZVJlgmcAAAoHUpZqDlIXMAAKAgKQCgMylzAACgHinrALka8ACVHmwAAKBFKWkAbQAAoHQpbAAAoKMhAKCdIQABYWleJmImaQBsAACgGilvAG6gNiJhAGwA8wB2C4ABYWJyAG8mciZ2JnIA8gAvEnIAawAAoHMnAAFha3omgSZjAAABZWt/JoAmfWBdYAABZXOFJocmAKCMKWwAAAFkdYwmjiYAoI4pAKCQKQACYWV1eZcmmiajJqUm8iFvbllhAAFkaZ4moSZpAGwAV2HsAA8M4gCAJkBkAAJjbHFzrSawJrUmuiZhAACgNylkImhhcgAAoGkpdQBvAPKgHSCjAWgAAKCzIYABYWNnAMMm0iaUC2wAgKEcIWlwcwDLJs4migxuAOUAoAxhAHIA9ADaC3QAAKCtJYABaWxyANsm3ybjJvMhaHQAoH0pbwBvAPIANgwA4DXYL90AAWFv6ib1JnIAAAFkde8m8SYAoMEhbKDAIQCgbCl2oMED8WOAAWducwD+Jk4nUCdoAHQAAANhaGxyc3QKJxInISc1Jz0nRydyInJvdwB0oJIhYQDpAFYmYSNycG9vbgAAAWR1GiceJ28AdwDuAPAmcAAAoMAh5SFmdAABYWgnJy0ncgByAG8AdwDzAAkMYQByAHAAbwBvAG4A8wATBGklZ2h0YXJyb3dzAACgySFxAHUAaQBnAGEAcgByAG8A9wBZJugkcmVldGltZXMAoMwiZwDaYmkAbgBnAGQAbwB0AHMAZQDxABwYgAFhaG0AYCdjJ2YncgDyAAkMYQDyABMEAKAPIG8idXN0AGGgsSPjIWhlAKCxI+0haWQAoO4qAAJhYnB0fCeGJ4knmScAAW5ygCeDJ2cAAKDtJ3IAAKD+IXIA6wAcDIABYWZsAI8nkieVJ3IAAKCGKQDgNdhj3XUAcwAAoC4qaSJtZXMAAKA1KgABYXCiJ6gncgBnoCkAdAAAoJQp7yJsaW50AKASKmEAcgDyADwnAAJhY2hxuCe8J6EMwCfxIXVvAKA6IHIAAOA12MfcAAFidYAmxCdvAPKgGSCoAYABaGlyAM4n0ifWJ3IAZQDlAE0n7SFlcwCgyiJpAIChuSVlZmwAXAxjEt4n9CFyaQCgzinsInVoYXIAoGgpAKAeIWENBSgJKA0oSyhVKIYoAACLKLAoAAAAAOMo5ygAABApJCkxKW0pcSmHKaYpAACYKgAAAACxKmMidXRlAFthcQB1AO8ABR+ApHsiRWFjZWlucHN5ABwoHignKCooLygyKEEoRihJKACgtCrwASMoAAAlKACguCpvAG4AYWF1AOUAgw1koLAqaQBsAF9hcgBjAF1hgAFFYXMAOCg6KD0oAKC2KnAAAKC6KmkAbQAAoOki7yJsaW50AKATKmkA7QCIDUFkbwB0AGKixSKRFgAAAABTKACgZiqAA0FhY21zdHgAYChkKG8ocyh1KHkogihyAHIAAKDYIXIAAAFocmkoayjrAJAab6CYIfcAzAd0ADuApwCnQGkAO2D3IWFyAKApKW0AAAFpbn4ozQBuAHUA8wDOAHQAAKA2J3IA7+A12DDdIxkAAmFjb3mRKJUonSisKHIAcAAAoG8mAAFoeZkonChjAHkASWRIZHIAdABtAqUoAAAAAKgoaQDkAFsPYQByAGEA7ABsJDuArQCtQAABZ22zKLsobQBhAAChwwNmdroouijCY4CjPCJkZWdsbnByAMgozCjPKNMo1yjaKN4obwB0AACgairxoEMiCw5FoJ4qAKCgKkWgnSoAoJ8qZQAAoEYi7CF1cwCgJCrhIXJyAKByKWEAcgDyAPwMAAJhZWl07Sj8KAEpCCkAAWxz8Sj4KGwAcwBlAHQAbQDpAH8oaABwAACgMyrwImFyc2wAoOQpAAFkbFoPBSllAACgIyNloKoqc6CsKgDgrCoA/oABZmxwABUpGCkfKfQhY3lMZGKgLwBhoMQpcgAAoD8jZgAA4DXYZN1hAAABZHIoKRcDZQBzAHWgYCZpAHQAAKBgJoABY3N1ADYpRilhKQABYXU6KUApcABzoJMiAOCTIgD+cABzoJQiAOCUIgD+dQAAAWJwSylWKQChjyJlcz4NUCllAHQAZaCPIvEAPw0AoZAiZXNIDVspZQB0AGWgkCLxAEkNAKGhJWFmZilbBHIAZQFrKVwEAKChJWEAcgDyAAMNAAJjZW10dyl7KX8pgilyAADgNdjI3HQAbQDuAM4AaQDsAAYpYQByAOYAVw0AAWFyiimOKXIA5qAGJhESAAFhbpIpoylpImdodAAAAWVwmSmgKXAAcwBpAGwAbwDuANkXaADpAKAkcwCvYIACYmNtbnAArin8KY4NJSooKgCkgiJFZGVtbnByc7wpvinCKcgpzCnUKdgp3CkAoMUqbwB0AACgvSpkoIYibwB0AACgwyr1IWx0AKDBKgABRWXQKdIpAKDLKgCgiiLsIXVzAKC/KuEhcnIAoHkpgAFlaXUA4inxKfQpdAAAoYIiZW7oKewpcQDxoIYivSllAHEA8aCKItEpbQAAoMcqAAFicPgp+ikAoNUqAKDTKmMAgKJ7ImFjZW5zAAcqDSoUKhYqRihwAHAAcgBvAPgAIyh1AHIAbAB5AGUA8QCDDfEAfA2AAWFlcwAcKiIqPShwAHAAcgBvAPgAPChxAPEAOShnAACgaiYApoMiMTIzRWRlaGxtbnBzPCo/KkIqRSpHKlIqWCpjKmcqaypzKncqO4C5ALlAO4CyALJAO4CzALNAAKDGKgABb3NLKk4qdAAAoL4qdQBiAACg2CpkoIcibwB0AACgxCpzAAABb3VdKmAqbAAAoMknYgAAoNcq4SFycgCgeyn1IWx0AKDCKgABRWVvKnEqAKDMKgCgiyLsIXVzAKDAKoABZWl1AH0qjCqPKnQAAKGDImVugyqHKnEA8aCHIkYqZQBxAPGgiyJwKm0AAKDIKgABYnCTKpUqAKDUKgCg1iqAAUFhbgCdKqEqrCpyAHIAAKDZIXIAAAFocqYqqCrrAJUab6CZIfcAxQf3IWFyAKAqKWwAaQBnADuA3wDfQOELzyrZKtwq6SrsKvEqAAD1KjQrAAAAAAAAAAAAAEwrbCsAAHErvSsAAAAAAADRK3IC1CoAAAAA2CrnIWV0AKAWI8RjcgDrAOUKgAFhZXkA4SrkKucq8iFvbmVh5CFpbGNhQmRvAPQAIg5sInJlYwAAoBUjcgAA4DXYMd0AAmVpa2/7KhIrKCsuK/IBACsAAAkrZQAAATRm6g0EK28AcgDlAOsNYQBzorgDECsAAAAAEit5AG0A0WMAAWNuFislK2sAAAFhcxsrIStwAHAAcgBvAPgAFw5pAG0AAKA8InMA8AD9DQABYXMsKyEr8AAXDnIAbgA7gP4A/kDsATgrOyswG2QA5QBnAmUAcwCAgdcAO2JkAEMrRCtJK9dAYaCgInIAAKAxKgCgMCqAAWVwcwBRK1MraSvhAAkh4qKkIlsrXysAAAAAYytvAHQAAKA2I2kAcgAAoPEqb+A12GXdcgBrAACg2irhAHgociJpbWUAAKA0IIABYWlwAHYreSu3K2QA5QC+DYADYWRlbXBzdACFK6MrmiunK6wrsCuzK24iZ2xlAACitSVkbHFykCuUK5ornCvvIXduAKC/JeUhZnRloMMl8QACBwCgXCJpImdodABloLkl8QBdDG8AdAAAoOwlaSJudXMAAKA6KuwhdXMAoDkqYgAAoM0p6SFtZQCgOyrlInppdW0AoOIjgAFjaHQAwivKK80rAAFyecYrySsA4DXYydxGZGMAeQBbZPIhb2tnYQABaW/UK9creAD0ANERaCJlYWQAAAFsct4r5ytlAGYAdABhAHIAcgBvAPcAXQbpJGdodGFycm93AKCgIQAJQUhhYmNkZmdobG1vcHJzdHV3CiwNLBEsHSwnLDEsQCxLLFIsYix6LIQsjyzLLOgs7Sz/LAotcgDyAAkDYQByAACgYykAAWNyFSwbLHUAdABlADuA+gD6QPIACQ1yAOMBIywAACUseQBeZHYAZQBtYQABaXkrLDAscgBjADuA+wD7QENkgAFhYmgANyw6LD0scgDyANEO7CFhY3FhYQDyAOAOAAFpckQsSCzzIWh0AKB+KQDgNdgy3XIAYQB2AGUAO4D5APlAYQFWLF8scgAAAWxyWixcLACgvyEAoL4hbABrAACggCUAAWN0Zix2LG8CbCwAAAAAcyxyAG4AZaAcI3IAAKAcI28AcAAAoA8jcgBpAACg+CUAAWFsfiyBLGMAcgBrYTuAqACoQAABZ3CILIssbwBuAHNhZgAA4DXYZt0AA2FkaGxzdZksniynLLgsuyzFLHIAcgBvAPcACQ1vAHcAbgBhAHIAcgBvAPcA2A5hI3Jwb29uAAABbHKvLLMsZQBmAPQAWyxpAGcAaAD0AF0sdQDzAKYOaQAAocUDaGzBLMIs0mNvAG4AxWPwI2Fycm93cwCgyCGAAWNpdADRLOEs5CxvAtcsAAAAAN4scgBuAGWgHSNyAACgHSNvAHAAAKAOI24AZwBvYXIAaQAAoPklYwByAADgNdjK3IABZGlyAPMs9yz6LG8AdAAAoPAi7CFkZWlhaQBmoLUlAKC0JQABYW0DLQYtcgDyAMosbAA7gPwA/EDhIm5nbGUAoKcpgAdBQkRhY2RlZmxub3Byc3oAJy0qLTAtNC2bLZ0toS2/LcMtxy3TLdgt3C3gLfwtcgDyABADYQByAHag6CoAoOkqYQBzAOgA/gIAAW5yOC08LechcnQAoJwpgANla25wcnN0AJkpSC1NLVQtXi1iLYItYQBwAHAA4QAaHG8AdABoAGkAbgDnAKEXgAFoaXIAoSmzJFotbwBwAPQAdCVooJUh7wD4JgABaXVmLWotZwBtAOEAuygAAWJwbi14LXMjZXRuZXEAceCKIgD+AODLKgD+cyNldG5lcQBx4IsiAP4A4MwqAP4AAWhyhi2KLWUAdADhABIraSNhbmdsZQAAAWxyki2WLeUhZnQAoLIiaSJnaHQAAKCzInkAMmThIXNoAKCiIoABZWxyAKcttC24LWKiKCKuLQAAAACyLWEAcgAAoLsicQAAoFoi7CFpcACg7iIAAWJ0vC1eD2EA8gBfD3IAAOA12DPddAByAOkAlS1zAHUAAAFicM0t0C0A4IIi0iAA4IMi0iBwAGYAAOA12GfdcgBvAPAAWQt0AHIA6QCaLQABY3XkLegtcgAA4DXYy9wAAWJw7C30LW4AAAFFZXUt8S0A4IoiAP5uAAABRWV/LfktAOCLIgD+6SJnemFnAKCaKYADY2Vmb3BycwANLhAuJS4pLiMuLi40LukhcmN1YQABZGkULiEuAAFiZxguHC5hAHIAAKBfKmUAcaAnIgCgWSLlIXJwAKAYIXIAAOA12DTdcABmAADgNdho3WWgQCJhAHQA6ABqD2MAcgAA4DXYzNzjCuQRUC4AAFQuAABYLmIuAAAAAGMubS5wLnQuAAAAAIguki4AAJouJxIqEnQAcgDpAB0ScgAA4DXYNd0AAUFhWy5eLnIA8gDnAnIA8gCTB75jAAFBYWYuaS5yAPIA4AJyAPIAjAdhAPAAeh5pAHMAAKD7IoABZHB0APgReS6DLgABZmx9LoAuAOA12GnddQDzAP8RaQBtAOUABBIAAUFhiy6OLnIA8gDuAnIA8gCaBwABY3GVLgoScgAA4DXYzdwAAXB0nS6hLmwAdQDzACUScgDpACASAARhY2VmaW9zdbEuvC7ELsguzC7PLtQu2S5jAAABdXm2LrsudABlADuA/QD9QE9kAAFpecAuwy5yAGMAd2FLZG4AO4ClAKVAcgAA4DXYNt1jAHkAV2RwAGYAAOA12GrdYwByAADgNdjO3AABY23dLt8ueQBOZGwAO4D/AP9AAAVhY2RlZmhpb3N38y73Lv8uAi8MLxAvEy8YLx0vIi9jInV0ZQB6YQABYXn7Lv4u8iFvbn5hN2RvAHQAfGEAAWV0Bi8KL3QAcgDmAB8QYQC2Y3IAAOA12DfdYwB5ADZk5yJyYXJyAKDdIXAAZgAA4DXYa91jAHIAAOA12M/cAAFqbiYvKC8AoA0gagAAoAwg");
+
+    var decodeDataXml$1 = {};
+
+    // Generated using scripts/write-decode-map.ts
+    Object.defineProperty(decodeDataXml$1, "__esModule", { value: true });
+    decodeDataXml$1.xmlDecodeTree = void 0;
+    const decode_shared_js_1 = decodeShared;
+    decodeDataXml$1.xmlDecodeTree = (0, decode_shared_js_1.decodeBase64)("AAJhZ2xxBwARABMAFQBtAg0AAAAAAA8AcAAmYG8AcwAnYHQAPmB0ADxg9SFvdCJg");
+
+    var binTrieFlags = {};
+
+    Object.defineProperty(binTrieFlags, "__esModule", { value: true });
+    binTrieFlags.BinTrieFlags = void 0;
+    /**
+     * Bit flags & masks for the binary trie encoding used for entity decoding.
+     *
+     * Bit layout (16 bits total):
+     * 15..14 VALUE_LENGTH   (+1 encoding; 0 => no value)
+     * 13     FLAG13.        If valueLength>0: semicolon required flag (implicit ';').
+     *                       If valueLength==0: compact run flag.
+     * 12..7  BRANCH_LENGTH  Branch length (0 => single branch in 6..0 if jumpOffset==char) OR run length (when compact run)
+     * 6..0   JUMP_TABLE     Jump offset (jump table) OR single-branch char code OR first run char
+     */
+    var BinTrieFlags;
+    (function (BinTrieFlags) {
+        BinTrieFlags[BinTrieFlags["VALUE_LENGTH"] = 49152] = "VALUE_LENGTH";
+        BinTrieFlags[BinTrieFlags["FLAG13"] = 8192] = "FLAG13";
+        BinTrieFlags[BinTrieFlags["BRANCH_LENGTH"] = 8064] = "BRANCH_LENGTH";
+        BinTrieFlags[BinTrieFlags["JUMP_TABLE"] = 127] = "JUMP_TABLE";
+    })(BinTrieFlags || (binTrieFlags.BinTrieFlags = BinTrieFlags = {}));
+
+    (function (exports) {
+    	Object.defineProperty(exports, "__esModule", { value: true });
+    	exports.xmlDecodeTree = exports.htmlDecodeTree = exports.replaceCodePoint = exports.fromCodePoint = exports.decodeCodePoint = exports.EntityDecoder = exports.DecodingMode = void 0;
+    	exports.determineBranch = determineBranch;
+    	exports.decodeHTML = decodeHTML;
+    	exports.decodeHTMLAttribute = decodeHTMLAttribute;
+    	exports.decodeHTMLStrict = decodeHTMLStrict;
+    	exports.decodeXML = decodeXML;
+    	const decode_codepoint_js_1 = decodeCodepoint;
+    	const decode_data_html_js_1 = decodeDataHtml$1;
+    	const decode_data_xml_js_1 = decodeDataXml$1;
+    	const bin_trie_flags_js_1 = binTrieFlags;
+    	var CharCodes;
+    	(function (CharCodes) {
+    	    CharCodes[CharCodes["NUM"] = 35] = "NUM";
+    	    CharCodes[CharCodes["SEMI"] = 59] = "SEMI";
+    	    CharCodes[CharCodes["EQUALS"] = 61] = "EQUALS";
+    	    CharCodes[CharCodes["ZERO"] = 48] = "ZERO";
+    	    CharCodes[CharCodes["NINE"] = 57] = "NINE";
+    	    CharCodes[CharCodes["LOWER_A"] = 97] = "LOWER_A";
+    	    CharCodes[CharCodes["LOWER_F"] = 102] = "LOWER_F";
+    	    CharCodes[CharCodes["LOWER_X"] = 120] = "LOWER_X";
+    	    CharCodes[CharCodes["LOWER_Z"] = 122] = "LOWER_Z";
+    	    CharCodes[CharCodes["UPPER_A"] = 65] = "UPPER_A";
+    	    CharCodes[CharCodes["UPPER_F"] = 70] = "UPPER_F";
+    	    CharCodes[CharCodes["UPPER_Z"] = 90] = "UPPER_Z";
+    	})(CharCodes || (CharCodes = {}));
+    	/** Bit that needs to be set to convert an upper case ASCII character to lower case */
+    	const TO_LOWER_BIT = 32;
+    	function isNumber(code) {
+    	    return code >= CharCodes.ZERO && code <= CharCodes.NINE;
+    	}
+    	function isHexadecimalCharacter(code) {
+    	    return ((code >= CharCodes.UPPER_A && code <= CharCodes.UPPER_F) ||
+    	        (code >= CharCodes.LOWER_A && code <= CharCodes.LOWER_F));
+    	}
+    	function isAsciiAlphaNumeric(code) {
+    	    return ((code >= CharCodes.UPPER_A && code <= CharCodes.UPPER_Z) ||
+    	        (code >= CharCodes.LOWER_A && code <= CharCodes.LOWER_Z) ||
+    	        isNumber(code));
+    	}
+    	/**
+    	 * Checks if the given character is a valid end character for an entity in an attribute.
+    	 *
+    	 * Attribute values that aren't terminated properly aren't parsed, and shouldn't lead to a parser error.
+    	 * See the example in https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state
+    	 */
+    	function isEntityInAttributeInvalidEnd(code) {
+    	    return code === CharCodes.EQUALS || isAsciiAlphaNumeric(code);
+    	}
+    	var EntityDecoderState;
+    	(function (EntityDecoderState) {
+    	    EntityDecoderState[EntityDecoderState["EntityStart"] = 0] = "EntityStart";
+    	    EntityDecoderState[EntityDecoderState["NumericStart"] = 1] = "NumericStart";
+    	    EntityDecoderState[EntityDecoderState["NumericDecimal"] = 2] = "NumericDecimal";
+    	    EntityDecoderState[EntityDecoderState["NumericHex"] = 3] = "NumericHex";
+    	    EntityDecoderState[EntityDecoderState["NamedEntity"] = 4] = "NamedEntity";
+    	})(EntityDecoderState || (EntityDecoderState = {}));
+    	var DecodingMode;
+    	(function (DecodingMode) {
+    	    /** Entities in text nodes that can end with any character. */
+    	    DecodingMode[DecodingMode["Legacy"] = 0] = "Legacy";
+    	    /** Only allow entities terminated with a semicolon. */
+    	    DecodingMode[DecodingMode["Strict"] = 1] = "Strict";
+    	    /** Entities in attributes have limitations on ending characters. */
+    	    DecodingMode[DecodingMode["Attribute"] = 2] = "Attribute";
+    	})(DecodingMode || (exports.DecodingMode = DecodingMode = {}));
+    	/**
+    	 * Token decoder with support of writing partial entities.
+    	 */
+    	class EntityDecoder {
+    	    constructor(
+    	    /** The tree used to decode entities. */
+    	    // biome-ignore lint/correctness/noUnusedPrivateClassMembers: False positive
+    	    decodeTree, 
+    	    /**
+    	     * The function that is called when a codepoint is decoded.
+    	     *
+    	     * For multi-byte named entities, this will be called multiple times,
+    	     * with the second codepoint, and the same `consumed` value.
+    	     *
+    	     * @param codepoint The decoded codepoint.
+    	     * @param consumed The number of bytes consumed by the decoder.
+    	     */
+    	    emitCodePoint, 
+    	    /** An object that is used to produce errors. */
+    	    errors) {
+    	        this.decodeTree = decodeTree;
+    	        this.emitCodePoint = emitCodePoint;
+    	        this.errors = errors;
+    	        /** The current state of the decoder. */
+    	        this.state = EntityDecoderState.EntityStart;
+    	        /** Characters that were consumed while parsing an entity. */
+    	        this.consumed = 1;
+    	        /**
+    	         * The result of the entity.
+    	         *
+    	         * Either the result index of a numeric entity, or the codepoint of a
+    	         * numeric entity.
+    	         */
+    	        this.result = 0;
+    	        /** The current index in the decode tree. */
+    	        this.treeIndex = 0;
+    	        /** The number of characters that were consumed in excess. */
+    	        this.excess = 1;
+    	        /** The mode in which the decoder is operating. */
+    	        this.decodeMode = DecodingMode.Strict;
+    	        /** The number of characters that have been consumed in the current run. */
+    	        this.runConsumed = 0;
+    	    }
+    	    /** Resets the instance to make it reusable. */
+    	    startEntity(decodeMode) {
+    	        this.decodeMode = decodeMode;
+    	        this.state = EntityDecoderState.EntityStart;
+    	        this.result = 0;
+    	        this.treeIndex = 0;
+    	        this.excess = 1;
+    	        this.consumed = 1;
+    	        this.runConsumed = 0;
+    	    }
+    	    /**
+    	     * Write an entity to the decoder. This can be called multiple times with partial entities.
+    	     * If the entity is incomplete, the decoder will return -1.
+    	     *
+    	     * Mirrors the implementation of `getDecoder`, but with the ability to stop decoding if the
+    	     * entity is incomplete, and resume when the next string is written.
+    	     *
+    	     * @param input The string containing the entity (or a continuation of the entity).
+    	     * @param offset The offset at which the entity begins. Should be 0 if this is not the first call.
+    	     * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
+    	     */
+    	    write(input, offset) {
+    	        switch (this.state) {
+    	            case EntityDecoderState.EntityStart: {
+    	                if (input.charCodeAt(offset) === CharCodes.NUM) {
+    	                    this.state = EntityDecoderState.NumericStart;
+    	                    this.consumed += 1;
+    	                    return this.stateNumericStart(input, offset + 1);
+    	                }
+    	                this.state = EntityDecoderState.NamedEntity;
+    	                return this.stateNamedEntity(input, offset);
+    	            }
+    	            case EntityDecoderState.NumericStart: {
+    	                return this.stateNumericStart(input, offset);
+    	            }
+    	            case EntityDecoderState.NumericDecimal: {
+    	                return this.stateNumericDecimal(input, offset);
+    	            }
+    	            case EntityDecoderState.NumericHex: {
+    	                return this.stateNumericHex(input, offset);
+    	            }
+    	            case EntityDecoderState.NamedEntity: {
+    	                return this.stateNamedEntity(input, offset);
+    	            }
+    	        }
+    	    }
+    	    /**
+    	     * Switches between the numeric decimal and hexadecimal states.
+    	     *
+    	     * Equivalent to the `Numeric character reference state` in the HTML spec.
+    	     *
+    	     * @param input The string containing the entity (or a continuation of the entity).
+    	     * @param offset The current offset.
+    	     * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
+    	     */
+    	    stateNumericStart(input, offset) {
+    	        if (offset >= input.length) {
+    	            return -1;
+    	        }
+    	        if ((input.charCodeAt(offset) | TO_LOWER_BIT) === CharCodes.LOWER_X) {
+    	            this.state = EntityDecoderState.NumericHex;
+    	            this.consumed += 1;
+    	            return this.stateNumericHex(input, offset + 1);
+    	        }
+    	        this.state = EntityDecoderState.NumericDecimal;
+    	        return this.stateNumericDecimal(input, offset);
+    	    }
+    	    /**
+    	     * Parses a hexadecimal numeric entity.
+    	     *
+    	     * Equivalent to the `Hexademical character reference state` in the HTML spec.
+    	     *
+    	     * @param input The string containing the entity (or a continuation of the entity).
+    	     * @param offset The current offset.
+    	     * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
+    	     */
+    	    stateNumericHex(input, offset) {
+    	        while (offset < input.length) {
+    	            const char = input.charCodeAt(offset);
+    	            if (isNumber(char) || isHexadecimalCharacter(char)) {
+    	                // Convert hex digit to value (0-15); 'a'/'A' -> 10.
+    	                const digit = char <= CharCodes.NINE
+    	                    ? char - CharCodes.ZERO
+    	                    : (char | TO_LOWER_BIT) - CharCodes.LOWER_A + 10;
+    	                this.result = this.result * 16 + digit;
+    	                this.consumed++;
+    	                offset++;
+    	            }
+    	            else {
+    	                return this.emitNumericEntity(char, 3);
+    	            }
+    	        }
+    	        return -1; // Incomplete entity
+    	    }
+    	    /**
+    	     * Parses a decimal numeric entity.
+    	     *
+    	     * Equivalent to the `Decimal character reference state` in the HTML spec.
+    	     *
+    	     * @param input The string containing the entity (or a continuation of the entity).
+    	     * @param offset The current offset.
+    	     * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
+    	     */
+    	    stateNumericDecimal(input, offset) {
+    	        while (offset < input.length) {
+    	            const char = input.charCodeAt(offset);
+    	            if (isNumber(char)) {
+    	                this.result = this.result * 10 + (char - CharCodes.ZERO);
+    	                this.consumed++;
+    	                offset++;
+    	            }
+    	            else {
+    	                return this.emitNumericEntity(char, 2);
+    	            }
+    	        }
+    	        return -1; // Incomplete entity
+    	    }
+    	    /**
+    	     * Validate and emit a numeric entity.
+    	     *
+    	     * Implements the logic from the `Hexademical character reference start
+    	     * state` and `Numeric character reference end state` in the HTML spec.
+    	     *
+    	     * @param lastCp The last code point of the entity. Used to see if the
+    	     *               entity was terminated with a semicolon.
+    	     * @param expectedLength The minimum number of characters that should be
+    	     *                       consumed. Used to validate that at least one digit
+    	     *                       was consumed.
+    	     * @returns The number of characters that were consumed.
+    	     */
+    	    emitNumericEntity(lastCp, expectedLength) {
+    	        var _a;
+    	        // Ensure we consumed at least one digit.
+    	        if (this.consumed <= expectedLength) {
+    	            (_a = this.errors) === null || _a === void 0 ? void 0 : _a.absenceOfDigitsInNumericCharacterReference(this.consumed);
+    	            return 0;
+    	        }
+    	        // Figure out if this is a legit end of the entity
+    	        if (lastCp === CharCodes.SEMI) {
+    	            this.consumed += 1;
+    	        }
+    	        else if (this.decodeMode === DecodingMode.Strict) {
+    	            return 0;
+    	        }
+    	        this.emitCodePoint((0, decode_codepoint_js_1.replaceCodePoint)(this.result), this.consumed);
+    	        if (this.errors) {
+    	            if (lastCp !== CharCodes.SEMI) {
+    	                this.errors.missingSemicolonAfterCharacterReference();
+    	            }
+    	            this.errors.validateNumericCharacterReference(this.result);
+    	        }
+    	        return this.consumed;
+    	    }
+    	    /**
+    	     * Parses a named entity.
+    	     *
+    	     * Equivalent to the `Named character reference state` in the HTML spec.
+    	     *
+    	     * @param input The string containing the entity (or a continuation of the entity).
+    	     * @param offset The current offset.
+    	     * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
+    	     */
+    	    stateNamedEntity(input, offset) {
+    	        const { decodeTree } = this;
+    	        let current = decodeTree[this.treeIndex];
+    	        // The length is the number of bytes of the value, including the current byte.
+    	        let valueLength = (current & bin_trie_flags_js_1.BinTrieFlags.VALUE_LENGTH) >> 14;
+    	        while (offset < input.length) {
+    	            // Handle compact runs (possibly inline): valueLength == 0 and SEMI_REQUIRED bit set.
+    	            if (valueLength === 0 && (current & bin_trie_flags_js_1.BinTrieFlags.FLAG13) !== 0) {
+    	                const runLength = (current & bin_trie_flags_js_1.BinTrieFlags.BRANCH_LENGTH) >> 7; /* 2..63 */
+    	                // If we are starting a run, check the first char.
+    	                if (this.runConsumed === 0) {
+    	                    const firstChar = current & bin_trie_flags_js_1.BinTrieFlags.JUMP_TABLE;
+    	                    if (input.charCodeAt(offset) !== firstChar) {
+    	                        return this.result === 0
+    	                            ? 0
+    	                            : this.emitNotTerminatedNamedEntity();
+    	                    }
+    	                    offset++;
+    	                    this.excess++;
+    	                    this.runConsumed++;
+    	                }
+    	                // Check remaining characters in the run.
+    	                while (this.runConsumed < runLength) {
+    	                    if (offset >= input.length) {
+    	                        return -1;
+    	                    }
+    	                    const charIndexInPacked = this.runConsumed - 1;
+    	                    const packedWord = decodeTree[this.treeIndex + 1 + (charIndexInPacked >> 1)];
+    	                    const expectedChar = charIndexInPacked % 2 === 0
+    	                        ? packedWord & 0xff
+    	                        : (packedWord >> 8) & 0xff;
+    	                    if (input.charCodeAt(offset) !== expectedChar) {
+    	                        this.runConsumed = 0;
+    	                        return this.result === 0
+    	                            ? 0
+    	                            : this.emitNotTerminatedNamedEntity();
+    	                    }
+    	                    offset++;
+    	                    this.excess++;
+    	                    this.runConsumed++;
+    	                }
+    	                this.runConsumed = 0;
+    	                this.treeIndex += 1 + (runLength >> 1);
+    	                current = decodeTree[this.treeIndex];
+    	                valueLength = (current & bin_trie_flags_js_1.BinTrieFlags.VALUE_LENGTH) >> 14;
+    	            }
+    	            if (offset >= input.length)
+    	                break;
+    	            const char = input.charCodeAt(offset);
+    	            /*
+    	             * Implicit semicolon handling for nodes that require a semicolon but
+    	             * don't have an explicit ';' branch stored in the trie. If we have
+    	             * a value on the current node, it requires a semicolon, and the
+    	             * current input character is a semicolon, emit the entity using the
+    	             * current node (without descending further).
+    	             */
+    	            if (char === CharCodes.SEMI &&
+    	                valueLength !== 0 &&
+    	                (current & bin_trie_flags_js_1.BinTrieFlags.FLAG13) !== 0) {
+    	                return this.emitNamedEntityData(this.treeIndex, valueLength, this.consumed + this.excess);
+    	            }
+    	            this.treeIndex = determineBranch(decodeTree, current, this.treeIndex + Math.max(1, valueLength), char);
+    	            if (this.treeIndex < 0) {
+    	                return this.result === 0 ||
+    	                    // If we are parsing an attribute
+    	                    (this.decodeMode === DecodingMode.Attribute &&
+    	                        // We shouldn't have consumed any characters after the entity,
+    	                        (valueLength === 0 ||
+    	                            // And there should be no invalid characters.
+    	                            isEntityInAttributeInvalidEnd(char)))
+    	                    ? 0
+    	                    : this.emitNotTerminatedNamedEntity();
+    	            }
+    	            current = decodeTree[this.treeIndex];
+    	            valueLength = (current & bin_trie_flags_js_1.BinTrieFlags.VALUE_LENGTH) >> 14;
+    	            // If the branch is a value, store it and continue
+    	            if (valueLength !== 0) {
+    	                // If the entity is terminated by a semicolon, we are done.
+    	                if (char === CharCodes.SEMI) {
+    	                    return this.emitNamedEntityData(this.treeIndex, valueLength, this.consumed + this.excess);
+    	                }
+    	                // If we encounter a non-terminated (legacy) entity while parsing strictly, then ignore it.
+    	                if (this.decodeMode !== DecodingMode.Strict &&
+    	                    (current & bin_trie_flags_js_1.BinTrieFlags.FLAG13) === 0) {
+    	                    this.result = this.treeIndex;
+    	                    this.consumed += this.excess;
+    	                    this.excess = 0;
+    	                }
+    	            }
+    	            // Increment offset & excess for next iteration
+    	            offset++;
+    	            this.excess++;
+    	        }
+    	        return -1;
+    	    }
+    	    /**
+    	     * Emit a named entity that was not terminated with a semicolon.
+    	     *
+    	     * @returns The number of characters consumed.
+    	     */
+    	    emitNotTerminatedNamedEntity() {
+    	        var _a;
+    	        const { result, decodeTree } = this;
+    	        const valueLength = (decodeTree[result] & bin_trie_flags_js_1.BinTrieFlags.VALUE_LENGTH) >> 14;
+    	        this.emitNamedEntityData(result, valueLength, this.consumed);
+    	        (_a = this.errors) === null || _a === void 0 ? void 0 : _a.missingSemicolonAfterCharacterReference();
+    	        return this.consumed;
+    	    }
+    	    /**
+    	     * Emit a named entity.
+    	     *
+    	     * @param result The index of the entity in the decode tree.
+    	     * @param valueLength The number of bytes in the entity.
+    	     * @param consumed The number of characters consumed.
+    	     *
+    	     * @returns The number of characters consumed.
+    	     */
+    	    emitNamedEntityData(result, valueLength, consumed) {
+    	        const { decodeTree } = this;
+    	        this.emitCodePoint(valueLength === 1
+    	            ? decodeTree[result] &
+    	                ~(bin_trie_flags_js_1.BinTrieFlags.VALUE_LENGTH | bin_trie_flags_js_1.BinTrieFlags.FLAG13)
+    	            : decodeTree[result + 1], consumed);
+    	        if (valueLength === 3) {
+    	            // For multi-byte values, we need to emit the second byte.
+    	            this.emitCodePoint(decodeTree[result + 2], consumed);
+    	        }
+    	        return consumed;
+    	    }
+    	    /**
+    	     * Signal to the parser that the end of the input was reached.
+    	     *
+    	     * Remaining data will be emitted and relevant errors will be produced.
+    	     *
+    	     * @returns The number of characters consumed.
+    	     */
+    	    end() {
+    	        var _a;
+    	        switch (this.state) {
+    	            case EntityDecoderState.NamedEntity: {
+    	                // Emit a named entity if we have one.
+    	                return this.result !== 0 &&
+    	                    (this.decodeMode !== DecodingMode.Attribute ||
+    	                        this.result === this.treeIndex)
+    	                    ? this.emitNotTerminatedNamedEntity()
+    	                    : 0;
+    	            }
+    	            // Otherwise, emit a numeric entity if we have one.
+    	            case EntityDecoderState.NumericDecimal: {
+    	                return this.emitNumericEntity(0, 2);
+    	            }
+    	            case EntityDecoderState.NumericHex: {
+    	                return this.emitNumericEntity(0, 3);
+    	            }
+    	            case EntityDecoderState.NumericStart: {
+    	                (_a = this.errors) === null || _a === void 0 ? void 0 : _a.absenceOfDigitsInNumericCharacterReference(this.consumed);
+    	                return 0;
+    	            }
+    	            case EntityDecoderState.EntityStart: {
+    	                // Return 0 if we have no entity.
+    	                return 0;
+    	            }
+    	        }
+    	    }
+    	}
+    	exports.EntityDecoder = EntityDecoder;
+    	/**
+    	 * Creates a function that decodes entities in a string.
+    	 *
+    	 * @param decodeTree The decode tree.
+    	 * @returns A function that decodes entities in a string.
+    	 */
+    	function getDecoder(decodeTree) {
+    	    let returnValue = "";
+    	    const decoder = new EntityDecoder(decodeTree, (data) => (returnValue += (0, decode_codepoint_js_1.fromCodePoint)(data)));
+    	    return function decodeWithTrie(input, decodeMode) {
+    	        let lastIndex = 0;
+    	        let offset = 0;
+    	        while ((offset = input.indexOf("&", offset)) >= 0) {
+    	            returnValue += input.slice(lastIndex, offset);
+    	            decoder.startEntity(decodeMode);
+    	            const length = decoder.write(input, 
+    	            // Skip the "&"
+    	            offset + 1);
+    	            if (length < 0) {
+    	                lastIndex = offset + decoder.end();
+    	                break;
+    	            }
+    	            lastIndex = offset + length;
+    	            // If `length` is 0, skip the current `&` and continue.
+    	            offset = length === 0 ? lastIndex + 1 : lastIndex;
+    	        }
+    	        const result = returnValue + input.slice(lastIndex);
+    	        // Make sure we don't keep a reference to the final string.
+    	        returnValue = "";
+    	        return result;
+    	    };
+    	}
+    	/**
+    	 * Determines the branch of the current node that is taken given the current
+    	 * character. This function is used to traverse the trie.
+    	 *
+    	 * @param decodeTree The trie.
+    	 * @param current The current node.
+    	 * @param nodeIdx The index right after the current node and its value.
+    	 * @param char The current character.
+    	 * @returns The index of the next node, or -1 if no branch is taken.
+    	 */
+    	function determineBranch(decodeTree, current, nodeIndex, char) {
+    	    const branchCount = (current & bin_trie_flags_js_1.BinTrieFlags.BRANCH_LENGTH) >> 7;
+    	    const jumpOffset = current & bin_trie_flags_js_1.BinTrieFlags.JUMP_TABLE;
+    	    // Case 1: Single branch encoded in jump offset
+    	    if (branchCount === 0) {
+    	        return jumpOffset !== 0 && char === jumpOffset ? nodeIndex : -1;
+    	    }
+    	    // Case 2: Multiple branches encoded in jump table
+    	    if (jumpOffset) {
+    	        const value = char - jumpOffset;
+    	        return value < 0 || value >= branchCount
+    	            ? -1
+    	            : decodeTree[nodeIndex + value] - 1;
+    	    }
+    	    // Case 3: Multiple branches encoded in packed dictionary (two keys per uint16)
+    	    const packedKeySlots = (branchCount + 1) >> 1;
+    	    /*
+    	     * Treat packed keys as a virtual sorted array of length `branchCount`.
+    	     * Key(i) = low byte for even i, high byte for odd i in slot i>>1.
+    	     */
+    	    let lo = 0;
+    	    let hi = branchCount - 1;
+    	    while (lo <= hi) {
+    	        const mid = (lo + hi) >>> 1;
+    	        const slot = mid >> 1;
+    	        const packed = decodeTree[nodeIndex + slot];
+    	        const midKey = (packed >> ((mid & 1) * 8)) & 0xff;
+    	        if (midKey < char) {
+    	            lo = mid + 1;
+    	        }
+    	        else if (midKey > char) {
+    	            hi = mid - 1;
+    	        }
+    	        else {
+    	            return decodeTree[nodeIndex + packedKeySlots + mid];
+    	        }
+    	    }
+    	    return -1;
+    	}
+    	const htmlDecoder = /* #__PURE__ */ getDecoder(decode_data_html_js_1.htmlDecodeTree);
+    	const xmlDecoder = /* #__PURE__ */ getDecoder(decode_data_xml_js_1.xmlDecodeTree);
+    	/**
+    	 * Decodes an HTML string.
+    	 *
+    	 * @param htmlString The string to decode.
+    	 * @param mode The decoding mode.
+    	 * @returns The decoded string.
+    	 */
+    	function decodeHTML(htmlString, mode = DecodingMode.Legacy) {
+    	    return htmlDecoder(htmlString, mode);
+    	}
+    	/**
+    	 * Decodes an HTML string in an attribute.
+    	 *
+    	 * @param htmlAttribute The string to decode.
+    	 * @returns The decoded string.
+    	 */
+    	function decodeHTMLAttribute(htmlAttribute) {
+    	    return htmlDecoder(htmlAttribute, DecodingMode.Attribute);
+    	}
+    	/**
+    	 * Decodes an HTML string, requiring all entities to be terminated by a semicolon.
+    	 *
+    	 * @param htmlString The string to decode.
+    	 * @returns The decoded string.
+    	 */
+    	function decodeHTMLStrict(htmlString) {
+    	    return htmlDecoder(htmlString, DecodingMode.Strict);
+    	}
+    	/**
+    	 * Decodes an XML string, requiring all entities to be terminated by a semicolon.
+    	 *
+    	 * @param xmlString The string to decode.
+    	 * @returns The decoded string.
+    	 */
+    	function decodeXML(xmlString) {
+    	    return xmlDecoder(xmlString, DecodingMode.Strict);
+    	}
+    	var decode_codepoint_js_2 = decodeCodepoint;
+    	Object.defineProperty(exports, "decodeCodePoint", { enumerable: true, get: function () { return decode_codepoint_js_2.decodeCodePoint; } });
+    	Object.defineProperty(exports, "fromCodePoint", { enumerable: true, get: function () { return decode_codepoint_js_2.fromCodePoint; } });
+    	Object.defineProperty(exports, "replaceCodePoint", { enumerable: true, get: function () { return decode_codepoint_js_2.replaceCodePoint; } });
+    	// Re-export for use by eg. htmlparser2
+    	var decode_data_html_js_2 = decodeDataHtml$1;
+    	Object.defineProperty(exports, "htmlDecodeTree", { enumerable: true, get: function () { return decode_data_html_js_2.htmlDecodeTree; } });
+    	var decode_data_xml_js_2 = decodeDataXml$1;
+    	Object.defineProperty(exports, "xmlDecodeTree", { enumerable: true, get: function () { return decode_data_xml_js_2.xmlDecodeTree; } });
+    	
+    } (decode$1));
+
+    Object.defineProperty(Tokenizer$1, "__esModule", { value: true });
+    Tokenizer$1.QuoteType = void 0;
+    const decode_1$1 = decode$1;
+    var CharCodes;
+    (function (CharCodes) {
+        CharCodes[CharCodes["Tab"] = 9] = "Tab";
+        CharCodes[CharCodes["NewLine"] = 10] = "NewLine";
+        CharCodes[CharCodes["FormFeed"] = 12] = "FormFeed";
+        CharCodes[CharCodes["CarriageReturn"] = 13] = "CarriageReturn";
+        CharCodes[CharCodes["Space"] = 32] = "Space";
+        CharCodes[CharCodes["ExclamationMark"] = 33] = "ExclamationMark";
+        CharCodes[CharCodes["Number"] = 35] = "Number";
+        CharCodes[CharCodes["Amp"] = 38] = "Amp";
+        CharCodes[CharCodes["SingleQuote"] = 39] = "SingleQuote";
+        CharCodes[CharCodes["DoubleQuote"] = 34] = "DoubleQuote";
+        CharCodes[CharCodes["Dash"] = 45] = "Dash";
+        CharCodes[CharCodes["Slash"] = 47] = "Slash";
+        CharCodes[CharCodes["Zero"] = 48] = "Zero";
+        CharCodes[CharCodes["Nine"] = 57] = "Nine";
+        CharCodes[CharCodes["Semi"] = 59] = "Semi";
+        CharCodes[CharCodes["Lt"] = 60] = "Lt";
+        CharCodes[CharCodes["Eq"] = 61] = "Eq";
+        CharCodes[CharCodes["Gt"] = 62] = "Gt";
+        CharCodes[CharCodes["Questionmark"] = 63] = "Questionmark";
+        CharCodes[CharCodes["UpperA"] = 65] = "UpperA";
+        CharCodes[CharCodes["LowerA"] = 97] = "LowerA";
+        CharCodes[CharCodes["UpperF"] = 70] = "UpperF";
+        CharCodes[CharCodes["LowerF"] = 102] = "LowerF";
+        CharCodes[CharCodes["UpperZ"] = 90] = "UpperZ";
+        CharCodes[CharCodes["LowerZ"] = 122] = "LowerZ";
+        CharCodes[CharCodes["LowerX"] = 120] = "LowerX";
+        CharCodes[CharCodes["OpeningSquareBracket"] = 91] = "OpeningSquareBracket";
+    })(CharCodes || (CharCodes = {}));
+    /** All the states the tokenizer can be in. */
+    var State;
+    (function (State) {
+        State[State["Text"] = 1] = "Text";
+        State[State["BeforeTagName"] = 2] = "BeforeTagName";
+        State[State["InTagName"] = 3] = "InTagName";
+        State[State["InSelfClosingTag"] = 4] = "InSelfClosingTag";
+        State[State["BeforeClosingTagName"] = 5] = "BeforeClosingTagName";
+        State[State["InClosingTagName"] = 6] = "InClosingTagName";
+        State[State["AfterClosingTagName"] = 7] = "AfterClosingTagName";
+        // Attributes
+        State[State["BeforeAttributeName"] = 8] = "BeforeAttributeName";
+        State[State["InAttributeName"] = 9] = "InAttributeName";
+        State[State["AfterAttributeName"] = 10] = "AfterAttributeName";
+        State[State["BeforeAttributeValue"] = 11] = "BeforeAttributeValue";
+        State[State["InAttributeValueDq"] = 12] = "InAttributeValueDq";
+        State[State["InAttributeValueSq"] = 13] = "InAttributeValueSq";
+        State[State["InAttributeValueNq"] = 14] = "InAttributeValueNq";
+        // Declarations
+        State[State["BeforeDeclaration"] = 15] = "BeforeDeclaration";
+        State[State["InDeclaration"] = 16] = "InDeclaration";
+        // Processing instructions
+        State[State["InProcessingInstruction"] = 17] = "InProcessingInstruction";
+        // Comments & CDATA
+        State[State["BeforeComment"] = 18] = "BeforeComment";
+        State[State["CDATASequence"] = 19] = "CDATASequence";
+        State[State["InSpecialComment"] = 20] = "InSpecialComment";
+        State[State["InCommentLike"] = 21] = "InCommentLike";
+        // Special tags
+        State[State["BeforeSpecialS"] = 22] = "BeforeSpecialS";
+        State[State["BeforeSpecialT"] = 23] = "BeforeSpecialT";
+        State[State["SpecialStartSequence"] = 24] = "SpecialStartSequence";
+        State[State["InSpecialTag"] = 25] = "InSpecialTag";
+        State[State["InEntity"] = 26] = "InEntity";
+    })(State || (State = {}));
+    function isWhitespace(c) {
+        return (c === CharCodes.Space ||
+            c === CharCodes.NewLine ||
+            c === CharCodes.Tab ||
+            c === CharCodes.FormFeed ||
+            c === CharCodes.CarriageReturn);
+    }
+    function isEndOfTagSection(c) {
+        return c === CharCodes.Slash || c === CharCodes.Gt || isWhitespace(c);
+    }
+    function isASCIIAlpha(c) {
+        return ((c >= CharCodes.LowerA && c <= CharCodes.LowerZ) ||
+            (c >= CharCodes.UpperA && c <= CharCodes.UpperZ));
+    }
+    var QuoteType;
+    (function (QuoteType) {
+        QuoteType[QuoteType["NoValue"] = 0] = "NoValue";
+        QuoteType[QuoteType["Unquoted"] = 1] = "Unquoted";
+        QuoteType[QuoteType["Single"] = 2] = "Single";
+        QuoteType[QuoteType["Double"] = 3] = "Double";
+    })(QuoteType || (Tokenizer$1.QuoteType = QuoteType = {}));
+    /**
+     * Sequences used to match longer strings.
+     *
+     * We don't have `Script`, `Style`, or `Title` here. Instead, we re-use the *End
+     * sequences with an increased offset.
+     */
+    const Sequences = {
+        Cdata: new Uint8Array([0x43, 0x44, 0x41, 0x54, 0x41, 0x5b]), // CDATA[
+        CdataEnd: new Uint8Array([0x5d, 0x5d, 0x3e]), // ]]>
+        CommentEnd: new Uint8Array([0x2d, 0x2d, 0x3e]), // `-->`
+        ScriptEnd: new Uint8Array([0x3c, 0x2f, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74]), // `</script`
+        StyleEnd: new Uint8Array([0x3c, 0x2f, 0x73, 0x74, 0x79, 0x6c, 0x65]), // `</style`
+        TitleEnd: new Uint8Array([0x3c, 0x2f, 0x74, 0x69, 0x74, 0x6c, 0x65]), // `</title`
+        TextareaEnd: new Uint8Array([
+            0x3c, 0x2f, 0x74, 0x65, 0x78, 0x74, 0x61, 0x72, 0x65, 0x61,
+        ]), // `</textarea`
+        XmpEnd: new Uint8Array([0x3c, 0x2f, 0x78, 0x6d, 0x70]), // `</xmp`
+    };
+    class Tokenizer {
+        constructor({ xmlMode = false, decodeEntities = true, }, cbs) {
+            this.cbs = cbs;
+            /** The current state the tokenizer is in. */
+            this.state = State.Text;
+            /** The read buffer. */
+            this.buffer = "";
+            /** The beginning of the section that is currently being read. */
+            this.sectionStart = 0;
+            /** The index within the buffer that we are currently looking at. */
+            this.index = 0;
+            /** The start of the last entity. */
+            this.entityStart = 0;
+            /** Some behavior, eg. when decoding entities, is done while we are in another state. This keeps track of the other state type. */
+            this.baseState = State.Text;
+            /** For special parsing behavior inside of script and style tags. */
+            this.isSpecial = false;
+            /** Indicates whether the tokenizer has been paused. */
+            this.running = true;
+            /** The offset of the current buffer. */
+            this.offset = 0;
+            this.currentSequence = undefined;
+            this.sequenceIndex = 0;
+            this.xmlMode = xmlMode;
+            this.decodeEntities = decodeEntities;
+            this.entityDecoder = new decode_1$1.EntityDecoder(xmlMode ? decode_1$1.xmlDecodeTree : decode_1$1.htmlDecodeTree, (cp, consumed) => this.emitCodePoint(cp, consumed));
+        }
+        reset() {
+            this.state = State.Text;
+            this.buffer = "";
+            this.sectionStart = 0;
+            this.index = 0;
+            this.baseState = State.Text;
+            this.currentSequence = undefined;
+            this.running = true;
+            this.offset = 0;
+        }
+        write(chunk) {
+            this.offset += this.buffer.length;
+            this.buffer = chunk;
+            this.parse();
+        }
+        end() {
+            if (this.running)
+                this.finish();
+        }
+        pause() {
+            this.running = false;
+        }
+        resume() {
+            this.running = true;
+            if (this.index < this.buffer.length + this.offset) {
+                this.parse();
+            }
+        }
+        stateText(c) {
+            if (c === CharCodes.Lt ||
+                (!this.decodeEntities && this.fastForwardTo(CharCodes.Lt))) {
+                if (this.index > this.sectionStart) {
+                    this.cbs.ontext(this.sectionStart, this.index);
+                }
+                this.state = State.BeforeTagName;
+                this.sectionStart = this.index;
+            }
+            else if (this.decodeEntities && c === CharCodes.Amp) {
+                this.startEntity();
+            }
+        }
+        stateSpecialStartSequence(c) {
+            const isEnd = this.sequenceIndex === this.currentSequence.length;
+            const isMatch = isEnd
+                ? // If we are at the end of the sequence, make sure the tag name has ended
+                    isEndOfTagSection(c)
+                : // Otherwise, do a case-insensitive comparison
+                    (c | 0x20) === this.currentSequence[this.sequenceIndex];
+            if (!isMatch) {
+                this.isSpecial = false;
+            }
+            else if (!isEnd) {
+                this.sequenceIndex++;
+                return;
+            }
+            this.sequenceIndex = 0;
+            this.state = State.InTagName;
+            this.stateInTagName(c);
+        }
+        /** Look for an end tag. For <title> tags, also decode entities. */
+        stateInSpecialTag(c) {
+            if (this.sequenceIndex === this.currentSequence.length) {
+                if (c === CharCodes.Gt || isWhitespace(c)) {
+                    const endOfText = this.index - this.currentSequence.length;
+                    if (this.sectionStart < endOfText) {
+                        // Spoof the index so that reported locations match up.
+                        const actualIndex = this.index;
+                        this.index = endOfText;
+                        this.cbs.ontext(this.sectionStart, endOfText);
+                        this.index = actualIndex;
+                    }
+                    this.isSpecial = false;
+                    this.sectionStart = endOfText + 2; // Skip over the `</`
+                    this.stateInClosingTagName(c);
+                    return; // We are done; skip the rest of the function.
+                }
+                this.sequenceIndex = 0;
+            }
+            if ((c | 0x20) === this.currentSequence[this.sequenceIndex]) {
+                this.sequenceIndex += 1;
+            }
+            else if (this.sequenceIndex === 0) {
+                if (this.currentSequence === Sequences.TitleEnd) {
+                    // We have to parse entities in <title> tags.
+                    if (this.decodeEntities && c === CharCodes.Amp) {
+                        this.startEntity();
+                    }
+                }
+                else if (this.fastForwardTo(CharCodes.Lt)) {
+                    // Outside of <title> tags, we can fast-forward.
+                    this.sequenceIndex = 1;
+                }
+            }
+            else {
+                // If we see a `<`, set the sequence index to 1; useful for eg. `<</script>`.
+                this.sequenceIndex = Number(c === CharCodes.Lt);
+            }
+        }
+        stateCDATASequence(c) {
+            if (c === Sequences.Cdata[this.sequenceIndex]) {
+                if (++this.sequenceIndex === Sequences.Cdata.length) {
+                    this.state = State.InCommentLike;
+                    this.currentSequence = Sequences.CdataEnd;
+                    this.sequenceIndex = 0;
+                    this.sectionStart = this.index + 1;
+                }
+            }
+            else {
+                this.sequenceIndex = 0;
+                this.state = State.InDeclaration;
+                this.stateInDeclaration(c); // Reconsume the character
+            }
+        }
+        /**
+         * When we wait for one specific character, we can speed things up
+         * by skipping through the buffer until we find it.
+         *
+         * @returns Whether the character was found.
+         */
+        fastForwardTo(c) {
+            while (++this.index < this.buffer.length + this.offset) {
+                if (this.buffer.charCodeAt(this.index - this.offset) === c) {
+                    return true;
+                }
+            }
+            /*
+             * We increment the index at the end of the `parse` loop,
+             * so set it to `buffer.length - 1` here.
+             *
+             * TODO: Refactor `parse` to increment index before calling states.
+             */
+            this.index = this.buffer.length + this.offset - 1;
+            return false;
+        }
+        /**
+         * Comments and CDATA end with `-->` and `]]>`.
+         *
+         * Their common qualities are:
+         * - Their end sequences have a distinct character they start with.
+         * - That character is then repeated, so we have to check multiple repeats.
+         * - All characters but the start character of the sequence can be skipped.
+         */
+        stateInCommentLike(c) {
+            if (c === this.currentSequence[this.sequenceIndex]) {
+                if (++this.sequenceIndex === this.currentSequence.length) {
+                    if (this.currentSequence === Sequences.CdataEnd) {
+                        this.cbs.oncdata(this.sectionStart, this.index, 2);
+                    }
+                    else {
+                        this.cbs.oncomment(this.sectionStart, this.index, 2);
+                    }
+                    this.sequenceIndex = 0;
+                    this.sectionStart = this.index + 1;
+                    this.state = State.Text;
+                }
+            }
+            else if (this.sequenceIndex === 0) {
+                // Fast-forward to the first character of the sequence
+                if (this.fastForwardTo(this.currentSequence[0])) {
+                    this.sequenceIndex = 1;
+                }
+            }
+            else if (c !== this.currentSequence[this.sequenceIndex - 1]) {
+                // Allow long sequences, eg. --->, ]]]>
+                this.sequenceIndex = 0;
+            }
+        }
+        /**
+         * HTML only allows ASCII alpha characters (a-z and A-Z) at the beginning of a tag name.
+         *
+         * XML allows a lot more characters here (@see https://www.w3.org/TR/REC-xml/#NT-NameStartChar).
+         * We allow anything that wouldn't end the tag.
+         */
+        isTagStartChar(c) {
+            return this.xmlMode ? !isEndOfTagSection(c) : isASCIIAlpha(c);
+        }
+        startSpecial(sequence, offset) {
+            this.isSpecial = true;
+            this.currentSequence = sequence;
+            this.sequenceIndex = offset;
+            this.state = State.SpecialStartSequence;
+        }
+        stateBeforeTagName(c) {
+            if (c === CharCodes.ExclamationMark) {
+                this.state = State.BeforeDeclaration;
+                this.sectionStart = this.index + 1;
+            }
+            else if (c === CharCodes.Questionmark) {
+                this.state = State.InProcessingInstruction;
+                this.sectionStart = this.index + 1;
+            }
+            else if (this.isTagStartChar(c)) {
+                const lower = c | 0x20;
+                this.sectionStart = this.index;
+                if (this.xmlMode) {
+                    this.state = State.InTagName;
+                }
+                else if (lower === Sequences.ScriptEnd[2]) {
+                    this.state = State.BeforeSpecialS;
+                }
+                else if (lower === Sequences.TitleEnd[2] ||
+                    lower === Sequences.XmpEnd[2]) {
+                    this.state = State.BeforeSpecialT;
+                }
+                else {
+                    this.state = State.InTagName;
+                }
+            }
+            else if (c === CharCodes.Slash) {
+                this.state = State.BeforeClosingTagName;
+            }
+            else {
+                this.state = State.Text;
+                this.stateText(c);
+            }
+        }
+        stateInTagName(c) {
+            if (isEndOfTagSection(c)) {
+                this.cbs.onopentagname(this.sectionStart, this.index);
+                this.sectionStart = -1;
+                this.state = State.BeforeAttributeName;
+                this.stateBeforeAttributeName(c);
+            }
+        }
+        stateBeforeClosingTagName(c) {
+            if (isWhitespace(c)) ;
+            else if (c === CharCodes.Gt) {
+                this.state = State.Text;
+            }
+            else {
+                this.state = this.isTagStartChar(c)
+                    ? State.InClosingTagName
+                    : State.InSpecialComment;
+                this.sectionStart = this.index;
+            }
+        }
+        stateInClosingTagName(c) {
+            if (c === CharCodes.Gt || isWhitespace(c)) {
+                this.cbs.onclosetag(this.sectionStart, this.index);
+                this.sectionStart = -1;
+                this.state = State.AfterClosingTagName;
+                this.stateAfterClosingTagName(c);
+            }
+        }
+        stateAfterClosingTagName(c) {
+            // Skip everything until ">"
+            if (c === CharCodes.Gt || this.fastForwardTo(CharCodes.Gt)) {
+                this.state = State.Text;
+                this.sectionStart = this.index + 1;
+            }
+        }
+        stateBeforeAttributeName(c) {
+            if (c === CharCodes.Gt) {
+                this.cbs.onopentagend(this.index);
+                if (this.isSpecial) {
+                    this.state = State.InSpecialTag;
+                    this.sequenceIndex = 0;
+                }
+                else {
+                    this.state = State.Text;
+                }
+                this.sectionStart = this.index + 1;
+            }
+            else if (c === CharCodes.Slash) {
+                this.state = State.InSelfClosingTag;
+            }
+            else if (!isWhitespace(c)) {
+                this.state = State.InAttributeName;
+                this.sectionStart = this.index;
+            }
+        }
+        stateInSelfClosingTag(c) {
+            if (c === CharCodes.Gt) {
+                this.cbs.onselfclosingtag(this.index);
+                this.state = State.Text;
+                this.sectionStart = this.index + 1;
+                this.isSpecial = false; // Reset special state, in case of self-closing special tags
+            }
+            else if (!isWhitespace(c)) {
+                this.state = State.BeforeAttributeName;
+                this.stateBeforeAttributeName(c);
+            }
+        }
+        stateInAttributeName(c) {
+            if (c === CharCodes.Eq || isEndOfTagSection(c)) {
+                this.cbs.onattribname(this.sectionStart, this.index);
+                this.sectionStart = this.index;
+                this.state = State.AfterAttributeName;
+                this.stateAfterAttributeName(c);
+            }
+        }
+        stateAfterAttributeName(c) {
+            if (c === CharCodes.Eq) {
+                this.state = State.BeforeAttributeValue;
+            }
+            else if (c === CharCodes.Slash || c === CharCodes.Gt) {
+                this.cbs.onattribend(QuoteType.NoValue, this.sectionStart);
+                this.sectionStart = -1;
+                this.state = State.BeforeAttributeName;
+                this.stateBeforeAttributeName(c);
+            }
+            else if (!isWhitespace(c)) {
+                this.cbs.onattribend(QuoteType.NoValue, this.sectionStart);
+                this.state = State.InAttributeName;
+                this.sectionStart = this.index;
+            }
+        }
+        stateBeforeAttributeValue(c) {
+            if (c === CharCodes.DoubleQuote) {
+                this.state = State.InAttributeValueDq;
+                this.sectionStart = this.index + 1;
+            }
+            else if (c === CharCodes.SingleQuote) {
+                this.state = State.InAttributeValueSq;
+                this.sectionStart = this.index + 1;
+            }
+            else if (!isWhitespace(c)) {
+                this.sectionStart = this.index;
+                this.state = State.InAttributeValueNq;
+                this.stateInAttributeValueNoQuotes(c); // Reconsume token
+            }
+        }
+        handleInAttributeValue(c, quote) {
+            if (c === quote ||
+                (!this.decodeEntities && this.fastForwardTo(quote))) {
+                this.cbs.onattribdata(this.sectionStart, this.index);
+                this.sectionStart = -1;
+                this.cbs.onattribend(quote === CharCodes.DoubleQuote
+                    ? QuoteType.Double
+                    : QuoteType.Single, this.index + 1);
+                this.state = State.BeforeAttributeName;
+            }
+            else if (this.decodeEntities && c === CharCodes.Amp) {
+                this.startEntity();
+            }
+        }
+        stateInAttributeValueDoubleQuotes(c) {
+            this.handleInAttributeValue(c, CharCodes.DoubleQuote);
+        }
+        stateInAttributeValueSingleQuotes(c) {
+            this.handleInAttributeValue(c, CharCodes.SingleQuote);
+        }
+        stateInAttributeValueNoQuotes(c) {
+            if (isWhitespace(c) || c === CharCodes.Gt) {
+                this.cbs.onattribdata(this.sectionStart, this.index);
+                this.sectionStart = -1;
+                this.cbs.onattribend(QuoteType.Unquoted, this.index);
+                this.state = State.BeforeAttributeName;
+                this.stateBeforeAttributeName(c);
+            }
+            else if (this.decodeEntities && c === CharCodes.Amp) {
+                this.startEntity();
+            }
+        }
+        stateBeforeDeclaration(c) {
+            if (c === CharCodes.OpeningSquareBracket) {
+                this.state = State.CDATASequence;
+                this.sequenceIndex = 0;
+            }
+            else {
+                this.state =
+                    c === CharCodes.Dash
+                        ? State.BeforeComment
+                        : State.InDeclaration;
+            }
+        }
+        stateInDeclaration(c) {
+            if (c === CharCodes.Gt || this.fastForwardTo(CharCodes.Gt)) {
+                this.cbs.ondeclaration(this.sectionStart, this.index);
+                this.state = State.Text;
+                this.sectionStart = this.index + 1;
+            }
+        }
+        stateInProcessingInstruction(c) {
+            if (c === CharCodes.Gt || this.fastForwardTo(CharCodes.Gt)) {
+                this.cbs.onprocessinginstruction(this.sectionStart, this.index);
+                this.state = State.Text;
+                this.sectionStart = this.index + 1;
+            }
+        }
+        stateBeforeComment(c) {
+            if (c === CharCodes.Dash) {
+                this.state = State.InCommentLike;
+                this.currentSequence = Sequences.CommentEnd;
+                // Allow short comments (eg. <!-->)
+                this.sequenceIndex = 2;
+                this.sectionStart = this.index + 1;
+            }
+            else {
+                this.state = State.InDeclaration;
+            }
+        }
+        stateInSpecialComment(c) {
+            if (c === CharCodes.Gt || this.fastForwardTo(CharCodes.Gt)) {
+                this.cbs.oncomment(this.sectionStart, this.index, 0);
+                this.state = State.Text;
+                this.sectionStart = this.index + 1;
+            }
+        }
+        stateBeforeSpecialS(c) {
+            const lower = c | 0x20;
+            if (lower === Sequences.ScriptEnd[3]) {
+                this.startSpecial(Sequences.ScriptEnd, 4);
+            }
+            else if (lower === Sequences.StyleEnd[3]) {
+                this.startSpecial(Sequences.StyleEnd, 4);
+            }
+            else {
+                this.state = State.InTagName;
+                this.stateInTagName(c); // Consume the token again
+            }
+        }
+        stateBeforeSpecialT(c) {
+            const lower = c | 0x20;
+            switch (lower) {
+                case Sequences.TitleEnd[3]: {
+                    this.startSpecial(Sequences.TitleEnd, 4);
+                    break;
+                }
+                case Sequences.TextareaEnd[3]: {
+                    this.startSpecial(Sequences.TextareaEnd, 4);
+                    break;
+                }
+                case Sequences.XmpEnd[3]: {
+                    this.startSpecial(Sequences.XmpEnd, 4);
+                    break;
+                }
+                default: {
+                    this.state = State.InTagName;
+                    this.stateInTagName(c); // Consume the token again
+                }
+            }
+        }
+        startEntity() {
+            this.baseState = this.state;
+            this.state = State.InEntity;
+            this.entityStart = this.index;
+            this.entityDecoder.startEntity(this.xmlMode
+                ? decode_1$1.DecodingMode.Strict
+                : this.baseState === State.Text ||
+                    this.baseState === State.InSpecialTag
+                    ? decode_1$1.DecodingMode.Legacy
+                    : decode_1$1.DecodingMode.Attribute);
+        }
+        stateInEntity() {
+            const indexInBuffer = this.index - this.offset;
+            const length = this.entityDecoder.write(this.buffer, indexInBuffer);
+            // If `length` is positive, we are done with the entity.
+            if (length >= 0) {
+                this.state = this.baseState;
+                if (length === 0) {
+                    this.index -= 1;
+                }
+            }
+            else {
+                if (indexInBuffer < this.buffer.length &&
+                    this.buffer.charCodeAt(indexInBuffer) === CharCodes.Amp) {
+                    this.state = this.baseState;
+                    this.index -= 1;
+                    return;
+                }
+                // Mark buffer as consumed.
+                this.index = this.offset + this.buffer.length - 1;
+            }
+        }
+        /**
+         * Remove data that has already been consumed from the buffer.
+         */
+        cleanup() {
+            // If we are inside of text or attributes, emit what we already have.
+            if (this.running && this.sectionStart !== this.index) {
+                if (this.state === State.Text ||
+                    (this.state === State.InSpecialTag && this.sequenceIndex === 0)) {
+                    this.cbs.ontext(this.sectionStart, this.index);
+                    this.sectionStart = this.index;
+                }
+                else if (this.state === State.InAttributeValueDq ||
+                    this.state === State.InAttributeValueSq ||
+                    this.state === State.InAttributeValueNq) {
+                    this.cbs.onattribdata(this.sectionStart, this.index);
+                    this.sectionStart = this.index;
+                }
+            }
+        }
+        shouldContinue() {
+            return this.index < this.buffer.length + this.offset && this.running;
+        }
+        /**
+         * Iterates through the buffer, calling the function corresponding to the current state.
+         *
+         * States that are more likely to be hit are higher up, as a performance improvement.
+         */
+        parse() {
+            while (this.shouldContinue()) {
+                const c = this.buffer.charCodeAt(this.index - this.offset);
+                switch (this.state) {
+                    case State.Text: {
+                        this.stateText(c);
+                        break;
+                    }
+                    case State.SpecialStartSequence: {
+                        this.stateSpecialStartSequence(c);
+                        break;
+                    }
+                    case State.InSpecialTag: {
+                        this.stateInSpecialTag(c);
+                        break;
+                    }
+                    case State.CDATASequence: {
+                        this.stateCDATASequence(c);
+                        break;
+                    }
+                    case State.InAttributeValueDq: {
+                        this.stateInAttributeValueDoubleQuotes(c);
+                        break;
+                    }
+                    case State.InAttributeName: {
+                        this.stateInAttributeName(c);
+                        break;
+                    }
+                    case State.InCommentLike: {
+                        this.stateInCommentLike(c);
+                        break;
+                    }
+                    case State.InSpecialComment: {
+                        this.stateInSpecialComment(c);
+                        break;
+                    }
+                    case State.BeforeAttributeName: {
+                        this.stateBeforeAttributeName(c);
+                        break;
+                    }
+                    case State.InTagName: {
+                        this.stateInTagName(c);
+                        break;
+                    }
+                    case State.InClosingTagName: {
+                        this.stateInClosingTagName(c);
+                        break;
+                    }
+                    case State.BeforeTagName: {
+                        this.stateBeforeTagName(c);
+                        break;
+                    }
+                    case State.AfterAttributeName: {
+                        this.stateAfterAttributeName(c);
+                        break;
+                    }
+                    case State.InAttributeValueSq: {
+                        this.stateInAttributeValueSingleQuotes(c);
+                        break;
+                    }
+                    case State.BeforeAttributeValue: {
+                        this.stateBeforeAttributeValue(c);
+                        break;
+                    }
+                    case State.BeforeClosingTagName: {
+                        this.stateBeforeClosingTagName(c);
+                        break;
+                    }
+                    case State.AfterClosingTagName: {
+                        this.stateAfterClosingTagName(c);
+                        break;
+                    }
+                    case State.BeforeSpecialS: {
+                        this.stateBeforeSpecialS(c);
+                        break;
+                    }
+                    case State.BeforeSpecialT: {
+                        this.stateBeforeSpecialT(c);
+                        break;
+                    }
+                    case State.InAttributeValueNq: {
+                        this.stateInAttributeValueNoQuotes(c);
+                        break;
+                    }
+                    case State.InSelfClosingTag: {
+                        this.stateInSelfClosingTag(c);
+                        break;
+                    }
+                    case State.InDeclaration: {
+                        this.stateInDeclaration(c);
+                        break;
+                    }
+                    case State.BeforeDeclaration: {
+                        this.stateBeforeDeclaration(c);
+                        break;
+                    }
+                    case State.BeforeComment: {
+                        this.stateBeforeComment(c);
+                        break;
+                    }
+                    case State.InProcessingInstruction: {
+                        this.stateInProcessingInstruction(c);
+                        break;
+                    }
+                    case State.InEntity: {
+                        this.stateInEntity();
+                        break;
+                    }
+                }
+                this.index++;
+            }
+            this.cleanup();
+        }
+        finish() {
+            if (this.state === State.InEntity) {
+                this.entityDecoder.end();
+                this.state = this.baseState;
+            }
+            this.handleTrailingData();
+            this.cbs.onend();
+        }
+        /** Handle any trailing data. */
+        handleTrailingData() {
+            const endIndex = this.buffer.length + this.offset;
+            // If there is no remaining data, we are done.
+            if (this.sectionStart >= endIndex) {
+                return;
+            }
+            if (this.state === State.InCommentLike) {
+                if (this.currentSequence === Sequences.CdataEnd) {
+                    this.cbs.oncdata(this.sectionStart, endIndex, 0);
+                }
+                else {
+                    this.cbs.oncomment(this.sectionStart, endIndex, 0);
+                }
+            }
+            else if (this.state === State.InTagName ||
+                this.state === State.BeforeAttributeName ||
+                this.state === State.BeforeAttributeValue ||
+                this.state === State.AfterAttributeName ||
+                this.state === State.InAttributeName ||
+                this.state === State.InAttributeValueSq ||
+                this.state === State.InAttributeValueDq ||
+                this.state === State.InAttributeValueNq ||
+                this.state === State.InClosingTagName) ;
+            else {
+                this.cbs.ontext(this.sectionStart, endIndex);
+            }
+        }
+        emitCodePoint(cp, consumed) {
+            if (this.baseState !== State.Text &&
+                this.baseState !== State.InSpecialTag) {
+                if (this.sectionStart < this.entityStart) {
+                    this.cbs.onattribdata(this.sectionStart, this.entityStart);
+                }
+                this.sectionStart = this.entityStart + consumed;
+                this.index = this.sectionStart - 1;
+                this.cbs.onattribentity(cp);
+            }
+            else {
+                if (this.sectionStart < this.entityStart) {
+                    this.cbs.ontext(this.sectionStart, this.entityStart);
+                }
+                this.sectionStart = this.entityStart + consumed;
+                this.index = this.sectionStart - 1;
+                this.cbs.ontextentity(cp, this.sectionStart);
+            }
+        }
+    }
+    Tokenizer$1.default = Tokenizer;
+
+    var __createBinding$1 = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        var desc = Object.getOwnPropertyDescriptor(m, k);
+        if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+          desc = { enumerable: true, get: function() { return m[k]; } };
+        }
+        Object.defineProperty(o, k2, desc);
+    }) : (function(o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        o[k2] = m[k];
+    }));
+    var __setModuleDefault$1 = (commonjsGlobal && commonjsGlobal.__setModuleDefault) || (Object.create ? (function(o, v) {
+        Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+        o["default"] = v;
+    });
+    var __importStar$1 = (commonjsGlobal && commonjsGlobal.__importStar) || (function () {
+        var ownKeys = function(o) {
+            ownKeys = Object.getOwnPropertyNames || function (o) {
+                var ar = [];
+                for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+                return ar;
+            };
+            return ownKeys(o);
+        };
+        return function (mod) {
+            if (mod && mod.__esModule) return mod;
+            var result = {};
+            if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding$1(result, mod, k[i]);
+            __setModuleDefault$1(result, mod);
+            return result;
+        };
+    })();
+    Object.defineProperty(Parser$3, "__esModule", { value: true });
+    Parser$3.Parser = void 0;
+    const Tokenizer_js_1 = __importStar$1(Tokenizer$1);
+    const decode_1 = decode$1;
+    const formTags = new Set([
+        "input",
+        "option",
+        "optgroup",
+        "select",
+        "button",
+        "datalist",
+        "textarea",
+    ]);
+    const pTag = new Set(["p"]);
+    const tableSectionTags = new Set(["thead", "tbody"]);
+    const ddtTags = new Set(["dd", "dt"]);
+    const rtpTags = new Set(["rt", "rp"]);
+    const openImpliesClose = new Map([
+        ["tr", new Set(["tr", "th", "td"])],
+        ["th", new Set(["th"])],
+        ["td", new Set(["thead", "th", "td"])],
+        ["body", new Set(["head", "link", "script"])],
+        ["li", new Set(["li"])],
+        ["p", pTag],
+        ["h1", pTag],
+        ["h2", pTag],
+        ["h3", pTag],
+        ["h4", pTag],
+        ["h5", pTag],
+        ["h6", pTag],
+        ["select", formTags],
+        ["input", formTags],
+        ["output", formTags],
+        ["button", formTags],
+        ["datalist", formTags],
+        ["textarea", formTags],
+        ["option", new Set(["option"])],
+        ["optgroup", new Set(["optgroup", "option"])],
+        ["dd", ddtTags],
+        ["dt", ddtTags],
+        ["address", pTag],
+        ["article", pTag],
+        ["aside", pTag],
+        ["blockquote", pTag],
+        ["details", pTag],
+        ["div", pTag],
+        ["dl", pTag],
+        ["fieldset", pTag],
+        ["figcaption", pTag],
+        ["figure", pTag],
+        ["footer", pTag],
+        ["form", pTag],
+        ["header", pTag],
+        ["hr", pTag],
+        ["main", pTag],
+        ["nav", pTag],
+        ["ol", pTag],
+        ["pre", pTag],
+        ["section", pTag],
+        ["table", pTag],
+        ["ul", pTag],
+        ["rt", rtpTags],
+        ["rp", rtpTags],
+        ["tbody", tableSectionTags],
+        ["tfoot", tableSectionTags],
+    ]);
+    const voidElements = new Set([
+        "area",
+        "base",
+        "basefont",
+        "br",
+        "col",
+        "command",
+        "embed",
+        "frame",
+        "hr",
+        "img",
+        "input",
+        "isindex",
+        "keygen",
+        "link",
+        "meta",
+        "param",
+        "source",
+        "track",
+        "wbr",
+    ]);
+    const foreignContextElements = new Set(["math", "svg"]);
+    const htmlIntegrationElements = new Set([
+        "mi",
+        "mo",
+        "mn",
+        "ms",
+        "mtext",
+        "annotation-xml",
+        "foreignobject",
+        "desc",
+        "title",
+    ]);
+    const reNameEnd = /\s|\//;
+    let Parser$2 = class Parser {
+        constructor(cbs, options = {}) {
+            var _a, _b, _c, _d, _e, _f;
+            this.options = options;
+            /** The start index of the last event. */
+            this.startIndex = 0;
+            /** The end index of the last event. */
+            this.endIndex = 0;
+            /**
+             * Store the start index of the current open tag,
+             * so we can update the start index for attributes.
+             */
+            this.openTagStart = 0;
+            this.tagname = "";
+            this.attribname = "";
+            this.attribvalue = "";
+            this.attribs = null;
+            this.stack = [];
+            this.buffers = [];
+            this.bufferOffset = 0;
+            /** The index of the last written buffer. Used when resuming after a `pause()`. */
+            this.writeIndex = 0;
+            /** Indicates whether the parser has finished running / `.end` has been called. */
+            this.ended = false;
+            this.cbs = cbs !== null && cbs !== void 0 ? cbs : {};
+            this.htmlMode = !this.options.xmlMode;
+            this.lowerCaseTagNames = (_a = options.lowerCaseTags) !== null && _a !== void 0 ? _a : this.htmlMode;
+            this.lowerCaseAttributeNames =
+                (_b = options.lowerCaseAttributeNames) !== null && _b !== void 0 ? _b : this.htmlMode;
+            this.recognizeSelfClosing =
+                (_c = options.recognizeSelfClosing) !== null && _c !== void 0 ? _c : !this.htmlMode;
+            this.tokenizer = new ((_d = options.Tokenizer) !== null && _d !== void 0 ? _d : Tokenizer_js_1.default)(this.options, this);
+            this.foreignContext = [!this.htmlMode];
+            (_f = (_e = this.cbs).onparserinit) === null || _f === void 0 ? void 0 : _f.call(_e, this);
+        }
+        // Tokenizer event handlers
+        /** @internal */
+        ontext(start, endIndex) {
+            var _a, _b;
+            const data = this.getSlice(start, endIndex);
+            this.endIndex = endIndex - 1;
+            (_b = (_a = this.cbs).ontext) === null || _b === void 0 ? void 0 : _b.call(_a, data);
+            this.startIndex = endIndex;
+        }
+        /** @internal */
+        ontextentity(cp, endIndex) {
+            var _a, _b;
+            this.endIndex = endIndex - 1;
+            (_b = (_a = this.cbs).ontext) === null || _b === void 0 ? void 0 : _b.call(_a, (0, decode_1.fromCodePoint)(cp));
+            this.startIndex = endIndex;
+        }
+        /**
+         * Checks if the current tag is a void element. Override this if you want
+         * to specify your own additional void elements.
+         */
+        isVoidElement(name) {
+            return this.htmlMode && voidElements.has(name);
+        }
+        /** @internal */
+        onopentagname(start, endIndex) {
+            this.endIndex = endIndex;
+            let name = this.getSlice(start, endIndex);
+            if (this.lowerCaseTagNames) {
+                name = name.toLowerCase();
+            }
+            this.emitOpenTag(name);
+        }
+        emitOpenTag(name) {
+            var _a, _b, _c, _d;
+            this.openTagStart = this.startIndex;
+            this.tagname = name;
+            const impliesClose = this.htmlMode && openImpliesClose.get(name);
+            if (impliesClose) {
+                while (this.stack.length > 0 && impliesClose.has(this.stack[0])) {
+                    const element = this.stack.shift();
+                    (_b = (_a = this.cbs).onclosetag) === null || _b === void 0 ? void 0 : _b.call(_a, element, true);
+                }
+            }
+            if (!this.isVoidElement(name)) {
+                this.stack.unshift(name);
+                if (this.htmlMode) {
+                    if (foreignContextElements.has(name)) {
+                        this.foreignContext.unshift(true);
+                    }
+                    else if (htmlIntegrationElements.has(name)) {
+                        this.foreignContext.unshift(false);
+                    }
+                }
+            }
+            (_d = (_c = this.cbs).onopentagname) === null || _d === void 0 ? void 0 : _d.call(_c, name);
+            if (this.cbs.onopentag)
+                this.attribs = {};
+        }
+        endOpenTag(isImplied) {
+            var _a, _b;
+            this.startIndex = this.openTagStart;
+            if (this.attribs) {
+                (_b = (_a = this.cbs).onopentag) === null || _b === void 0 ? void 0 : _b.call(_a, this.tagname, this.attribs, isImplied);
+                this.attribs = null;
+            }
+            if (this.cbs.onclosetag && this.isVoidElement(this.tagname)) {
+                this.cbs.onclosetag(this.tagname, true);
+            }
+            this.tagname = "";
+        }
+        /** @internal */
+        onopentagend(endIndex) {
+            this.endIndex = endIndex;
+            this.endOpenTag(false);
+            // Set `startIndex` for next node
+            this.startIndex = endIndex + 1;
+        }
+        /** @internal */
+        onclosetag(start, endIndex) {
+            var _a, _b, _c, _d, _e, _f, _g, _h;
+            this.endIndex = endIndex;
+            let name = this.getSlice(start, endIndex);
+            if (this.lowerCaseTagNames) {
+                name = name.toLowerCase();
+            }
+            if (this.htmlMode &&
+                (foreignContextElements.has(name) ||
+                    htmlIntegrationElements.has(name))) {
+                this.foreignContext.shift();
+            }
+            if (!this.isVoidElement(name)) {
+                const pos = this.stack.indexOf(name);
+                if (pos !== -1) {
+                    for (let index = 0; index <= pos; index++) {
+                        const element = this.stack.shift();
+                        // We know the stack has sufficient elements.
+                        (_b = (_a = this.cbs).onclosetag) === null || _b === void 0 ? void 0 : _b.call(_a, element, index !== pos);
+                    }
+                }
+                else if (this.htmlMode && name === "p") {
+                    // Implicit open before close
+                    this.emitOpenTag("p");
+                    this.closeCurrentTag(true);
+                }
+            }
+            else if (this.htmlMode && name === "br") {
+                // We can't use `emitOpenTag` for implicit open, as `br` would be implicitly closed.
+                (_d = (_c = this.cbs).onopentagname) === null || _d === void 0 ? void 0 : _d.call(_c, "br");
+                (_f = (_e = this.cbs).onopentag) === null || _f === void 0 ? void 0 : _f.call(_e, "br", {}, true);
+                (_h = (_g = this.cbs).onclosetag) === null || _h === void 0 ? void 0 : _h.call(_g, "br", false);
+            }
+            // Set `startIndex` for next node
+            this.startIndex = endIndex + 1;
+        }
+        /** @internal */
+        onselfclosingtag(endIndex) {
+            this.endIndex = endIndex;
+            if (this.recognizeSelfClosing || this.foreignContext[0]) {
+                this.closeCurrentTag(false);
+                // Set `startIndex` for next node
+                this.startIndex = endIndex + 1;
+            }
+            else {
+                // Ignore the fact that the tag is self-closing.
+                this.onopentagend(endIndex);
+            }
+        }
+        closeCurrentTag(isOpenImplied) {
+            var _a, _b;
+            const name = this.tagname;
+            this.endOpenTag(isOpenImplied);
+            // Self-closing tags will be on the top of the stack
+            if (this.stack[0] === name) {
+                // If the opening tag isn't implied, the closing tag has to be implied.
+                (_b = (_a = this.cbs).onclosetag) === null || _b === void 0 ? void 0 : _b.call(_a, name, !isOpenImplied);
+                this.stack.shift();
+            }
+        }
+        /** @internal */
+        onattribname(start, endIndex) {
+            this.startIndex = start;
+            const name = this.getSlice(start, endIndex);
+            this.attribname = this.lowerCaseAttributeNames
+                ? name.toLowerCase()
+                : name;
+        }
+        /** @internal */
+        onattribdata(start, endIndex) {
+            this.attribvalue += this.getSlice(start, endIndex);
+        }
+        /** @internal */
+        onattribentity(cp) {
+            this.attribvalue += (0, decode_1.fromCodePoint)(cp);
+        }
+        /** @internal */
+        onattribend(quote, endIndex) {
+            var _a, _b;
+            this.endIndex = endIndex;
+            (_b = (_a = this.cbs).onattribute) === null || _b === void 0 ? void 0 : _b.call(_a, this.attribname, this.attribvalue, quote === Tokenizer_js_1.QuoteType.Double
+                ? '"'
+                : quote === Tokenizer_js_1.QuoteType.Single
+                    ? "'"
+                    : quote === Tokenizer_js_1.QuoteType.NoValue
+                        ? undefined
+                        : null);
+            if (this.attribs &&
+                !Object.prototype.hasOwnProperty.call(this.attribs, this.attribname)) {
+                this.attribs[this.attribname] = this.attribvalue;
+            }
+            this.attribvalue = "";
+        }
+        getInstructionName(value) {
+            const index = value.search(reNameEnd);
+            let name = index < 0 ? value : value.substr(0, index);
+            if (this.lowerCaseTagNames) {
+                name = name.toLowerCase();
+            }
+            return name;
+        }
+        /** @internal */
+        ondeclaration(start, endIndex) {
+            this.endIndex = endIndex;
+            const value = this.getSlice(start, endIndex);
+            if (this.cbs.onprocessinginstruction) {
+                const name = this.getInstructionName(value);
+                this.cbs.onprocessinginstruction(`!${name}`, `!${value}`);
+            }
+            // Set `startIndex` for next node
+            this.startIndex = endIndex + 1;
+        }
+        /** @internal */
+        onprocessinginstruction(start, endIndex) {
+            this.endIndex = endIndex;
+            const value = this.getSlice(start, endIndex);
+            if (this.cbs.onprocessinginstruction) {
+                const name = this.getInstructionName(value);
+                this.cbs.onprocessinginstruction(`?${name}`, `?${value}`);
+            }
+            // Set `startIndex` for next node
+            this.startIndex = endIndex + 1;
+        }
+        /** @internal */
+        oncomment(start, endIndex, offset) {
+            var _a, _b, _c, _d;
+            this.endIndex = endIndex;
+            (_b = (_a = this.cbs).oncomment) === null || _b === void 0 ? void 0 : _b.call(_a, this.getSlice(start, endIndex - offset));
+            (_d = (_c = this.cbs).oncommentend) === null || _d === void 0 ? void 0 : _d.call(_c);
+            // Set `startIndex` for next node
+            this.startIndex = endIndex + 1;
+        }
+        /** @internal */
+        oncdata(start, endIndex, offset) {
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+            this.endIndex = endIndex;
+            const value = this.getSlice(start, endIndex - offset);
+            if (!this.htmlMode || this.options.recognizeCDATA) {
+                (_b = (_a = this.cbs).oncdatastart) === null || _b === void 0 ? void 0 : _b.call(_a);
+                (_d = (_c = this.cbs).ontext) === null || _d === void 0 ? void 0 : _d.call(_c, value);
+                (_f = (_e = this.cbs).oncdataend) === null || _f === void 0 ? void 0 : _f.call(_e);
+            }
+            else {
+                (_h = (_g = this.cbs).oncomment) === null || _h === void 0 ? void 0 : _h.call(_g, `[CDATA[${value}]]`);
+                (_k = (_j = this.cbs).oncommentend) === null || _k === void 0 ? void 0 : _k.call(_j);
+            }
+            // Set `startIndex` for next node
+            this.startIndex = endIndex + 1;
+        }
+        /** @internal */
+        onend() {
+            var _a, _b;
+            if (this.cbs.onclosetag) {
+                // Set the end index for all remaining tags
+                this.endIndex = this.startIndex;
+                for (let index = 0; index < this.stack.length; index++) {
+                    this.cbs.onclosetag(this.stack[index], true);
+                }
+            }
+            (_b = (_a = this.cbs).onend) === null || _b === void 0 ? void 0 : _b.call(_a);
+        }
+        /**
+         * Resets the parser to a blank state, ready to parse a new HTML document
+         */
+        reset() {
+            var _a, _b, _c, _d;
+            (_b = (_a = this.cbs).onreset) === null || _b === void 0 ? void 0 : _b.call(_a);
+            this.tokenizer.reset();
+            this.tagname = "";
+            this.attribname = "";
+            this.attribs = null;
+            this.stack.length = 0;
+            this.startIndex = 0;
+            this.endIndex = 0;
+            (_d = (_c = this.cbs).onparserinit) === null || _d === void 0 ? void 0 : _d.call(_c, this);
+            this.buffers.length = 0;
+            this.foreignContext.length = 0;
+            this.foreignContext.unshift(!this.htmlMode);
+            this.bufferOffset = 0;
+            this.writeIndex = 0;
+            this.ended = false;
+        }
+        /**
+         * Resets the parser, then parses a complete document and
+         * pushes it to the handler.
+         *
+         * @param data Document to parse.
+         */
+        parseComplete(data) {
+            this.reset();
+            this.end(data);
+        }
+        getSlice(start, end) {
+            while (start - this.bufferOffset >= this.buffers[0].length) {
+                this.shiftBuffer();
+            }
+            let slice = this.buffers[0].slice(start - this.bufferOffset, end - this.bufferOffset);
+            while (end - this.bufferOffset > this.buffers[0].length) {
+                this.shiftBuffer();
+                slice += this.buffers[0].slice(0, end - this.bufferOffset);
+            }
+            return slice;
+        }
+        shiftBuffer() {
+            this.bufferOffset += this.buffers[0].length;
+            this.writeIndex--;
+            this.buffers.shift();
+        }
+        /**
+         * Parses a chunk of data and calls the corresponding callbacks.
+         *
+         * @param chunk Chunk to parse.
+         */
+        write(chunk) {
+            var _a, _b;
+            if (this.ended) {
+                (_b = (_a = this.cbs).onerror) === null || _b === void 0 ? void 0 : _b.call(_a, new Error(".write() after done!"));
+                return;
+            }
+            this.buffers.push(chunk);
+            if (this.tokenizer.running) {
+                this.tokenizer.write(chunk);
+                this.writeIndex++;
+            }
+        }
+        /**
+         * Parses the end of the buffer and clears the stack, calls onend.
+         *
+         * @param chunk Optional final chunk to parse.
+         */
+        end(chunk) {
+            var _a, _b;
+            if (this.ended) {
+                (_b = (_a = this.cbs).onerror) === null || _b === void 0 ? void 0 : _b.call(_a, new Error(".end() after done!"));
+                return;
+            }
+            if (chunk)
+                this.write(chunk);
+            this.ended = true;
+            this.tokenizer.end();
+        }
+        /**
+         * Pauses parsing. The parser won't emit events until `resume` is called.
+         */
+        pause() {
+            this.tokenizer.pause();
+        }
+        /**
+         * Resumes parsing after `pause` was called.
+         */
+        resume() {
+            this.tokenizer.resume();
+            while (this.tokenizer.running &&
+                this.writeIndex < this.buffers.length) {
+                this.tokenizer.write(this.buffers[this.writeIndex++]);
+            }
+            if (this.ended)
+                this.tokenizer.end();
+        }
+        /**
+         * Alias of `write`, for backwards compatibility.
+         *
+         * @param chunk Chunk to parse.
+         * @deprecated
+         */
+        parseChunk(chunk) {
+            this.write(chunk);
+        }
+        /**
+         * Alias of `end`, for backwards compatibility.
+         *
+         * @param chunk Optional final chunk to parse.
+         * @deprecated
+         */
+        done(chunk) {
+            this.end(chunk);
+        }
+    };
+    Parser$3.Parser = Parser$2;
+
+    var lib$4 = {};
+
+    var lib$3 = {};
+
+    (function (exports) {
+    	Object.defineProperty(exports, "__esModule", { value: true });
+    	exports.Doctype = exports.CDATA = exports.Tag = exports.Style = exports.Script = exports.Comment = exports.Directive = exports.Text = exports.Root = exports.isTag = exports.ElementType = void 0;
+    	/** Types of elements found in htmlparser2's DOM */
+    	var ElementType;
+    	(function (ElementType) {
+    	    /** Type for the root element of a document */
+    	    ElementType["Root"] = "root";
+    	    /** Type for Text */
+    	    ElementType["Text"] = "text";
+    	    /** Type for <? ... ?> */
+    	    ElementType["Directive"] = "directive";
+    	    /** Type for <!-- ... --> */
+    	    ElementType["Comment"] = "comment";
+    	    /** Type for <script> tags */
+    	    ElementType["Script"] = "script";
+    	    /** Type for <style> tags */
+    	    ElementType["Style"] = "style";
+    	    /** Type for Any tag */
+    	    ElementType["Tag"] = "tag";
+    	    /** Type for <![CDATA[ ... ]]> */
+    	    ElementType["CDATA"] = "cdata";
+    	    /** Type for <!doctype ...> */
+    	    ElementType["Doctype"] = "doctype";
+    	})(ElementType = exports.ElementType || (exports.ElementType = {}));
+    	/**
+    	 * Tests whether an element is a tag or not.
+    	 *
+    	 * @param elem Element to test
+    	 */
+    	function isTag(elem) {
+    	    return (elem.type === ElementType.Tag ||
+    	        elem.type === ElementType.Script ||
+    	        elem.type === ElementType.Style);
+    	}
+    	exports.isTag = isTag;
+    	// Exports for backwards compatibility
+    	/** Type for the root element of a document */
+    	exports.Root = ElementType.Root;
+    	/** Type for Text */
+    	exports.Text = ElementType.Text;
+    	/** Type for <? ... ?> */
+    	exports.Directive = ElementType.Directive;
+    	/** Type for <!-- ... --> */
+    	exports.Comment = ElementType.Comment;
+    	/** Type for <script> tags */
+    	exports.Script = ElementType.Script;
+    	/** Type for <style> tags */
+    	exports.Style = ElementType.Style;
+    	/** Type for Any tag */
+    	exports.Tag = ElementType.Tag;
+    	/** Type for <![CDATA[ ... ]]> */
+    	exports.CDATA = ElementType.CDATA;
+    	/** Type for <!doctype ...> */
+    	exports.Doctype = ElementType.Doctype; 
+    } (lib$3));
+
+    var node$1 = {};
+
+    var __extends = (commonjsGlobal && commonjsGlobal.__extends) || (function () {
+        var extendStatics = function (d, b) {
+            extendStatics = Object.setPrototypeOf ||
+                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+            return extendStatics(d, b);
+        };
+        return function (d, b) {
+            if (typeof b !== "function" && b !== null)
+                throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+            extendStatics(d, b);
+            function __() { this.constructor = d; }
+            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+        };
+    })();
+    var __assign$1 = (commonjsGlobal && commonjsGlobal.__assign) || function () {
+        __assign$1 = Object.assign || function(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                    t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign$1.apply(this, arguments);
+    };
+    Object.defineProperty(node$1, "__esModule", { value: true });
+    node$1.cloneNode = node$1.hasChildren = node$1.isDocument = node$1.isDirective = node$1.isComment = node$1.isText = node$1.isCDATA = node$1.isTag = node$1.Element = node$1.Document = node$1.CDATA = node$1.NodeWithChildren = node$1.ProcessingInstruction = node$1.Comment = node$1.Text = node$1.DataNode = node$1.Node = void 0;
+    var domelementtype_1$1 = lib$3;
+    /**
+     * This object will be used as the prototype for Nodes when creating a
+     * DOM-Level-1-compliant structure.
+     */
+    var Node$5 = /** @class */ (function () {
+        function Node() {
+            /** Parent of the node */
+            this.parent = null;
+            /** Previous sibling */
+            this.prev = null;
+            /** Next sibling */
+            this.next = null;
+            /** The start index of the node. Requires `withStartIndices` on the handler to be `true. */
+            this.startIndex = null;
+            /** The end index of the node. Requires `withEndIndices` on the handler to be `true. */
+            this.endIndex = null;
+        }
+        Object.defineProperty(Node.prototype, "parentNode", {
+            // Read-write aliases for properties
+            /**
+             * Same as {@link parent}.
+             * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+             */
+            get: function () {
+                return this.parent;
+            },
+            set: function (parent) {
+                this.parent = parent;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Node.prototype, "previousSibling", {
+            /**
+             * Same as {@link prev}.
+             * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+             */
+            get: function () {
+                return this.prev;
+            },
+            set: function (prev) {
+                this.prev = prev;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Node.prototype, "nextSibling", {
+            /**
+             * Same as {@link next}.
+             * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+             */
+            get: function () {
+                return this.next;
+            },
+            set: function (next) {
+                this.next = next;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        /**
+         * Clone this node, and optionally its children.
+         *
+         * @param recursive Clone child nodes as well.
+         * @returns A clone of the node.
+         */
+        Node.prototype.cloneNode = function (recursive) {
+            if (recursive === void 0) { recursive = false; }
+            return cloneNode$1(this, recursive);
+        };
+        return Node;
+    }());
+    node$1.Node = Node$5;
+    /**
+     * A node that contains some data.
+     */
+    var DataNode = /** @class */ (function (_super) {
+        __extends(DataNode, _super);
+        /**
+         * @param data The content of the data node
+         */
+        function DataNode(data) {
+            var _this = _super.call(this) || this;
+            _this.data = data;
+            return _this;
+        }
+        Object.defineProperty(DataNode.prototype, "nodeValue", {
+            /**
+             * Same as {@link data}.
+             * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+             */
+            get: function () {
+                return this.data;
+            },
+            set: function (data) {
+                this.data = data;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        return DataNode;
+    }(Node$5));
+    node$1.DataNode = DataNode;
+    /**
+     * Text within the document.
+     */
+    var Text = /** @class */ (function (_super) {
+        __extends(Text, _super);
+        function Text() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.type = domelementtype_1$1.ElementType.Text;
+            return _this;
+        }
+        Object.defineProperty(Text.prototype, "nodeType", {
+            get: function () {
+                return 3;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        return Text;
+    }(DataNode));
+    node$1.Text = Text;
+    /**
+     * Comments within the document.
+     */
+    var Comment$5 = /** @class */ (function (_super) {
+        __extends(Comment, _super);
+        function Comment() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.type = domelementtype_1$1.ElementType.Comment;
+            return _this;
+        }
+        Object.defineProperty(Comment.prototype, "nodeType", {
+            get: function () {
+                return 8;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        return Comment;
+    }(DataNode));
+    node$1.Comment = Comment$5;
+    /**
+     * Processing instructions, including doc types.
+     */
+    var ProcessingInstruction = /** @class */ (function (_super) {
+        __extends(ProcessingInstruction, _super);
+        function ProcessingInstruction(name, data) {
+            var _this = _super.call(this, data) || this;
+            _this.name = name;
+            _this.type = domelementtype_1$1.ElementType.Directive;
+            return _this;
+        }
+        Object.defineProperty(ProcessingInstruction.prototype, "nodeType", {
+            get: function () {
+                return 1;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        return ProcessingInstruction;
+    }(DataNode));
+    node$1.ProcessingInstruction = ProcessingInstruction;
+    /**
+     * A `Node` that can have children.
+     */
+    var NodeWithChildren = /** @class */ (function (_super) {
+        __extends(NodeWithChildren, _super);
+        /**
+         * @param children Children of the node. Only certain node types can have children.
+         */
+        function NodeWithChildren(children) {
+            var _this = _super.call(this) || this;
+            _this.children = children;
+            return _this;
+        }
+        Object.defineProperty(NodeWithChildren.prototype, "firstChild", {
+            // Aliases
+            /** First child of the node. */
+            get: function () {
+                var _a;
+                return (_a = this.children[0]) !== null && _a !== void 0 ? _a : null;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(NodeWithChildren.prototype, "lastChild", {
+            /** Last child of the node. */
+            get: function () {
+                return this.children.length > 0
+                    ? this.children[this.children.length - 1]
+                    : null;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(NodeWithChildren.prototype, "childNodes", {
+            /**
+             * Same as {@link children}.
+             * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+             */
+            get: function () {
+                return this.children;
+            },
+            set: function (children) {
+                this.children = children;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        return NodeWithChildren;
+    }(Node$5));
+    node$1.NodeWithChildren = NodeWithChildren;
+    var CDATA = /** @class */ (function (_super) {
+        __extends(CDATA, _super);
+        function CDATA() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.type = domelementtype_1$1.ElementType.CDATA;
+            return _this;
+        }
+        Object.defineProperty(CDATA.prototype, "nodeType", {
+            get: function () {
+                return 4;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        return CDATA;
+    }(NodeWithChildren));
+    node$1.CDATA = CDATA;
+    /**
+     * The root node of the document.
+     */
+    var Document$4 = /** @class */ (function (_super) {
+        __extends(Document, _super);
+        function Document() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.type = domelementtype_1$1.ElementType.Root;
+            return _this;
+        }
+        Object.defineProperty(Document.prototype, "nodeType", {
+            get: function () {
+                return 9;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        return Document;
+    }(NodeWithChildren));
+    node$1.Document = Document$4;
+    /**
+     * An element within the DOM.
+     */
+    var Element = /** @class */ (function (_super) {
+        __extends(Element, _super);
+        /**
+         * @param name Name of the tag, eg. `div`, `span`.
+         * @param attribs Object mapping attribute names to attribute values.
+         * @param children Children of the node.
+         */
+        function Element(name, attribs, children, type) {
+            if (children === void 0) { children = []; }
+            if (type === void 0) { type = name === "script"
+                ? domelementtype_1$1.ElementType.Script
+                : name === "style"
+                    ? domelementtype_1$1.ElementType.Style
+                    : domelementtype_1$1.ElementType.Tag; }
+            var _this = _super.call(this, children) || this;
+            _this.name = name;
+            _this.attribs = attribs;
+            _this.type = type;
+            return _this;
+        }
+        Object.defineProperty(Element.prototype, "nodeType", {
+            get: function () {
+                return 1;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Element.prototype, "tagName", {
+            // DOM Level 1 aliases
+            /**
+             * Same as {@link name}.
+             * [DOM spec](https://dom.spec.whatwg.org)-compatible alias.
+             */
+            get: function () {
+                return this.name;
+            },
+            set: function (name) {
+                this.name = name;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Element.prototype, "attributes", {
+            get: function () {
+                var _this = this;
+                return Object.keys(this.attribs).map(function (name) {
+                    var _a, _b;
+                    return ({
+                        name: name,
+                        value: _this.attribs[name],
+                        namespace: (_a = _this["x-attribsNamespace"]) === null || _a === void 0 ? void 0 : _a[name],
+                        prefix: (_b = _this["x-attribsPrefix"]) === null || _b === void 0 ? void 0 : _b[name],
+                    });
+                });
+            },
+            enumerable: false,
+            configurable: true
+        });
+        return Element;
+    }(NodeWithChildren));
+    node$1.Element = Element;
+    /**
+     * @param node Node to check.
+     * @returns `true` if the node is a `Element`, `false` otherwise.
+     */
+    function isTag(node) {
+        return (0, domelementtype_1$1.isTag)(node);
+    }
+    node$1.isTag = isTag;
+    /**
+     * @param node Node to check.
+     * @returns `true` if the node has the type `CDATA`, `false` otherwise.
+     */
+    function isCDATA(node) {
+        return node.type === domelementtype_1$1.ElementType.CDATA;
+    }
+    node$1.isCDATA = isCDATA;
+    /**
+     * @param node Node to check.
+     * @returns `true` if the node has the type `Text`, `false` otherwise.
+     */
+    function isText(node) {
+        return node.type === domelementtype_1$1.ElementType.Text;
+    }
+    node$1.isText = isText;
+    /**
+     * @param node Node to check.
+     * @returns `true` if the node has the type `Comment`, `false` otherwise.
+     */
+    function isComment(node) {
+        return node.type === domelementtype_1$1.ElementType.Comment;
+    }
+    node$1.isComment = isComment;
+    /**
+     * @param node Node to check.
+     * @returns `true` if the node has the type `ProcessingInstruction`, `false` otherwise.
+     */
+    function isDirective(node) {
+        return node.type === domelementtype_1$1.ElementType.Directive;
+    }
+    node$1.isDirective = isDirective;
+    /**
+     * @param node Node to check.
+     * @returns `true` if the node has the type `ProcessingInstruction`, `false` otherwise.
+     */
+    function isDocument(node) {
+        return node.type === domelementtype_1$1.ElementType.Root;
+    }
+    node$1.isDocument = isDocument;
+    /**
+     * @param node Node to check.
+     * @returns `true` if the node has children, `false` otherwise.
+     */
+    function hasChildren(node) {
+        return Object.prototype.hasOwnProperty.call(node, "children");
+    }
+    node$1.hasChildren = hasChildren;
+    /**
+     * Clone a node, and optionally its children.
+     *
+     * @param recursive Clone child nodes as well.
+     * @returns A clone of the node.
+     */
+    function cloneNode$1(node, recursive) {
+        if (recursive === void 0) { recursive = false; }
+        var result;
+        if (isText(node)) {
+            result = new Text(node.data);
+        }
+        else if (isComment(node)) {
+            result = new Comment$5(node.data);
+        }
+        else if (isTag(node)) {
+            var children = recursive ? cloneChildren(node.children) : [];
+            var clone_1 = new Element(node.name, __assign$1({}, node.attribs), children);
+            children.forEach(function (child) { return (child.parent = clone_1); });
+            if (node.namespace != null) {
+                clone_1.namespace = node.namespace;
+            }
+            if (node["x-attribsNamespace"]) {
+                clone_1["x-attribsNamespace"] = __assign$1({}, node["x-attribsNamespace"]);
+            }
+            if (node["x-attribsPrefix"]) {
+                clone_1["x-attribsPrefix"] = __assign$1({}, node["x-attribsPrefix"]);
+            }
+            result = clone_1;
+        }
+        else if (isCDATA(node)) {
+            var children = recursive ? cloneChildren(node.children) : [];
+            var clone_2 = new CDATA(children);
+            children.forEach(function (child) { return (child.parent = clone_2); });
+            result = clone_2;
+        }
+        else if (isDocument(node)) {
+            var children = recursive ? cloneChildren(node.children) : [];
+            var clone_3 = new Document$4(children);
+            children.forEach(function (child) { return (child.parent = clone_3); });
+            if (node["x-mode"]) {
+                clone_3["x-mode"] = node["x-mode"];
+            }
+            result = clone_3;
+        }
+        else if (isDirective(node)) {
+            var instruction = new ProcessingInstruction(node.name, node.data);
+            if (node["x-name"] != null) {
+                instruction["x-name"] = node["x-name"];
+                instruction["x-publicId"] = node["x-publicId"];
+                instruction["x-systemId"] = node["x-systemId"];
+            }
+            result = instruction;
+        }
+        else {
+            throw new Error("Not implemented yet: ".concat(node.type));
+        }
+        result.startIndex = node.startIndex;
+        result.endIndex = node.endIndex;
+        if (node.sourceCodeLocation != null) {
+            result.sourceCodeLocation = node.sourceCodeLocation;
+        }
+        return result;
+    }
+    node$1.cloneNode = cloneNode$1;
+    function cloneChildren(childs) {
+        var children = childs.map(function (child) { return cloneNode$1(child, true); });
+        for (var i = 1; i < children.length; i++) {
+            children[i].prev = children[i - 1];
+            children[i - 1].next = children[i];
+        }
+        return children;
+    }
+
+    (function (exports) {
+    	var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    	    if (k2 === undefined) k2 = k;
+    	    var desc = Object.getOwnPropertyDescriptor(m, k);
+    	    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+    	      desc = { enumerable: true, get: function() { return m[k]; } };
+    	    }
+    	    Object.defineProperty(o, k2, desc);
+    	}) : (function(o, m, k, k2) {
+    	    if (k2 === undefined) k2 = k;
+    	    o[k2] = m[k];
+    	}));
+    	var __exportStar = (commonjsGlobal && commonjsGlobal.__exportStar) || function(m, exports) {
+    	    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+    	};
+    	Object.defineProperty(exports, "__esModule", { value: true });
+    	exports.DomHandler = void 0;
+    	var domelementtype_1 = lib$3;
+    	var node_js_1 = node$1;
+    	__exportStar(node$1, exports);
+    	// Default options
+    	var defaultOpts = {
+    	    withStartIndices: false,
+    	    withEndIndices: false,
+    	    xmlMode: false,
+    	};
+    	var DomHandler = /** @class */ (function () {
+    	    /**
+    	     * @param callback Called once parsing has completed.
+    	     * @param options Settings for the handler.
+    	     * @param elementCB Callback whenever a tag is closed.
+    	     */
+    	    function DomHandler(callback, options, elementCB) {
+    	        /** The elements of the DOM */
+    	        this.dom = [];
+    	        /** The root element for the DOM */
+    	        this.root = new node_js_1.Document(this.dom);
+    	        /** Indicated whether parsing has been completed. */
+    	        this.done = false;
+    	        /** Stack of open tags. */
+    	        this.tagStack = [this.root];
+    	        /** A data node that is still being written to. */
+    	        this.lastNode = null;
+    	        /** Reference to the parser instance. Used for location information. */
+    	        this.parser = null;
+    	        // Make it possible to skip arguments, for backwards-compatibility
+    	        if (typeof options === "function") {
+    	            elementCB = options;
+    	            options = defaultOpts;
+    	        }
+    	        if (typeof callback === "object") {
+    	            options = callback;
+    	            callback = undefined;
+    	        }
+    	        this.callback = callback !== null && callback !== void 0 ? callback : null;
+    	        this.options = options !== null && options !== void 0 ? options : defaultOpts;
+    	        this.elementCB = elementCB !== null && elementCB !== void 0 ? elementCB : null;
+    	    }
+    	    DomHandler.prototype.onparserinit = function (parser) {
+    	        this.parser = parser;
+    	    };
+    	    // Resets the handler back to starting state
+    	    DomHandler.prototype.onreset = function () {
+    	        this.dom = [];
+    	        this.root = new node_js_1.Document(this.dom);
+    	        this.done = false;
+    	        this.tagStack = [this.root];
+    	        this.lastNode = null;
+    	        this.parser = null;
+    	    };
+    	    // Signals the handler that parsing is done
+    	    DomHandler.prototype.onend = function () {
+    	        if (this.done)
+    	            return;
+    	        this.done = true;
+    	        this.parser = null;
+    	        this.handleCallback(null);
+    	    };
+    	    DomHandler.prototype.onerror = function (error) {
+    	        this.handleCallback(error);
+    	    };
+    	    DomHandler.prototype.onclosetag = function () {
+    	        this.lastNode = null;
+    	        var elem = this.tagStack.pop();
+    	        if (this.options.withEndIndices) {
+    	            elem.endIndex = this.parser.endIndex;
+    	        }
+    	        if (this.elementCB)
+    	            this.elementCB(elem);
+    	    };
+    	    DomHandler.prototype.onopentag = function (name, attribs) {
+    	        var type = this.options.xmlMode ? domelementtype_1.ElementType.Tag : undefined;
+    	        var element = new node_js_1.Element(name, attribs, undefined, type);
+    	        this.addNode(element);
+    	        this.tagStack.push(element);
+    	    };
+    	    DomHandler.prototype.ontext = function (data) {
+    	        var lastNode = this.lastNode;
+    	        if (lastNode && lastNode.type === domelementtype_1.ElementType.Text) {
+    	            lastNode.data += data;
+    	            if (this.options.withEndIndices) {
+    	                lastNode.endIndex = this.parser.endIndex;
+    	            }
+    	        }
+    	        else {
+    	            var node = new node_js_1.Text(data);
+    	            this.addNode(node);
+    	            this.lastNode = node;
+    	        }
+    	    };
+    	    DomHandler.prototype.oncomment = function (data) {
+    	        if (this.lastNode && this.lastNode.type === domelementtype_1.ElementType.Comment) {
+    	            this.lastNode.data += data;
+    	            return;
+    	        }
+    	        var node = new node_js_1.Comment(data);
+    	        this.addNode(node);
+    	        this.lastNode = node;
+    	    };
+    	    DomHandler.prototype.oncommentend = function () {
+    	        this.lastNode = null;
+    	    };
+    	    DomHandler.prototype.oncdatastart = function () {
+    	        var text = new node_js_1.Text("");
+    	        var node = new node_js_1.CDATA([text]);
+    	        this.addNode(node);
+    	        text.parent = node;
+    	        this.lastNode = text;
+    	    };
+    	    DomHandler.prototype.oncdataend = function () {
+    	        this.lastNode = null;
+    	    };
+    	    DomHandler.prototype.onprocessinginstruction = function (name, data) {
+    	        var node = new node_js_1.ProcessingInstruction(name, data);
+    	        this.addNode(node);
+    	    };
+    	    DomHandler.prototype.handleCallback = function (error) {
+    	        if (typeof this.callback === "function") {
+    	            this.callback(error, this.dom);
+    	        }
+    	        else if (error) {
+    	            throw error;
+    	        }
+    	    };
+    	    DomHandler.prototype.addNode = function (node) {
+    	        var parent = this.tagStack[this.tagStack.length - 1];
+    	        var previousSibling = parent.children[parent.children.length - 1];
+    	        if (this.options.withStartIndices) {
+    	            node.startIndex = this.parser.startIndex;
+    	        }
+    	        if (this.options.withEndIndices) {
+    	            node.endIndex = this.parser.endIndex;
+    	        }
+    	        parent.children.push(node);
+    	        if (previousSibling) {
+    	            node.prev = previousSibling;
+    	            previousSibling.next = node;
+    	        }
+    	        node.parent = parent;
+    	        this.lastNode = null;
+    	    };
+    	    return DomHandler;
+    	}());
+    	exports.DomHandler = DomHandler;
+    	exports.default = DomHandler; 
+    } (lib$4));
+
+    var lib$2 = {};
+
+    var stringify$5 = {};
+
+    var lib$1 = {};
+
+    var lib = {};
+
+    var decode = {};
+
+    var decodeDataHtml = {};
+
+    // Generated using scripts/write-decode-map.ts
+    Object.defineProperty(decodeDataHtml, "__esModule", { value: true });
+    decodeDataHtml.default = new Uint16Array(
+    // prettier-ignore
+    "\u1d41<\xd5\u0131\u028a\u049d\u057b\u05d0\u0675\u06de\u07a2\u07d6\u080f\u0a4a\u0a91\u0da1\u0e6d\u0f09\u0f26\u10ca\u1228\u12e1\u1415\u149d\u14c3\u14df\u1525\0\0\0\0\0\0\u156b\u16cd\u198d\u1c12\u1ddd\u1f7e\u2060\u21b0\u228d\u23c0\u23fb\u2442\u2824\u2912\u2d08\u2e48\u2fce\u3016\u32ba\u3639\u37ac\u38fe\u3a28\u3a71\u3ae0\u3b2e\u0800EMabcfglmnoprstu\\bfms\x7f\x84\x8b\x90\x95\x98\xa6\xb3\xb9\xc8\xcflig\u803b\xc6\u40c6P\u803b&\u4026cute\u803b\xc1\u40c1reve;\u4102\u0100iyx}rc\u803b\xc2\u40c2;\u4410r;\uc000\ud835\udd04rave\u803b\xc0\u40c0pha;\u4391acr;\u4100d;\u6a53\u0100gp\x9d\xa1on;\u4104f;\uc000\ud835\udd38plyFunction;\u6061ing\u803b\xc5\u40c5\u0100cs\xbe\xc3r;\uc000\ud835\udc9cign;\u6254ilde\u803b\xc3\u40c3ml\u803b\xc4\u40c4\u0400aceforsu\xe5\xfb\xfe\u0117\u011c\u0122\u0127\u012a\u0100cr\xea\xf2kslash;\u6216\u0176\xf6\xf8;\u6ae7ed;\u6306y;\u4411\u0180crt\u0105\u010b\u0114ause;\u6235noullis;\u612ca;\u4392r;\uc000\ud835\udd05pf;\uc000\ud835\udd39eve;\u42d8c\xf2\u0113mpeq;\u624e\u0700HOacdefhilorsu\u014d\u0151\u0156\u0180\u019e\u01a2\u01b5\u01b7\u01ba\u01dc\u0215\u0273\u0278\u027ecy;\u4427PY\u803b\xa9\u40a9\u0180cpy\u015d\u0162\u017aute;\u4106\u0100;i\u0167\u0168\u62d2talDifferentialD;\u6145leys;\u612d\u0200aeio\u0189\u018e\u0194\u0198ron;\u410cdil\u803b\xc7\u40c7rc;\u4108nint;\u6230ot;\u410a\u0100dn\u01a7\u01adilla;\u40b8terDot;\u40b7\xf2\u017fi;\u43a7rcle\u0200DMPT\u01c7\u01cb\u01d1\u01d6ot;\u6299inus;\u6296lus;\u6295imes;\u6297o\u0100cs\u01e2\u01f8kwiseContourIntegral;\u6232eCurly\u0100DQ\u0203\u020foubleQuote;\u601duote;\u6019\u0200lnpu\u021e\u0228\u0247\u0255on\u0100;e\u0225\u0226\u6237;\u6a74\u0180git\u022f\u0236\u023aruent;\u6261nt;\u622fourIntegral;\u622e\u0100fr\u024c\u024e;\u6102oduct;\u6210nterClockwiseContourIntegral;\u6233oss;\u6a2fcr;\uc000\ud835\udc9ep\u0100;C\u0284\u0285\u62d3ap;\u624d\u0580DJSZacefios\u02a0\u02ac\u02b0\u02b4\u02b8\u02cb\u02d7\u02e1\u02e6\u0333\u048d\u0100;o\u0179\u02a5trahd;\u6911cy;\u4402cy;\u4405cy;\u440f\u0180grs\u02bf\u02c4\u02c7ger;\u6021r;\u61a1hv;\u6ae4\u0100ay\u02d0\u02d5ron;\u410e;\u4414l\u0100;t\u02dd\u02de\u6207a;\u4394r;\uc000\ud835\udd07\u0100af\u02eb\u0327\u0100cm\u02f0\u0322ritical\u0200ADGT\u0300\u0306\u0316\u031ccute;\u40b4o\u0174\u030b\u030d;\u42d9bleAcute;\u42ddrave;\u4060ilde;\u42dcond;\u62c4ferentialD;\u6146\u0470\u033d\0\0\0\u0342\u0354\0\u0405f;\uc000\ud835\udd3b\u0180;DE\u0348\u0349\u034d\u40a8ot;\u60dcqual;\u6250ble\u0300CDLRUV\u0363\u0372\u0382\u03cf\u03e2\u03f8ontourIntegra\xec\u0239o\u0274\u0379\0\0\u037b\xbb\u0349nArrow;\u61d3\u0100eo\u0387\u03a4ft\u0180ART\u0390\u0396\u03a1rrow;\u61d0ightArrow;\u61d4e\xe5\u02cang\u0100LR\u03ab\u03c4eft\u0100AR\u03b3\u03b9rrow;\u67f8ightArrow;\u67faightArrow;\u67f9ight\u0100AT\u03d8\u03derrow;\u61d2ee;\u62a8p\u0241\u03e9\0\0\u03efrrow;\u61d1ownArrow;\u61d5erticalBar;\u6225n\u0300ABLRTa\u0412\u042a\u0430\u045e\u047f\u037crrow\u0180;BU\u041d\u041e\u0422\u6193ar;\u6913pArrow;\u61f5reve;\u4311eft\u02d2\u043a\0\u0446\0\u0450ightVector;\u6950eeVector;\u695eector\u0100;B\u0459\u045a\u61bdar;\u6956ight\u01d4\u0467\0\u0471eeVector;\u695fector\u0100;B\u047a\u047b\u61c1ar;\u6957ee\u0100;A\u0486\u0487\u62a4rrow;\u61a7\u0100ct\u0492\u0497r;\uc000\ud835\udc9frok;\u4110\u0800NTacdfglmopqstux\u04bd\u04c0\u04c4\u04cb\u04de\u04e2\u04e7\u04ee\u04f5\u0521\u052f\u0536\u0552\u055d\u0560\u0565G;\u414aH\u803b\xd0\u40d0cute\u803b\xc9\u40c9\u0180aiy\u04d2\u04d7\u04dcron;\u411arc\u803b\xca\u40ca;\u442dot;\u4116r;\uc000\ud835\udd08rave\u803b\xc8\u40c8ement;\u6208\u0100ap\u04fa\u04fecr;\u4112ty\u0253\u0506\0\0\u0512mallSquare;\u65fberySmallSquare;\u65ab\u0100gp\u0526\u052aon;\u4118f;\uc000\ud835\udd3csilon;\u4395u\u0100ai\u053c\u0549l\u0100;T\u0542\u0543\u6a75ilde;\u6242librium;\u61cc\u0100ci\u0557\u055ar;\u6130m;\u6a73a;\u4397ml\u803b\xcb\u40cb\u0100ip\u056a\u056fsts;\u6203onentialE;\u6147\u0280cfios\u0585\u0588\u058d\u05b2\u05ccy;\u4424r;\uc000\ud835\udd09lled\u0253\u0597\0\0\u05a3mallSquare;\u65fcerySmallSquare;\u65aa\u0370\u05ba\0\u05bf\0\0\u05c4f;\uc000\ud835\udd3dAll;\u6200riertrf;\u6131c\xf2\u05cb\u0600JTabcdfgorst\u05e8\u05ec\u05ef\u05fa\u0600\u0612\u0616\u061b\u061d\u0623\u066c\u0672cy;\u4403\u803b>\u403emma\u0100;d\u05f7\u05f8\u4393;\u43dcreve;\u411e\u0180eiy\u0607\u060c\u0610dil;\u4122rc;\u411c;\u4413ot;\u4120r;\uc000\ud835\udd0a;\u62d9pf;\uc000\ud835\udd3eeater\u0300EFGLST\u0635\u0644\u064e\u0656\u065b\u0666qual\u0100;L\u063e\u063f\u6265ess;\u62dbullEqual;\u6267reater;\u6aa2ess;\u6277lantEqual;\u6a7eilde;\u6273cr;\uc000\ud835\udca2;\u626b\u0400Aacfiosu\u0685\u068b\u0696\u069b\u069e\u06aa\u06be\u06caRDcy;\u442a\u0100ct\u0690\u0694ek;\u42c7;\u405eirc;\u4124r;\u610clbertSpace;\u610b\u01f0\u06af\0\u06b2f;\u610dizontalLine;\u6500\u0100ct\u06c3\u06c5\xf2\u06a9rok;\u4126mp\u0144\u06d0\u06d8ownHum\xf0\u012fqual;\u624f\u0700EJOacdfgmnostu\u06fa\u06fe\u0703\u0707\u070e\u071a\u071e\u0721\u0728\u0744\u0778\u078b\u078f\u0795cy;\u4415lig;\u4132cy;\u4401cute\u803b\xcd\u40cd\u0100iy\u0713\u0718rc\u803b\xce\u40ce;\u4418ot;\u4130r;\u6111rave\u803b\xcc\u40cc\u0180;ap\u0720\u072f\u073f\u0100cg\u0734\u0737r;\u412ainaryI;\u6148lie\xf3\u03dd\u01f4\u0749\0\u0762\u0100;e\u074d\u074e\u622c\u0100gr\u0753\u0758ral;\u622bsection;\u62c2isible\u0100CT\u076c\u0772omma;\u6063imes;\u6062\u0180gpt\u077f\u0783\u0788on;\u412ef;\uc000\ud835\udd40a;\u4399cr;\u6110ilde;\u4128\u01eb\u079a\0\u079ecy;\u4406l\u803b\xcf\u40cf\u0280cfosu\u07ac\u07b7\u07bc\u07c2\u07d0\u0100iy\u07b1\u07b5rc;\u4134;\u4419r;\uc000\ud835\udd0dpf;\uc000\ud835\udd41\u01e3\u07c7\0\u07ccr;\uc000\ud835\udca5rcy;\u4408kcy;\u4404\u0380HJacfos\u07e4\u07e8\u07ec\u07f1\u07fd\u0802\u0808cy;\u4425cy;\u440cppa;\u439a\u0100ey\u07f6\u07fbdil;\u4136;\u441ar;\uc000\ud835\udd0epf;\uc000\ud835\udd42cr;\uc000\ud835\udca6\u0580JTaceflmost\u0825\u0829\u082c\u0850\u0863\u09b3\u09b8\u09c7\u09cd\u0a37\u0a47cy;\u4409\u803b<\u403c\u0280cmnpr\u0837\u083c\u0841\u0844\u084dute;\u4139bda;\u439bg;\u67ealacetrf;\u6112r;\u619e\u0180aey\u0857\u085c\u0861ron;\u413ddil;\u413b;\u441b\u0100fs\u0868\u0970t\u0500ACDFRTUVar\u087e\u08a9\u08b1\u08e0\u08e6\u08fc\u092f\u095b\u0390\u096a\u0100nr\u0883\u088fgleBracket;\u67e8row\u0180;BR\u0899\u089a\u089e\u6190ar;\u61e4ightArrow;\u61c6eiling;\u6308o\u01f5\u08b7\0\u08c3bleBracket;\u67e6n\u01d4\u08c8\0\u08d2eeVector;\u6961ector\u0100;B\u08db\u08dc\u61c3ar;\u6959loor;\u630aight\u0100AV\u08ef\u08f5rrow;\u6194ector;\u694e\u0100er\u0901\u0917e\u0180;AV\u0909\u090a\u0910\u62a3rrow;\u61a4ector;\u695aiangle\u0180;BE\u0924\u0925\u0929\u62b2ar;\u69cfqual;\u62b4p\u0180DTV\u0937\u0942\u094cownVector;\u6951eeVector;\u6960ector\u0100;B\u0956\u0957\u61bfar;\u6958ector\u0100;B\u0965\u0966\u61bcar;\u6952ight\xe1\u039cs\u0300EFGLST\u097e\u098b\u0995\u099d\u09a2\u09adqualGreater;\u62daullEqual;\u6266reater;\u6276ess;\u6aa1lantEqual;\u6a7dilde;\u6272r;\uc000\ud835\udd0f\u0100;e\u09bd\u09be\u62d8ftarrow;\u61daidot;\u413f\u0180npw\u09d4\u0a16\u0a1bg\u0200LRlr\u09de\u09f7\u0a02\u0a10eft\u0100AR\u09e6\u09ecrrow;\u67f5ightArrow;\u67f7ightArrow;\u67f6eft\u0100ar\u03b3\u0a0aight\xe1\u03bfight\xe1\u03caf;\uc000\ud835\udd43er\u0100LR\u0a22\u0a2ceftArrow;\u6199ightArrow;\u6198\u0180cht\u0a3e\u0a40\u0a42\xf2\u084c;\u61b0rok;\u4141;\u626a\u0400acefiosu\u0a5a\u0a5d\u0a60\u0a77\u0a7c\u0a85\u0a8b\u0a8ep;\u6905y;\u441c\u0100dl\u0a65\u0a6fiumSpace;\u605flintrf;\u6133r;\uc000\ud835\udd10nusPlus;\u6213pf;\uc000\ud835\udd44c\xf2\u0a76;\u439c\u0480Jacefostu\u0aa3\u0aa7\u0aad\u0ac0\u0b14\u0b19\u0d91\u0d97\u0d9ecy;\u440acute;\u4143\u0180aey\u0ab4\u0ab9\u0aberon;\u4147dil;\u4145;\u441d\u0180gsw\u0ac7\u0af0\u0b0eative\u0180MTV\u0ad3\u0adf\u0ae8ediumSpace;\u600bhi\u0100cn\u0ae6\u0ad8\xeb\u0ad9eryThi\xee\u0ad9ted\u0100GL\u0af8\u0b06reaterGreate\xf2\u0673essLes\xf3\u0a48Line;\u400ar;\uc000\ud835\udd11\u0200Bnpt\u0b22\u0b28\u0b37\u0b3areak;\u6060BreakingSpace;\u40a0f;\u6115\u0680;CDEGHLNPRSTV\u0b55\u0b56\u0b6a\u0b7c\u0ba1\u0beb\u0c04\u0c5e\u0c84\u0ca6\u0cd8\u0d61\u0d85\u6aec\u0100ou\u0b5b\u0b64ngruent;\u6262pCap;\u626doubleVerticalBar;\u6226\u0180lqx\u0b83\u0b8a\u0b9bement;\u6209ual\u0100;T\u0b92\u0b93\u6260ilde;\uc000\u2242\u0338ists;\u6204reater\u0380;EFGLST\u0bb6\u0bb7\u0bbd\u0bc9\u0bd3\u0bd8\u0be5\u626fqual;\u6271ullEqual;\uc000\u2267\u0338reater;\uc000\u226b\u0338ess;\u6279lantEqual;\uc000\u2a7e\u0338ilde;\u6275ump\u0144\u0bf2\u0bfdownHump;\uc000\u224e\u0338qual;\uc000\u224f\u0338e\u0100fs\u0c0a\u0c27tTriangle\u0180;BE\u0c1a\u0c1b\u0c21\u62eaar;\uc000\u29cf\u0338qual;\u62ecs\u0300;EGLST\u0c35\u0c36\u0c3c\u0c44\u0c4b\u0c58\u626equal;\u6270reater;\u6278ess;\uc000\u226a\u0338lantEqual;\uc000\u2a7d\u0338ilde;\u6274ested\u0100GL\u0c68\u0c79reaterGreater;\uc000\u2aa2\u0338essLess;\uc000\u2aa1\u0338recedes\u0180;ES\u0c92\u0c93\u0c9b\u6280qual;\uc000\u2aaf\u0338lantEqual;\u62e0\u0100ei\u0cab\u0cb9verseElement;\u620cghtTriangle\u0180;BE\u0ccb\u0ccc\u0cd2\u62ebar;\uc000\u29d0\u0338qual;\u62ed\u0100qu\u0cdd\u0d0cuareSu\u0100bp\u0ce8\u0cf9set\u0100;E\u0cf0\u0cf3\uc000\u228f\u0338qual;\u62e2erset\u0100;E\u0d03\u0d06\uc000\u2290\u0338qual;\u62e3\u0180bcp\u0d13\u0d24\u0d4eset\u0100;E\u0d1b\u0d1e\uc000\u2282\u20d2qual;\u6288ceeds\u0200;EST\u0d32\u0d33\u0d3b\u0d46\u6281qual;\uc000\u2ab0\u0338lantEqual;\u62e1ilde;\uc000\u227f\u0338erset\u0100;E\u0d58\u0d5b\uc000\u2283\u20d2qual;\u6289ilde\u0200;EFT\u0d6e\u0d6f\u0d75\u0d7f\u6241qual;\u6244ullEqual;\u6247ilde;\u6249erticalBar;\u6224cr;\uc000\ud835\udca9ilde\u803b\xd1\u40d1;\u439d\u0700Eacdfgmoprstuv\u0dbd\u0dc2\u0dc9\u0dd5\u0ddb\u0de0\u0de7\u0dfc\u0e02\u0e20\u0e22\u0e32\u0e3f\u0e44lig;\u4152cute\u803b\xd3\u40d3\u0100iy\u0dce\u0dd3rc\u803b\xd4\u40d4;\u441eblac;\u4150r;\uc000\ud835\udd12rave\u803b\xd2\u40d2\u0180aei\u0dee\u0df2\u0df6cr;\u414cga;\u43a9cron;\u439fpf;\uc000\ud835\udd46enCurly\u0100DQ\u0e0e\u0e1aoubleQuote;\u601cuote;\u6018;\u6a54\u0100cl\u0e27\u0e2cr;\uc000\ud835\udcaaash\u803b\xd8\u40d8i\u016c\u0e37\u0e3cde\u803b\xd5\u40d5es;\u6a37ml\u803b\xd6\u40d6er\u0100BP\u0e4b\u0e60\u0100ar\u0e50\u0e53r;\u603eac\u0100ek\u0e5a\u0e5c;\u63deet;\u63b4arenthesis;\u63dc\u0480acfhilors\u0e7f\u0e87\u0e8a\u0e8f\u0e92\u0e94\u0e9d\u0eb0\u0efcrtialD;\u6202y;\u441fr;\uc000\ud835\udd13i;\u43a6;\u43a0usMinus;\u40b1\u0100ip\u0ea2\u0eadncareplan\xe5\u069df;\u6119\u0200;eio\u0eb9\u0eba\u0ee0\u0ee4\u6abbcedes\u0200;EST\u0ec8\u0ec9\u0ecf\u0eda\u627aqual;\u6aaflantEqual;\u627cilde;\u627eme;\u6033\u0100dp\u0ee9\u0eeeuct;\u620fortion\u0100;a\u0225\u0ef9l;\u621d\u0100ci\u0f01\u0f06r;\uc000\ud835\udcab;\u43a8\u0200Ufos\u0f11\u0f16\u0f1b\u0f1fOT\u803b\"\u4022r;\uc000\ud835\udd14pf;\u611acr;\uc000\ud835\udcac\u0600BEacefhiorsu\u0f3e\u0f43\u0f47\u0f60\u0f73\u0fa7\u0faa\u0fad\u1096\u10a9\u10b4\u10bearr;\u6910G\u803b\xae\u40ae\u0180cnr\u0f4e\u0f53\u0f56ute;\u4154g;\u67ebr\u0100;t\u0f5c\u0f5d\u61a0l;\u6916\u0180aey\u0f67\u0f6c\u0f71ron;\u4158dil;\u4156;\u4420\u0100;v\u0f78\u0f79\u611cerse\u0100EU\u0f82\u0f99\u0100lq\u0f87\u0f8eement;\u620builibrium;\u61cbpEquilibrium;\u696fr\xbb\u0f79o;\u43a1ght\u0400ACDFTUVa\u0fc1\u0feb\u0ff3\u1022\u1028\u105b\u1087\u03d8\u0100nr\u0fc6\u0fd2gleBracket;\u67e9row\u0180;BL\u0fdc\u0fdd\u0fe1\u6192ar;\u61e5eftArrow;\u61c4eiling;\u6309o\u01f5\u0ff9\0\u1005bleBracket;\u67e7n\u01d4\u100a\0\u1014eeVector;\u695dector\u0100;B\u101d\u101e\u61c2ar;\u6955loor;\u630b\u0100er\u102d\u1043e\u0180;AV\u1035\u1036\u103c\u62a2rrow;\u61a6ector;\u695biangle\u0180;BE\u1050\u1051\u1055\u62b3ar;\u69d0qual;\u62b5p\u0180DTV\u1063\u106e\u1078ownVector;\u694feeVector;\u695cector\u0100;B\u1082\u1083\u61bear;\u6954ector\u0100;B\u1091\u1092\u61c0ar;\u6953\u0100pu\u109b\u109ef;\u611dndImplies;\u6970ightarrow;\u61db\u0100ch\u10b9\u10bcr;\u611b;\u61b1leDelayed;\u69f4\u0680HOacfhimoqstu\u10e4\u10f1\u10f7\u10fd\u1119\u111e\u1151\u1156\u1161\u1167\u11b5\u11bb\u11bf\u0100Cc\u10e9\u10eeHcy;\u4429y;\u4428FTcy;\u442ccute;\u415a\u0280;aeiy\u1108\u1109\u110e\u1113\u1117\u6abcron;\u4160dil;\u415erc;\u415c;\u4421r;\uc000\ud835\udd16ort\u0200DLRU\u112a\u1134\u113e\u1149ownArrow\xbb\u041eeftArrow\xbb\u089aightArrow\xbb\u0fddpArrow;\u6191gma;\u43a3allCircle;\u6218pf;\uc000\ud835\udd4a\u0272\u116d\0\0\u1170t;\u621aare\u0200;ISU\u117b\u117c\u1189\u11af\u65a1ntersection;\u6293u\u0100bp\u118f\u119eset\u0100;E\u1197\u1198\u628fqual;\u6291erset\u0100;E\u11a8\u11a9\u6290qual;\u6292nion;\u6294cr;\uc000\ud835\udcaear;\u62c6\u0200bcmp\u11c8\u11db\u1209\u120b\u0100;s\u11cd\u11ce\u62d0et\u0100;E\u11cd\u11d5qual;\u6286\u0100ch\u11e0\u1205eeds\u0200;EST\u11ed\u11ee\u11f4\u11ff\u627bqual;\u6ab0lantEqual;\u627dilde;\u627fTh\xe1\u0f8c;\u6211\u0180;es\u1212\u1213\u1223\u62d1rset\u0100;E\u121c\u121d\u6283qual;\u6287et\xbb\u1213\u0580HRSacfhiors\u123e\u1244\u1249\u1255\u125e\u1271\u1276\u129f\u12c2\u12c8\u12d1ORN\u803b\xde\u40deADE;\u6122\u0100Hc\u124e\u1252cy;\u440by;\u4426\u0100bu\u125a\u125c;\u4009;\u43a4\u0180aey\u1265\u126a\u126fron;\u4164dil;\u4162;\u4422r;\uc000\ud835\udd17\u0100ei\u127b\u1289\u01f2\u1280\0\u1287efore;\u6234a;\u4398\u0100cn\u128e\u1298kSpace;\uc000\u205f\u200aSpace;\u6009lde\u0200;EFT\u12ab\u12ac\u12b2\u12bc\u623cqual;\u6243ullEqual;\u6245ilde;\u6248pf;\uc000\ud835\udd4bipleDot;\u60db\u0100ct\u12d6\u12dbr;\uc000\ud835\udcafrok;\u4166\u0ae1\u12f7\u130e\u131a\u1326\0\u132c\u1331\0\0\0\0\0\u1338\u133d\u1377\u1385\0\u13ff\u1404\u140a\u1410\u0100cr\u12fb\u1301ute\u803b\xda\u40dar\u0100;o\u1307\u1308\u619fcir;\u6949r\u01e3\u1313\0\u1316y;\u440eve;\u416c\u0100iy\u131e\u1323rc\u803b\xdb\u40db;\u4423blac;\u4170r;\uc000\ud835\udd18rave\u803b\xd9\u40d9acr;\u416a\u0100di\u1341\u1369er\u0100BP\u1348\u135d\u0100ar\u134d\u1350r;\u405fac\u0100ek\u1357\u1359;\u63dfet;\u63b5arenthesis;\u63ddon\u0100;P\u1370\u1371\u62c3lus;\u628e\u0100gp\u137b\u137fon;\u4172f;\uc000\ud835\udd4c\u0400ADETadps\u1395\u13ae\u13b8\u13c4\u03e8\u13d2\u13d7\u13f3rrow\u0180;BD\u1150\u13a0\u13a4ar;\u6912ownArrow;\u61c5ownArrow;\u6195quilibrium;\u696eee\u0100;A\u13cb\u13cc\u62a5rrow;\u61a5own\xe1\u03f3er\u0100LR\u13de\u13e8eftArrow;\u6196ightArrow;\u6197i\u0100;l\u13f9\u13fa\u43d2on;\u43a5ing;\u416ecr;\uc000\ud835\udcb0ilde;\u4168ml\u803b\xdc\u40dc\u0480Dbcdefosv\u1427\u142c\u1430\u1433\u143e\u1485\u148a\u1490\u1496ash;\u62abar;\u6aeby;\u4412ash\u0100;l\u143b\u143c\u62a9;\u6ae6\u0100er\u1443\u1445;\u62c1\u0180bty\u144c\u1450\u147aar;\u6016\u0100;i\u144f\u1455cal\u0200BLST\u1461\u1465\u146a\u1474ar;\u6223ine;\u407ceparator;\u6758ilde;\u6240ThinSpace;\u600ar;\uc000\ud835\udd19pf;\uc000\ud835\udd4dcr;\uc000\ud835\udcb1dash;\u62aa\u0280cefos\u14a7\u14ac\u14b1\u14b6\u14bcirc;\u4174dge;\u62c0r;\uc000\ud835\udd1apf;\uc000\ud835\udd4ecr;\uc000\ud835\udcb2\u0200fios\u14cb\u14d0\u14d2\u14d8r;\uc000\ud835\udd1b;\u439epf;\uc000\ud835\udd4fcr;\uc000\ud835\udcb3\u0480AIUacfosu\u14f1\u14f5\u14f9\u14fd\u1504\u150f\u1514\u151a\u1520cy;\u442fcy;\u4407cy;\u442ecute\u803b\xdd\u40dd\u0100iy\u1509\u150drc;\u4176;\u442br;\uc000\ud835\udd1cpf;\uc000\ud835\udd50cr;\uc000\ud835\udcb4ml;\u4178\u0400Hacdefos\u1535\u1539\u153f\u154b\u154f\u155d\u1560\u1564cy;\u4416cute;\u4179\u0100ay\u1544\u1549ron;\u417d;\u4417ot;\u417b\u01f2\u1554\0\u155boWidt\xe8\u0ad9a;\u4396r;\u6128pf;\u6124cr;\uc000\ud835\udcb5\u0be1\u1583\u158a\u1590\0\u15b0\u15b6\u15bf\0\0\0\0\u15c6\u15db\u15eb\u165f\u166d\0\u1695\u169b\u16b2\u16b9\0\u16becute\u803b\xe1\u40e1reve;\u4103\u0300;Ediuy\u159c\u159d\u15a1\u15a3\u15a8\u15ad\u623e;\uc000\u223e\u0333;\u623frc\u803b\xe2\u40e2te\u80bb\xb4\u0306;\u4430lig\u803b\xe6\u40e6\u0100;r\xb2\u15ba;\uc000\ud835\udd1erave\u803b\xe0\u40e0\u0100ep\u15ca\u15d6\u0100fp\u15cf\u15d4sym;\u6135\xe8\u15d3ha;\u43b1\u0100ap\u15dfc\u0100cl\u15e4\u15e7r;\u4101g;\u6a3f\u0264\u15f0\0\0\u160a\u0280;adsv\u15fa\u15fb\u15ff\u1601\u1607\u6227nd;\u6a55;\u6a5clope;\u6a58;\u6a5a\u0380;elmrsz\u1618\u1619\u161b\u161e\u163f\u164f\u1659\u6220;\u69a4e\xbb\u1619sd\u0100;a\u1625\u1626\u6221\u0461\u1630\u1632\u1634\u1636\u1638\u163a\u163c\u163e;\u69a8;\u69a9;\u69aa;\u69ab;\u69ac;\u69ad;\u69ae;\u69aft\u0100;v\u1645\u1646\u621fb\u0100;d\u164c\u164d\u62be;\u699d\u0100pt\u1654\u1657h;\u6222\xbb\xb9arr;\u637c\u0100gp\u1663\u1667on;\u4105f;\uc000\ud835\udd52\u0380;Eaeiop\u12c1\u167b\u167d\u1682\u1684\u1687\u168a;\u6a70cir;\u6a6f;\u624ad;\u624bs;\u4027rox\u0100;e\u12c1\u1692\xf1\u1683ing\u803b\xe5\u40e5\u0180cty\u16a1\u16a6\u16a8r;\uc000\ud835\udcb6;\u402amp\u0100;e\u12c1\u16af\xf1\u0288ilde\u803b\xe3\u40e3ml\u803b\xe4\u40e4\u0100ci\u16c2\u16c8onin\xf4\u0272nt;\u6a11\u0800Nabcdefiklnoprsu\u16ed\u16f1\u1730\u173c\u1743\u1748\u1778\u177d\u17e0\u17e6\u1839\u1850\u170d\u193d\u1948\u1970ot;\u6aed\u0100cr\u16f6\u171ek\u0200ceps\u1700\u1705\u170d\u1713ong;\u624cpsilon;\u43f6rime;\u6035im\u0100;e\u171a\u171b\u623dq;\u62cd\u0176\u1722\u1726ee;\u62bded\u0100;g\u172c\u172d\u6305e\xbb\u172drk\u0100;t\u135c\u1737brk;\u63b6\u0100oy\u1701\u1741;\u4431quo;\u601e\u0280cmprt\u1753\u175b\u1761\u1764\u1768aus\u0100;e\u010a\u0109ptyv;\u69b0s\xe9\u170cno\xf5\u0113\u0180ahw\u176f\u1771\u1773;\u43b2;\u6136een;\u626cr;\uc000\ud835\udd1fg\u0380costuvw\u178d\u179d\u17b3\u17c1\u17d5\u17db\u17de\u0180aiu\u1794\u1796\u179a\xf0\u0760rc;\u65efp\xbb\u1371\u0180dpt\u17a4\u17a8\u17adot;\u6a00lus;\u6a01imes;\u6a02\u0271\u17b9\0\0\u17becup;\u6a06ar;\u6605riangle\u0100du\u17cd\u17d2own;\u65bdp;\u65b3plus;\u6a04e\xe5\u1444\xe5\u14adarow;\u690d\u0180ako\u17ed\u1826\u1835\u0100cn\u17f2\u1823k\u0180lst\u17fa\u05ab\u1802ozenge;\u69ebriangle\u0200;dlr\u1812\u1813\u1818\u181d\u65b4own;\u65beeft;\u65c2ight;\u65b8k;\u6423\u01b1\u182b\0\u1833\u01b2\u182f\0\u1831;\u6592;\u65914;\u6593ck;\u6588\u0100eo\u183e\u184d\u0100;q\u1843\u1846\uc000=\u20e5uiv;\uc000\u2261\u20e5t;\u6310\u0200ptwx\u1859\u185e\u1867\u186cf;\uc000\ud835\udd53\u0100;t\u13cb\u1863om\xbb\u13cctie;\u62c8\u0600DHUVbdhmptuv\u1885\u1896\u18aa\u18bb\u18d7\u18db\u18ec\u18ff\u1905\u190a\u1910\u1921\u0200LRlr\u188e\u1890\u1892\u1894;\u6557;\u6554;\u6556;\u6553\u0280;DUdu\u18a1\u18a2\u18a4\u18a6\u18a8\u6550;\u6566;\u6569;\u6564;\u6567\u0200LRlr\u18b3\u18b5\u18b7\u18b9;\u655d;\u655a;\u655c;\u6559\u0380;HLRhlr\u18ca\u18cb\u18cd\u18cf\u18d1\u18d3\u18d5\u6551;\u656c;\u6563;\u6560;\u656b;\u6562;\u655fox;\u69c9\u0200LRlr\u18e4\u18e6\u18e8\u18ea;\u6555;\u6552;\u6510;\u650c\u0280;DUdu\u06bd\u18f7\u18f9\u18fb\u18fd;\u6565;\u6568;\u652c;\u6534inus;\u629flus;\u629eimes;\u62a0\u0200LRlr\u1919\u191b\u191d\u191f;\u655b;\u6558;\u6518;\u6514\u0380;HLRhlr\u1930\u1931\u1933\u1935\u1937\u1939\u193b\u6502;\u656a;\u6561;\u655e;\u653c;\u6524;\u651c\u0100ev\u0123\u1942bar\u803b\xa6\u40a6\u0200ceio\u1951\u1956\u195a\u1960r;\uc000\ud835\udcb7mi;\u604fm\u0100;e\u171a\u171cl\u0180;bh\u1968\u1969\u196b\u405c;\u69c5sub;\u67c8\u016c\u1974\u197el\u0100;e\u1979\u197a\u6022t\xbb\u197ap\u0180;Ee\u012f\u1985\u1987;\u6aae\u0100;q\u06dc\u06db\u0ce1\u19a7\0\u19e8\u1a11\u1a15\u1a32\0\u1a37\u1a50\0\0\u1ab4\0\0\u1ac1\0\0\u1b21\u1b2e\u1b4d\u1b52\0\u1bfd\0\u1c0c\u0180cpr\u19ad\u19b2\u19ddute;\u4107\u0300;abcds\u19bf\u19c0\u19c4\u19ca\u19d5\u19d9\u6229nd;\u6a44rcup;\u6a49\u0100au\u19cf\u19d2p;\u6a4bp;\u6a47ot;\u6a40;\uc000\u2229\ufe00\u0100eo\u19e2\u19e5t;\u6041\xee\u0693\u0200aeiu\u19f0\u19fb\u1a01\u1a05\u01f0\u19f5\0\u19f8s;\u6a4don;\u410ddil\u803b\xe7\u40e7rc;\u4109ps\u0100;s\u1a0c\u1a0d\u6a4cm;\u6a50ot;\u410b\u0180dmn\u1a1b\u1a20\u1a26il\u80bb\xb8\u01adptyv;\u69b2t\u8100\xa2;e\u1a2d\u1a2e\u40a2r\xe4\u01b2r;\uc000\ud835\udd20\u0180cei\u1a3d\u1a40\u1a4dy;\u4447ck\u0100;m\u1a47\u1a48\u6713ark\xbb\u1a48;\u43c7r\u0380;Ecefms\u1a5f\u1a60\u1a62\u1a6b\u1aa4\u1aaa\u1aae\u65cb;\u69c3\u0180;el\u1a69\u1a6a\u1a6d\u42c6q;\u6257e\u0261\u1a74\0\0\u1a88rrow\u0100lr\u1a7c\u1a81eft;\u61baight;\u61bb\u0280RSacd\u1a92\u1a94\u1a96\u1a9a\u1a9f\xbb\u0f47;\u64c8st;\u629birc;\u629aash;\u629dnint;\u6a10id;\u6aefcir;\u69c2ubs\u0100;u\u1abb\u1abc\u6663it\xbb\u1abc\u02ec\u1ac7\u1ad4\u1afa\0\u1b0aon\u0100;e\u1acd\u1ace\u403a\u0100;q\xc7\xc6\u026d\u1ad9\0\0\u1ae2a\u0100;t\u1ade\u1adf\u402c;\u4040\u0180;fl\u1ae8\u1ae9\u1aeb\u6201\xee\u1160e\u0100mx\u1af1\u1af6ent\xbb\u1ae9e\xf3\u024d\u01e7\u1afe\0\u1b07\u0100;d\u12bb\u1b02ot;\u6a6dn\xf4\u0246\u0180fry\u1b10\u1b14\u1b17;\uc000\ud835\udd54o\xe4\u0254\u8100\xa9;s\u0155\u1b1dr;\u6117\u0100ao\u1b25\u1b29rr;\u61b5ss;\u6717\u0100cu\u1b32\u1b37r;\uc000\ud835\udcb8\u0100bp\u1b3c\u1b44\u0100;e\u1b41\u1b42\u6acf;\u6ad1\u0100;e\u1b49\u1b4a\u6ad0;\u6ad2dot;\u62ef\u0380delprvw\u1b60\u1b6c\u1b77\u1b82\u1bac\u1bd4\u1bf9arr\u0100lr\u1b68\u1b6a;\u6938;\u6935\u0270\u1b72\0\0\u1b75r;\u62dec;\u62dfarr\u0100;p\u1b7f\u1b80\u61b6;\u693d\u0300;bcdos\u1b8f\u1b90\u1b96\u1ba1\u1ba5\u1ba8\u622arcap;\u6a48\u0100au\u1b9b\u1b9ep;\u6a46p;\u6a4aot;\u628dr;\u6a45;\uc000\u222a\ufe00\u0200alrv\u1bb5\u1bbf\u1bde\u1be3rr\u0100;m\u1bbc\u1bbd\u61b7;\u693cy\u0180evw\u1bc7\u1bd4\u1bd8q\u0270\u1bce\0\0\u1bd2re\xe3\u1b73u\xe3\u1b75ee;\u62ceedge;\u62cfen\u803b\xa4\u40a4earrow\u0100lr\u1bee\u1bf3eft\xbb\u1b80ight\xbb\u1bbde\xe4\u1bdd\u0100ci\u1c01\u1c07onin\xf4\u01f7nt;\u6231lcty;\u632d\u0980AHabcdefhijlorstuwz\u1c38\u1c3b\u1c3f\u1c5d\u1c69\u1c75\u1c8a\u1c9e\u1cac\u1cb7\u1cfb\u1cff\u1d0d\u1d7b\u1d91\u1dab\u1dbb\u1dc6\u1dcdr\xf2\u0381ar;\u6965\u0200glrs\u1c48\u1c4d\u1c52\u1c54ger;\u6020eth;\u6138\xf2\u1133h\u0100;v\u1c5a\u1c5b\u6010\xbb\u090a\u016b\u1c61\u1c67arow;\u690fa\xe3\u0315\u0100ay\u1c6e\u1c73ron;\u410f;\u4434\u0180;ao\u0332\u1c7c\u1c84\u0100gr\u02bf\u1c81r;\u61catseq;\u6a77\u0180glm\u1c91\u1c94\u1c98\u803b\xb0\u40b0ta;\u43b4ptyv;\u69b1\u0100ir\u1ca3\u1ca8sht;\u697f;\uc000\ud835\udd21ar\u0100lr\u1cb3\u1cb5\xbb\u08dc\xbb\u101e\u0280aegsv\u1cc2\u0378\u1cd6\u1cdc\u1ce0m\u0180;os\u0326\u1cca\u1cd4nd\u0100;s\u0326\u1cd1uit;\u6666amma;\u43ddin;\u62f2\u0180;io\u1ce7\u1ce8\u1cf8\u40f7de\u8100\xf7;o\u1ce7\u1cf0ntimes;\u62c7n\xf8\u1cf7cy;\u4452c\u026f\u1d06\0\0\u1d0arn;\u631eop;\u630d\u0280lptuw\u1d18\u1d1d\u1d22\u1d49\u1d55lar;\u4024f;\uc000\ud835\udd55\u0280;emps\u030b\u1d2d\u1d37\u1d3d\u1d42q\u0100;d\u0352\u1d33ot;\u6251inus;\u6238lus;\u6214quare;\u62a1blebarwedg\xe5\xfan\u0180adh\u112e\u1d5d\u1d67ownarrow\xf3\u1c83arpoon\u0100lr\u1d72\u1d76ef\xf4\u1cb4igh\xf4\u1cb6\u0162\u1d7f\u1d85karo\xf7\u0f42\u026f\u1d8a\0\0\u1d8ern;\u631fop;\u630c\u0180cot\u1d98\u1da3\u1da6\u0100ry\u1d9d\u1da1;\uc000\ud835\udcb9;\u4455l;\u69f6rok;\u4111\u0100dr\u1db0\u1db4ot;\u62f1i\u0100;f\u1dba\u1816\u65bf\u0100ah\u1dc0\u1dc3r\xf2\u0429a\xf2\u0fa6angle;\u69a6\u0100ci\u1dd2\u1dd5y;\u445fgrarr;\u67ff\u0900Dacdefglmnopqrstux\u1e01\u1e09\u1e19\u1e38\u0578\u1e3c\u1e49\u1e61\u1e7e\u1ea5\u1eaf\u1ebd\u1ee1\u1f2a\u1f37\u1f44\u1f4e\u1f5a\u0100Do\u1e06\u1d34o\xf4\u1c89\u0100cs\u1e0e\u1e14ute\u803b\xe9\u40e9ter;\u6a6e\u0200aioy\u1e22\u1e27\u1e31\u1e36ron;\u411br\u0100;c\u1e2d\u1e2e\u6256\u803b\xea\u40ealon;\u6255;\u444dot;\u4117\u0100Dr\u1e41\u1e45ot;\u6252;\uc000\ud835\udd22\u0180;rs\u1e50\u1e51\u1e57\u6a9aave\u803b\xe8\u40e8\u0100;d\u1e5c\u1e5d\u6a96ot;\u6a98\u0200;ils\u1e6a\u1e6b\u1e72\u1e74\u6a99nters;\u63e7;\u6113\u0100;d\u1e79\u1e7a\u6a95ot;\u6a97\u0180aps\u1e85\u1e89\u1e97cr;\u4113ty\u0180;sv\u1e92\u1e93\u1e95\u6205et\xbb\u1e93p\u01001;\u1e9d\u1ea4\u0133\u1ea1\u1ea3;\u6004;\u6005\u6003\u0100gs\u1eaa\u1eac;\u414bp;\u6002\u0100gp\u1eb4\u1eb8on;\u4119f;\uc000\ud835\udd56\u0180als\u1ec4\u1ece\u1ed2r\u0100;s\u1eca\u1ecb\u62d5l;\u69e3us;\u6a71i\u0180;lv\u1eda\u1edb\u1edf\u43b5on\xbb\u1edb;\u43f5\u0200csuv\u1eea\u1ef3\u1f0b\u1f23\u0100io\u1eef\u1e31rc\xbb\u1e2e\u0269\u1ef9\0\0\u1efb\xed\u0548ant\u0100gl\u1f02\u1f06tr\xbb\u1e5dess\xbb\u1e7a\u0180aei\u1f12\u1f16\u1f1als;\u403dst;\u625fv\u0100;D\u0235\u1f20D;\u6a78parsl;\u69e5\u0100Da\u1f2f\u1f33ot;\u6253rr;\u6971\u0180cdi\u1f3e\u1f41\u1ef8r;\u612fo\xf4\u0352\u0100ah\u1f49\u1f4b;\u43b7\u803b\xf0\u40f0\u0100mr\u1f53\u1f57l\u803b\xeb\u40ebo;\u60ac\u0180cip\u1f61\u1f64\u1f67l;\u4021s\xf4\u056e\u0100eo\u1f6c\u1f74ctatio\xee\u0559nential\xe5\u0579\u09e1\u1f92\0\u1f9e\0\u1fa1\u1fa7\0\0\u1fc6\u1fcc\0\u1fd3\0\u1fe6\u1fea\u2000\0\u2008\u205allingdotse\xf1\u1e44y;\u4444male;\u6640\u0180ilr\u1fad\u1fb3\u1fc1lig;\u8000\ufb03\u0269\u1fb9\0\0\u1fbdg;\u8000\ufb00ig;\u8000\ufb04;\uc000\ud835\udd23lig;\u8000\ufb01lig;\uc000fj\u0180alt\u1fd9\u1fdc\u1fe1t;\u666dig;\u8000\ufb02ns;\u65b1of;\u4192\u01f0\u1fee\0\u1ff3f;\uc000\ud835\udd57\u0100ak\u05bf\u1ff7\u0100;v\u1ffc\u1ffd\u62d4;\u6ad9artint;\u6a0d\u0100ao\u200c\u2055\u0100cs\u2011\u2052\u03b1\u201a\u2030\u2038\u2045\u2048\0\u2050\u03b2\u2022\u2025\u2027\u202a\u202c\0\u202e\u803b\xbd\u40bd;\u6153\u803b\xbc\u40bc;\u6155;\u6159;\u615b\u01b3\u2034\0\u2036;\u6154;\u6156\u02b4\u203e\u2041\0\0\u2043\u803b\xbe\u40be;\u6157;\u615c5;\u6158\u01b6\u204c\0\u204e;\u615a;\u615d8;\u615el;\u6044wn;\u6322cr;\uc000\ud835\udcbb\u0880Eabcdefgijlnorstv\u2082\u2089\u209f\u20a5\u20b0\u20b4\u20f0\u20f5\u20fa\u20ff\u2103\u2112\u2138\u0317\u213e\u2152\u219e\u0100;l\u064d\u2087;\u6a8c\u0180cmp\u2090\u2095\u209dute;\u41f5ma\u0100;d\u209c\u1cda\u43b3;\u6a86reve;\u411f\u0100iy\u20aa\u20aerc;\u411d;\u4433ot;\u4121\u0200;lqs\u063e\u0642\u20bd\u20c9\u0180;qs\u063e\u064c\u20c4lan\xf4\u0665\u0200;cdl\u0665\u20d2\u20d5\u20e5c;\u6aa9ot\u0100;o\u20dc\u20dd\u6a80\u0100;l\u20e2\u20e3\u6a82;\u6a84\u0100;e\u20ea\u20ed\uc000\u22db\ufe00s;\u6a94r;\uc000\ud835\udd24\u0100;g\u0673\u061bmel;\u6137cy;\u4453\u0200;Eaj\u065a\u210c\u210e\u2110;\u6a92;\u6aa5;\u6aa4\u0200Eaes\u211b\u211d\u2129\u2134;\u6269p\u0100;p\u2123\u2124\u6a8arox\xbb\u2124\u0100;q\u212e\u212f\u6a88\u0100;q\u212e\u211bim;\u62e7pf;\uc000\ud835\udd58\u0100ci\u2143\u2146r;\u610am\u0180;el\u066b\u214e\u2150;\u6a8e;\u6a90\u8300>;cdlqr\u05ee\u2160\u216a\u216e\u2173\u2179\u0100ci\u2165\u2167;\u6aa7r;\u6a7aot;\u62d7Par;\u6995uest;\u6a7c\u0280adels\u2184\u216a\u2190\u0656\u219b\u01f0\u2189\0\u218epro\xf8\u209er;\u6978q\u0100lq\u063f\u2196les\xf3\u2088i\xed\u066b\u0100en\u21a3\u21adrtneqq;\uc000\u2269\ufe00\xc5\u21aa\u0500Aabcefkosy\u21c4\u21c7\u21f1\u21f5\u21fa\u2218\u221d\u222f\u2268\u227dr\xf2\u03a0\u0200ilmr\u21d0\u21d4\u21d7\u21dbrs\xf0\u1484f\xbb\u2024il\xf4\u06a9\u0100dr\u21e0\u21e4cy;\u444a\u0180;cw\u08f4\u21eb\u21efir;\u6948;\u61adar;\u610firc;\u4125\u0180alr\u2201\u220e\u2213rts\u0100;u\u2209\u220a\u6665it\xbb\u220alip;\u6026con;\u62b9r;\uc000\ud835\udd25s\u0100ew\u2223\u2229arow;\u6925arow;\u6926\u0280amopr\u223a\u223e\u2243\u225e\u2263rr;\u61fftht;\u623bk\u0100lr\u2249\u2253eftarrow;\u61a9ightarrow;\u61aaf;\uc000\ud835\udd59bar;\u6015\u0180clt\u226f\u2274\u2278r;\uc000\ud835\udcbdas\xe8\u21f4rok;\u4127\u0100bp\u2282\u2287ull;\u6043hen\xbb\u1c5b\u0ae1\u22a3\0\u22aa\0\u22b8\u22c5\u22ce\0\u22d5\u22f3\0\0\u22f8\u2322\u2367\u2362\u237f\0\u2386\u23aa\u23b4cute\u803b\xed\u40ed\u0180;iy\u0771\u22b0\u22b5rc\u803b\xee\u40ee;\u4438\u0100cx\u22bc\u22bfy;\u4435cl\u803b\xa1\u40a1\u0100fr\u039f\u22c9;\uc000\ud835\udd26rave\u803b\xec\u40ec\u0200;ino\u073e\u22dd\u22e9\u22ee\u0100in\u22e2\u22e6nt;\u6a0ct;\u622dfin;\u69dcta;\u6129lig;\u4133\u0180aop\u22fe\u231a\u231d\u0180cgt\u2305\u2308\u2317r;\u412b\u0180elp\u071f\u230f\u2313in\xe5\u078ear\xf4\u0720h;\u4131f;\u62b7ed;\u41b5\u0280;cfot\u04f4\u232c\u2331\u233d\u2341are;\u6105in\u0100;t\u2338\u2339\u621eie;\u69dddo\xf4\u2319\u0280;celp\u0757\u234c\u2350\u235b\u2361al;\u62ba\u0100gr\u2355\u2359er\xf3\u1563\xe3\u234darhk;\u6a17rod;\u6a3c\u0200cgpt\u236f\u2372\u2376\u237by;\u4451on;\u412ff;\uc000\ud835\udd5aa;\u43b9uest\u803b\xbf\u40bf\u0100ci\u238a\u238fr;\uc000\ud835\udcben\u0280;Edsv\u04f4\u239b\u239d\u23a1\u04f3;\u62f9ot;\u62f5\u0100;v\u23a6\u23a7\u62f4;\u62f3\u0100;i\u0777\u23aelde;\u4129\u01eb\u23b8\0\u23bccy;\u4456l\u803b\xef\u40ef\u0300cfmosu\u23cc\u23d7\u23dc\u23e1\u23e7\u23f5\u0100iy\u23d1\u23d5rc;\u4135;\u4439r;\uc000\ud835\udd27ath;\u4237pf;\uc000\ud835\udd5b\u01e3\u23ec\0\u23f1r;\uc000\ud835\udcbfrcy;\u4458kcy;\u4454\u0400acfghjos\u240b\u2416\u2422\u2427\u242d\u2431\u2435\u243bppa\u0100;v\u2413\u2414\u43ba;\u43f0\u0100ey\u241b\u2420dil;\u4137;\u443ar;\uc000\ud835\udd28reen;\u4138cy;\u4445cy;\u445cpf;\uc000\ud835\udd5ccr;\uc000\ud835\udcc0\u0b80ABEHabcdefghjlmnoprstuv\u2470\u2481\u2486\u248d\u2491\u250e\u253d\u255a\u2580\u264e\u265e\u2665\u2679\u267d\u269a\u26b2\u26d8\u275d\u2768\u278b\u27c0\u2801\u2812\u0180art\u2477\u247a\u247cr\xf2\u09c6\xf2\u0395ail;\u691barr;\u690e\u0100;g\u0994\u248b;\u6a8bar;\u6962\u0963\u24a5\0\u24aa\0\u24b1\0\0\0\0\0\u24b5\u24ba\0\u24c6\u24c8\u24cd\0\u24f9ute;\u413amptyv;\u69b4ra\xee\u084cbda;\u43bbg\u0180;dl\u088e\u24c1\u24c3;\u6991\xe5\u088e;\u6a85uo\u803b\xab\u40abr\u0400;bfhlpst\u0899\u24de\u24e6\u24e9\u24eb\u24ee\u24f1\u24f5\u0100;f\u089d\u24e3s;\u691fs;\u691d\xeb\u2252p;\u61abl;\u6939im;\u6973l;\u61a2\u0180;ae\u24ff\u2500\u2504\u6aabil;\u6919\u0100;s\u2509\u250a\u6aad;\uc000\u2aad\ufe00\u0180abr\u2515\u2519\u251drr;\u690crk;\u6772\u0100ak\u2522\u252cc\u0100ek\u2528\u252a;\u407b;\u405b\u0100es\u2531\u2533;\u698bl\u0100du\u2539\u253b;\u698f;\u698d\u0200aeuy\u2546\u254b\u2556\u2558ron;\u413e\u0100di\u2550\u2554il;\u413c\xec\u08b0\xe2\u2529;\u443b\u0200cqrs\u2563\u2566\u256d\u257da;\u6936uo\u0100;r\u0e19\u1746\u0100du\u2572\u2577har;\u6967shar;\u694bh;\u61b2\u0280;fgqs\u258b\u258c\u0989\u25f3\u25ff\u6264t\u0280ahlrt\u2598\u25a4\u25b7\u25c2\u25e8rrow\u0100;t\u0899\u25a1a\xe9\u24f6arpoon\u0100du\u25af\u25b4own\xbb\u045ap\xbb\u0966eftarrows;\u61c7ight\u0180ahs\u25cd\u25d6\u25derrow\u0100;s\u08f4\u08a7arpoon\xf3\u0f98quigarro\xf7\u21f0hreetimes;\u62cb\u0180;qs\u258b\u0993\u25falan\xf4\u09ac\u0280;cdgs\u09ac\u260a\u260d\u261d\u2628c;\u6aa8ot\u0100;o\u2614\u2615\u6a7f\u0100;r\u261a\u261b\u6a81;\u6a83\u0100;e\u2622\u2625\uc000\u22da\ufe00s;\u6a93\u0280adegs\u2633\u2639\u263d\u2649\u264bppro\xf8\u24c6ot;\u62d6q\u0100gq\u2643\u2645\xf4\u0989gt\xf2\u248c\xf4\u099bi\xed\u09b2\u0180ilr\u2655\u08e1\u265asht;\u697c;\uc000\ud835\udd29\u0100;E\u099c\u2663;\u6a91\u0161\u2669\u2676r\u0100du\u25b2\u266e\u0100;l\u0965\u2673;\u696alk;\u6584cy;\u4459\u0280;acht\u0a48\u2688\u268b\u2691\u2696r\xf2\u25c1orne\xf2\u1d08ard;\u696bri;\u65fa\u0100io\u269f\u26a4dot;\u4140ust\u0100;a\u26ac\u26ad\u63b0che\xbb\u26ad\u0200Eaes\u26bb\u26bd\u26c9\u26d4;\u6268p\u0100;p\u26c3\u26c4\u6a89rox\xbb\u26c4\u0100;q\u26ce\u26cf\u6a87\u0100;q\u26ce\u26bbim;\u62e6\u0400abnoptwz\u26e9\u26f4\u26f7\u271a\u272f\u2741\u2747\u2750\u0100nr\u26ee\u26f1g;\u67ecr;\u61fdr\xeb\u08c1g\u0180lmr\u26ff\u270d\u2714eft\u0100ar\u09e6\u2707ight\xe1\u09f2apsto;\u67fcight\xe1\u09fdparrow\u0100lr\u2725\u2729ef\xf4\u24edight;\u61ac\u0180afl\u2736\u2739\u273dr;\u6985;\uc000\ud835\udd5dus;\u6a2dimes;\u6a34\u0161\u274b\u274fst;\u6217\xe1\u134e\u0180;ef\u2757\u2758\u1800\u65cange\xbb\u2758ar\u0100;l\u2764\u2765\u4028t;\u6993\u0280achmt\u2773\u2776\u277c\u2785\u2787r\xf2\u08a8orne\xf2\u1d8car\u0100;d\u0f98\u2783;\u696d;\u600eri;\u62bf\u0300achiqt\u2798\u279d\u0a40\u27a2\u27ae\u27bbquo;\u6039r;\uc000\ud835\udcc1m\u0180;eg\u09b2\u27aa\u27ac;\u6a8d;\u6a8f\u0100bu\u252a\u27b3o\u0100;r\u0e1f\u27b9;\u601arok;\u4142\u8400<;cdhilqr\u082b\u27d2\u2639\u27dc\u27e0\u27e5\u27ea\u27f0\u0100ci\u27d7\u27d9;\u6aa6r;\u6a79re\xe5\u25f2mes;\u62c9arr;\u6976uest;\u6a7b\u0100Pi\u27f5\u27f9ar;\u6996\u0180;ef\u2800\u092d\u181b\u65c3r\u0100du\u2807\u280dshar;\u694ahar;\u6966\u0100en\u2817\u2821rtneqq;\uc000\u2268\ufe00\xc5\u281e\u0700Dacdefhilnopsu\u2840\u2845\u2882\u288e\u2893\u28a0\u28a5\u28a8\u28da\u28e2\u28e4\u0a83\u28f3\u2902Dot;\u623a\u0200clpr\u284e\u2852\u2863\u287dr\u803b\xaf\u40af\u0100et\u2857\u2859;\u6642\u0100;e\u285e\u285f\u6720se\xbb\u285f\u0100;s\u103b\u2868to\u0200;dlu\u103b\u2873\u2877\u287bow\xee\u048cef\xf4\u090f\xf0\u13d1ker;\u65ae\u0100oy\u2887\u288cmma;\u6a29;\u443cash;\u6014asuredangle\xbb\u1626r;\uc000\ud835\udd2ao;\u6127\u0180cdn\u28af\u28b4\u28c9ro\u803b\xb5\u40b5\u0200;acd\u1464\u28bd\u28c0\u28c4s\xf4\u16a7ir;\u6af0ot\u80bb\xb7\u01b5us\u0180;bd\u28d2\u1903\u28d3\u6212\u0100;u\u1d3c\u28d8;\u6a2a\u0163\u28de\u28e1p;\u6adb\xf2\u2212\xf0\u0a81\u0100dp\u28e9\u28eeels;\u62a7f;\uc000\ud835\udd5e\u0100ct\u28f8\u28fdr;\uc000\ud835\udcc2pos\xbb\u159d\u0180;lm\u2909\u290a\u290d\u43bctimap;\u62b8\u0c00GLRVabcdefghijlmoprstuvw\u2942\u2953\u297e\u2989\u2998\u29da\u29e9\u2a15\u2a1a\u2a58\u2a5d\u2a83\u2a95\u2aa4\u2aa8\u2b04\u2b07\u2b44\u2b7f\u2bae\u2c34\u2c67\u2c7c\u2ce9\u0100gt\u2947\u294b;\uc000\u22d9\u0338\u0100;v\u2950\u0bcf\uc000\u226b\u20d2\u0180elt\u295a\u2972\u2976ft\u0100ar\u2961\u2967rrow;\u61cdightarrow;\u61ce;\uc000\u22d8\u0338\u0100;v\u297b\u0c47\uc000\u226a\u20d2ightarrow;\u61cf\u0100Dd\u298e\u2993ash;\u62afash;\u62ae\u0280bcnpt\u29a3\u29a7\u29ac\u29b1\u29ccla\xbb\u02deute;\u4144g;\uc000\u2220\u20d2\u0280;Eiop\u0d84\u29bc\u29c0\u29c5\u29c8;\uc000\u2a70\u0338d;\uc000\u224b\u0338s;\u4149ro\xf8\u0d84ur\u0100;a\u29d3\u29d4\u666el\u0100;s\u29d3\u0b38\u01f3\u29df\0\u29e3p\u80bb\xa0\u0b37mp\u0100;e\u0bf9\u0c00\u0280aeouy\u29f4\u29fe\u2a03\u2a10\u2a13\u01f0\u29f9\0\u29fb;\u6a43on;\u4148dil;\u4146ng\u0100;d\u0d7e\u2a0aot;\uc000\u2a6d\u0338p;\u6a42;\u443dash;\u6013\u0380;Aadqsx\u0b92\u2a29\u2a2d\u2a3b\u2a41\u2a45\u2a50rr;\u61d7r\u0100hr\u2a33\u2a36k;\u6924\u0100;o\u13f2\u13f0ot;\uc000\u2250\u0338ui\xf6\u0b63\u0100ei\u2a4a\u2a4ear;\u6928\xed\u0b98ist\u0100;s\u0ba0\u0b9fr;\uc000\ud835\udd2b\u0200Eest\u0bc5\u2a66\u2a79\u2a7c\u0180;qs\u0bbc\u2a6d\u0be1\u0180;qs\u0bbc\u0bc5\u2a74lan\xf4\u0be2i\xed\u0bea\u0100;r\u0bb6\u2a81\xbb\u0bb7\u0180Aap\u2a8a\u2a8d\u2a91r\xf2\u2971rr;\u61aear;\u6af2\u0180;sv\u0f8d\u2a9c\u0f8c\u0100;d\u2aa1\u2aa2\u62fc;\u62facy;\u445a\u0380AEadest\u2ab7\u2aba\u2abe\u2ac2\u2ac5\u2af6\u2af9r\xf2\u2966;\uc000\u2266\u0338rr;\u619ar;\u6025\u0200;fqs\u0c3b\u2ace\u2ae3\u2aeft\u0100ar\u2ad4\u2ad9rro\xf7\u2ac1ightarro\xf7\u2a90\u0180;qs\u0c3b\u2aba\u2aealan\xf4\u0c55\u0100;s\u0c55\u2af4\xbb\u0c36i\xed\u0c5d\u0100;r\u0c35\u2afei\u0100;e\u0c1a\u0c25i\xe4\u0d90\u0100pt\u2b0c\u2b11f;\uc000\ud835\udd5f\u8180\xac;in\u2b19\u2b1a\u2b36\u40acn\u0200;Edv\u0b89\u2b24\u2b28\u2b2e;\uc000\u22f9\u0338ot;\uc000\u22f5\u0338\u01e1\u0b89\u2b33\u2b35;\u62f7;\u62f6i\u0100;v\u0cb8\u2b3c\u01e1\u0cb8\u2b41\u2b43;\u62fe;\u62fd\u0180aor\u2b4b\u2b63\u2b69r\u0200;ast\u0b7b\u2b55\u2b5a\u2b5flle\xec\u0b7bl;\uc000\u2afd\u20e5;\uc000\u2202\u0338lint;\u6a14\u0180;ce\u0c92\u2b70\u2b73u\xe5\u0ca5\u0100;c\u0c98\u2b78\u0100;e\u0c92\u2b7d\xf1\u0c98\u0200Aait\u2b88\u2b8b\u2b9d\u2ba7r\xf2\u2988rr\u0180;cw\u2b94\u2b95\u2b99\u619b;\uc000\u2933\u0338;\uc000\u219d\u0338ghtarrow\xbb\u2b95ri\u0100;e\u0ccb\u0cd6\u0380chimpqu\u2bbd\u2bcd\u2bd9\u2b04\u0b78\u2be4\u2bef\u0200;cer\u0d32\u2bc6\u0d37\u2bc9u\xe5\u0d45;\uc000\ud835\udcc3ort\u026d\u2b05\0\0\u2bd6ar\xe1\u2b56m\u0100;e\u0d6e\u2bdf\u0100;q\u0d74\u0d73su\u0100bp\u2beb\u2bed\xe5\u0cf8\xe5\u0d0b\u0180bcp\u2bf6\u2c11\u2c19\u0200;Ees\u2bff\u2c00\u0d22\u2c04\u6284;\uc000\u2ac5\u0338et\u0100;e\u0d1b\u2c0bq\u0100;q\u0d23\u2c00c\u0100;e\u0d32\u2c17\xf1\u0d38\u0200;Ees\u2c22\u2c23\u0d5f\u2c27\u6285;\uc000\u2ac6\u0338et\u0100;e\u0d58\u2c2eq\u0100;q\u0d60\u2c23\u0200gilr\u2c3d\u2c3f\u2c45\u2c47\xec\u0bd7lde\u803b\xf1\u40f1\xe7\u0c43iangle\u0100lr\u2c52\u2c5ceft\u0100;e\u0c1a\u2c5a\xf1\u0c26ight\u0100;e\u0ccb\u2c65\xf1\u0cd7\u0100;m\u2c6c\u2c6d\u43bd\u0180;es\u2c74\u2c75\u2c79\u4023ro;\u6116p;\u6007\u0480DHadgilrs\u2c8f\u2c94\u2c99\u2c9e\u2ca3\u2cb0\u2cb6\u2cd3\u2ce3ash;\u62adarr;\u6904p;\uc000\u224d\u20d2ash;\u62ac\u0100et\u2ca8\u2cac;\uc000\u2265\u20d2;\uc000>\u20d2nfin;\u69de\u0180Aet\u2cbd\u2cc1\u2cc5rr;\u6902;\uc000\u2264\u20d2\u0100;r\u2cca\u2ccd\uc000<\u20d2ie;\uc000\u22b4\u20d2\u0100At\u2cd8\u2cdcrr;\u6903rie;\uc000\u22b5\u20d2im;\uc000\u223c\u20d2\u0180Aan\u2cf0\u2cf4\u2d02rr;\u61d6r\u0100hr\u2cfa\u2cfdk;\u6923\u0100;o\u13e7\u13e5ear;\u6927\u1253\u1a95\0\0\0\0\0\0\0\0\0\0\0\0\0\u2d2d\0\u2d38\u2d48\u2d60\u2d65\u2d72\u2d84\u1b07\0\0\u2d8d\u2dab\0\u2dc8\u2dce\0\u2ddc\u2e19\u2e2b\u2e3e\u2e43\u0100cs\u2d31\u1a97ute\u803b\xf3\u40f3\u0100iy\u2d3c\u2d45r\u0100;c\u1a9e\u2d42\u803b\xf4\u40f4;\u443e\u0280abios\u1aa0\u2d52\u2d57\u01c8\u2d5alac;\u4151v;\u6a38old;\u69bclig;\u4153\u0100cr\u2d69\u2d6dir;\u69bf;\uc000\ud835\udd2c\u036f\u2d79\0\0\u2d7c\0\u2d82n;\u42dbave\u803b\xf2\u40f2;\u69c1\u0100bm\u2d88\u0df4ar;\u69b5\u0200acit\u2d95\u2d98\u2da5\u2da8r\xf2\u1a80\u0100ir\u2d9d\u2da0r;\u69beoss;\u69bbn\xe5\u0e52;\u69c0\u0180aei\u2db1\u2db5\u2db9cr;\u414dga;\u43c9\u0180cdn\u2dc0\u2dc5\u01cdron;\u43bf;\u69b6pf;\uc000\ud835\udd60\u0180ael\u2dd4\u2dd7\u01d2r;\u69b7rp;\u69b9\u0380;adiosv\u2dea\u2deb\u2dee\u2e08\u2e0d\u2e10\u2e16\u6228r\xf2\u1a86\u0200;efm\u2df7\u2df8\u2e02\u2e05\u6a5dr\u0100;o\u2dfe\u2dff\u6134f\xbb\u2dff\u803b\xaa\u40aa\u803b\xba\u40bagof;\u62b6r;\u6a56lope;\u6a57;\u6a5b\u0180clo\u2e1f\u2e21\u2e27\xf2\u2e01ash\u803b\xf8\u40f8l;\u6298i\u016c\u2e2f\u2e34de\u803b\xf5\u40f5es\u0100;a\u01db\u2e3as;\u6a36ml\u803b\xf6\u40f6bar;\u633d\u0ae1\u2e5e\0\u2e7d\0\u2e80\u2e9d\0\u2ea2\u2eb9\0\0\u2ecb\u0e9c\0\u2f13\0\0\u2f2b\u2fbc\0\u2fc8r\u0200;ast\u0403\u2e67\u2e72\u0e85\u8100\xb6;l\u2e6d\u2e6e\u40b6le\xec\u0403\u0269\u2e78\0\0\u2e7bm;\u6af3;\u6afdy;\u443fr\u0280cimpt\u2e8b\u2e8f\u2e93\u1865\u2e97nt;\u4025od;\u402eil;\u6030enk;\u6031r;\uc000\ud835\udd2d\u0180imo\u2ea8\u2eb0\u2eb4\u0100;v\u2ead\u2eae\u43c6;\u43d5ma\xf4\u0a76ne;\u660e\u0180;tv\u2ebf\u2ec0\u2ec8\u43c0chfork\xbb\u1ffd;\u43d6\u0100au\u2ecf\u2edfn\u0100ck\u2ed5\u2eddk\u0100;h\u21f4\u2edb;\u610e\xf6\u21f4s\u0480;abcdemst\u2ef3\u2ef4\u1908\u2ef9\u2efd\u2f04\u2f06\u2f0a\u2f0e\u402bcir;\u6a23ir;\u6a22\u0100ou\u1d40\u2f02;\u6a25;\u6a72n\u80bb\xb1\u0e9dim;\u6a26wo;\u6a27\u0180ipu\u2f19\u2f20\u2f25ntint;\u6a15f;\uc000\ud835\udd61nd\u803b\xa3\u40a3\u0500;Eaceinosu\u0ec8\u2f3f\u2f41\u2f44\u2f47\u2f81\u2f89\u2f92\u2f7e\u2fb6;\u6ab3p;\u6ab7u\xe5\u0ed9\u0100;c\u0ece\u2f4c\u0300;acens\u0ec8\u2f59\u2f5f\u2f66\u2f68\u2f7eppro\xf8\u2f43urlye\xf1\u0ed9\xf1\u0ece\u0180aes\u2f6f\u2f76\u2f7approx;\u6ab9qq;\u6ab5im;\u62e8i\xed\u0edfme\u0100;s\u2f88\u0eae\u6032\u0180Eas\u2f78\u2f90\u2f7a\xf0\u2f75\u0180dfp\u0eec\u2f99\u2faf\u0180als\u2fa0\u2fa5\u2faalar;\u632eine;\u6312urf;\u6313\u0100;t\u0efb\u2fb4\xef\u0efbrel;\u62b0\u0100ci\u2fc0\u2fc5r;\uc000\ud835\udcc5;\u43c8ncsp;\u6008\u0300fiopsu\u2fda\u22e2\u2fdf\u2fe5\u2feb\u2ff1r;\uc000\ud835\udd2epf;\uc000\ud835\udd62rime;\u6057cr;\uc000\ud835\udcc6\u0180aeo\u2ff8\u3009\u3013t\u0100ei\u2ffe\u3005rnion\xf3\u06b0nt;\u6a16st\u0100;e\u3010\u3011\u403f\xf1\u1f19\xf4\u0f14\u0a80ABHabcdefhilmnoprstux\u3040\u3051\u3055\u3059\u30e0\u310e\u312b\u3147\u3162\u3172\u318e\u3206\u3215\u3224\u3229\u3258\u326e\u3272\u3290\u32b0\u32b7\u0180art\u3047\u304a\u304cr\xf2\u10b3\xf2\u03ddail;\u691car\xf2\u1c65ar;\u6964\u0380cdenqrt\u3068\u3075\u3078\u307f\u308f\u3094\u30cc\u0100eu\u306d\u3071;\uc000\u223d\u0331te;\u4155i\xe3\u116emptyv;\u69b3g\u0200;del\u0fd1\u3089\u308b\u308d;\u6992;\u69a5\xe5\u0fd1uo\u803b\xbb\u40bbr\u0580;abcfhlpstw\u0fdc\u30ac\u30af\u30b7\u30b9\u30bc\u30be\u30c0\u30c3\u30c7\u30cap;\u6975\u0100;f\u0fe0\u30b4s;\u6920;\u6933s;\u691e\xeb\u225d\xf0\u272el;\u6945im;\u6974l;\u61a3;\u619d\u0100ai\u30d1\u30d5il;\u691ao\u0100;n\u30db\u30dc\u6236al\xf3\u0f1e\u0180abr\u30e7\u30ea\u30eer\xf2\u17e5rk;\u6773\u0100ak\u30f3\u30fdc\u0100ek\u30f9\u30fb;\u407d;\u405d\u0100es\u3102\u3104;\u698cl\u0100du\u310a\u310c;\u698e;\u6990\u0200aeuy\u3117\u311c\u3127\u3129ron;\u4159\u0100di\u3121\u3125il;\u4157\xec\u0ff2\xe2\u30fa;\u4440\u0200clqs\u3134\u3137\u313d\u3144a;\u6937dhar;\u6969uo\u0100;r\u020e\u020dh;\u61b3\u0180acg\u314e\u315f\u0f44l\u0200;ips\u0f78\u3158\u315b\u109cn\xe5\u10bbar\xf4\u0fa9t;\u65ad\u0180ilr\u3169\u1023\u316esht;\u697d;\uc000\ud835\udd2f\u0100ao\u3177\u3186r\u0100du\u317d\u317f\xbb\u047b\u0100;l\u1091\u3184;\u696c\u0100;v\u318b\u318c\u43c1;\u43f1\u0180gns\u3195\u31f9\u31fcht\u0300ahlrst\u31a4\u31b0\u31c2\u31d8\u31e4\u31eerrow\u0100;t\u0fdc\u31ada\xe9\u30c8arpoon\u0100du\u31bb\u31bfow\xee\u317ep\xbb\u1092eft\u0100ah\u31ca\u31d0rrow\xf3\u0feaarpoon\xf3\u0551ightarrows;\u61c9quigarro\xf7\u30cbhreetimes;\u62ccg;\u42daingdotse\xf1\u1f32\u0180ahm\u320d\u3210\u3213r\xf2\u0feaa\xf2\u0551;\u600foust\u0100;a\u321e\u321f\u63b1che\xbb\u321fmid;\u6aee\u0200abpt\u3232\u323d\u3240\u3252\u0100nr\u3237\u323ag;\u67edr;\u61fer\xeb\u1003\u0180afl\u3247\u324a\u324er;\u6986;\uc000\ud835\udd63us;\u6a2eimes;\u6a35\u0100ap\u325d\u3267r\u0100;g\u3263\u3264\u4029t;\u6994olint;\u6a12ar\xf2\u31e3\u0200achq\u327b\u3280\u10bc\u3285quo;\u603ar;\uc000\ud835\udcc7\u0100bu\u30fb\u328ao\u0100;r\u0214\u0213\u0180hir\u3297\u329b\u32a0re\xe5\u31f8mes;\u62cai\u0200;efl\u32aa\u1059\u1821\u32ab\u65b9tri;\u69celuhar;\u6968;\u611e\u0d61\u32d5\u32db\u32df\u332c\u3338\u3371\0\u337a\u33a4\0\0\u33ec\u33f0\0\u3428\u3448\u345a\u34ad\u34b1\u34ca\u34f1\0\u3616\0\0\u3633cute;\u415bqu\xef\u27ba\u0500;Eaceinpsy\u11ed\u32f3\u32f5\u32ff\u3302\u330b\u330f\u331f\u3326\u3329;\u6ab4\u01f0\u32fa\0\u32fc;\u6ab8on;\u4161u\xe5\u11fe\u0100;d\u11f3\u3307il;\u415frc;\u415d\u0180Eas\u3316\u3318\u331b;\u6ab6p;\u6abaim;\u62e9olint;\u6a13i\xed\u1204;\u4441ot\u0180;be\u3334\u1d47\u3335\u62c5;\u6a66\u0380Aacmstx\u3346\u334a\u3357\u335b\u335e\u3363\u336drr;\u61d8r\u0100hr\u3350\u3352\xeb\u2228\u0100;o\u0a36\u0a34t\u803b\xa7\u40a7i;\u403bwar;\u6929m\u0100in\u3369\xf0nu\xf3\xf1t;\u6736r\u0100;o\u3376\u2055\uc000\ud835\udd30\u0200acoy\u3382\u3386\u3391\u33a0rp;\u666f\u0100hy\u338b\u338fcy;\u4449;\u4448rt\u026d\u3399\0\0\u339ci\xe4\u1464ara\xec\u2e6f\u803b\xad\u40ad\u0100gm\u33a8\u33b4ma\u0180;fv\u33b1\u33b2\u33b2\u43c3;\u43c2\u0400;deglnpr\u12ab\u33c5\u33c9\u33ce\u33d6\u33de\u33e1\u33e6ot;\u6a6a\u0100;q\u12b1\u12b0\u0100;E\u33d3\u33d4\u6a9e;\u6aa0\u0100;E\u33db\u33dc\u6a9d;\u6a9fe;\u6246lus;\u6a24arr;\u6972ar\xf2\u113d\u0200aeit\u33f8\u3408\u340f\u3417\u0100ls\u33fd\u3404lsetm\xe9\u336ahp;\u6a33parsl;\u69e4\u0100dl\u1463\u3414e;\u6323\u0100;e\u341c\u341d\u6aaa\u0100;s\u3422\u3423\u6aac;\uc000\u2aac\ufe00\u0180flp\u342e\u3433\u3442tcy;\u444c\u0100;b\u3438\u3439\u402f\u0100;a\u343e\u343f\u69c4r;\u633ff;\uc000\ud835\udd64a\u0100dr\u344d\u0402es\u0100;u\u3454\u3455\u6660it\xbb\u3455\u0180csu\u3460\u3479\u349f\u0100au\u3465\u346fp\u0100;s\u1188\u346b;\uc000\u2293\ufe00p\u0100;s\u11b4\u3475;\uc000\u2294\ufe00u\u0100bp\u347f\u348f\u0180;es\u1197\u119c\u3486et\u0100;e\u1197\u348d\xf1\u119d\u0180;es\u11a8\u11ad\u3496et\u0100;e\u11a8\u349d\xf1\u11ae\u0180;af\u117b\u34a6\u05b0r\u0165\u34ab\u05b1\xbb\u117car\xf2\u1148\u0200cemt\u34b9\u34be\u34c2\u34c5r;\uc000\ud835\udcc8tm\xee\xf1i\xec\u3415ar\xe6\u11be\u0100ar\u34ce\u34d5r\u0100;f\u34d4\u17bf\u6606\u0100an\u34da\u34edight\u0100ep\u34e3\u34eapsilo\xee\u1ee0h\xe9\u2eafs\xbb\u2852\u0280bcmnp\u34fb\u355e\u1209\u358b\u358e\u0480;Edemnprs\u350e\u350f\u3511\u3515\u351e\u3523\u352c\u3531\u3536\u6282;\u6ac5ot;\u6abd\u0100;d\u11da\u351aot;\u6ac3ult;\u6ac1\u0100Ee\u3528\u352a;\u6acb;\u628alus;\u6abfarr;\u6979\u0180eiu\u353d\u3552\u3555t\u0180;en\u350e\u3545\u354bq\u0100;q\u11da\u350feq\u0100;q\u352b\u3528m;\u6ac7\u0100bp\u355a\u355c;\u6ad5;\u6ad3c\u0300;acens\u11ed\u356c\u3572\u3579\u357b\u3326ppro\xf8\u32faurlye\xf1\u11fe\xf1\u11f3\u0180aes\u3582\u3588\u331bppro\xf8\u331aq\xf1\u3317g;\u666a\u0680123;Edehlmnps\u35a9\u35ac\u35af\u121c\u35b2\u35b4\u35c0\u35c9\u35d5\u35da\u35df\u35e8\u35ed\u803b\xb9\u40b9\u803b\xb2\u40b2\u803b\xb3\u40b3;\u6ac6\u0100os\u35b9\u35bct;\u6abeub;\u6ad8\u0100;d\u1222\u35c5ot;\u6ac4s\u0100ou\u35cf\u35d2l;\u67c9b;\u6ad7arr;\u697bult;\u6ac2\u0100Ee\u35e4\u35e6;\u6acc;\u628blus;\u6ac0\u0180eiu\u35f4\u3609\u360ct\u0180;en\u121c\u35fc\u3602q\u0100;q\u1222\u35b2eq\u0100;q\u35e7\u35e4m;\u6ac8\u0100bp\u3611\u3613;\u6ad4;\u6ad6\u0180Aan\u361c\u3620\u362drr;\u61d9r\u0100hr\u3626\u3628\xeb\u222e\u0100;o\u0a2b\u0a29war;\u692alig\u803b\xdf\u40df\u0be1\u3651\u365d\u3660\u12ce\u3673\u3679\0\u367e\u36c2\0\0\0\0\0\u36db\u3703\0\u3709\u376c\0\0\0\u3787\u0272\u3656\0\0\u365bget;\u6316;\u43c4r\xeb\u0e5f\u0180aey\u3666\u366b\u3670ron;\u4165dil;\u4163;\u4442lrec;\u6315r;\uc000\ud835\udd31\u0200eiko\u3686\u369d\u36b5\u36bc\u01f2\u368b\0\u3691e\u01004f\u1284\u1281a\u0180;sv\u3698\u3699\u369b\u43b8ym;\u43d1\u0100cn\u36a2\u36b2k\u0100as\u36a8\u36aeppro\xf8\u12c1im\xbb\u12acs\xf0\u129e\u0100as\u36ba\u36ae\xf0\u12c1rn\u803b\xfe\u40fe\u01ec\u031f\u36c6\u22e7es\u8180\xd7;bd\u36cf\u36d0\u36d8\u40d7\u0100;a\u190f\u36d5r;\u6a31;\u6a30\u0180eps\u36e1\u36e3\u3700\xe1\u2a4d\u0200;bcf\u0486\u36ec\u36f0\u36f4ot;\u6336ir;\u6af1\u0100;o\u36f9\u36fc\uc000\ud835\udd65rk;\u6ada\xe1\u3362rime;\u6034\u0180aip\u370f\u3712\u3764d\xe5\u1248\u0380adempst\u3721\u374d\u3740\u3751\u3757\u375c\u375fngle\u0280;dlqr\u3730\u3731\u3736\u3740\u3742\u65b5own\xbb\u1dbbeft\u0100;e\u2800\u373e\xf1\u092e;\u625cight\u0100;e\u32aa\u374b\xf1\u105aot;\u65ecinus;\u6a3alus;\u6a39b;\u69cdime;\u6a3bezium;\u63e2\u0180cht\u3772\u377d\u3781\u0100ry\u3777\u377b;\uc000\ud835\udcc9;\u4446cy;\u445brok;\u4167\u0100io\u378b\u378ex\xf4\u1777head\u0100lr\u3797\u37a0eftarro\xf7\u084fightarrow\xbb\u0f5d\u0900AHabcdfghlmoprstuw\u37d0\u37d3\u37d7\u37e4\u37f0\u37fc\u380e\u381c\u3823\u3834\u3851\u385d\u386b\u38a9\u38cc\u38d2\u38ea\u38f6r\xf2\u03edar;\u6963\u0100cr\u37dc\u37e2ute\u803b\xfa\u40fa\xf2\u1150r\u01e3\u37ea\0\u37edy;\u445eve;\u416d\u0100iy\u37f5\u37farc\u803b\xfb\u40fb;\u4443\u0180abh\u3803\u3806\u380br\xf2\u13adlac;\u4171a\xf2\u13c3\u0100ir\u3813\u3818sht;\u697e;\uc000\ud835\udd32rave\u803b\xf9\u40f9\u0161\u3827\u3831r\u0100lr\u382c\u382e\xbb\u0957\xbb\u1083lk;\u6580\u0100ct\u3839\u384d\u026f\u383f\0\0\u384arn\u0100;e\u3845\u3846\u631cr\xbb\u3846op;\u630fri;\u65f8\u0100al\u3856\u385acr;\u416b\u80bb\xa8\u0349\u0100gp\u3862\u3866on;\u4173f;\uc000\ud835\udd66\u0300adhlsu\u114b\u3878\u387d\u1372\u3891\u38a0own\xe1\u13b3arpoon\u0100lr\u3888\u388cef\xf4\u382digh\xf4\u382fi\u0180;hl\u3899\u389a\u389c\u43c5\xbb\u13faon\xbb\u389aparrows;\u61c8\u0180cit\u38b0\u38c4\u38c8\u026f\u38b6\0\0\u38c1rn\u0100;e\u38bc\u38bd\u631dr\xbb\u38bdop;\u630eng;\u416fri;\u65f9cr;\uc000\ud835\udcca\u0180dir\u38d9\u38dd\u38e2ot;\u62f0lde;\u4169i\u0100;f\u3730\u38e8\xbb\u1813\u0100am\u38ef\u38f2r\xf2\u38a8l\u803b\xfc\u40fcangle;\u69a7\u0780ABDacdeflnoprsz\u391c\u391f\u3929\u392d\u39b5\u39b8\u39bd\u39df\u39e4\u39e8\u39f3\u39f9\u39fd\u3a01\u3a20r\xf2\u03f7ar\u0100;v\u3926\u3927\u6ae8;\u6ae9as\xe8\u03e1\u0100nr\u3932\u3937grt;\u699c\u0380eknprst\u34e3\u3946\u394b\u3952\u395d\u3964\u3996app\xe1\u2415othin\xe7\u1e96\u0180hir\u34eb\u2ec8\u3959op\xf4\u2fb5\u0100;h\u13b7\u3962\xef\u318d\u0100iu\u3969\u396dgm\xe1\u33b3\u0100bp\u3972\u3984setneq\u0100;q\u397d\u3980\uc000\u228a\ufe00;\uc000\u2acb\ufe00setneq\u0100;q\u398f\u3992\uc000\u228b\ufe00;\uc000\u2acc\ufe00\u0100hr\u399b\u399fet\xe1\u369ciangle\u0100lr\u39aa\u39afeft\xbb\u0925ight\xbb\u1051y;\u4432ash\xbb\u1036\u0180elr\u39c4\u39d2\u39d7\u0180;be\u2dea\u39cb\u39cfar;\u62bbq;\u625alip;\u62ee\u0100bt\u39dc\u1468a\xf2\u1469r;\uc000\ud835\udd33tr\xe9\u39aesu\u0100bp\u39ef\u39f1\xbb\u0d1c\xbb\u0d59pf;\uc000\ud835\udd67ro\xf0\u0efbtr\xe9\u39b4\u0100cu\u3a06\u3a0br;\uc000\ud835\udccb\u0100bp\u3a10\u3a18n\u0100Ee\u3980\u3a16\xbb\u397en\u0100Ee\u3992\u3a1e\xbb\u3990igzag;\u699a\u0380cefoprs\u3a36\u3a3b\u3a56\u3a5b\u3a54\u3a61\u3a6airc;\u4175\u0100di\u3a40\u3a51\u0100bg\u3a45\u3a49ar;\u6a5fe\u0100;q\u15fa\u3a4f;\u6259erp;\u6118r;\uc000\ud835\udd34pf;\uc000\ud835\udd68\u0100;e\u1479\u3a66at\xe8\u1479cr;\uc000\ud835\udccc\u0ae3\u178e\u3a87\0\u3a8b\0\u3a90\u3a9b\0\0\u3a9d\u3aa8\u3aab\u3aaf\0\0\u3ac3\u3ace\0\u3ad8\u17dc\u17dftr\xe9\u17d1r;\uc000\ud835\udd35\u0100Aa\u3a94\u3a97r\xf2\u03c3r\xf2\u09f6;\u43be\u0100Aa\u3aa1\u3aa4r\xf2\u03b8r\xf2\u09eba\xf0\u2713is;\u62fb\u0180dpt\u17a4\u3ab5\u3abe\u0100fl\u3aba\u17a9;\uc000\ud835\udd69im\xe5\u17b2\u0100Aa\u3ac7\u3acar\xf2\u03cer\xf2\u0a01\u0100cq\u3ad2\u17b8r;\uc000\ud835\udccd\u0100pt\u17d6\u3adcr\xe9\u17d4\u0400acefiosu\u3af0\u3afd\u3b08\u3b0c\u3b11\u3b15\u3b1b\u3b21c\u0100uy\u3af6\u3afbte\u803b\xfd\u40fd;\u444f\u0100iy\u3b02\u3b06rc;\u4177;\u444bn\u803b\xa5\u40a5r;\uc000\ud835\udd36cy;\u4457pf;\uc000\ud835\udd6acr;\uc000\ud835\udcce\u0100cm\u3b26\u3b29y;\u444el\u803b\xff\u40ff\u0500acdefhiosw\u3b42\u3b48\u3b54\u3b58\u3b64\u3b69\u3b6d\u3b74\u3b7a\u3b80cute;\u417a\u0100ay\u3b4d\u3b52ron;\u417e;\u4437ot;\u417c\u0100et\u3b5d\u3b61tr\xe6\u155fa;\u43b6r;\uc000\ud835\udd37cy;\u4436grarr;\u61ddpf;\uc000\ud835\udd6bcr;\uc000\ud835\udccf\u0100jn\u3b85\u3b87;\u600dj;\u600c"
+        .split("")
+        .map(function (c) { return c.charCodeAt(0); }));
+
+    var decodeDataXml = {};
+
+    // Generated using scripts/write-decode-map.ts
+    Object.defineProperty(decodeDataXml, "__esModule", { value: true });
+    decodeDataXml.default = new Uint16Array(
+    // prettier-ignore
+    "\u0200aglq\t\x15\x18\x1b\u026d\x0f\0\0\x12p;\u4026os;\u4027t;\u403et;\u403cuot;\u4022"
+        .split("")
+        .map(function (c) { return c.charCodeAt(0); }));
+
+    var decode_codepoint = {};
+
+    (function (exports) {
+    	// Adapted from https://github.com/mathiasbynens/he/blob/36afe179392226cf1b6ccdb16ebbb7a5a844d93a/src/he.js#L106-L134
+    	var _a;
+    	Object.defineProperty(exports, "__esModule", { value: true });
+    	exports.replaceCodePoint = exports.fromCodePoint = void 0;
+    	var decodeMap = new Map([
+    	    [0, 65533],
+    	    // C1 Unicode control character reference replacements
+    	    [128, 8364],
+    	    [130, 8218],
+    	    [131, 402],
+    	    [132, 8222],
+    	    [133, 8230],
+    	    [134, 8224],
+    	    [135, 8225],
+    	    [136, 710],
+    	    [137, 8240],
+    	    [138, 352],
+    	    [139, 8249],
+    	    [140, 338],
+    	    [142, 381],
+    	    [145, 8216],
+    	    [146, 8217],
+    	    [147, 8220],
+    	    [148, 8221],
+    	    [149, 8226],
+    	    [150, 8211],
+    	    [151, 8212],
+    	    [152, 732],
+    	    [153, 8482],
+    	    [154, 353],
+    	    [155, 8250],
+    	    [156, 339],
+    	    [158, 382],
+    	    [159, 376],
+    	]);
+    	/**
+    	 * Polyfill for `String.fromCodePoint`. It is used to create a string from a Unicode code point.
+    	 */
+    	exports.fromCodePoint = 
+    	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, node/no-unsupported-features/es-builtins
+    	(_a = String.fromCodePoint) !== null && _a !== void 0 ? _a : function (codePoint) {
+    	    var output = "";
+    	    if (codePoint > 0xffff) {
+    	        codePoint -= 0x10000;
+    	        output += String.fromCharCode(((codePoint >>> 10) & 0x3ff) | 0xd800);
+    	        codePoint = 0xdc00 | (codePoint & 0x3ff);
+    	    }
+    	    output += String.fromCharCode(codePoint);
+    	    return output;
+    	};
+    	/**
+    	 * Replace the given code point with a replacement character if it is a
+    	 * surrogate or is outside the valid range. Otherwise return the code
+    	 * point unchanged.
+    	 */
+    	function replaceCodePoint(codePoint) {
+    	    var _a;
+    	    if ((codePoint >= 0xd800 && codePoint <= 0xdfff) || codePoint > 0x10ffff) {
+    	        return 0xfffd;
+    	    }
+    	    return (_a = decodeMap.get(codePoint)) !== null && _a !== void 0 ? _a : codePoint;
+    	}
+    	exports.replaceCodePoint = replaceCodePoint;
+    	/**
+    	 * Replace the code point if relevant, then convert it to a string.
+    	 *
+    	 * @deprecated Use `fromCodePoint(replaceCodePoint(codePoint))` instead.
+    	 * @param codePoint The code point to decode.
+    	 * @returns The decoded code point.
+    	 */
+    	function decodeCodePoint(codePoint) {
+    	    return (0, exports.fromCodePoint)(replaceCodePoint(codePoint));
+    	}
+    	exports.default = decodeCodePoint;
+    	
+    } (decode_codepoint));
+
+    (function (exports) {
+    	var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    	    if (k2 === undefined) k2 = k;
+    	    var desc = Object.getOwnPropertyDescriptor(m, k);
+    	    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+    	      desc = { enumerable: true, get: function() { return m[k]; } };
+    	    }
+    	    Object.defineProperty(o, k2, desc);
+    	}) : (function(o, m, k, k2) {
+    	    if (k2 === undefined) k2 = k;
+    	    o[k2] = m[k];
+    	}));
+    	var __setModuleDefault = (commonjsGlobal && commonjsGlobal.__setModuleDefault) || (Object.create ? (function(o, v) {
+    	    Object.defineProperty(o, "default", { enumerable: true, value: v });
+    	}) : function(o, v) {
+    	    o["default"] = v;
+    	});
+    	var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
+    	    if (mod && mod.__esModule) return mod;
+    	    var result = {};
+    	    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    	    __setModuleDefault(result, mod);
+    	    return result;
+    	};
+    	var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+    	    return (mod && mod.__esModule) ? mod : { "default": mod };
+    	};
+    	Object.defineProperty(exports, "__esModule", { value: true });
+    	exports.decodeXML = exports.decodeHTMLStrict = exports.decodeHTMLAttribute = exports.decodeHTML = exports.determineBranch = exports.EntityDecoder = exports.DecodingMode = exports.BinTrieFlags = exports.fromCodePoint = exports.replaceCodePoint = exports.decodeCodePoint = exports.xmlDecodeTree = exports.htmlDecodeTree = void 0;
+    	var decode_data_html_js_1 = __importDefault(decodeDataHtml);
+    	exports.htmlDecodeTree = decode_data_html_js_1.default;
+    	var decode_data_xml_js_1 = __importDefault(decodeDataXml);
+    	exports.xmlDecodeTree = decode_data_xml_js_1.default;
+    	var decode_codepoint_js_1 = __importStar(decode_codepoint);
+    	exports.decodeCodePoint = decode_codepoint_js_1.default;
+    	var decode_codepoint_js_2 = decode_codepoint;
+    	Object.defineProperty(exports, "replaceCodePoint", { enumerable: true, get: function () { return decode_codepoint_js_2.replaceCodePoint; } });
+    	Object.defineProperty(exports, "fromCodePoint", { enumerable: true, get: function () { return decode_codepoint_js_2.fromCodePoint; } });
+    	var CharCodes;
+    	(function (CharCodes) {
+    	    CharCodes[CharCodes["NUM"] = 35] = "NUM";
+    	    CharCodes[CharCodes["SEMI"] = 59] = "SEMI";
+    	    CharCodes[CharCodes["EQUALS"] = 61] = "EQUALS";
+    	    CharCodes[CharCodes["ZERO"] = 48] = "ZERO";
+    	    CharCodes[CharCodes["NINE"] = 57] = "NINE";
+    	    CharCodes[CharCodes["LOWER_A"] = 97] = "LOWER_A";
+    	    CharCodes[CharCodes["LOWER_F"] = 102] = "LOWER_F";
+    	    CharCodes[CharCodes["LOWER_X"] = 120] = "LOWER_X";
+    	    CharCodes[CharCodes["LOWER_Z"] = 122] = "LOWER_Z";
+    	    CharCodes[CharCodes["UPPER_A"] = 65] = "UPPER_A";
+    	    CharCodes[CharCodes["UPPER_F"] = 70] = "UPPER_F";
+    	    CharCodes[CharCodes["UPPER_Z"] = 90] = "UPPER_Z";
+    	})(CharCodes || (CharCodes = {}));
+    	/** Bit that needs to be set to convert an upper case ASCII character to lower case */
+    	var TO_LOWER_BIT = 32;
+    	var BinTrieFlags;
+    	(function (BinTrieFlags) {
+    	    BinTrieFlags[BinTrieFlags["VALUE_LENGTH"] = 49152] = "VALUE_LENGTH";
+    	    BinTrieFlags[BinTrieFlags["BRANCH_LENGTH"] = 16256] = "BRANCH_LENGTH";
+    	    BinTrieFlags[BinTrieFlags["JUMP_TABLE"] = 127] = "JUMP_TABLE";
+    	})(BinTrieFlags = exports.BinTrieFlags || (exports.BinTrieFlags = {}));
+    	function isNumber(code) {
+    	    return code >= CharCodes.ZERO && code <= CharCodes.NINE;
+    	}
+    	function isHexadecimalCharacter(code) {
+    	    return ((code >= CharCodes.UPPER_A && code <= CharCodes.UPPER_F) ||
+    	        (code >= CharCodes.LOWER_A && code <= CharCodes.LOWER_F));
+    	}
+    	function isAsciiAlphaNumeric(code) {
+    	    return ((code >= CharCodes.UPPER_A && code <= CharCodes.UPPER_Z) ||
+    	        (code >= CharCodes.LOWER_A && code <= CharCodes.LOWER_Z) ||
+    	        isNumber(code));
+    	}
+    	/**
+    	 * Checks if the given character is a valid end character for an entity in an attribute.
+    	 *
+    	 * Attribute values that aren't terminated properly aren't parsed, and shouldn't lead to a parser error.
+    	 * See the example in https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state
+    	 */
+    	function isEntityInAttributeInvalidEnd(code) {
+    	    return code === CharCodes.EQUALS || isAsciiAlphaNumeric(code);
+    	}
+    	var EntityDecoderState;
+    	(function (EntityDecoderState) {
+    	    EntityDecoderState[EntityDecoderState["EntityStart"] = 0] = "EntityStart";
+    	    EntityDecoderState[EntityDecoderState["NumericStart"] = 1] = "NumericStart";
+    	    EntityDecoderState[EntityDecoderState["NumericDecimal"] = 2] = "NumericDecimal";
+    	    EntityDecoderState[EntityDecoderState["NumericHex"] = 3] = "NumericHex";
+    	    EntityDecoderState[EntityDecoderState["NamedEntity"] = 4] = "NamedEntity";
+    	})(EntityDecoderState || (EntityDecoderState = {}));
+    	var DecodingMode;
+    	(function (DecodingMode) {
+    	    /** Entities in text nodes that can end with any character. */
+    	    DecodingMode[DecodingMode["Legacy"] = 0] = "Legacy";
+    	    /** Only allow entities terminated with a semicolon. */
+    	    DecodingMode[DecodingMode["Strict"] = 1] = "Strict";
+    	    /** Entities in attributes have limitations on ending characters. */
+    	    DecodingMode[DecodingMode["Attribute"] = 2] = "Attribute";
+    	})(DecodingMode = exports.DecodingMode || (exports.DecodingMode = {}));
+    	/**
+    	 * Token decoder with support of writing partial entities.
+    	 */
+    	var EntityDecoder = /** @class */ (function () {
+    	    function EntityDecoder(
+    	    /** The tree used to decode entities. */
+    	    decodeTree, 
+    	    /**
+    	     * The function that is called when a codepoint is decoded.
+    	     *
+    	     * For multi-byte named entities, this will be called multiple times,
+    	     * with the second codepoint, and the same `consumed` value.
+    	     *
+    	     * @param codepoint The decoded codepoint.
+    	     * @param consumed The number of bytes consumed by the decoder.
+    	     */
+    	    emitCodePoint, 
+    	    /** An object that is used to produce errors. */
+    	    errors) {
+    	        this.decodeTree = decodeTree;
+    	        this.emitCodePoint = emitCodePoint;
+    	        this.errors = errors;
+    	        /** The current state of the decoder. */
+    	        this.state = EntityDecoderState.EntityStart;
+    	        /** Characters that were consumed while parsing an entity. */
+    	        this.consumed = 1;
+    	        /**
+    	         * The result of the entity.
+    	         *
+    	         * Either the result index of a numeric entity, or the codepoint of a
+    	         * numeric entity.
+    	         */
+    	        this.result = 0;
+    	        /** The current index in the decode tree. */
+    	        this.treeIndex = 0;
+    	        /** The number of characters that were consumed in excess. */
+    	        this.excess = 1;
+    	        /** The mode in which the decoder is operating. */
+    	        this.decodeMode = DecodingMode.Strict;
+    	    }
+    	    /** Resets the instance to make it reusable. */
+    	    EntityDecoder.prototype.startEntity = function (decodeMode) {
+    	        this.decodeMode = decodeMode;
+    	        this.state = EntityDecoderState.EntityStart;
+    	        this.result = 0;
+    	        this.treeIndex = 0;
+    	        this.excess = 1;
+    	        this.consumed = 1;
+    	    };
+    	    /**
+    	     * Write an entity to the decoder. This can be called multiple times with partial entities.
+    	     * If the entity is incomplete, the decoder will return -1.
+    	     *
+    	     * Mirrors the implementation of `getDecoder`, but with the ability to stop decoding if the
+    	     * entity is incomplete, and resume when the next string is written.
+    	     *
+    	     * @param string The string containing the entity (or a continuation of the entity).
+    	     * @param offset The offset at which the entity begins. Should be 0 if this is not the first call.
+    	     * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
+    	     */
+    	    EntityDecoder.prototype.write = function (str, offset) {
+    	        switch (this.state) {
+    	            case EntityDecoderState.EntityStart: {
+    	                if (str.charCodeAt(offset) === CharCodes.NUM) {
+    	                    this.state = EntityDecoderState.NumericStart;
+    	                    this.consumed += 1;
+    	                    return this.stateNumericStart(str, offset + 1);
+    	                }
+    	                this.state = EntityDecoderState.NamedEntity;
+    	                return this.stateNamedEntity(str, offset);
+    	            }
+    	            case EntityDecoderState.NumericStart: {
+    	                return this.stateNumericStart(str, offset);
+    	            }
+    	            case EntityDecoderState.NumericDecimal: {
+    	                return this.stateNumericDecimal(str, offset);
+    	            }
+    	            case EntityDecoderState.NumericHex: {
+    	                return this.stateNumericHex(str, offset);
+    	            }
+    	            case EntityDecoderState.NamedEntity: {
+    	                return this.stateNamedEntity(str, offset);
+    	            }
+    	        }
+    	    };
+    	    /**
+    	     * Switches between the numeric decimal and hexadecimal states.
+    	     *
+    	     * Equivalent to the `Numeric character reference state` in the HTML spec.
+    	     *
+    	     * @param str The string containing the entity (or a continuation of the entity).
+    	     * @param offset The current offset.
+    	     * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
+    	     */
+    	    EntityDecoder.prototype.stateNumericStart = function (str, offset) {
+    	        if (offset >= str.length) {
+    	            return -1;
+    	        }
+    	        if ((str.charCodeAt(offset) | TO_LOWER_BIT) === CharCodes.LOWER_X) {
+    	            this.state = EntityDecoderState.NumericHex;
+    	            this.consumed += 1;
+    	            return this.stateNumericHex(str, offset + 1);
+    	        }
+    	        this.state = EntityDecoderState.NumericDecimal;
+    	        return this.stateNumericDecimal(str, offset);
+    	    };
+    	    EntityDecoder.prototype.addToNumericResult = function (str, start, end, base) {
+    	        if (start !== end) {
+    	            var digitCount = end - start;
+    	            this.result =
+    	                this.result * Math.pow(base, digitCount) +
+    	                    parseInt(str.substr(start, digitCount), base);
+    	            this.consumed += digitCount;
+    	        }
+    	    };
+    	    /**
+    	     * Parses a hexadecimal numeric entity.
+    	     *
+    	     * Equivalent to the `Hexademical character reference state` in the HTML spec.
+    	     *
+    	     * @param str The string containing the entity (or a continuation of the entity).
+    	     * @param offset The current offset.
+    	     * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
+    	     */
+    	    EntityDecoder.prototype.stateNumericHex = function (str, offset) {
+    	        var startIdx = offset;
+    	        while (offset < str.length) {
+    	            var char = str.charCodeAt(offset);
+    	            if (isNumber(char) || isHexadecimalCharacter(char)) {
+    	                offset += 1;
+    	            }
+    	            else {
+    	                this.addToNumericResult(str, startIdx, offset, 16);
+    	                return this.emitNumericEntity(char, 3);
+    	            }
+    	        }
+    	        this.addToNumericResult(str, startIdx, offset, 16);
+    	        return -1;
+    	    };
+    	    /**
+    	     * Parses a decimal numeric entity.
+    	     *
+    	     * Equivalent to the `Decimal character reference state` in the HTML spec.
+    	     *
+    	     * @param str The string containing the entity (or a continuation of the entity).
+    	     * @param offset The current offset.
+    	     * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
+    	     */
+    	    EntityDecoder.prototype.stateNumericDecimal = function (str, offset) {
+    	        var startIdx = offset;
+    	        while (offset < str.length) {
+    	            var char = str.charCodeAt(offset);
+    	            if (isNumber(char)) {
+    	                offset += 1;
+    	            }
+    	            else {
+    	                this.addToNumericResult(str, startIdx, offset, 10);
+    	                return this.emitNumericEntity(char, 2);
+    	            }
+    	        }
+    	        this.addToNumericResult(str, startIdx, offset, 10);
+    	        return -1;
+    	    };
+    	    /**
+    	     * Validate and emit a numeric entity.
+    	     *
+    	     * Implements the logic from the `Hexademical character reference start
+    	     * state` and `Numeric character reference end state` in the HTML spec.
+    	     *
+    	     * @param lastCp The last code point of the entity. Used to see if the
+    	     *               entity was terminated with a semicolon.
+    	     * @param expectedLength The minimum number of characters that should be
+    	     *                       consumed. Used to validate that at least one digit
+    	     *                       was consumed.
+    	     * @returns The number of characters that were consumed.
+    	     */
+    	    EntityDecoder.prototype.emitNumericEntity = function (lastCp, expectedLength) {
+    	        var _a;
+    	        // Ensure we consumed at least one digit.
+    	        if (this.consumed <= expectedLength) {
+    	            (_a = this.errors) === null || _a === void 0 ? void 0 : _a.absenceOfDigitsInNumericCharacterReference(this.consumed);
+    	            return 0;
+    	        }
+    	        // Figure out if this is a legit end of the entity
+    	        if (lastCp === CharCodes.SEMI) {
+    	            this.consumed += 1;
+    	        }
+    	        else if (this.decodeMode === DecodingMode.Strict) {
+    	            return 0;
+    	        }
+    	        this.emitCodePoint((0, decode_codepoint_js_1.replaceCodePoint)(this.result), this.consumed);
+    	        if (this.errors) {
+    	            if (lastCp !== CharCodes.SEMI) {
+    	                this.errors.missingSemicolonAfterCharacterReference();
+    	            }
+    	            this.errors.validateNumericCharacterReference(this.result);
+    	        }
+    	        return this.consumed;
+    	    };
+    	    /**
+    	     * Parses a named entity.
+    	     *
+    	     * Equivalent to the `Named character reference state` in the HTML spec.
+    	     *
+    	     * @param str The string containing the entity (or a continuation of the entity).
+    	     * @param offset The current offset.
+    	     * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
+    	     */
+    	    EntityDecoder.prototype.stateNamedEntity = function (str, offset) {
+    	        var decodeTree = this.decodeTree;
+    	        var current = decodeTree[this.treeIndex];
+    	        // The mask is the number of bytes of the value, including the current byte.
+    	        var valueLength = (current & BinTrieFlags.VALUE_LENGTH) >> 14;
+    	        for (; offset < str.length; offset++, this.excess++) {
+    	            var char = str.charCodeAt(offset);
+    	            this.treeIndex = determineBranch(decodeTree, current, this.treeIndex + Math.max(1, valueLength), char);
+    	            if (this.treeIndex < 0) {
+    	                return this.result === 0 ||
+    	                    // If we are parsing an attribute
+    	                    (this.decodeMode === DecodingMode.Attribute &&
+    	                        // We shouldn't have consumed any characters after the entity,
+    	                        (valueLength === 0 ||
+    	                            // And there should be no invalid characters.
+    	                            isEntityInAttributeInvalidEnd(char)))
+    	                    ? 0
+    	                    : this.emitNotTerminatedNamedEntity();
+    	            }
+    	            current = decodeTree[this.treeIndex];
+    	            valueLength = (current & BinTrieFlags.VALUE_LENGTH) >> 14;
+    	            // If the branch is a value, store it and continue
+    	            if (valueLength !== 0) {
+    	                // If the entity is terminated by a semicolon, we are done.
+    	                if (char === CharCodes.SEMI) {
+    	                    return this.emitNamedEntityData(this.treeIndex, valueLength, this.consumed + this.excess);
+    	                }
+    	                // If we encounter a non-terminated (legacy) entity while parsing strictly, then ignore it.
+    	                if (this.decodeMode !== DecodingMode.Strict) {
+    	                    this.result = this.treeIndex;
+    	                    this.consumed += this.excess;
+    	                    this.excess = 0;
+    	                }
+    	            }
+    	        }
+    	        return -1;
+    	    };
+    	    /**
+    	     * Emit a named entity that was not terminated with a semicolon.
+    	     *
+    	     * @returns The number of characters consumed.
+    	     */
+    	    EntityDecoder.prototype.emitNotTerminatedNamedEntity = function () {
+    	        var _a;
+    	        var _b = this, result = _b.result, decodeTree = _b.decodeTree;
+    	        var valueLength = (decodeTree[result] & BinTrieFlags.VALUE_LENGTH) >> 14;
+    	        this.emitNamedEntityData(result, valueLength, this.consumed);
+    	        (_a = this.errors) === null || _a === void 0 ? void 0 : _a.missingSemicolonAfterCharacterReference();
+    	        return this.consumed;
+    	    };
+    	    /**
+    	     * Emit a named entity.
+    	     *
+    	     * @param result The index of the entity in the decode tree.
+    	     * @param valueLength The number of bytes in the entity.
+    	     * @param consumed The number of characters consumed.
+    	     *
+    	     * @returns The number of characters consumed.
+    	     */
+    	    EntityDecoder.prototype.emitNamedEntityData = function (result, valueLength, consumed) {
+    	        var decodeTree = this.decodeTree;
+    	        this.emitCodePoint(valueLength === 1
+    	            ? decodeTree[result] & ~BinTrieFlags.VALUE_LENGTH
+    	            : decodeTree[result + 1], consumed);
+    	        if (valueLength === 3) {
+    	            // For multi-byte values, we need to emit the second byte.
+    	            this.emitCodePoint(decodeTree[result + 2], consumed);
+    	        }
+    	        return consumed;
+    	    };
+    	    /**
+    	     * Signal to the parser that the end of the input was reached.
+    	     *
+    	     * Remaining data will be emitted and relevant errors will be produced.
+    	     *
+    	     * @returns The number of characters consumed.
+    	     */
+    	    EntityDecoder.prototype.end = function () {
+    	        var _a;
+    	        switch (this.state) {
+    	            case EntityDecoderState.NamedEntity: {
+    	                // Emit a named entity if we have one.
+    	                return this.result !== 0 &&
+    	                    (this.decodeMode !== DecodingMode.Attribute ||
+    	                        this.result === this.treeIndex)
+    	                    ? this.emitNotTerminatedNamedEntity()
+    	                    : 0;
+    	            }
+    	            // Otherwise, emit a numeric entity if we have one.
+    	            case EntityDecoderState.NumericDecimal: {
+    	                return this.emitNumericEntity(0, 2);
+    	            }
+    	            case EntityDecoderState.NumericHex: {
+    	                return this.emitNumericEntity(0, 3);
+    	            }
+    	            case EntityDecoderState.NumericStart: {
+    	                (_a = this.errors) === null || _a === void 0 ? void 0 : _a.absenceOfDigitsInNumericCharacterReference(this.consumed);
+    	                return 0;
+    	            }
+    	            case EntityDecoderState.EntityStart: {
+    	                // Return 0 if we have no entity.
+    	                return 0;
+    	            }
+    	        }
+    	    };
+    	    return EntityDecoder;
+    	}());
+    	exports.EntityDecoder = EntityDecoder;
+    	/**
+    	 * Creates a function that decodes entities in a string.
+    	 *
+    	 * @param decodeTree The decode tree.
+    	 * @returns A function that decodes entities in a string.
+    	 */
+    	function getDecoder(decodeTree) {
+    	    var ret = "";
+    	    var decoder = new EntityDecoder(decodeTree, function (str) { return (ret += (0, decode_codepoint_js_1.fromCodePoint)(str)); });
+    	    return function decodeWithTrie(str, decodeMode) {
+    	        var lastIndex = 0;
+    	        var offset = 0;
+    	        while ((offset = str.indexOf("&", offset)) >= 0) {
+    	            ret += str.slice(lastIndex, offset);
+    	            decoder.startEntity(decodeMode);
+    	            var len = decoder.write(str, 
+    	            // Skip the "&"
+    	            offset + 1);
+    	            if (len < 0) {
+    	                lastIndex = offset + decoder.end();
+    	                break;
+    	            }
+    	            lastIndex = offset + len;
+    	            // If `len` is 0, skip the current `&` and continue.
+    	            offset = len === 0 ? lastIndex + 1 : lastIndex;
+    	        }
+    	        var result = ret + str.slice(lastIndex);
+    	        // Make sure we don't keep a reference to the final string.
+    	        ret = "";
+    	        return result;
+    	    };
+    	}
+    	/**
+    	 * Determines the branch of the current node that is taken given the current
+    	 * character. This function is used to traverse the trie.
+    	 *
+    	 * @param decodeTree The trie.
+    	 * @param current The current node.
+    	 * @param nodeIdx The index right after the current node and its value.
+    	 * @param char The current character.
+    	 * @returns The index of the next node, or -1 if no branch is taken.
+    	 */
+    	function determineBranch(decodeTree, current, nodeIdx, char) {
+    	    var branchCount = (current & BinTrieFlags.BRANCH_LENGTH) >> 7;
+    	    var jumpOffset = current & BinTrieFlags.JUMP_TABLE;
+    	    // Case 1: Single branch encoded in jump offset
+    	    if (branchCount === 0) {
+    	        return jumpOffset !== 0 && char === jumpOffset ? nodeIdx : -1;
+    	    }
+    	    // Case 2: Multiple branches encoded in jump table
+    	    if (jumpOffset) {
+    	        var value = char - jumpOffset;
+    	        return value < 0 || value >= branchCount
+    	            ? -1
+    	            : decodeTree[nodeIdx + value] - 1;
+    	    }
+    	    // Case 3: Multiple branches encoded in dictionary
+    	    // Binary search for the character.
+    	    var lo = nodeIdx;
+    	    var hi = lo + branchCount - 1;
+    	    while (lo <= hi) {
+    	        var mid = (lo + hi) >>> 1;
+    	        var midVal = decodeTree[mid];
+    	        if (midVal < char) {
+    	            lo = mid + 1;
+    	        }
+    	        else if (midVal > char) {
+    	            hi = mid - 1;
+    	        }
+    	        else {
+    	            return decodeTree[mid + branchCount];
+    	        }
+    	    }
+    	    return -1;
+    	}
+    	exports.determineBranch = determineBranch;
+    	var htmlDecoder = getDecoder(decode_data_html_js_1.default);
+    	var xmlDecoder = getDecoder(decode_data_xml_js_1.default);
+    	/**
+    	 * Decodes an HTML string.
+    	 *
+    	 * @param str The string to decode.
+    	 * @param mode The decoding mode.
+    	 * @returns The decoded string.
+    	 */
+    	function decodeHTML(str, mode) {
+    	    if (mode === void 0) { mode = DecodingMode.Legacy; }
+    	    return htmlDecoder(str, mode);
+    	}
+    	exports.decodeHTML = decodeHTML;
+    	/**
+    	 * Decodes an HTML string in an attribute.
+    	 *
+    	 * @param str The string to decode.
+    	 * @returns The decoded string.
+    	 */
+    	function decodeHTMLAttribute(str) {
+    	    return htmlDecoder(str, DecodingMode.Attribute);
+    	}
+    	exports.decodeHTMLAttribute = decodeHTMLAttribute;
+    	/**
+    	 * Decodes an HTML string, requiring all entities to be terminated by a semicolon.
+    	 *
+    	 * @param str The string to decode.
+    	 * @returns The decoded string.
+    	 */
+    	function decodeHTMLStrict(str) {
+    	    return htmlDecoder(str, DecodingMode.Strict);
+    	}
+    	exports.decodeHTMLStrict = decodeHTMLStrict;
+    	/**
+    	 * Decodes an XML string, requiring all entities to be terminated by a semicolon.
+    	 *
+    	 * @param str The string to decode.
+    	 * @returns The decoded string.
+    	 */
+    	function decodeXML(str) {
+    	    return xmlDecoder(str, DecodingMode.Strict);
+    	}
+    	exports.decodeXML = decodeXML;
+    	
+    } (decode));
+
+    var encode = {};
+
+    var encodeHtml = {};
+
+    // Generated using scripts/write-encode-map.ts
+    Object.defineProperty(encodeHtml, "__esModule", { value: true });
+    function restoreDiff(arr) {
+        for (var i = 1; i < arr.length; i++) {
+            arr[i][0] += arr[i - 1][0] + 1;
+        }
+        return arr;
+    }
+    // prettier-ignore
+    encodeHtml.default = new Map(/* #__PURE__ */ restoreDiff([[9, "&Tab;"], [0, "&NewLine;"], [22, "&excl;"], [0, "&quot;"], [0, "&num;"], [0, "&dollar;"], [0, "&percnt;"], [0, "&amp;"], [0, "&apos;"], [0, "&lpar;"], [0, "&rpar;"], [0, "&ast;"], [0, "&plus;"], [0, "&comma;"], [1, "&period;"], [0, "&sol;"], [10, "&colon;"], [0, "&semi;"], [0, { v: "&lt;", n: 8402, o: "&nvlt;" }], [0, { v: "&equals;", n: 8421, o: "&bne;" }], [0, { v: "&gt;", n: 8402, o: "&nvgt;" }], [0, "&quest;"], [0, "&commat;"], [26, "&lbrack;"], [0, "&bsol;"], [0, "&rbrack;"], [0, "&Hat;"], [0, "&lowbar;"], [0, "&DiacriticalGrave;"], [5, { n: 106, o: "&fjlig;" }], [20, "&lbrace;"], [0, "&verbar;"], [0, "&rbrace;"], [34, "&nbsp;"], [0, "&iexcl;"], [0, "&cent;"], [0, "&pound;"], [0, "&curren;"], [0, "&yen;"], [0, "&brvbar;"], [0, "&sect;"], [0, "&die;"], [0, "&copy;"], [0, "&ordf;"], [0, "&laquo;"], [0, "&not;"], [0, "&shy;"], [0, "&circledR;"], [0, "&macr;"], [0, "&deg;"], [0, "&PlusMinus;"], [0, "&sup2;"], [0, "&sup3;"], [0, "&acute;"], [0, "&micro;"], [0, "&para;"], [0, "&centerdot;"], [0, "&cedil;"], [0, "&sup1;"], [0, "&ordm;"], [0, "&raquo;"], [0, "&frac14;"], [0, "&frac12;"], [0, "&frac34;"], [0, "&iquest;"], [0, "&Agrave;"], [0, "&Aacute;"], [0, "&Acirc;"], [0, "&Atilde;"], [0, "&Auml;"], [0, "&angst;"], [0, "&AElig;"], [0, "&Ccedil;"], [0, "&Egrave;"], [0, "&Eacute;"], [0, "&Ecirc;"], [0, "&Euml;"], [0, "&Igrave;"], [0, "&Iacute;"], [0, "&Icirc;"], [0, "&Iuml;"], [0, "&ETH;"], [0, "&Ntilde;"], [0, "&Ograve;"], [0, "&Oacute;"], [0, "&Ocirc;"], [0, "&Otilde;"], [0, "&Ouml;"], [0, "&times;"], [0, "&Oslash;"], [0, "&Ugrave;"], [0, "&Uacute;"], [0, "&Ucirc;"], [0, "&Uuml;"], [0, "&Yacute;"], [0, "&THORN;"], [0, "&szlig;"], [0, "&agrave;"], [0, "&aacute;"], [0, "&acirc;"], [0, "&atilde;"], [0, "&auml;"], [0, "&aring;"], [0, "&aelig;"], [0, "&ccedil;"], [0, "&egrave;"], [0, "&eacute;"], [0, "&ecirc;"], [0, "&euml;"], [0, "&igrave;"], [0, "&iacute;"], [0, "&icirc;"], [0, "&iuml;"], [0, "&eth;"], [0, "&ntilde;"], [0, "&ograve;"], [0, "&oacute;"], [0, "&ocirc;"], [0, "&otilde;"], [0, "&ouml;"], [0, "&div;"], [0, "&oslash;"], [0, "&ugrave;"], [0, "&uacute;"], [0, "&ucirc;"], [0, "&uuml;"], [0, "&yacute;"], [0, "&thorn;"], [0, "&yuml;"], [0, "&Amacr;"], [0, "&amacr;"], [0, "&Abreve;"], [0, "&abreve;"], [0, "&Aogon;"], [0, "&aogon;"], [0, "&Cacute;"], [0, "&cacute;"], [0, "&Ccirc;"], [0, "&ccirc;"], [0, "&Cdot;"], [0, "&cdot;"], [0, "&Ccaron;"], [0, "&ccaron;"], [0, "&Dcaron;"], [0, "&dcaron;"], [0, "&Dstrok;"], [0, "&dstrok;"], [0, "&Emacr;"], [0, "&emacr;"], [2, "&Edot;"], [0, "&edot;"], [0, "&Eogon;"], [0, "&eogon;"], [0, "&Ecaron;"], [0, "&ecaron;"], [0, "&Gcirc;"], [0, "&gcirc;"], [0, "&Gbreve;"], [0, "&gbreve;"], [0, "&Gdot;"], [0, "&gdot;"], [0, "&Gcedil;"], [1, "&Hcirc;"], [0, "&hcirc;"], [0, "&Hstrok;"], [0, "&hstrok;"], [0, "&Itilde;"], [0, "&itilde;"], [0, "&Imacr;"], [0, "&imacr;"], [2, "&Iogon;"], [0, "&iogon;"], [0, "&Idot;"], [0, "&imath;"], [0, "&IJlig;"], [0, "&ijlig;"], [0, "&Jcirc;"], [0, "&jcirc;"], [0, "&Kcedil;"], [0, "&kcedil;"], [0, "&kgreen;"], [0, "&Lacute;"], [0, "&lacute;"], [0, "&Lcedil;"], [0, "&lcedil;"], [0, "&Lcaron;"], [0, "&lcaron;"], [0, "&Lmidot;"], [0, "&lmidot;"], [0, "&Lstrok;"], [0, "&lstrok;"], [0, "&Nacute;"], [0, "&nacute;"], [0, "&Ncedil;"], [0, "&ncedil;"], [0, "&Ncaron;"], [0, "&ncaron;"], [0, "&napos;"], [0, "&ENG;"], [0, "&eng;"], [0, "&Omacr;"], [0, "&omacr;"], [2, "&Odblac;"], [0, "&odblac;"], [0, "&OElig;"], [0, "&oelig;"], [0, "&Racute;"], [0, "&racute;"], [0, "&Rcedil;"], [0, "&rcedil;"], [0, "&Rcaron;"], [0, "&rcaron;"], [0, "&Sacute;"], [0, "&sacute;"], [0, "&Scirc;"], [0, "&scirc;"], [0, "&Scedil;"], [0, "&scedil;"], [0, "&Scaron;"], [0, "&scaron;"], [0, "&Tcedil;"], [0, "&tcedil;"], [0, "&Tcaron;"], [0, "&tcaron;"], [0, "&Tstrok;"], [0, "&tstrok;"], [0, "&Utilde;"], [0, "&utilde;"], [0, "&Umacr;"], [0, "&umacr;"], [0, "&Ubreve;"], [0, "&ubreve;"], [0, "&Uring;"], [0, "&uring;"], [0, "&Udblac;"], [0, "&udblac;"], [0, "&Uogon;"], [0, "&uogon;"], [0, "&Wcirc;"], [0, "&wcirc;"], [0, "&Ycirc;"], [0, "&ycirc;"], [0, "&Yuml;"], [0, "&Zacute;"], [0, "&zacute;"], [0, "&Zdot;"], [0, "&zdot;"], [0, "&Zcaron;"], [0, "&zcaron;"], [19, "&fnof;"], [34, "&imped;"], [63, "&gacute;"], [65, "&jmath;"], [142, "&circ;"], [0, "&caron;"], [16, "&breve;"], [0, "&DiacriticalDot;"], [0, "&ring;"], [0, "&ogon;"], [0, "&DiacriticalTilde;"], [0, "&dblac;"], [51, "&DownBreve;"], [127, "&Alpha;"], [0, "&Beta;"], [0, "&Gamma;"], [0, "&Delta;"], [0, "&Epsilon;"], [0, "&Zeta;"], [0, "&Eta;"], [0, "&Theta;"], [0, "&Iota;"], [0, "&Kappa;"], [0, "&Lambda;"], [0, "&Mu;"], [0, "&Nu;"], [0, "&Xi;"], [0, "&Omicron;"], [0, "&Pi;"], [0, "&Rho;"], [1, "&Sigma;"], [0, "&Tau;"], [0, "&Upsilon;"], [0, "&Phi;"], [0, "&Chi;"], [0, "&Psi;"], [0, "&ohm;"], [7, "&alpha;"], [0, "&beta;"], [0, "&gamma;"], [0, "&delta;"], [0, "&epsi;"], [0, "&zeta;"], [0, "&eta;"], [0, "&theta;"], [0, "&iota;"], [0, "&kappa;"], [0, "&lambda;"], [0, "&mu;"], [0, "&nu;"], [0, "&xi;"], [0, "&omicron;"], [0, "&pi;"], [0, "&rho;"], [0, "&sigmaf;"], [0, "&sigma;"], [0, "&tau;"], [0, "&upsi;"], [0, "&phi;"], [0, "&chi;"], [0, "&psi;"], [0, "&omega;"], [7, "&thetasym;"], [0, "&Upsi;"], [2, "&phiv;"], [0, "&piv;"], [5, "&Gammad;"], [0, "&digamma;"], [18, "&kappav;"], [0, "&rhov;"], [3, "&epsiv;"], [0, "&backepsilon;"], [10, "&IOcy;"], [0, "&DJcy;"], [0, "&GJcy;"], [0, "&Jukcy;"], [0, "&DScy;"], [0, "&Iukcy;"], [0, "&YIcy;"], [0, "&Jsercy;"], [0, "&LJcy;"], [0, "&NJcy;"], [0, "&TSHcy;"], [0, "&KJcy;"], [1, "&Ubrcy;"], [0, "&DZcy;"], [0, "&Acy;"], [0, "&Bcy;"], [0, "&Vcy;"], [0, "&Gcy;"], [0, "&Dcy;"], [0, "&IEcy;"], [0, "&ZHcy;"], [0, "&Zcy;"], [0, "&Icy;"], [0, "&Jcy;"], [0, "&Kcy;"], [0, "&Lcy;"], [0, "&Mcy;"], [0, "&Ncy;"], [0, "&Ocy;"], [0, "&Pcy;"], [0, "&Rcy;"], [0, "&Scy;"], [0, "&Tcy;"], [0, "&Ucy;"], [0, "&Fcy;"], [0, "&KHcy;"], [0, "&TScy;"], [0, "&CHcy;"], [0, "&SHcy;"], [0, "&SHCHcy;"], [0, "&HARDcy;"], [0, "&Ycy;"], [0, "&SOFTcy;"], [0, "&Ecy;"], [0, "&YUcy;"], [0, "&YAcy;"], [0, "&acy;"], [0, "&bcy;"], [0, "&vcy;"], [0, "&gcy;"], [0, "&dcy;"], [0, "&iecy;"], [0, "&zhcy;"], [0, "&zcy;"], [0, "&icy;"], [0, "&jcy;"], [0, "&kcy;"], [0, "&lcy;"], [0, "&mcy;"], [0, "&ncy;"], [0, "&ocy;"], [0, "&pcy;"], [0, "&rcy;"], [0, "&scy;"], [0, "&tcy;"], [0, "&ucy;"], [0, "&fcy;"], [0, "&khcy;"], [0, "&tscy;"], [0, "&chcy;"], [0, "&shcy;"], [0, "&shchcy;"], [0, "&hardcy;"], [0, "&ycy;"], [0, "&softcy;"], [0, "&ecy;"], [0, "&yucy;"], [0, "&yacy;"], [1, "&iocy;"], [0, "&djcy;"], [0, "&gjcy;"], [0, "&jukcy;"], [0, "&dscy;"], [0, "&iukcy;"], [0, "&yicy;"], [0, "&jsercy;"], [0, "&ljcy;"], [0, "&njcy;"], [0, "&tshcy;"], [0, "&kjcy;"], [1, "&ubrcy;"], [0, "&dzcy;"], [7074, "&ensp;"], [0, "&emsp;"], [0, "&emsp13;"], [0, "&emsp14;"], [1, "&numsp;"], [0, "&puncsp;"], [0, "&ThinSpace;"], [0, "&hairsp;"], [0, "&NegativeMediumSpace;"], [0, "&zwnj;"], [0, "&zwj;"], [0, "&lrm;"], [0, "&rlm;"], [0, "&dash;"], [2, "&ndash;"], [0, "&mdash;"], [0, "&horbar;"], [0, "&Verbar;"], [1, "&lsquo;"], [0, "&CloseCurlyQuote;"], [0, "&lsquor;"], [1, "&ldquo;"], [0, "&CloseCurlyDoubleQuote;"], [0, "&bdquo;"], [1, "&dagger;"], [0, "&Dagger;"], [0, "&bull;"], [2, "&nldr;"], [0, "&hellip;"], [9, "&permil;"], [0, "&pertenk;"], [0, "&prime;"], [0, "&Prime;"], [0, "&tprime;"], [0, "&backprime;"], [3, "&lsaquo;"], [0, "&rsaquo;"], [3, "&oline;"], [2, "&caret;"], [1, "&hybull;"], [0, "&frasl;"], [10, "&bsemi;"], [7, "&qprime;"], [7, { v: "&MediumSpace;", n: 8202, o: "&ThickSpace;" }], [0, "&NoBreak;"], [0, "&af;"], [0, "&InvisibleTimes;"], [0, "&ic;"], [72, "&euro;"], [46, "&tdot;"], [0, "&DotDot;"], [37, "&complexes;"], [2, "&incare;"], [4, "&gscr;"], [0, "&hamilt;"], [0, "&Hfr;"], [0, "&Hopf;"], [0, "&planckh;"], [0, "&hbar;"], [0, "&imagline;"], [0, "&Ifr;"], [0, "&lagran;"], [0, "&ell;"], [1, "&naturals;"], [0, "&numero;"], [0, "&copysr;"], [0, "&weierp;"], [0, "&Popf;"], [0, "&Qopf;"], [0, "&realine;"], [0, "&real;"], [0, "&reals;"], [0, "&rx;"], [3, "&trade;"], [1, "&integers;"], [2, "&mho;"], [0, "&zeetrf;"], [0, "&iiota;"], [2, "&bernou;"], [0, "&Cayleys;"], [1, "&escr;"], [0, "&Escr;"], [0, "&Fouriertrf;"], [1, "&Mellintrf;"], [0, "&order;"], [0, "&alefsym;"], [0, "&beth;"], [0, "&gimel;"], [0, "&daleth;"], [12, "&CapitalDifferentialD;"], [0, "&dd;"], [0, "&ee;"], [0, "&ii;"], [10, "&frac13;"], [0, "&frac23;"], [0, "&frac15;"], [0, "&frac25;"], [0, "&frac35;"], [0, "&frac45;"], [0, "&frac16;"], [0, "&frac56;"], [0, "&frac18;"], [0, "&frac38;"], [0, "&frac58;"], [0, "&frac78;"], [49, "&larr;"], [0, "&ShortUpArrow;"], [0, "&rarr;"], [0, "&darr;"], [0, "&harr;"], [0, "&updownarrow;"], [0, "&nwarr;"], [0, "&nearr;"], [0, "&LowerRightArrow;"], [0, "&LowerLeftArrow;"], [0, "&nlarr;"], [0, "&nrarr;"], [1, { v: "&rarrw;", n: 824, o: "&nrarrw;" }], [0, "&Larr;"], [0, "&Uarr;"], [0, "&Rarr;"], [0, "&Darr;"], [0, "&larrtl;"], [0, "&rarrtl;"], [0, "&LeftTeeArrow;"], [0, "&mapstoup;"], [0, "&map;"], [0, "&DownTeeArrow;"], [1, "&hookleftarrow;"], [0, "&hookrightarrow;"], [0, "&larrlp;"], [0, "&looparrowright;"], [0, "&harrw;"], [0, "&nharr;"], [1, "&lsh;"], [0, "&rsh;"], [0, "&ldsh;"], [0, "&rdsh;"], [1, "&crarr;"], [0, "&cularr;"], [0, "&curarr;"], [2, "&circlearrowleft;"], [0, "&circlearrowright;"], [0, "&leftharpoonup;"], [0, "&DownLeftVector;"], [0, "&RightUpVector;"], [0, "&LeftUpVector;"], [0, "&rharu;"], [0, "&DownRightVector;"], [0, "&dharr;"], [0, "&dharl;"], [0, "&RightArrowLeftArrow;"], [0, "&udarr;"], [0, "&LeftArrowRightArrow;"], [0, "&leftleftarrows;"], [0, "&upuparrows;"], [0, "&rightrightarrows;"], [0, "&ddarr;"], [0, "&leftrightharpoons;"], [0, "&Equilibrium;"], [0, "&nlArr;"], [0, "&nhArr;"], [0, "&nrArr;"], [0, "&DoubleLeftArrow;"], [0, "&DoubleUpArrow;"], [0, "&DoubleRightArrow;"], [0, "&dArr;"], [0, "&DoubleLeftRightArrow;"], [0, "&DoubleUpDownArrow;"], [0, "&nwArr;"], [0, "&neArr;"], [0, "&seArr;"], [0, "&swArr;"], [0, "&lAarr;"], [0, "&rAarr;"], [1, "&zigrarr;"], [6, "&larrb;"], [0, "&rarrb;"], [15, "&DownArrowUpArrow;"], [7, "&loarr;"], [0, "&roarr;"], [0, "&hoarr;"], [0, "&forall;"], [0, "&comp;"], [0, { v: "&part;", n: 824, o: "&npart;" }], [0, "&exist;"], [0, "&nexist;"], [0, "&empty;"], [1, "&Del;"], [0, "&Element;"], [0, "&NotElement;"], [1, "&ni;"], [0, "&notni;"], [2, "&prod;"], [0, "&coprod;"], [0, "&sum;"], [0, "&minus;"], [0, "&MinusPlus;"], [0, "&dotplus;"], [1, "&Backslash;"], [0, "&lowast;"], [0, "&compfn;"], [1, "&radic;"], [2, "&prop;"], [0, "&infin;"], [0, "&angrt;"], [0, { v: "&ang;", n: 8402, o: "&nang;" }], [0, "&angmsd;"], [0, "&angsph;"], [0, "&mid;"], [0, "&nmid;"], [0, "&DoubleVerticalBar;"], [0, "&NotDoubleVerticalBar;"], [0, "&and;"], [0, "&or;"], [0, { v: "&cap;", n: 65024, o: "&caps;" }], [0, { v: "&cup;", n: 65024, o: "&cups;" }], [0, "&int;"], [0, "&Int;"], [0, "&iiint;"], [0, "&conint;"], [0, "&Conint;"], [0, "&Cconint;"], [0, "&cwint;"], [0, "&ClockwiseContourIntegral;"], [0, "&awconint;"], [0, "&there4;"], [0, "&becaus;"], [0, "&ratio;"], [0, "&Colon;"], [0, "&dotminus;"], [1, "&mDDot;"], [0, "&homtht;"], [0, { v: "&sim;", n: 8402, o: "&nvsim;" }], [0, { v: "&backsim;", n: 817, o: "&race;" }], [0, { v: "&ac;", n: 819, o: "&acE;" }], [0, "&acd;"], [0, "&VerticalTilde;"], [0, "&NotTilde;"], [0, { v: "&eqsim;", n: 824, o: "&nesim;" }], [0, "&sime;"], [0, "&NotTildeEqual;"], [0, "&cong;"], [0, "&simne;"], [0, "&ncong;"], [0, "&ap;"], [0, "&nap;"], [0, "&ape;"], [0, { v: "&apid;", n: 824, o: "&napid;" }], [0, "&backcong;"], [0, { v: "&asympeq;", n: 8402, o: "&nvap;" }], [0, { v: "&bump;", n: 824, o: "&nbump;" }], [0, { v: "&bumpe;", n: 824, o: "&nbumpe;" }], [0, { v: "&doteq;", n: 824, o: "&nedot;" }], [0, "&doteqdot;"], [0, "&efDot;"], [0, "&erDot;"], [0, "&Assign;"], [0, "&ecolon;"], [0, "&ecir;"], [0, "&circeq;"], [1, "&wedgeq;"], [0, "&veeeq;"], [1, "&triangleq;"], [2, "&equest;"], [0, "&ne;"], [0, { v: "&Congruent;", n: 8421, o: "&bnequiv;" }], [0, "&nequiv;"], [1, { v: "&le;", n: 8402, o: "&nvle;" }], [0, { v: "&ge;", n: 8402, o: "&nvge;" }], [0, { v: "&lE;", n: 824, o: "&nlE;" }], [0, { v: "&gE;", n: 824, o: "&ngE;" }], [0, { v: "&lnE;", n: 65024, o: "&lvertneqq;" }], [0, { v: "&gnE;", n: 65024, o: "&gvertneqq;" }], [0, { v: "&ll;", n: new Map(/* #__PURE__ */ restoreDiff([[824, "&nLtv;"], [7577, "&nLt;"]])) }], [0, { v: "&gg;", n: new Map(/* #__PURE__ */ restoreDiff([[824, "&nGtv;"], [7577, "&nGt;"]])) }], [0, "&between;"], [0, "&NotCupCap;"], [0, "&nless;"], [0, "&ngt;"], [0, "&nle;"], [0, "&nge;"], [0, "&lesssim;"], [0, "&GreaterTilde;"], [0, "&nlsim;"], [0, "&ngsim;"], [0, "&LessGreater;"], [0, "&gl;"], [0, "&NotLessGreater;"], [0, "&NotGreaterLess;"], [0, "&pr;"], [0, "&sc;"], [0, "&prcue;"], [0, "&sccue;"], [0, "&PrecedesTilde;"], [0, { v: "&scsim;", n: 824, o: "&NotSucceedsTilde;" }], [0, "&NotPrecedes;"], [0, "&NotSucceeds;"], [0, { v: "&sub;", n: 8402, o: "&NotSubset;" }], [0, { v: "&sup;", n: 8402, o: "&NotSuperset;" }], [0, "&nsub;"], [0, "&nsup;"], [0, "&sube;"], [0, "&supe;"], [0, "&NotSubsetEqual;"], [0, "&NotSupersetEqual;"], [0, { v: "&subne;", n: 65024, o: "&varsubsetneq;" }], [0, { v: "&supne;", n: 65024, o: "&varsupsetneq;" }], [1, "&cupdot;"], [0, "&UnionPlus;"], [0, { v: "&sqsub;", n: 824, o: "&NotSquareSubset;" }], [0, { v: "&sqsup;", n: 824, o: "&NotSquareSuperset;" }], [0, "&sqsube;"], [0, "&sqsupe;"], [0, { v: "&sqcap;", n: 65024, o: "&sqcaps;" }], [0, { v: "&sqcup;", n: 65024, o: "&sqcups;" }], [0, "&CirclePlus;"], [0, "&CircleMinus;"], [0, "&CircleTimes;"], [0, "&osol;"], [0, "&CircleDot;"], [0, "&circledcirc;"], [0, "&circledast;"], [1, "&circleddash;"], [0, "&boxplus;"], [0, "&boxminus;"], [0, "&boxtimes;"], [0, "&dotsquare;"], [0, "&RightTee;"], [0, "&dashv;"], [0, "&DownTee;"], [0, "&bot;"], [1, "&models;"], [0, "&DoubleRightTee;"], [0, "&Vdash;"], [0, "&Vvdash;"], [0, "&VDash;"], [0, "&nvdash;"], [0, "&nvDash;"], [0, "&nVdash;"], [0, "&nVDash;"], [0, "&prurel;"], [1, "&LeftTriangle;"], [0, "&RightTriangle;"], [0, { v: "&LeftTriangleEqual;", n: 8402, o: "&nvltrie;" }], [0, { v: "&RightTriangleEqual;", n: 8402, o: "&nvrtrie;" }], [0, "&origof;"], [0, "&imof;"], [0, "&multimap;"], [0, "&hercon;"], [0, "&intcal;"], [0, "&veebar;"], [1, "&barvee;"], [0, "&angrtvb;"], [0, "&lrtri;"], [0, "&bigwedge;"], [0, "&bigvee;"], [0, "&bigcap;"], [0, "&bigcup;"], [0, "&diam;"], [0, "&sdot;"], [0, "&sstarf;"], [0, "&divideontimes;"], [0, "&bowtie;"], [0, "&ltimes;"], [0, "&rtimes;"], [0, "&leftthreetimes;"], [0, "&rightthreetimes;"], [0, "&backsimeq;"], [0, "&curlyvee;"], [0, "&curlywedge;"], [0, "&Sub;"], [0, "&Sup;"], [0, "&Cap;"], [0, "&Cup;"], [0, "&fork;"], [0, "&epar;"], [0, "&lessdot;"], [0, "&gtdot;"], [0, { v: "&Ll;", n: 824, o: "&nLl;" }], [0, { v: "&Gg;", n: 824, o: "&nGg;" }], [0, { v: "&leg;", n: 65024, o: "&lesg;" }], [0, { v: "&gel;", n: 65024, o: "&gesl;" }], [2, "&cuepr;"], [0, "&cuesc;"], [0, "&NotPrecedesSlantEqual;"], [0, "&NotSucceedsSlantEqual;"], [0, "&NotSquareSubsetEqual;"], [0, "&NotSquareSupersetEqual;"], [2, "&lnsim;"], [0, "&gnsim;"], [0, "&precnsim;"], [0, "&scnsim;"], [0, "&nltri;"], [0, "&NotRightTriangle;"], [0, "&nltrie;"], [0, "&NotRightTriangleEqual;"], [0, "&vellip;"], [0, "&ctdot;"], [0, "&utdot;"], [0, "&dtdot;"], [0, "&disin;"], [0, "&isinsv;"], [0, "&isins;"], [0, { v: "&isindot;", n: 824, o: "&notindot;" }], [0, "&notinvc;"], [0, "&notinvb;"], [1, { v: "&isinE;", n: 824, o: "&notinE;" }], [0, "&nisd;"], [0, "&xnis;"], [0, "&nis;"], [0, "&notnivc;"], [0, "&notnivb;"], [6, "&barwed;"], [0, "&Barwed;"], [1, "&lceil;"], [0, "&rceil;"], [0, "&LeftFloor;"], [0, "&rfloor;"], [0, "&drcrop;"], [0, "&dlcrop;"], [0, "&urcrop;"], [0, "&ulcrop;"], [0, "&bnot;"], [1, "&profline;"], [0, "&profsurf;"], [1, "&telrec;"], [0, "&target;"], [5, "&ulcorn;"], [0, "&urcorn;"], [0, "&dlcorn;"], [0, "&drcorn;"], [2, "&frown;"], [0, "&smile;"], [9, "&cylcty;"], [0, "&profalar;"], [7, "&topbot;"], [6, "&ovbar;"], [1, "&solbar;"], [60, "&angzarr;"], [51, "&lmoustache;"], [0, "&rmoustache;"], [2, "&OverBracket;"], [0, "&bbrk;"], [0, "&bbrktbrk;"], [37, "&OverParenthesis;"], [0, "&UnderParenthesis;"], [0, "&OverBrace;"], [0, "&UnderBrace;"], [2, "&trpezium;"], [4, "&elinters;"], [59, "&blank;"], [164, "&circledS;"], [55, "&boxh;"], [1, "&boxv;"], [9, "&boxdr;"], [3, "&boxdl;"], [3, "&boxur;"], [3, "&boxul;"], [3, "&boxvr;"], [7, "&boxvl;"], [7, "&boxhd;"], [7, "&boxhu;"], [7, "&boxvh;"], [19, "&boxH;"], [0, "&boxV;"], [0, "&boxdR;"], [0, "&boxDr;"], [0, "&boxDR;"], [0, "&boxdL;"], [0, "&boxDl;"], [0, "&boxDL;"], [0, "&boxuR;"], [0, "&boxUr;"], [0, "&boxUR;"], [0, "&boxuL;"], [0, "&boxUl;"], [0, "&boxUL;"], [0, "&boxvR;"], [0, "&boxVr;"], [0, "&boxVR;"], [0, "&boxvL;"], [0, "&boxVl;"], [0, "&boxVL;"], [0, "&boxHd;"], [0, "&boxhD;"], [0, "&boxHD;"], [0, "&boxHu;"], [0, "&boxhU;"], [0, "&boxHU;"], [0, "&boxvH;"], [0, "&boxVh;"], [0, "&boxVH;"], [19, "&uhblk;"], [3, "&lhblk;"], [3, "&block;"], [8, "&blk14;"], [0, "&blk12;"], [0, "&blk34;"], [13, "&square;"], [8, "&blacksquare;"], [0, "&EmptyVerySmallSquare;"], [1, "&rect;"], [0, "&marker;"], [2, "&fltns;"], [1, "&bigtriangleup;"], [0, "&blacktriangle;"], [0, "&triangle;"], [2, "&blacktriangleright;"], [0, "&rtri;"], [3, "&bigtriangledown;"], [0, "&blacktriangledown;"], [0, "&dtri;"], [2, "&blacktriangleleft;"], [0, "&ltri;"], [6, "&loz;"], [0, "&cir;"], [32, "&tridot;"], [2, "&bigcirc;"], [8, "&ultri;"], [0, "&urtri;"], [0, "&lltri;"], [0, "&EmptySmallSquare;"], [0, "&FilledSmallSquare;"], [8, "&bigstar;"], [0, "&star;"], [7, "&phone;"], [49, "&female;"], [1, "&male;"], [29, "&spades;"], [2, "&clubs;"], [1, "&hearts;"], [0, "&diamondsuit;"], [3, "&sung;"], [2, "&flat;"], [0, "&natural;"], [0, "&sharp;"], [163, "&check;"], [3, "&cross;"], [8, "&malt;"], [21, "&sext;"], [33, "&VerticalSeparator;"], [25, "&lbbrk;"], [0, "&rbbrk;"], [84, "&bsolhsub;"], [0, "&suphsol;"], [28, "&LeftDoubleBracket;"], [0, "&RightDoubleBracket;"], [0, "&lang;"], [0, "&rang;"], [0, "&Lang;"], [0, "&Rang;"], [0, "&loang;"], [0, "&roang;"], [7, "&longleftarrow;"], [0, "&longrightarrow;"], [0, "&longleftrightarrow;"], [0, "&DoubleLongLeftArrow;"], [0, "&DoubleLongRightArrow;"], [0, "&DoubleLongLeftRightArrow;"], [1, "&longmapsto;"], [2, "&dzigrarr;"], [258, "&nvlArr;"], [0, "&nvrArr;"], [0, "&nvHarr;"], [0, "&Map;"], [6, "&lbarr;"], [0, "&bkarow;"], [0, "&lBarr;"], [0, "&dbkarow;"], [0, "&drbkarow;"], [0, "&DDotrahd;"], [0, "&UpArrowBar;"], [0, "&DownArrowBar;"], [2, "&Rarrtl;"], [2, "&latail;"], [0, "&ratail;"], [0, "&lAtail;"], [0, "&rAtail;"], [0, "&larrfs;"], [0, "&rarrfs;"], [0, "&larrbfs;"], [0, "&rarrbfs;"], [2, "&nwarhk;"], [0, "&nearhk;"], [0, "&hksearow;"], [0, "&hkswarow;"], [0, "&nwnear;"], [0, "&nesear;"], [0, "&seswar;"], [0, "&swnwar;"], [8, { v: "&rarrc;", n: 824, o: "&nrarrc;" }], [1, "&cudarrr;"], [0, "&ldca;"], [0, "&rdca;"], [0, "&cudarrl;"], [0, "&larrpl;"], [2, "&curarrm;"], [0, "&cularrp;"], [7, "&rarrpl;"], [2, "&harrcir;"], [0, "&Uarrocir;"], [0, "&lurdshar;"], [0, "&ldrushar;"], [2, "&LeftRightVector;"], [0, "&RightUpDownVector;"], [0, "&DownLeftRightVector;"], [0, "&LeftUpDownVector;"], [0, "&LeftVectorBar;"], [0, "&RightVectorBar;"], [0, "&RightUpVectorBar;"], [0, "&RightDownVectorBar;"], [0, "&DownLeftVectorBar;"], [0, "&DownRightVectorBar;"], [0, "&LeftUpVectorBar;"], [0, "&LeftDownVectorBar;"], [0, "&LeftTeeVector;"], [0, "&RightTeeVector;"], [0, "&RightUpTeeVector;"], [0, "&RightDownTeeVector;"], [0, "&DownLeftTeeVector;"], [0, "&DownRightTeeVector;"], [0, "&LeftUpTeeVector;"], [0, "&LeftDownTeeVector;"], [0, "&lHar;"], [0, "&uHar;"], [0, "&rHar;"], [0, "&dHar;"], [0, "&luruhar;"], [0, "&ldrdhar;"], [0, "&ruluhar;"], [0, "&rdldhar;"], [0, "&lharul;"], [0, "&llhard;"], [0, "&rharul;"], [0, "&lrhard;"], [0, "&udhar;"], [0, "&duhar;"], [0, "&RoundImplies;"], [0, "&erarr;"], [0, "&simrarr;"], [0, "&larrsim;"], [0, "&rarrsim;"], [0, "&rarrap;"], [0, "&ltlarr;"], [1, "&gtrarr;"], [0, "&subrarr;"], [1, "&suplarr;"], [0, "&lfisht;"], [0, "&rfisht;"], [0, "&ufisht;"], [0, "&dfisht;"], [5, "&lopar;"], [0, "&ropar;"], [4, "&lbrke;"], [0, "&rbrke;"], [0, "&lbrkslu;"], [0, "&rbrksld;"], [0, "&lbrksld;"], [0, "&rbrkslu;"], [0, "&langd;"], [0, "&rangd;"], [0, "&lparlt;"], [0, "&rpargt;"], [0, "&gtlPar;"], [0, "&ltrPar;"], [3, "&vzigzag;"], [1, "&vangrt;"], [0, "&angrtvbd;"], [6, "&ange;"], [0, "&range;"], [0, "&dwangle;"], [0, "&uwangle;"], [0, "&angmsdaa;"], [0, "&angmsdab;"], [0, "&angmsdac;"], [0, "&angmsdad;"], [0, "&angmsdae;"], [0, "&angmsdaf;"], [0, "&angmsdag;"], [0, "&angmsdah;"], [0, "&bemptyv;"], [0, "&demptyv;"], [0, "&cemptyv;"], [0, "&raemptyv;"], [0, "&laemptyv;"], [0, "&ohbar;"], [0, "&omid;"], [0, "&opar;"], [1, "&operp;"], [1, "&olcross;"], [0, "&odsold;"], [1, "&olcir;"], [0, "&ofcir;"], [0, "&olt;"], [0, "&ogt;"], [0, "&cirscir;"], [0, "&cirE;"], [0, "&solb;"], [0, "&bsolb;"], [3, "&boxbox;"], [3, "&trisb;"], [0, "&rtriltri;"], [0, { v: "&LeftTriangleBar;", n: 824, o: "&NotLeftTriangleBar;" }], [0, { v: "&RightTriangleBar;", n: 824, o: "&NotRightTriangleBar;" }], [11, "&iinfin;"], [0, "&infintie;"], [0, "&nvinfin;"], [4, "&eparsl;"], [0, "&smeparsl;"], [0, "&eqvparsl;"], [5, "&blacklozenge;"], [8, "&RuleDelayed;"], [1, "&dsol;"], [9, "&bigodot;"], [0, "&bigoplus;"], [0, "&bigotimes;"], [1, "&biguplus;"], [1, "&bigsqcup;"], [5, "&iiiint;"], [0, "&fpartint;"], [2, "&cirfnint;"], [0, "&awint;"], [0, "&rppolint;"], [0, "&scpolint;"], [0, "&npolint;"], [0, "&pointint;"], [0, "&quatint;"], [0, "&intlarhk;"], [10, "&pluscir;"], [0, "&plusacir;"], [0, "&simplus;"], [0, "&plusdu;"], [0, "&plussim;"], [0, "&plustwo;"], [1, "&mcomma;"], [0, "&minusdu;"], [2, "&loplus;"], [0, "&roplus;"], [0, "&Cross;"], [0, "&timesd;"], [0, "&timesbar;"], [1, "&smashp;"], [0, "&lotimes;"], [0, "&rotimes;"], [0, "&otimesas;"], [0, "&Otimes;"], [0, "&odiv;"], [0, "&triplus;"], [0, "&triminus;"], [0, "&tritime;"], [0, "&intprod;"], [2, "&amalg;"], [0, "&capdot;"], [1, "&ncup;"], [0, "&ncap;"], [0, "&capand;"], [0, "&cupor;"], [0, "&cupcap;"], [0, "&capcup;"], [0, "&cupbrcap;"], [0, "&capbrcup;"], [0, "&cupcup;"], [0, "&capcap;"], [0, "&ccups;"], [0, "&ccaps;"], [2, "&ccupssm;"], [2, "&And;"], [0, "&Or;"], [0, "&andand;"], [0, "&oror;"], [0, "&orslope;"], [0, "&andslope;"], [1, "&andv;"], [0, "&orv;"], [0, "&andd;"], [0, "&ord;"], [1, "&wedbar;"], [6, "&sdote;"], [3, "&simdot;"], [2, { v: "&congdot;", n: 824, o: "&ncongdot;" }], [0, "&easter;"], [0, "&apacir;"], [0, { v: "&apE;", n: 824, o: "&napE;" }], [0, "&eplus;"], [0, "&pluse;"], [0, "&Esim;"], [0, "&Colone;"], [0, "&Equal;"], [1, "&ddotseq;"], [0, "&equivDD;"], [0, "&ltcir;"], [0, "&gtcir;"], [0, "&ltquest;"], [0, "&gtquest;"], [0, { v: "&leqslant;", n: 824, o: "&nleqslant;" }], [0, { v: "&geqslant;", n: 824, o: "&ngeqslant;" }], [0, "&lesdot;"], [0, "&gesdot;"], [0, "&lesdoto;"], [0, "&gesdoto;"], [0, "&lesdotor;"], [0, "&gesdotol;"], [0, "&lap;"], [0, "&gap;"], [0, "&lne;"], [0, "&gne;"], [0, "&lnap;"], [0, "&gnap;"], [0, "&lEg;"], [0, "&gEl;"], [0, "&lsime;"], [0, "&gsime;"], [0, "&lsimg;"], [0, "&gsiml;"], [0, "&lgE;"], [0, "&glE;"], [0, "&lesges;"], [0, "&gesles;"], [0, "&els;"], [0, "&egs;"], [0, "&elsdot;"], [0, "&egsdot;"], [0, "&el;"], [0, "&eg;"], [2, "&siml;"], [0, "&simg;"], [0, "&simlE;"], [0, "&simgE;"], [0, { v: "&LessLess;", n: 824, o: "&NotNestedLessLess;" }], [0, { v: "&GreaterGreater;", n: 824, o: "&NotNestedGreaterGreater;" }], [1, "&glj;"], [0, "&gla;"], [0, "&ltcc;"], [0, "&gtcc;"], [0, "&lescc;"], [0, "&gescc;"], [0, "&smt;"], [0, "&lat;"], [0, { v: "&smte;", n: 65024, o: "&smtes;" }], [0, { v: "&late;", n: 65024, o: "&lates;" }], [0, "&bumpE;"], [0, { v: "&PrecedesEqual;", n: 824, o: "&NotPrecedesEqual;" }], [0, { v: "&sce;", n: 824, o: "&NotSucceedsEqual;" }], [2, "&prE;"], [0, "&scE;"], [0, "&precneqq;"], [0, "&scnE;"], [0, "&prap;"], [0, "&scap;"], [0, "&precnapprox;"], [0, "&scnap;"], [0, "&Pr;"], [0, "&Sc;"], [0, "&subdot;"], [0, "&supdot;"], [0, "&subplus;"], [0, "&supplus;"], [0, "&submult;"], [0, "&supmult;"], [0, "&subedot;"], [0, "&supedot;"], [0, { v: "&subE;", n: 824, o: "&nsubE;" }], [0, { v: "&supE;", n: 824, o: "&nsupE;" }], [0, "&subsim;"], [0, "&supsim;"], [2, { v: "&subnE;", n: 65024, o: "&varsubsetneqq;" }], [0, { v: "&supnE;", n: 65024, o: "&varsupsetneqq;" }], [2, "&csub;"], [0, "&csup;"], [0, "&csube;"], [0, "&csupe;"], [0, "&subsup;"], [0, "&supsub;"], [0, "&subsub;"], [0, "&supsup;"], [0, "&suphsub;"], [0, "&supdsub;"], [0, "&forkv;"], [0, "&topfork;"], [0, "&mlcp;"], [8, "&Dashv;"], [1, "&Vdashl;"], [0, "&Barv;"], [0, "&vBar;"], [0, "&vBarv;"], [1, "&Vbar;"], [0, "&Not;"], [0, "&bNot;"], [0, "&rnmid;"], [0, "&cirmid;"], [0, "&midcir;"], [0, "&topcir;"], [0, "&nhpar;"], [0, "&parsim;"], [9, { v: "&parsl;", n: 8421, o: "&nparsl;" }], [44343, { n: new Map(/* #__PURE__ */ restoreDiff([[56476, "&Ascr;"], [1, "&Cscr;"], [0, "&Dscr;"], [2, "&Gscr;"], [2, "&Jscr;"], [0, "&Kscr;"], [2, "&Nscr;"], [0, "&Oscr;"], [0, "&Pscr;"], [0, "&Qscr;"], [1, "&Sscr;"], [0, "&Tscr;"], [0, "&Uscr;"], [0, "&Vscr;"], [0, "&Wscr;"], [0, "&Xscr;"], [0, "&Yscr;"], [0, "&Zscr;"], [0, "&ascr;"], [0, "&bscr;"], [0, "&cscr;"], [0, "&dscr;"], [1, "&fscr;"], [1, "&hscr;"], [0, "&iscr;"], [0, "&jscr;"], [0, "&kscr;"], [0, "&lscr;"], [0, "&mscr;"], [0, "&nscr;"], [1, "&pscr;"], [0, "&qscr;"], [0, "&rscr;"], [0, "&sscr;"], [0, "&tscr;"], [0, "&uscr;"], [0, "&vscr;"], [0, "&wscr;"], [0, "&xscr;"], [0, "&yscr;"], [0, "&zscr;"], [52, "&Afr;"], [0, "&Bfr;"], [1, "&Dfr;"], [0, "&Efr;"], [0, "&Ffr;"], [0, "&Gfr;"], [2, "&Jfr;"], [0, "&Kfr;"], [0, "&Lfr;"], [0, "&Mfr;"], [0, "&Nfr;"], [0, "&Ofr;"], [0, "&Pfr;"], [0, "&Qfr;"], [1, "&Sfr;"], [0, "&Tfr;"], [0, "&Ufr;"], [0, "&Vfr;"], [0, "&Wfr;"], [0, "&Xfr;"], [0, "&Yfr;"], [1, "&afr;"], [0, "&bfr;"], [0, "&cfr;"], [0, "&dfr;"], [0, "&efr;"], [0, "&ffr;"], [0, "&gfr;"], [0, "&hfr;"], [0, "&ifr;"], [0, "&jfr;"], [0, "&kfr;"], [0, "&lfr;"], [0, "&mfr;"], [0, "&nfr;"], [0, "&ofr;"], [0, "&pfr;"], [0, "&qfr;"], [0, "&rfr;"], [0, "&sfr;"], [0, "&tfr;"], [0, "&ufr;"], [0, "&vfr;"], [0, "&wfr;"], [0, "&xfr;"], [0, "&yfr;"], [0, "&zfr;"], [0, "&Aopf;"], [0, "&Bopf;"], [1, "&Dopf;"], [0, "&Eopf;"], [0, "&Fopf;"], [0, "&Gopf;"], [1, "&Iopf;"], [0, "&Jopf;"], [0, "&Kopf;"], [0, "&Lopf;"], [0, "&Mopf;"], [1, "&Oopf;"], [3, "&Sopf;"], [0, "&Topf;"], [0, "&Uopf;"], [0, "&Vopf;"], [0, "&Wopf;"], [0, "&Xopf;"], [0, "&Yopf;"], [1, "&aopf;"], [0, "&bopf;"], [0, "&copf;"], [0, "&dopf;"], [0, "&eopf;"], [0, "&fopf;"], [0, "&gopf;"], [0, "&hopf;"], [0, "&iopf;"], [0, "&jopf;"], [0, "&kopf;"], [0, "&lopf;"], [0, "&mopf;"], [0, "&nopf;"], [0, "&oopf;"], [0, "&popf;"], [0, "&qopf;"], [0, "&ropf;"], [0, "&sopf;"], [0, "&topf;"], [0, "&uopf;"], [0, "&vopf;"], [0, "&wopf;"], [0, "&xopf;"], [0, "&yopf;"], [0, "&zopf;"]])) }], [8906, "&fflig;"], [0, "&filig;"], [0, "&fllig;"], [0, "&ffilig;"], [0, "&ffllig;"]]));
+
+    var _escape = {};
+
+    (function (exports) {
+    	Object.defineProperty(exports, "__esModule", { value: true });
+    	exports.escapeText = exports.escapeAttribute = exports.escapeUTF8 = exports.escape = exports.encodeXML = exports.getCodePoint = exports.xmlReplacer = void 0;
+    	exports.xmlReplacer = /["&'<>$\x80-\uFFFF]/g;
+    	var xmlCodeMap = new Map([
+    	    [34, "&quot;"],
+    	    [38, "&amp;"],
+    	    [39, "&apos;"],
+    	    [60, "&lt;"],
+    	    [62, "&gt;"],
+    	]);
+    	// For compatibility with node < 4, we wrap `codePointAt`
+    	exports.getCodePoint = 
+    	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    	String.prototype.codePointAt != null
+    	    ? function (str, index) { return str.codePointAt(index); }
+    	    : // http://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
+    	        function (c, index) {
+    	            return (c.charCodeAt(index) & 0xfc00) === 0xd800
+    	                ? (c.charCodeAt(index) - 0xd800) * 0x400 +
+    	                    c.charCodeAt(index + 1) -
+    	                    0xdc00 +
+    	                    0x10000
+    	                : c.charCodeAt(index);
+    	        };
+    	/**
+    	 * Encodes all non-ASCII characters, as well as characters not valid in XML
+    	 * documents using XML entities.
+    	 *
+    	 * If a character has no equivalent entity, a
+    	 * numeric hexadecimal reference (eg. `&#xfc;`) will be used.
+    	 */
+    	function encodeXML(str) {
+    	    var ret = "";
+    	    var lastIdx = 0;
+    	    var match;
+    	    while ((match = exports.xmlReplacer.exec(str)) !== null) {
+    	        var i = match.index;
+    	        var char = str.charCodeAt(i);
+    	        var next = xmlCodeMap.get(char);
+    	        if (next !== undefined) {
+    	            ret += str.substring(lastIdx, i) + next;
+    	            lastIdx = i + 1;
+    	        }
+    	        else {
+    	            ret += "".concat(str.substring(lastIdx, i), "&#x").concat((0, exports.getCodePoint)(str, i).toString(16), ";");
+    	            // Increase by 1 if we have a surrogate pair
+    	            lastIdx = exports.xmlReplacer.lastIndex += Number((char & 0xfc00) === 0xd800);
+    	        }
+    	    }
+    	    return ret + str.substr(lastIdx);
+    	}
+    	exports.encodeXML = encodeXML;
+    	/**
+    	 * Encodes all non-ASCII characters, as well as characters not valid in XML
+    	 * documents using numeric hexadecimal reference (eg. `&#xfc;`).
+    	 *
+    	 * Have a look at `escapeUTF8` if you want a more concise output at the expense
+    	 * of reduced transportability.
+    	 *
+    	 * @param data String to escape.
+    	 */
+    	exports.escape = encodeXML;
+    	/**
+    	 * Creates a function that escapes all characters matched by the given regular
+    	 * expression using the given map of characters to escape to their entities.
+    	 *
+    	 * @param regex Regular expression to match characters to escape.
+    	 * @param map Map of characters to escape to their entities.
+    	 *
+    	 * @returns Function that escapes all characters matched by the given regular
+    	 * expression using the given map of characters to escape to their entities.
+    	 */
+    	function getEscaper(regex, map) {
+    	    return function escape(data) {
+    	        var match;
+    	        var lastIdx = 0;
+    	        var result = "";
+    	        while ((match = regex.exec(data))) {
+    	            if (lastIdx !== match.index) {
+    	                result += data.substring(lastIdx, match.index);
+    	            }
+    	            // We know that this character will be in the map.
+    	            result += map.get(match[0].charCodeAt(0));
+    	            // Every match will be of length 1
+    	            lastIdx = match.index + 1;
+    	        }
+    	        return result + data.substring(lastIdx);
+    	    };
+    	}
+    	/**
+    	 * Encodes all characters not valid in XML documents using XML entities.
+    	 *
+    	 * Note that the output will be character-set dependent.
+    	 *
+    	 * @param data String to escape.
+    	 */
+    	exports.escapeUTF8 = getEscaper(/[&<>'"]/g, xmlCodeMap);
+    	/**
+    	 * Encodes all characters that have to be escaped in HTML attributes,
+    	 * following {@link https://html.spec.whatwg.org/multipage/parsing.html#escapingString}.
+    	 *
+    	 * @param data String to escape.
+    	 */
+    	exports.escapeAttribute = getEscaper(/["&\u00A0]/g, new Map([
+    	    [34, "&quot;"],
+    	    [38, "&amp;"],
+    	    [160, "&nbsp;"],
+    	]));
+    	/**
+    	 * Encodes all characters that have to be escaped in HTML text,
+    	 * following {@link https://html.spec.whatwg.org/multipage/parsing.html#escapingString}.
+    	 *
+    	 * @param data String to escape.
+    	 */
+    	exports.escapeText = getEscaper(/[&<>\u00A0]/g, new Map([
+    	    [38, "&amp;"],
+    	    [60, "&lt;"],
+    	    [62, "&gt;"],
+    	    [160, "&nbsp;"],
+    	]));
+    	
+    } (_escape));
+
+    var __importDefault$1 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+        return (mod && mod.__esModule) ? mod : { "default": mod };
+    };
+    Object.defineProperty(encode, "__esModule", { value: true });
+    encode.encodeNonAsciiHTML = encode.encodeHTML = void 0;
+    var encode_html_js_1 = __importDefault$1(encodeHtml);
+    var escape_js_1 = _escape;
+    var htmlReplacer = /[\t\n!-,./:-@[-`\f{-}$\x80-\uFFFF]/g;
+    /**
+     * Encodes all characters in the input using HTML entities. This includes
+     * characters that are valid ASCII characters in HTML documents, such as `#`.
+     *
+     * To get a more compact output, consider using the `encodeNonAsciiHTML`
+     * function, which will only encode characters that are not valid in HTML
+     * documents, as well as non-ASCII characters.
+     *
+     * If a character has no equivalent entity, a numeric hexadecimal reference
+     * (eg. `&#xfc;`) will be used.
+     */
+    function encodeHTML(data) {
+        return encodeHTMLTrieRe(htmlReplacer, data);
+    }
+    encode.encodeHTML = encodeHTML;
+    /**
+     * Encodes all non-ASCII characters, as well as characters not valid in HTML
+     * documents using HTML entities. This function will not encode characters that
+     * are valid in HTML documents, such as `#`.
+     *
+     * If a character has no equivalent entity, a numeric hexadecimal reference
+     * (eg. `&#xfc;`) will be used.
+     */
+    function encodeNonAsciiHTML(data) {
+        return encodeHTMLTrieRe(escape_js_1.xmlReplacer, data);
+    }
+    encode.encodeNonAsciiHTML = encodeNonAsciiHTML;
+    function encodeHTMLTrieRe(regExp, str) {
+        var ret = "";
+        var lastIdx = 0;
+        var match;
+        while ((match = regExp.exec(str)) !== null) {
+            var i = match.index;
+            ret += str.substring(lastIdx, i);
+            var char = str.charCodeAt(i);
+            var next = encode_html_js_1.default.get(char);
+            if (typeof next === "object") {
+                // We are in a branch. Try to match the next char.
+                if (i + 1 < str.length) {
+                    var nextChar = str.charCodeAt(i + 1);
+                    var value = typeof next.n === "number"
+                        ? next.n === nextChar
+                            ? next.o
+                            : undefined
+                        : next.n.get(nextChar);
+                    if (value !== undefined) {
+                        ret += value;
+                        lastIdx = regExp.lastIndex += 1;
+                        continue;
+                    }
+                }
+                next = next.v;
+            }
+            // We might have a tree node without a value; skip and use a numeric entity.
+            if (next !== undefined) {
+                ret += next;
+                lastIdx = i + 1;
+            }
+            else {
+                var cp = (0, escape_js_1.getCodePoint)(str, i);
+                ret += "&#x".concat(cp.toString(16), ";");
+                // Increase by 1 if we have a surrogate pair
+                lastIdx = regExp.lastIndex += Number(cp !== char);
+            }
+        }
+        return ret + str.substr(lastIdx);
+    }
+
+    (function (exports) {
+    	Object.defineProperty(exports, "__esModule", { value: true });
+    	exports.decodeXMLStrict = exports.decodeHTML5Strict = exports.decodeHTML4Strict = exports.decodeHTML5 = exports.decodeHTML4 = exports.decodeHTMLAttribute = exports.decodeHTMLStrict = exports.decodeHTML = exports.decodeXML = exports.DecodingMode = exports.EntityDecoder = exports.encodeHTML5 = exports.encodeHTML4 = exports.encodeNonAsciiHTML = exports.encodeHTML = exports.escapeText = exports.escapeAttribute = exports.escapeUTF8 = exports.escape = exports.encodeXML = exports.encode = exports.decodeStrict = exports.decode = exports.EncodingMode = exports.EntityLevel = void 0;
+    	var decode_js_1 = decode;
+    	var encode_js_1 = encode;
+    	var escape_js_1 = _escape;
+    	/** The level of entities to support. */
+    	var EntityLevel;
+    	(function (EntityLevel) {
+    	    /** Support only XML entities. */
+    	    EntityLevel[EntityLevel["XML"] = 0] = "XML";
+    	    /** Support HTML entities, which are a superset of XML entities. */
+    	    EntityLevel[EntityLevel["HTML"] = 1] = "HTML";
+    	})(EntityLevel = exports.EntityLevel || (exports.EntityLevel = {}));
+    	var EncodingMode;
+    	(function (EncodingMode) {
+    	    /**
+    	     * The output is UTF-8 encoded. Only characters that need escaping within
+    	     * XML will be escaped.
+    	     */
+    	    EncodingMode[EncodingMode["UTF8"] = 0] = "UTF8";
+    	    /**
+    	     * The output consists only of ASCII characters. Characters that need
+    	     * escaping within HTML, and characters that aren't ASCII characters will
+    	     * be escaped.
+    	     */
+    	    EncodingMode[EncodingMode["ASCII"] = 1] = "ASCII";
+    	    /**
+    	     * Encode all characters that have an equivalent entity, as well as all
+    	     * characters that are not ASCII characters.
+    	     */
+    	    EncodingMode[EncodingMode["Extensive"] = 2] = "Extensive";
+    	    /**
+    	     * Encode all characters that have to be escaped in HTML attributes,
+    	     * following {@link https://html.spec.whatwg.org/multipage/parsing.html#escapingString}.
+    	     */
+    	    EncodingMode[EncodingMode["Attribute"] = 3] = "Attribute";
+    	    /**
+    	     * Encode all characters that have to be escaped in HTML text,
+    	     * following {@link https://html.spec.whatwg.org/multipage/parsing.html#escapingString}.
+    	     */
+    	    EncodingMode[EncodingMode["Text"] = 4] = "Text";
+    	})(EncodingMode = exports.EncodingMode || (exports.EncodingMode = {}));
+    	/**
+    	 * Decodes a string with entities.
+    	 *
+    	 * @param data String to decode.
+    	 * @param options Decoding options.
+    	 */
+    	function decode$1(data, options) {
+    	    if (options === void 0) { options = EntityLevel.XML; }
+    	    var level = typeof options === "number" ? options : options.level;
+    	    if (level === EntityLevel.HTML) {
+    	        var mode = typeof options === "object" ? options.mode : undefined;
+    	        return (0, decode_js_1.decodeHTML)(data, mode);
+    	    }
+    	    return (0, decode_js_1.decodeXML)(data);
+    	}
+    	exports.decode = decode$1;
+    	/**
+    	 * Decodes a string with entities. Does not allow missing trailing semicolons for entities.
+    	 *
+    	 * @param data String to decode.
+    	 * @param options Decoding options.
+    	 * @deprecated Use `decode` with the `mode` set to `Strict`.
+    	 */
+    	function decodeStrict(data, options) {
+    	    var _a;
+    	    if (options === void 0) { options = EntityLevel.XML; }
+    	    var opts = typeof options === "number" ? { level: options } : options;
+    	    (_a = opts.mode) !== null && _a !== void 0 ? _a : (opts.mode = decode_js_1.DecodingMode.Strict);
+    	    return decode$1(data, opts);
+    	}
+    	exports.decodeStrict = decodeStrict;
+    	/**
+    	 * Encodes a string with entities.
+    	 *
+    	 * @param data String to encode.
+    	 * @param options Encoding options.
+    	 */
+    	function encode$1(data, options) {
+    	    if (options === void 0) { options = EntityLevel.XML; }
+    	    var opts = typeof options === "number" ? { level: options } : options;
+    	    // Mode `UTF8` just escapes XML entities
+    	    if (opts.mode === EncodingMode.UTF8)
+    	        return (0, escape_js_1.escapeUTF8)(data);
+    	    if (opts.mode === EncodingMode.Attribute)
+    	        return (0, escape_js_1.escapeAttribute)(data);
+    	    if (opts.mode === EncodingMode.Text)
+    	        return (0, escape_js_1.escapeText)(data);
+    	    if (opts.level === EntityLevel.HTML) {
+    	        if (opts.mode === EncodingMode.ASCII) {
+    	            return (0, encode_js_1.encodeNonAsciiHTML)(data);
+    	        }
+    	        return (0, encode_js_1.encodeHTML)(data);
+    	    }
+    	    // ASCII and Extensive are equivalent
+    	    return (0, escape_js_1.encodeXML)(data);
+    	}
+    	exports.encode = encode$1;
+    	var escape_js_2 = _escape;
+    	Object.defineProperty(exports, "encodeXML", { enumerable: true, get: function () { return escape_js_2.encodeXML; } });
+    	Object.defineProperty(exports, "escape", { enumerable: true, get: function () { return escape_js_2.escape; } });
+    	Object.defineProperty(exports, "escapeUTF8", { enumerable: true, get: function () { return escape_js_2.escapeUTF8; } });
+    	Object.defineProperty(exports, "escapeAttribute", { enumerable: true, get: function () { return escape_js_2.escapeAttribute; } });
+    	Object.defineProperty(exports, "escapeText", { enumerable: true, get: function () { return escape_js_2.escapeText; } });
+    	var encode_js_2 = encode;
+    	Object.defineProperty(exports, "encodeHTML", { enumerable: true, get: function () { return encode_js_2.encodeHTML; } });
+    	Object.defineProperty(exports, "encodeNonAsciiHTML", { enumerable: true, get: function () { return encode_js_2.encodeNonAsciiHTML; } });
+    	// Legacy aliases (deprecated)
+    	Object.defineProperty(exports, "encodeHTML4", { enumerable: true, get: function () { return encode_js_2.encodeHTML; } });
+    	Object.defineProperty(exports, "encodeHTML5", { enumerable: true, get: function () { return encode_js_2.encodeHTML; } });
+    	var decode_js_2 = decode;
+    	Object.defineProperty(exports, "EntityDecoder", { enumerable: true, get: function () { return decode_js_2.EntityDecoder; } });
+    	Object.defineProperty(exports, "DecodingMode", { enumerable: true, get: function () { return decode_js_2.DecodingMode; } });
+    	Object.defineProperty(exports, "decodeXML", { enumerable: true, get: function () { return decode_js_2.decodeXML; } });
+    	Object.defineProperty(exports, "decodeHTML", { enumerable: true, get: function () { return decode_js_2.decodeHTML; } });
+    	Object.defineProperty(exports, "decodeHTMLStrict", { enumerable: true, get: function () { return decode_js_2.decodeHTMLStrict; } });
+    	Object.defineProperty(exports, "decodeHTMLAttribute", { enumerable: true, get: function () { return decode_js_2.decodeHTMLAttribute; } });
+    	// Legacy aliases (deprecated)
+    	Object.defineProperty(exports, "decodeHTML4", { enumerable: true, get: function () { return decode_js_2.decodeHTML; } });
+    	Object.defineProperty(exports, "decodeHTML5", { enumerable: true, get: function () { return decode_js_2.decodeHTML; } });
+    	Object.defineProperty(exports, "decodeHTML4Strict", { enumerable: true, get: function () { return decode_js_2.decodeHTMLStrict; } });
+    	Object.defineProperty(exports, "decodeHTML5Strict", { enumerable: true, get: function () { return decode_js_2.decodeHTMLStrict; } });
+    	Object.defineProperty(exports, "decodeXMLStrict", { enumerable: true, get: function () { return decode_js_2.decodeXML; } });
+    	
+    } (lib));
+
+    var foreignNames = {};
+
+    Object.defineProperty(foreignNames, "__esModule", { value: true });
+    foreignNames.attributeNames = foreignNames.elementNames = void 0;
+    foreignNames.elementNames = new Map([
+        "altGlyph",
+        "altGlyphDef",
+        "altGlyphItem",
+        "animateColor",
+        "animateMotion",
+        "animateTransform",
+        "clipPath",
+        "feBlend",
+        "feColorMatrix",
+        "feComponentTransfer",
+        "feComposite",
+        "feConvolveMatrix",
+        "feDiffuseLighting",
+        "feDisplacementMap",
+        "feDistantLight",
+        "feDropShadow",
+        "feFlood",
+        "feFuncA",
+        "feFuncB",
+        "feFuncG",
+        "feFuncR",
+        "feGaussianBlur",
+        "feImage",
+        "feMerge",
+        "feMergeNode",
+        "feMorphology",
+        "feOffset",
+        "fePointLight",
+        "feSpecularLighting",
+        "feSpotLight",
+        "feTile",
+        "feTurbulence",
+        "foreignObject",
+        "glyphRef",
+        "linearGradient",
+        "radialGradient",
+        "textPath",
+    ].map(function (val) { return [val.toLowerCase(), val]; }));
+    foreignNames.attributeNames = new Map([
+        "definitionURL",
+        "attributeName",
+        "attributeType",
+        "baseFrequency",
+        "baseProfile",
+        "calcMode",
+        "clipPathUnits",
+        "diffuseConstant",
+        "edgeMode",
+        "filterUnits",
+        "glyphRef",
+        "gradientTransform",
+        "gradientUnits",
+        "kernelMatrix",
+        "kernelUnitLength",
+        "keyPoints",
+        "keySplines",
+        "keyTimes",
+        "lengthAdjust",
+        "limitingConeAngle",
+        "markerHeight",
+        "markerUnits",
+        "markerWidth",
+        "maskContentUnits",
+        "maskUnits",
+        "numOctaves",
+        "pathLength",
+        "patternContentUnits",
+        "patternTransform",
+        "patternUnits",
+        "pointsAtX",
+        "pointsAtY",
+        "pointsAtZ",
+        "preserveAlpha",
+        "preserveAspectRatio",
+        "primitiveUnits",
+        "refX",
+        "refY",
+        "repeatCount",
+        "repeatDur",
+        "requiredExtensions",
+        "requiredFeatures",
+        "specularConstant",
+        "specularExponent",
+        "spreadMethod",
+        "startOffset",
+        "stdDeviation",
+        "stitchTiles",
+        "surfaceScale",
+        "systemLanguage",
+        "tableValues",
+        "targetX",
+        "targetY",
+        "textLength",
+        "viewBox",
+        "viewTarget",
+        "xChannelSelector",
+        "yChannelSelector",
+        "zoomAndPan",
+    ].map(function (val) { return [val.toLowerCase(), val]; }));
+
+    var __assign = (commonjsGlobal && commonjsGlobal.__assign) || function () {
+        __assign = Object.assign || function(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                    t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
+    };
+    var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        var desc = Object.getOwnPropertyDescriptor(m, k);
+        if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+          desc = { enumerable: true, get: function() { return m[k]; } };
+        }
+        Object.defineProperty(o, k2, desc);
+    }) : (function(o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        o[k2] = m[k];
+    }));
+    var __setModuleDefault = (commonjsGlobal && commonjsGlobal.__setModuleDefault) || (Object.create ? (function(o, v) {
+        Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+        o["default"] = v;
+    });
+    var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+    Object.defineProperty(lib$1, "__esModule", { value: true });
+    lib$1.render = void 0;
+    /*
+     * Module dependencies
+     */
+    var ElementType = __importStar(lib$3);
+    var entities_1 = lib;
+    /**
+     * Mixed-case SVG and MathML tags & attributes
+     * recognized by the HTML parser.
+     *
+     * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inforeign
+     */
+    var foreignNames_js_1 = foreignNames;
+    var unencodedElements = new Set([
+        "style",
+        "script",
+        "xmp",
+        "iframe",
+        "noembed",
+        "noframes",
+        "plaintext",
+        "noscript",
+    ]);
+    function replaceQuotes(value) {
+        return value.replace(/"/g, "&quot;");
+    }
+    /**
+     * Format attributes
+     */
+    function formatAttributes(attributes, opts) {
+        var _a;
+        if (!attributes)
+            return;
+        var encode = ((_a = opts.encodeEntities) !== null && _a !== void 0 ? _a : opts.decodeEntities) === false
+            ? replaceQuotes
+            : opts.xmlMode || opts.encodeEntities !== "utf8"
+                ? entities_1.encodeXML
+                : entities_1.escapeAttribute;
+        return Object.keys(attributes)
+            .map(function (key) {
+            var _a, _b;
+            var value = (_a = attributes[key]) !== null && _a !== void 0 ? _a : "";
+            if (opts.xmlMode === "foreign") {
+                /* Fix up mixed-case attribute names */
+                key = (_b = foreignNames_js_1.attributeNames.get(key)) !== null && _b !== void 0 ? _b : key;
+            }
+            if (!opts.emptyAttrs && !opts.xmlMode && value === "") {
+                return key;
+            }
+            return "".concat(key, "=\"").concat(encode(value), "\"");
+        })
+            .join(" ");
+    }
+    /**
+     * Self-enclosing tags
+     */
+    var singleTag = new Set([
+        "area",
+        "base",
+        "basefont",
+        "br",
+        "col",
+        "command",
+        "embed",
+        "frame",
+        "hr",
+        "img",
+        "input",
+        "isindex",
+        "keygen",
+        "link",
+        "meta",
+        "param",
+        "source",
+        "track",
+        "wbr",
+    ]);
+    /**
+     * Renders a DOM node or an array of DOM nodes to a string.
+     *
+     * Can be thought of as the equivalent of the `outerHTML` of the passed node(s).
+     *
+     * @param node Node to be rendered.
+     * @param options Changes serialization behavior
+     */
+    function render(node, options) {
+        if (options === void 0) { options = {}; }
+        var nodes = "length" in node ? node : [node];
+        var output = "";
+        for (var i = 0; i < nodes.length; i++) {
+            output += renderNode(nodes[i], options);
+        }
+        return output;
+    }
+    lib$1.render = render;
+    lib$1.default = render;
+    function renderNode(node, options) {
+        switch (node.type) {
+            case ElementType.Root:
+                return render(node.children, options);
+            // @ts-expect-error We don't use `Doctype` yet
+            case ElementType.Doctype:
+            case ElementType.Directive:
+                return renderDirective(node);
+            case ElementType.Comment:
+                return renderComment(node);
+            case ElementType.CDATA:
+                return renderCdata(node);
+            case ElementType.Script:
+            case ElementType.Style:
+            case ElementType.Tag:
+                return renderTag(node, options);
+            case ElementType.Text:
+                return renderText(node, options);
+        }
+    }
+    var foreignModeIntegrationPoints = new Set([
+        "mi",
+        "mo",
+        "mn",
+        "ms",
+        "mtext",
+        "annotation-xml",
+        "foreignObject",
+        "desc",
+        "title",
+    ]);
+    var foreignElements = new Set(["svg", "math"]);
+    function renderTag(elem, opts) {
+        var _a;
+        // Handle SVG / MathML in HTML
+        if (opts.xmlMode === "foreign") {
+            /* Fix up mixed-case element names */
+            elem.name = (_a = foreignNames_js_1.elementNames.get(elem.name)) !== null && _a !== void 0 ? _a : elem.name;
+            /* Exit foreign mode at integration points */
+            if (elem.parent &&
+                foreignModeIntegrationPoints.has(elem.parent.name)) {
+                opts = __assign(__assign({}, opts), { xmlMode: false });
+            }
+        }
+        if (!opts.xmlMode && foreignElements.has(elem.name)) {
+            opts = __assign(__assign({}, opts), { xmlMode: "foreign" });
+        }
+        var tag = "<".concat(elem.name);
+        var attribs = formatAttributes(elem.attribs, opts);
+        if (attribs) {
+            tag += " ".concat(attribs);
+        }
+        if (elem.children.length === 0 &&
+            (opts.xmlMode
+                ? // In XML mode or foreign mode, and user hasn't explicitly turned off self-closing tags
+                    opts.selfClosingTags !== false
+                : // User explicitly asked for self-closing tags, even in HTML mode
+                    opts.selfClosingTags && singleTag.has(elem.name))) {
+            if (!opts.xmlMode)
+                tag += " ";
+            tag += "/>";
+        }
+        else {
+            tag += ">";
+            if (elem.children.length > 0) {
+                tag += render(elem.children, opts);
+            }
+            if (opts.xmlMode || !singleTag.has(elem.name)) {
+                tag += "</".concat(elem.name, ">");
+            }
+        }
+        return tag;
+    }
+    function renderDirective(elem) {
+        return "<".concat(elem.data, ">");
+    }
+    function renderText(elem, opts) {
+        var _a;
+        var data = elem.data || "";
+        // If entities weren't decoded, no need to encode them back
+        if (((_a = opts.encodeEntities) !== null && _a !== void 0 ? _a : opts.decodeEntities) !== false &&
+            !(!opts.xmlMode &&
+                elem.parent &&
+                unencodedElements.has(elem.parent.name))) {
+            data =
+                opts.xmlMode || opts.encodeEntities !== "utf8"
+                    ? (0, entities_1.encodeXML)(data)
+                    : (0, entities_1.escapeText)(data);
+        }
+        return data;
+    }
+    function renderCdata(elem) {
+        return "<![CDATA[".concat(elem.children[0].data, "]]>");
+    }
+    function renderComment(elem) {
+        return "<!--".concat(elem.data, "-->");
+    }
+
+    var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+        return (mod && mod.__esModule) ? mod : { "default": mod };
+    };
+    Object.defineProperty(stringify$5, "__esModule", { value: true });
+    stringify$5.getOuterHTML = getOuterHTML;
+    stringify$5.getInnerHTML = getInnerHTML;
+    stringify$5.getText = getText;
+    stringify$5.textContent = textContent;
+    stringify$5.innerText = innerText;
+    var domhandler_1$4 = lib$4;
+    var dom_serializer_1 = __importDefault(lib$1);
+    var domelementtype_1 = lib$3;
+    /**
+     * @category Stringify
+     * @deprecated Use the `dom-serializer` module directly.
+     * @param node Node to get the outer HTML of.
+     * @param options Options for serialization.
+     * @returns `node`'s outer HTML.
+     */
+    function getOuterHTML(node, options) {
+        return (0, dom_serializer_1.default)(node, options);
+    }
+    /**
+     * @category Stringify
+     * @deprecated Use the `dom-serializer` module directly.
+     * @param node Node to get the inner HTML of.
+     * @param options Options for serialization.
+     * @returns `node`'s inner HTML.
+     */
+    function getInnerHTML(node, options) {
+        return (0, domhandler_1$4.hasChildren)(node)
+            ? node.children.map(function (node) { return getOuterHTML(node, options); }).join("")
+            : "";
+    }
+    /**
+     * Get a node's inner text. Same as `textContent`, but inserts newlines for `<br>` tags. Ignores comments.
+     *
+     * @category Stringify
+     * @deprecated Use `textContent` instead.
+     * @param node Node to get the inner text of.
+     * @returns `node`'s inner text.
+     */
+    function getText(node) {
+        if (Array.isArray(node))
+            return node.map(getText).join("");
+        if ((0, domhandler_1$4.isTag)(node))
+            return node.name === "br" ? "\n" : getText(node.children);
+        if ((0, domhandler_1$4.isCDATA)(node))
+            return getText(node.children);
+        if ((0, domhandler_1$4.isText)(node))
+            return node.data;
+        return "";
+    }
+    /**
+     * Get a node's text content. Ignores comments.
+     *
+     * @category Stringify
+     * @param node Node to get the text content of.
+     * @returns `node`'s text content.
+     * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent}
+     */
+    function textContent(node) {
+        if (Array.isArray(node))
+            return node.map(textContent).join("");
+        if ((0, domhandler_1$4.hasChildren)(node) && !(0, domhandler_1$4.isComment)(node)) {
+            return textContent(node.children);
+        }
+        if ((0, domhandler_1$4.isText)(node))
+            return node.data;
+        return "";
+    }
+    /**
+     * Get a node's inner text, ignoring `<script>` and `<style>` tags. Ignores comments.
+     *
+     * @category Stringify
+     * @param node Node to get the inner text of.
+     * @returns `node`'s inner text.
+     * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Node/innerText}
+     */
+    function innerText(node) {
+        if (Array.isArray(node))
+            return node.map(innerText).join("");
+        if ((0, domhandler_1$4.hasChildren)(node) && (node.type === domelementtype_1.ElementType.Tag || (0, domhandler_1$4.isCDATA)(node))) {
+            return innerText(node.children);
+        }
+        if ((0, domhandler_1$4.isText)(node))
+            return node.data;
+        return "";
+    }
+
+    var traversal = {};
+
+    Object.defineProperty(traversal, "__esModule", { value: true });
+    traversal.getChildren = getChildren;
+    traversal.getParent = getParent;
+    traversal.getSiblings = getSiblings;
+    traversal.getAttributeValue = getAttributeValue;
+    traversal.hasAttrib = hasAttrib;
+    traversal.getName = getName;
+    traversal.nextElementSibling = nextElementSibling;
+    traversal.prevElementSibling = prevElementSibling;
+    var domhandler_1$3 = lib$4;
+    /**
+     * Get a node's children.
+     *
+     * @category Traversal
+     * @param elem Node to get the children of.
+     * @returns `elem`'s children, or an empty array.
+     */
+    function getChildren(elem) {
+        return (0, domhandler_1$3.hasChildren)(elem) ? elem.children : [];
+    }
+    /**
+     * Get a node's parent.
+     *
+     * @category Traversal
+     * @param elem Node to get the parent of.
+     * @returns `elem`'s parent node, or `null` if `elem` is a root node.
+     */
+    function getParent(elem) {
+        return elem.parent || null;
+    }
+    /**
+     * Gets an elements siblings, including the element itself.
+     *
+     * Attempts to get the children through the element's parent first. If we don't
+     * have a parent (the element is a root node), we walk the element's `prev` &
+     * `next` to get all remaining nodes.
+     *
+     * @category Traversal
+     * @param elem Element to get the siblings of.
+     * @returns `elem`'s siblings, including `elem`.
+     */
+    function getSiblings(elem) {
+        var _a, _b;
+        var parent = getParent(elem);
+        if (parent != null)
+            return getChildren(parent);
+        var siblings = [elem];
+        var prev = elem.prev, next = elem.next;
+        while (prev != null) {
+            siblings.unshift(prev);
+            (_a = prev, prev = _a.prev);
+        }
+        while (next != null) {
+            siblings.push(next);
+            (_b = next, next = _b.next);
+        }
+        return siblings;
+    }
+    /**
+     * Gets an attribute from an element.
+     *
+     * @category Traversal
+     * @param elem Element to check.
+     * @param name Attribute name to retrieve.
+     * @returns The element's attribute value, or `undefined`.
+     */
+    function getAttributeValue(elem, name) {
+        var _a;
+        return (_a = elem.attribs) === null || _a === void 0 ? void 0 : _a[name];
+    }
+    /**
+     * Checks whether an element has an attribute.
+     *
+     * @category Traversal
+     * @param elem Element to check.
+     * @param name Attribute name to look for.
+     * @returns Returns whether `elem` has the attribute `name`.
+     */
+    function hasAttrib(elem, name) {
+        return (elem.attribs != null &&
+            Object.prototype.hasOwnProperty.call(elem.attribs, name) &&
+            elem.attribs[name] != null);
+    }
+    /**
+     * Get the tag name of an element.
+     *
+     * @category Traversal
+     * @param elem The element to get the name for.
+     * @returns The tag name of `elem`.
+     */
+    function getName(elem) {
+        return elem.name;
+    }
+    /**
+     * Returns the next element sibling of a node.
+     *
+     * @category Traversal
+     * @param elem The element to get the next sibling of.
+     * @returns `elem`'s next sibling that is a tag, or `null` if there is no next
+     * sibling.
+     */
+    function nextElementSibling(elem) {
+        var _a;
+        var next = elem.next;
+        while (next !== null && !(0, domhandler_1$3.isTag)(next))
+            (_a = next, next = _a.next);
+        return next;
+    }
+    /**
+     * Returns the previous element sibling of a node.
+     *
+     * @category Traversal
+     * @param elem The element to get the previous sibling of.
+     * @returns `elem`'s previous sibling that is a tag, or `null` if there is no
+     * previous sibling.
+     */
+    function prevElementSibling(elem) {
+        var _a;
+        var prev = elem.prev;
+        while (prev !== null && !(0, domhandler_1$3.isTag)(prev))
+            (_a = prev, prev = _a.prev);
+        return prev;
+    }
+
+    var manipulation = {};
+
+    Object.defineProperty(manipulation, "__esModule", { value: true });
+    manipulation.removeElement = removeElement;
+    manipulation.replaceElement = replaceElement;
+    manipulation.appendChild = appendChild;
+    manipulation.append = append;
+    manipulation.prependChild = prependChild;
+    manipulation.prepend = prepend;
+    /**
+     * Remove an element from the dom
+     *
+     * @category Manipulation
+     * @param elem The element to be removed
+     */
+    function removeElement(elem) {
+        if (elem.prev)
+            elem.prev.next = elem.next;
+        if (elem.next)
+            elem.next.prev = elem.prev;
+        if (elem.parent) {
+            var childs = elem.parent.children;
+            var childsIndex = childs.lastIndexOf(elem);
+            if (childsIndex >= 0) {
+                childs.splice(childsIndex, 1);
+            }
+        }
+        elem.next = null;
+        elem.prev = null;
+        elem.parent = null;
+    }
+    /**
+     * Replace an element in the dom
+     *
+     * @category Manipulation
+     * @param elem The element to be replaced
+     * @param replacement The element to be added
+     */
+    function replaceElement(elem, replacement) {
+        var prev = (replacement.prev = elem.prev);
+        if (prev) {
+            prev.next = replacement;
+        }
+        var next = (replacement.next = elem.next);
+        if (next) {
+            next.prev = replacement;
+        }
+        var parent = (replacement.parent = elem.parent);
+        if (parent) {
+            var childs = parent.children;
+            childs[childs.lastIndexOf(elem)] = replacement;
+            elem.parent = null;
+        }
+    }
+    /**
+     * Append a child to an element.
+     *
+     * @category Manipulation
+     * @param parent The element to append to.
+     * @param child The element to be added as a child.
+     */
+    function appendChild(parent, child) {
+        removeElement(child);
+        child.next = null;
+        child.parent = parent;
+        if (parent.children.push(child) > 1) {
+            var sibling = parent.children[parent.children.length - 2];
+            sibling.next = child;
+            child.prev = sibling;
+        }
+        else {
+            child.prev = null;
+        }
+    }
+    /**
+     * Append an element after another.
+     *
+     * @category Manipulation
+     * @param elem The element to append after.
+     * @param next The element be added.
+     */
+    function append(elem, next) {
+        removeElement(next);
+        var parent = elem.parent;
+        var currNext = elem.next;
+        next.next = currNext;
+        next.prev = elem;
+        elem.next = next;
+        next.parent = parent;
+        if (currNext) {
+            currNext.prev = next;
+            if (parent) {
+                var childs = parent.children;
+                childs.splice(childs.lastIndexOf(currNext), 0, next);
+            }
+        }
+        else if (parent) {
+            parent.children.push(next);
+        }
+    }
+    /**
+     * Prepend a child to an element.
+     *
+     * @category Manipulation
+     * @param parent The element to prepend before.
+     * @param child The element to be added as a child.
+     */
+    function prependChild(parent, child) {
+        removeElement(child);
+        child.parent = parent;
+        child.prev = null;
+        if (parent.children.unshift(child) !== 1) {
+            var sibling = parent.children[1];
+            sibling.prev = child;
+            child.next = sibling;
+        }
+        else {
+            child.next = null;
+        }
+    }
+    /**
+     * Prepend an element before another.
+     *
+     * @category Manipulation
+     * @param elem The element to prepend before.
+     * @param prev The element be added.
+     */
+    function prepend(elem, prev) {
+        removeElement(prev);
+        var parent = elem.parent;
+        if (parent) {
+            var childs = parent.children;
+            childs.splice(childs.indexOf(elem), 0, prev);
+        }
+        if (elem.prev) {
+            elem.prev.next = prev;
+        }
+        prev.parent = parent;
+        prev.prev = elem.prev;
+        prev.next = elem;
+        elem.prev = prev;
+    }
+
+    var querying = {};
+
+    Object.defineProperty(querying, "__esModule", { value: true });
+    querying.filter = filter$1;
+    querying.find = find;
+    querying.findOneChild = findOneChild;
+    querying.findOne = findOne;
+    querying.existsOne = existsOne;
+    querying.findAll = findAll;
+    var domhandler_1$2 = lib$4;
+    /**
+     * Search a node and its children for nodes passing a test function. If `node` is not an array, it will be wrapped in one.
+     *
+     * @category Querying
+     * @param test Function to test nodes on.
+     * @param node Node to search. Will be included in the result set if it matches.
+     * @param recurse Also consider child nodes.
+     * @param limit Maximum number of nodes to return.
+     * @returns All nodes passing `test`.
+     */
+    function filter$1(test, node, recurse, limit) {
+        if (recurse === void 0) { recurse = true; }
+        if (limit === void 0) { limit = Infinity; }
+        return find(test, Array.isArray(node) ? node : [node], recurse, limit);
+    }
+    /**
+     * Search an array of nodes and their children for nodes passing a test function.
+     *
+     * @category Querying
+     * @param test Function to test nodes on.
+     * @param nodes Array of nodes to search.
+     * @param recurse Also consider child nodes.
+     * @param limit Maximum number of nodes to return.
+     * @returns All nodes passing `test`.
+     */
+    function find(test, nodes, recurse, limit) {
+        var result = [];
+        /** Stack of the arrays we are looking at. */
+        var nodeStack = [Array.isArray(nodes) ? nodes : [nodes]];
+        /** Stack of the indices within the arrays. */
+        var indexStack = [0];
+        for (;;) {
+            // First, check if the current array has any more elements to look at.
+            if (indexStack[0] >= nodeStack[0].length) {
+                // If we have no more arrays to look at, we are done.
+                if (indexStack.length === 1) {
+                    return result;
+                }
+                // Otherwise, remove the current array from the stack.
+                nodeStack.shift();
+                indexStack.shift();
+                // Loop back to the start to continue with the next array.
+                continue;
+            }
+            var elem = nodeStack[0][indexStack[0]++];
+            if (test(elem)) {
+                result.push(elem);
+                if (--limit <= 0)
+                    return result;
+            }
+            if (recurse && (0, domhandler_1$2.hasChildren)(elem) && elem.children.length > 0) {
+                /*
+                 * Add the children to the stack. We are depth-first, so this is
+                 * the next array we look at.
+                 */
+                indexStack.unshift(0);
+                nodeStack.unshift(elem.children);
+            }
+        }
+    }
+    /**
+     * Finds the first element inside of an array that matches a test function. This is an alias for `Array.prototype.find`.
+     *
+     * @category Querying
+     * @param test Function to test nodes on.
+     * @param nodes Array of nodes to search.
+     * @returns The first node in the array that passes `test`.
+     * @deprecated Use `Array.prototype.find` directly.
+     */
+    function findOneChild(test, nodes) {
+        return nodes.find(test);
+    }
+    /**
+     * Finds one element in a tree that passes a test.
+     *
+     * @category Querying
+     * @param test Function to test nodes on.
+     * @param nodes Node or array of nodes to search.
+     * @param recurse Also consider child nodes.
+     * @returns The first node that passes `test`.
+     */
+    function findOne(test, nodes, recurse) {
+        if (recurse === void 0) { recurse = true; }
+        var searchedNodes = Array.isArray(nodes) ? nodes : [nodes];
+        for (var i = 0; i < searchedNodes.length; i++) {
+            var node = searchedNodes[i];
+            if ((0, domhandler_1$2.isTag)(node) && test(node)) {
+                return node;
+            }
+            if (recurse && (0, domhandler_1$2.hasChildren)(node) && node.children.length > 0) {
+                var found = findOne(test, node.children, true);
+                if (found)
+                    return found;
+            }
+        }
+        return null;
+    }
+    /**
+     * Checks if a tree of nodes contains at least one node passing a test.
+     *
+     * @category Querying
+     * @param test Function to test nodes on.
+     * @param nodes Array of nodes to search.
+     * @returns Whether a tree of nodes contains at least one node passing the test.
+     */
+    function existsOne(test, nodes) {
+        return (Array.isArray(nodes) ? nodes : [nodes]).some(function (node) {
+            return ((0, domhandler_1$2.isTag)(node) && test(node)) ||
+                ((0, domhandler_1$2.hasChildren)(node) && existsOne(test, node.children));
+        });
+    }
+    /**
+     * Search an array of nodes and their children for elements passing a test function.
+     *
+     * Same as `find`, but limited to elements and with less options, leading to reduced complexity.
+     *
+     * @category Querying
+     * @param test Function to test nodes on.
+     * @param nodes Array of nodes to search.
+     * @returns All nodes passing `test`.
+     */
+    function findAll(test, nodes) {
+        var result = [];
+        var nodeStack = [Array.isArray(nodes) ? nodes : [nodes]];
+        var indexStack = [0];
+        for (;;) {
+            if (indexStack[0] >= nodeStack[0].length) {
+                if (nodeStack.length === 1) {
+                    return result;
+                }
+                // Otherwise, remove the current array from the stack.
+                nodeStack.shift();
+                indexStack.shift();
+                // Loop back to the start to continue with the next array.
+                continue;
+            }
+            var elem = nodeStack[0][indexStack[0]++];
+            if ((0, domhandler_1$2.isTag)(elem) && test(elem))
+                result.push(elem);
+            if ((0, domhandler_1$2.hasChildren)(elem) && elem.children.length > 0) {
+                indexStack.unshift(0);
+                nodeStack.unshift(elem.children);
+            }
+        }
+    }
+
+    var legacy = {};
+
+    Object.defineProperty(legacy, "__esModule", { value: true });
+    legacy.testElement = testElement;
+    legacy.getElements = getElements;
+    legacy.getElementById = getElementById;
+    legacy.getElementsByTagName = getElementsByTagName;
+    legacy.getElementsByClassName = getElementsByClassName;
+    legacy.getElementsByTagType = getElementsByTagType;
+    var domhandler_1$1 = lib$4;
+    var querying_js_1 = querying;
+    /**
+     * A map of functions to check nodes against.
+     */
+    var Checks = {
+        tag_name: function (name) {
+            if (typeof name === "function") {
+                return function (elem) { return (0, domhandler_1$1.isTag)(elem) && name(elem.name); };
+            }
+            else if (name === "*") {
+                return domhandler_1$1.isTag;
+            }
+            return function (elem) { return (0, domhandler_1$1.isTag)(elem) && elem.name === name; };
+        },
+        tag_type: function (type) {
+            if (typeof type === "function") {
+                return function (elem) { return type(elem.type); };
+            }
+            return function (elem) { return elem.type === type; };
+        },
+        tag_contains: function (data) {
+            if (typeof data === "function") {
+                return function (elem) { return (0, domhandler_1$1.isText)(elem) && data(elem.data); };
+            }
+            return function (elem) { return (0, domhandler_1$1.isText)(elem) && elem.data === data; };
+        },
+    };
+    /**
+     * Returns a function to check whether a node has an attribute with a particular
+     * value.
+     *
+     * @param attrib Attribute to check.
+     * @param value Attribute value to look for.
+     * @returns A function to check whether the a node has an attribute with a
+     *   particular value.
+     */
+    function getAttribCheck(attrib, value) {
+        if (typeof value === "function") {
+            return function (elem) { return (0, domhandler_1$1.isTag)(elem) && value(elem.attribs[attrib]); };
+        }
+        return function (elem) { return (0, domhandler_1$1.isTag)(elem) && elem.attribs[attrib] === value; };
+    }
+    /**
+     * Returns a function that returns `true` if either of the input functions
+     * returns `true` for a node.
+     *
+     * @param a First function to combine.
+     * @param b Second function to combine.
+     * @returns A function taking a node and returning `true` if either of the input
+     *   functions returns `true` for the node.
+     */
+    function combineFuncs(a, b) {
+        return function (elem) { return a(elem) || b(elem); };
+    }
+    /**
+     * Returns a function that executes all checks in `options` and returns `true`
+     * if any of them match a node.
+     *
+     * @param options An object describing nodes to look for.
+     * @returns A function that executes all checks in `options` and returns `true`
+     *   if any of them match a node.
+     */
+    function compileTest(options) {
+        var funcs = Object.keys(options).map(function (key) {
+            var value = options[key];
+            return Object.prototype.hasOwnProperty.call(Checks, key)
+                ? Checks[key](value)
+                : getAttribCheck(key, value);
+        });
+        return funcs.length === 0 ? null : funcs.reduce(combineFuncs);
+    }
+    /**
+     * Checks whether a node matches the description in `options`.
+     *
+     * @category Legacy Query Functions
+     * @param options An object describing nodes to look for.
+     * @param node The element to test.
+     * @returns Whether the element matches the description in `options`.
+     */
+    function testElement(options, node) {
+        var test = compileTest(options);
+        return test ? test(node) : true;
+    }
+    /**
+     * Returns all nodes that match `options`.
+     *
+     * @category Legacy Query Functions
+     * @param options An object describing nodes to look for.
+     * @param nodes Nodes to search through.
+     * @param recurse Also consider child nodes.
+     * @param limit Maximum number of nodes to return.
+     * @returns All nodes that match `options`.
+     */
+    function getElements(options, nodes, recurse, limit) {
+        if (limit === void 0) { limit = Infinity; }
+        var test = compileTest(options);
+        return test ? (0, querying_js_1.filter)(test, nodes, recurse, limit) : [];
+    }
+    /**
+     * Returns the node with the supplied ID.
+     *
+     * @category Legacy Query Functions
+     * @param id The unique ID attribute value to look for.
+     * @param nodes Nodes to search through.
+     * @param recurse Also consider child nodes.
+     * @returns The node with the supplied ID.
+     */
+    function getElementById(id, nodes, recurse) {
+        if (recurse === void 0) { recurse = true; }
+        if (!Array.isArray(nodes))
+            nodes = [nodes];
+        return (0, querying_js_1.findOne)(getAttribCheck("id", id), nodes, recurse);
+    }
+    /**
+     * Returns all nodes with the supplied `tagName`.
+     *
+     * @category Legacy Query Functions
+     * @param tagName Tag name to search for.
+     * @param nodes Nodes to search through.
+     * @param recurse Also consider child nodes.
+     * @param limit Maximum number of nodes to return.
+     * @returns All nodes with the supplied `tagName`.
+     */
+    function getElementsByTagName(tagName, nodes, recurse, limit) {
+        if (recurse === void 0) { recurse = true; }
+        if (limit === void 0) { limit = Infinity; }
+        return (0, querying_js_1.filter)(Checks["tag_name"](tagName), nodes, recurse, limit);
+    }
+    /**
+     * Returns all nodes with the supplied `className`.
+     *
+     * @category Legacy Query Functions
+     * @param className Class name to search for.
+     * @param nodes Nodes to search through.
+     * @param recurse Also consider child nodes.
+     * @param limit Maximum number of nodes to return.
+     * @returns All nodes with the supplied `className`.
+     */
+    function getElementsByClassName(className, nodes, recurse, limit) {
+        if (recurse === void 0) { recurse = true; }
+        if (limit === void 0) { limit = Infinity; }
+        return (0, querying_js_1.filter)(getAttribCheck("class", className), nodes, recurse, limit);
+    }
+    /**
+     * Returns all nodes with the supplied `type`.
+     *
+     * @category Legacy Query Functions
+     * @param type Element type to look for.
+     * @param nodes Nodes to search through.
+     * @param recurse Also consider child nodes.
+     * @param limit Maximum number of nodes to return.
+     * @returns All nodes with the supplied `type`.
+     */
+    function getElementsByTagType(type, nodes, recurse, limit) {
+        if (recurse === void 0) { recurse = true; }
+        if (limit === void 0) { limit = Infinity; }
+        return (0, querying_js_1.filter)(Checks["tag_type"](type), nodes, recurse, limit);
+    }
+
+    var helpers = {};
+
+    Object.defineProperty(helpers, "__esModule", { value: true });
+    helpers.DocumentPosition = void 0;
+    helpers.removeSubsets = removeSubsets;
+    helpers.compareDocumentPosition = compareDocumentPosition;
+    helpers.uniqueSort = uniqueSort;
+    var domhandler_1 = lib$4;
+    /**
+     * Given an array of nodes, remove any member that is contained by another
+     * member.
+     *
+     * @category Helpers
+     * @param nodes Nodes to filter.
+     * @returns Remaining nodes that aren't contained by other nodes.
+     */
+    function removeSubsets(nodes) {
+        var idx = nodes.length;
+        /*
+         * Check if each node (or one of its ancestors) is already contained in the
+         * array.
+         */
+        while (--idx >= 0) {
+            var node = nodes[idx];
+            /*
+             * Remove the node if it is not unique.
+             * We are going through the array from the end, so we only
+             * have to check nodes that preceed the node under consideration in the array.
+             */
+            if (idx > 0 && nodes.lastIndexOf(node, idx - 1) >= 0) {
+                nodes.splice(idx, 1);
+                continue;
+            }
+            for (var ancestor = node.parent; ancestor; ancestor = ancestor.parent) {
+                if (nodes.includes(ancestor)) {
+                    nodes.splice(idx, 1);
+                    break;
+                }
+            }
+        }
+        return nodes;
+    }
+    /**
+     * @category Helpers
+     * @see {@link http://dom.spec.whatwg.org/#dom-node-comparedocumentposition}
+     */
+    var DocumentPosition;
+    (function (DocumentPosition) {
+        DocumentPosition[DocumentPosition["DISCONNECTED"] = 1] = "DISCONNECTED";
+        DocumentPosition[DocumentPosition["PRECEDING"] = 2] = "PRECEDING";
+        DocumentPosition[DocumentPosition["FOLLOWING"] = 4] = "FOLLOWING";
+        DocumentPosition[DocumentPosition["CONTAINS"] = 8] = "CONTAINS";
+        DocumentPosition[DocumentPosition["CONTAINED_BY"] = 16] = "CONTAINED_BY";
+    })(DocumentPosition || (helpers.DocumentPosition = DocumentPosition = {}));
+    /**
+     * Compare the position of one node against another node in any other document,
+     * returning a bitmask with the values from {@link DocumentPosition}.
+     *
+     * Document order:
+     * > There is an ordering, document order, defined on all the nodes in the
+     * > document corresponding to the order in which the first character of the
+     * > XML representation of each node occurs in the XML representation of the
+     * > document after expansion of general entities. Thus, the document element
+     * > node will be the first node. Element nodes occur before their children.
+     * > Thus, document order orders element nodes in order of the occurrence of
+     * > their start-tag in the XML (after expansion of entities). The attribute
+     * > nodes of an element occur after the element and before its children. The
+     * > relative order of attribute nodes is implementation-dependent.
+     *
+     * Source:
+     * http://www.w3.org/TR/DOM-Level-3-Core/glossary.html#dt-document-order
+     *
+     * @category Helpers
+     * @param nodeA The first node to use in the comparison
+     * @param nodeB The second node to use in the comparison
+     * @returns A bitmask describing the input nodes' relative position.
+     *
+     * See http://dom.spec.whatwg.org/#dom-node-comparedocumentposition for
+     * a description of these values.
+     */
+    function compareDocumentPosition(nodeA, nodeB) {
+        var aParents = [];
+        var bParents = [];
+        if (nodeA === nodeB) {
+            return 0;
+        }
+        var current = (0, domhandler_1.hasChildren)(nodeA) ? nodeA : nodeA.parent;
+        while (current) {
+            aParents.unshift(current);
+            current = current.parent;
+        }
+        current = (0, domhandler_1.hasChildren)(nodeB) ? nodeB : nodeB.parent;
+        while (current) {
+            bParents.unshift(current);
+            current = current.parent;
+        }
+        var maxIdx = Math.min(aParents.length, bParents.length);
+        var idx = 0;
+        while (idx < maxIdx && aParents[idx] === bParents[idx]) {
+            idx++;
+        }
+        if (idx === 0) {
+            return DocumentPosition.DISCONNECTED;
+        }
+        var sharedParent = aParents[idx - 1];
+        var siblings = sharedParent.children;
+        var aSibling = aParents[idx];
+        var bSibling = bParents[idx];
+        if (siblings.indexOf(aSibling) > siblings.indexOf(bSibling)) {
+            if (sharedParent === nodeB) {
+                return DocumentPosition.FOLLOWING | DocumentPosition.CONTAINED_BY;
+            }
+            return DocumentPosition.FOLLOWING;
+        }
+        if (sharedParent === nodeA) {
+            return DocumentPosition.PRECEDING | DocumentPosition.CONTAINS;
+        }
+        return DocumentPosition.PRECEDING;
+    }
+    /**
+     * Sort an array of nodes based on their relative position in the document,
+     * removing any duplicate nodes. If the array contains nodes that do not belong
+     * to the same document, sort order is unspecified.
+     *
+     * @category Helpers
+     * @param nodes Array of DOM nodes.
+     * @returns Collection of unique nodes, sorted in document order.
+     */
+    function uniqueSort(nodes) {
+        nodes = nodes.filter(function (node, i, arr) { return !arr.includes(node, i + 1); });
+        nodes.sort(function (a, b) {
+            var relative = compareDocumentPosition(a, b);
+            if (relative & DocumentPosition.PRECEDING) {
+                return -1;
+            }
+            else if (relative & DocumentPosition.FOLLOWING) {
+                return 1;
+            }
+            return 0;
+        });
+        return nodes;
+    }
+
+    var feeds = {};
+
+    Object.defineProperty(feeds, "__esModule", { value: true });
+    feeds.getFeed = getFeed;
+    var stringify_js_1 = stringify$5;
+    var legacy_js_1 = legacy;
+    /**
+     * Get the feed object from the root of a DOM tree.
+     *
+     * @category Feeds
+     * @param doc - The DOM to to extract the feed from.
+     * @returns The feed.
+     */
+    function getFeed(doc) {
+        var feedRoot = getOneElement(isValidFeed, doc);
+        return !feedRoot
+            ? null
+            : feedRoot.name === "feed"
+                ? getAtomFeed(feedRoot)
+                : getRssFeed(feedRoot);
+    }
+    /**
+     * Parse an Atom feed.
+     *
+     * @param feedRoot The root of the feed.
+     * @returns The parsed feed.
+     */
+    function getAtomFeed(feedRoot) {
+        var _a;
+        var childs = feedRoot.children;
+        var feed = {
+            type: "atom",
+            items: (0, legacy_js_1.getElementsByTagName)("entry", childs).map(function (item) {
+                var _a;
+                var children = item.children;
+                var entry = { media: getMediaElements(children) };
+                addConditionally(entry, "id", "id", children);
+                addConditionally(entry, "title", "title", children);
+                var href = (_a = getOneElement("link", children)) === null || _a === void 0 ? void 0 : _a.attribs["href"];
+                if (href) {
+                    entry.link = href;
+                }
+                var description = fetch$1("summary", children) || fetch$1("content", children);
+                if (description) {
+                    entry.description = description;
+                }
+                var pubDate = fetch$1("updated", children);
+                if (pubDate) {
+                    entry.pubDate = new Date(pubDate);
+                }
+                return entry;
+            }),
+        };
+        addConditionally(feed, "id", "id", childs);
+        addConditionally(feed, "title", "title", childs);
+        var href = (_a = getOneElement("link", childs)) === null || _a === void 0 ? void 0 : _a.attribs["href"];
+        if (href) {
+            feed.link = href;
+        }
+        addConditionally(feed, "description", "subtitle", childs);
+        var updated = fetch$1("updated", childs);
+        if (updated) {
+            feed.updated = new Date(updated);
+        }
+        addConditionally(feed, "author", "email", childs, true);
+        return feed;
+    }
+    /**
+     * Parse a RSS feed.
+     *
+     * @param feedRoot The root of the feed.
+     * @returns The parsed feed.
+     */
+    function getRssFeed(feedRoot) {
+        var _a, _b;
+        var childs = (_b = (_a = getOneElement("channel", feedRoot.children)) === null || _a === void 0 ? void 0 : _a.children) !== null && _b !== void 0 ? _b : [];
+        var feed = {
+            type: feedRoot.name.substr(0, 3),
+            id: "",
+            items: (0, legacy_js_1.getElementsByTagName)("item", feedRoot.children).map(function (item) {
+                var children = item.children;
+                var entry = { media: getMediaElements(children) };
+                addConditionally(entry, "id", "guid", children);
+                addConditionally(entry, "title", "title", children);
+                addConditionally(entry, "link", "link", children);
+                addConditionally(entry, "description", "description", children);
+                var pubDate = fetch$1("pubDate", children) || fetch$1("dc:date", children);
+                if (pubDate)
+                    entry.pubDate = new Date(pubDate);
+                return entry;
+            }),
+        };
+        addConditionally(feed, "title", "title", childs);
+        addConditionally(feed, "link", "link", childs);
+        addConditionally(feed, "description", "description", childs);
+        var updated = fetch$1("lastBuildDate", childs);
+        if (updated) {
+            feed.updated = new Date(updated);
+        }
+        addConditionally(feed, "author", "managingEditor", childs, true);
+        return feed;
+    }
+    var MEDIA_KEYS_STRING = ["url", "type", "lang"];
+    var MEDIA_KEYS_INT = [
+        "fileSize",
+        "bitrate",
+        "framerate",
+        "samplingrate",
+        "channels",
+        "duration",
+        "height",
+        "width",
+    ];
+    /**
+     * Get all media elements of a feed item.
+     *
+     * @param where Nodes to search in.
+     * @returns Media elements.
+     */
+    function getMediaElements(where) {
+        return (0, legacy_js_1.getElementsByTagName)("media:content", where).map(function (elem) {
+            var attribs = elem.attribs;
+            var media = {
+                medium: attribs["medium"],
+                isDefault: !!attribs["isDefault"],
+            };
+            for (var _i = 0, MEDIA_KEYS_STRING_1 = MEDIA_KEYS_STRING; _i < MEDIA_KEYS_STRING_1.length; _i++) {
+                var attrib = MEDIA_KEYS_STRING_1[_i];
+                if (attribs[attrib]) {
+                    media[attrib] = attribs[attrib];
+                }
+            }
+            for (var _a = 0, MEDIA_KEYS_INT_1 = MEDIA_KEYS_INT; _a < MEDIA_KEYS_INT_1.length; _a++) {
+                var attrib = MEDIA_KEYS_INT_1[_a];
+                if (attribs[attrib]) {
+                    media[attrib] = parseInt(attribs[attrib], 10);
+                }
+            }
+            if (attribs["expression"]) {
+                media.expression = attribs["expression"];
+            }
+            return media;
+        });
+    }
+    /**
+     * Get one element by tag name.
+     *
+     * @param tagName Tag name to look for
+     * @param node Node to search in
+     * @returns The element or null
+     */
+    function getOneElement(tagName, node) {
+        return (0, legacy_js_1.getElementsByTagName)(tagName, node, true, 1)[0];
+    }
+    /**
+     * Get the text content of an element with a certain tag name.
+     *
+     * @param tagName Tag name to look for.
+     * @param where Node to search in.
+     * @param recurse Whether to recurse into child nodes.
+     * @returns The text content of the element.
+     */
+    function fetch$1(tagName, where, recurse) {
+        if (recurse === void 0) { recurse = false; }
+        return (0, stringify_js_1.textContent)((0, legacy_js_1.getElementsByTagName)(tagName, where, recurse, 1)).trim();
+    }
+    /**
+     * Adds a property to an object if it has a value.
+     *
+     * @param obj Object to be extended
+     * @param prop Property name
+     * @param tagName Tag name that contains the conditionally added property
+     * @param where Element to search for the property
+     * @param recurse Whether to recurse into child nodes.
+     */
+    function addConditionally(obj, prop, tagName, where, recurse) {
+        if (recurse === void 0) { recurse = false; }
+        var val = fetch$1(tagName, where, recurse);
+        if (val)
+            obj[prop] = val;
+    }
+    /**
+     * Checks if an element is a feed root node.
+     *
+     * @param value The name of the element to check.
+     * @returns Whether an element is a feed root node.
+     */
+    function isValidFeed(value) {
+        return value === "rss" || value === "feed" || value === "rdf:RDF";
+    }
+
+    (function (exports) {
+    	var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    	    if (k2 === undefined) k2 = k;
+    	    var desc = Object.getOwnPropertyDescriptor(m, k);
+    	    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+    	      desc = { enumerable: true, get: function() { return m[k]; } };
+    	    }
+    	    Object.defineProperty(o, k2, desc);
+    	}) : (function(o, m, k, k2) {
+    	    if (k2 === undefined) k2 = k;
+    	    o[k2] = m[k];
+    	}));
+    	var __exportStar = (commonjsGlobal && commonjsGlobal.__exportStar) || function(m, exports) {
+    	    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+    	};
+    	Object.defineProperty(exports, "__esModule", { value: true });
+    	exports.hasChildren = exports.isDocument = exports.isComment = exports.isText = exports.isCDATA = exports.isTag = void 0;
+    	__exportStar(stringify$5, exports);
+    	__exportStar(traversal, exports);
+    	__exportStar(manipulation, exports);
+    	__exportStar(querying, exports);
+    	__exportStar(legacy, exports);
+    	__exportStar(helpers, exports);
+    	__exportStar(feeds, exports);
+    	/** @deprecated Use these methods from `domhandler` directly. */
+    	var domhandler_1 = lib$4;
+    	Object.defineProperty(exports, "isTag", { enumerable: true, get: function () { return domhandler_1.isTag; } });
+    	Object.defineProperty(exports, "isCDATA", { enumerable: true, get: function () { return domhandler_1.isCDATA; } });
+    	Object.defineProperty(exports, "isText", { enumerable: true, get: function () { return domhandler_1.isText; } });
+    	Object.defineProperty(exports, "isComment", { enumerable: true, get: function () { return domhandler_1.isComment; } });
+    	Object.defineProperty(exports, "isDocument", { enumerable: true, get: function () { return domhandler_1.isDocument; } });
+    	Object.defineProperty(exports, "hasChildren", { enumerable: true, get: function () { return domhandler_1.hasChildren; } });
+    	
+    } (lib$2));
+
+    (function (exports) {
+    	var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    	    if (k2 === undefined) k2 = k;
+    	    var desc = Object.getOwnPropertyDescriptor(m, k);
+    	    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+    	      desc = { enumerable: true, get: function() { return m[k]; } };
+    	    }
+    	    Object.defineProperty(o, k2, desc);
+    	}) : (function(o, m, k, k2) {
+    	    if (k2 === undefined) k2 = k;
+    	    o[k2] = m[k];
+    	}));
+    	var __setModuleDefault = (commonjsGlobal && commonjsGlobal.__setModuleDefault) || (Object.create ? (function(o, v) {
+    	    Object.defineProperty(o, "default", { enumerable: true, value: v });
+    	}) : function(o, v) {
+    	    o["default"] = v;
+    	});
+    	var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || (function () {
+    	    var ownKeys = function(o) {
+    	        ownKeys = Object.getOwnPropertyNames || function (o) {
+    	            var ar = [];
+    	            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+    	            return ar;
+    	        };
+    	        return ownKeys(o);
+    	    };
+    	    return function (mod) {
+    	        if (mod && mod.__esModule) return mod;
+    	        var result = {};
+    	        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+    	        __setModuleDefault(result, mod);
+    	        return result;
+    	    };
+    	})();
+    	var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+    	    return (mod && mod.__esModule) ? mod : { "default": mod };
+    	};
+    	Object.defineProperty(exports, "__esModule", { value: true });
+    	exports.DomUtils = exports.getFeed = exports.ElementType = exports.QuoteType = exports.Tokenizer = exports.DefaultHandler = exports.DomHandler = exports.Parser = void 0;
+    	exports.parseDocument = parseDocument;
+    	exports.parseDOM = parseDOM;
+    	exports.createDocumentStream = createDocumentStream;
+    	exports.createDomStream = createDomStream;
+    	exports.parseFeed = parseFeed;
+    	const Parser_js_1 = Parser$3;
+    	var Parser_js_2 = Parser$3;
+    	Object.defineProperty(exports, "Parser", { enumerable: true, get: function () { return Parser_js_2.Parser; } });
+    	const domhandler_1 = lib$4;
+    	var domhandler_2 = lib$4;
+    	Object.defineProperty(exports, "DomHandler", { enumerable: true, get: function () { return domhandler_2.DomHandler; } });
+    	// Old name for DomHandler
+    	Object.defineProperty(exports, "DefaultHandler", { enumerable: true, get: function () { return domhandler_2.DomHandler; } });
+    	// Helper methods
+    	/**
+    	 * Parses the data, returns the resulting document.
+    	 *
+    	 * @param data The data that should be parsed.
+    	 * @param options Optional options for the parser and DOM handler.
+    	 */
+    	function parseDocument(data, options) {
+    	    const handler = new domhandler_1.DomHandler(undefined, options);
+    	    new Parser_js_1.Parser(handler, options).end(data);
+    	    return handler.root;
+    	}
+    	/**
+    	 * Parses data, returns an array of the root nodes.
+    	 *
+    	 * Note that the root nodes still have a `Document` node as their parent.
+    	 * Use `parseDocument` to get the `Document` node instead.
+    	 *
+    	 * @param data The data that should be parsed.
+    	 * @param options Optional options for the parser and DOM handler.
+    	 * @deprecated Use `parseDocument` instead.
+    	 */
+    	function parseDOM(data, options) {
+    	    return parseDocument(data, options).children;
+    	}
+    	/**
+    	 * Creates a parser instance, with an attached DOM handler.
+    	 *
+    	 * @param callback A callback that will be called once parsing has been completed, with the resulting document.
+    	 * @param options Optional options for the parser and DOM handler.
+    	 * @param elementCallback An optional callback that will be called every time a tag has been completed inside of the DOM.
+    	 */
+    	function createDocumentStream(callback, options, elementCallback) {
+    	    const handler = new domhandler_1.DomHandler((error) => callback(error, handler.root), options, elementCallback);
+    	    return new Parser_js_1.Parser(handler, options);
+    	}
+    	/**
+    	 * Creates a parser instance, with an attached DOM handler.
+    	 *
+    	 * @param callback A callback that will be called once parsing has been completed, with an array of root nodes.
+    	 * @param options Optional options for the parser and DOM handler.
+    	 * @param elementCallback An optional callback that will be called every time a tag has been completed inside of the DOM.
+    	 * @deprecated Use `createDocumentStream` instead.
+    	 */
+    	function createDomStream(callback, options, elementCallback) {
+    	    const handler = new domhandler_1.DomHandler(callback, options, elementCallback);
+    	    return new Parser_js_1.Parser(handler, options);
+    	}
+    	var Tokenizer_js_1 = Tokenizer$1;
+    	Object.defineProperty(exports, "Tokenizer", { enumerable: true, get: function () { return __importDefault(Tokenizer_js_1).default; } });
+    	Object.defineProperty(exports, "QuoteType", { enumerable: true, get: function () { return Tokenizer_js_1.QuoteType; } });
+    	/*
+    	 * All of the following exports exist for backwards-compatibility.
+    	 * They should probably be removed eventually.
+    	 */
+    	exports.ElementType = __importStar(lib$3);
+    	const domutils_1 = lib$2;
+    	var domutils_2 = lib$2;
+    	Object.defineProperty(exports, "getFeed", { enumerable: true, get: function () { return domutils_2.getFeed; } });
+    	const parseFeedDefaultOptions = { xmlMode: true };
+    	/**
+    	 * Parse a feed.
+    	 *
+    	 * @param feed The feed that should be parsed, as a string.
+    	 * @param options Optionally, options for parsing. When using this, you should set `xmlMode` to `true`.
+    	 */
+    	function parseFeed(feed, options = parseFeedDefaultOptions) {
+    	    return (0, domutils_1.getFeed)(parseDOM(feed, options));
+    	}
+    	exports.DomUtils = __importStar(lib$2);
+    	
+    } (commonjs));
+
+    var escapeStringRegexp$1 = string => {
+    	if (typeof string !== 'string') {
+    		throw new TypeError('Expected a string');
+    	}
+
+    	// Escape characters with special meaning either inside or outside character sets.
+    	// Use a simple backslash escape when it’s always valid, and a \unnnn escape when the simpler form would be disallowed by Unicode patterns’ stricter grammar.
+    	return string
+    		.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
+    		.replace(/-/g, '\\x2d');
+    };
+
+    var isPlainObject$2 = {};
+
+    Object.defineProperty(isPlainObject$2, '__esModule', { value: true });
+
+    /*!
+     * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
+     *
+     * Copyright (c) 2014-2017, Jon Schlinkert.
+     * Released under the MIT License.
+     */
+
+    function isObject(o) {
+      return Object.prototype.toString.call(o) === '[object Object]';
+    }
+
+    function isPlainObject$1(o) {
+      var ctor,prot;
+
+      if (isObject(o) === false) return false;
+
+      // If has modified constructor
+      ctor = o.constructor;
+      if (ctor === undefined) return true;
+
+      // If has modified prototype
+      prot = ctor.prototype;
+      if (isObject(prot) === false) return false;
+
+      // If constructor does not have an Object-specific method
+      if (prot.hasOwnProperty('isPrototypeOf') === false) {
+        return false;
+      }
+
+      // Most likely a plain Object
+      return true;
+    }
+
+    isPlainObject$2.isPlainObject = isPlainObject$1;
+
+    var isMergeableObject = function isMergeableObject(value) {
+    	return isNonNullObject(value)
+    		&& !isSpecial(value)
+    };
+
+    function isNonNullObject(value) {
+    	return !!value && typeof value === 'object'
+    }
+
+    function isSpecial(value) {
+    	var stringValue = Object.prototype.toString.call(value);
+
+    	return stringValue === '[object RegExp]'
+    		|| stringValue === '[object Date]'
+    		|| isReactElement(value)
+    }
+
+    // see https://github.com/facebook/react/blob/b5ac963fb791d1298e7f396236383bc955f916c1/src/isomorphic/classic/element/ReactElement.js#L21-L25
+    var canUseSymbol = typeof Symbol === 'function' && Symbol.for;
+    var REACT_ELEMENT_TYPE = canUseSymbol ? Symbol.for('react.element') : 0xeac7;
+
+    function isReactElement(value) {
+    	return value.$$typeof === REACT_ELEMENT_TYPE
+    }
+
+    function emptyTarget(val) {
+    	return Array.isArray(val) ? [] : {}
+    }
+
+    function cloneUnlessOtherwiseSpecified(value, options) {
+    	return (options.clone !== false && options.isMergeableObject(value))
+    		? deepmerge$1(emptyTarget(value), value, options)
+    		: value
+    }
+
+    function defaultArrayMerge(target, source, options) {
+    	return target.concat(source).map(function(element) {
+    		return cloneUnlessOtherwiseSpecified(element, options)
+    	})
+    }
+
+    function getMergeFunction(key, options) {
+    	if (!options.customMerge) {
+    		return deepmerge$1
+    	}
+    	var customMerge = options.customMerge(key);
+    	return typeof customMerge === 'function' ? customMerge : deepmerge$1
+    }
+
+    function getEnumerableOwnPropertySymbols(target) {
+    	return Object.getOwnPropertySymbols
+    		? Object.getOwnPropertySymbols(target).filter(function(symbol) {
+    			return Object.propertyIsEnumerable.call(target, symbol)
+    		})
+    		: []
+    }
+
+    function getKeys(target) {
+    	return Object.keys(target).concat(getEnumerableOwnPropertySymbols(target))
+    }
+
+    function propertyIsOnObject(object, property) {
+    	try {
+    		return property in object
+    	} catch(_) {
+    		return false
+    	}
+    }
+
+    // Protects from prototype poisoning and unexpected merging up the prototype chain.
+    function propertyIsUnsafe(target, key) {
+    	return propertyIsOnObject(target, key) // Properties are safe to merge if they don't exist in the target yet,
+    		&& !(Object.hasOwnProperty.call(target, key) // unsafe if they exist up the prototype chain,
+    			&& Object.propertyIsEnumerable.call(target, key)) // and also unsafe if they're nonenumerable.
+    }
+
+    function mergeObject(target, source, options) {
+    	var destination = {};
+    	if (options.isMergeableObject(target)) {
+    		getKeys(target).forEach(function(key) {
+    			destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
+    		});
+    	}
+    	getKeys(source).forEach(function(key) {
+    		if (propertyIsUnsafe(target, key)) {
+    			return
+    		}
+
+    		if (propertyIsOnObject(target, key) && options.isMergeableObject(source[key])) {
+    			destination[key] = getMergeFunction(key, options)(target[key], source[key], options);
+    		} else {
+    			destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
+    		}
+    	});
+    	return destination
+    }
+
+    function deepmerge$1(target, source, options) {
+    	options = options || {};
+    	options.arrayMerge = options.arrayMerge || defaultArrayMerge;
+    	options.isMergeableObject = options.isMergeableObject || isMergeableObject;
+    	// cloneUnlessOtherwiseSpecified is added to `options` so that custom arrayMerge()
+    	// implementations can use it. The caller may not replace it.
+    	options.cloneUnlessOtherwiseSpecified = cloneUnlessOtherwiseSpecified;
+
+    	var sourceIsArray = Array.isArray(source);
+    	var targetIsArray = Array.isArray(target);
+    	var sourceAndTargetTypesMatch = sourceIsArray === targetIsArray;
+
+    	if (!sourceAndTargetTypesMatch) {
+    		return cloneUnlessOtherwiseSpecified(source, options)
+    	} else if (sourceIsArray) {
+    		return options.arrayMerge(target, source, options)
+    	} else {
+    		return mergeObject(target, source, options)
+    	}
+    }
+
+    deepmerge$1.all = function deepmergeAll(array, options) {
+    	if (!Array.isArray(array)) {
+    		throw new Error('first argument should be an array')
+    	}
+
+    	return array.reduce(function(prev, next) {
+    		return deepmerge$1(prev, next, options)
+    	}, {})
+    };
+
+    var deepmerge_1 = deepmerge$1;
+
+    var cjs = deepmerge_1;
+
+    var parseSrcset$1 = {exports: {}};
+
+    /**
+     * Srcset Parser
+     *
+     * By Alex Bell |  MIT License
+     *
+     * JS Parser for the string value that appears in markup <img srcset="here">
+     *
+     * @returns Array [{url: _, d: _, w: _, h:_}, ...]
+     *
+     * Based super duper closely on the reference algorithm at:
+     * https://html.spec.whatwg.org/multipage/embedded-content.html#parse-a-srcset-attribute
+     *
+     * Most comments are copied in directly from the spec
+     * (except for comments in parens).
+     */
+
+    (function (module) {
+    	(function (root, factory) {
+    		if (module.exports) {
+    			// Node. Does not work with strict CommonJS, but
+    			// only CommonJS-like environments that support module.exports,
+    			// like Node.
+    			module.exports = factory();
+    		} else {
+    			// Browser globals (root is window)
+    			root.parseSrcset = factory();
+    		}
+    	}(commonjsGlobal, function () {
+
+    		// 1. Let input be the value passed to this algorithm.
+    		return function (input) {
+
+    			// UTILITY FUNCTIONS
+
+    			// Manual is faster than RegEx
+    			// http://bjorn.tipling.com/state-and-regular-expressions-in-javascript
+    			// http://jsperf.com/whitespace-character/5
+    			function isSpace(c) {
+    				return (c === "\u0020" || // space
+    				c === "\u0009" || // horizontal tab
+    				c === "\u000A" || // new line
+    				c === "\u000C" || // form feed
+    				c === "\u000D");  // carriage return
+    			}
+
+    			function collectCharacters(regEx) {
+    				var chars,
+    					match = regEx.exec(input.substring(pos));
+    				if (match) {
+    					chars = match[ 0 ];
+    					pos += chars.length;
+    					return chars;
+    				}
+    			}
+
+    			var inputLength = input.length,
+
+    				// (Don't use \s, to avoid matching non-breaking space)
+    				regexLeadingSpaces = /^[ \t\n\r\u000c]+/,
+    				regexLeadingCommasOrSpaces = /^[, \t\n\r\u000c]+/,
+    				regexLeadingNotSpaces = /^[^ \t\n\r\u000c]+/,
+    				regexTrailingCommas = /[,]+$/,
+    				regexNonNegativeInteger = /^\d+$/,
+
+    				// ( Positive or negative or unsigned integers or decimals, without or without exponents.
+    				// Must include at least one digit.
+    				// According to spec tests any decimal point must be followed by a digit.
+    				// No leading plus sign is allowed.)
+    				// https://html.spec.whatwg.org/multipage/infrastructure.html#valid-floating-point-number
+    				regexFloatingPoint = /^-?(?:[0-9]+|[0-9]*\.[0-9]+)(?:[eE][+-]?[0-9]+)?$/,
+
+    				url,
+    				descriptors,
+    				currentDescriptor,
+    				state,
+    				c,
+
+    				// 2. Let position be a pointer into input, initially pointing at the start
+    				//    of the string.
+    				pos = 0,
+
+    				// 3. Let candidates be an initially empty source set.
+    				candidates = [];
+
+    			// 4. Splitting loop: Collect a sequence of characters that are space
+    			//    characters or U+002C COMMA characters. If any U+002C COMMA characters
+    			//    were collected, that is a parse error.
+    			while (true) {
+    				collectCharacters(regexLeadingCommasOrSpaces);
+
+    				// 5. If position is past the end of input, return candidates and abort these steps.
+    				if (pos >= inputLength) {
+    					return candidates; // (we're done, this is the sole return path)
+    				}
+
+    				// 6. Collect a sequence of characters that are not space characters,
+    				//    and let that be url.
+    				url = collectCharacters(regexLeadingNotSpaces);
+
+    				// 7. Let descriptors be a new empty list.
+    				descriptors = [];
+
+    				// 8. If url ends with a U+002C COMMA character (,), follow these substeps:
+    				//		(1). Remove all trailing U+002C COMMA characters from url. If this removed
+    				//         more than one character, that is a parse error.
+    				if (url.slice(-1) === ",") {
+    					url = url.replace(regexTrailingCommas, "");
+    					// (Jump ahead to step 9 to skip tokenization and just push the candidate).
+    					parseDescriptors();
+
+    					//	Otherwise, follow these substeps:
+    				} else {
+    					tokenize();
+    				} // (close else of step 8)
+
+    				// 16. Return to the step labeled splitting loop.
+    			} // (Close of big while loop.)
+
+    			/**
+    			 * Tokenizes descriptor properties prior to parsing
+    			 * Returns undefined.
+    			 */
+    			function tokenize() {
+
+    				// 8.1. Descriptor tokeniser: Skip whitespace
+    				collectCharacters(regexLeadingSpaces);
+
+    				// 8.2. Let current descriptor be the empty string.
+    				currentDescriptor = "";
+
+    				// 8.3. Let state be in descriptor.
+    				state = "in descriptor";
+
+    				while (true) {
+
+    					// 8.4. Let c be the character at position.
+    					c = input.charAt(pos);
+
+    					//  Do the following depending on the value of state.
+    					//  For the purpose of this step, "EOF" is a special character representing
+    					//  that position is past the end of input.
+
+    					// In descriptor
+    					if (state === "in descriptor") {
+    						// Do the following, depending on the value of c:
+
+    						// Space character
+    						// If current descriptor is not empty, append current descriptor to
+    						// descriptors and let current descriptor be the empty string.
+    						// Set state to after descriptor.
+    						if (isSpace(c)) {
+    							if (currentDescriptor) {
+    								descriptors.push(currentDescriptor);
+    								currentDescriptor = "";
+    								state = "after descriptor";
+    							}
+
+    							// U+002C COMMA (,)
+    							// Advance position to the next character in input. If current descriptor
+    							// is not empty, append current descriptor to descriptors. Jump to the step
+    							// labeled descriptor parser.
+    						} else if (c === ",") {
+    							pos += 1;
+    							if (currentDescriptor) {
+    								descriptors.push(currentDescriptor);
+    							}
+    							parseDescriptors();
+    							return;
+
+    							// U+0028 LEFT PARENTHESIS (()
+    							// Append c to current descriptor. Set state to in parens.
+    						} else if (c === "\u0028") {
+    							currentDescriptor = currentDescriptor + c;
+    							state = "in parens";
+
+    							// EOF
+    							// If current descriptor is not empty, append current descriptor to
+    							// descriptors. Jump to the step labeled descriptor parser.
+    						} else if (c === "") {
+    							if (currentDescriptor) {
+    								descriptors.push(currentDescriptor);
+    							}
+    							parseDescriptors();
+    							return;
+
+    							// Anything else
+    							// Append c to current descriptor.
+    						} else {
+    							currentDescriptor = currentDescriptor + c;
+    						}
+    						// (end "in descriptor"
+
+    						// In parens
+    					} else if (state === "in parens") {
+
+    						// U+0029 RIGHT PARENTHESIS ())
+    						// Append c to current descriptor. Set state to in descriptor.
+    						if (c === ")") {
+    							currentDescriptor = currentDescriptor + c;
+    							state = "in descriptor";
+
+    							// EOF
+    							// Append current descriptor to descriptors. Jump to the step labeled
+    							// descriptor parser.
+    						} else if (c === "") {
+    							descriptors.push(currentDescriptor);
+    							parseDescriptors();
+    							return;
+
+    							// Anything else
+    							// Append c to current descriptor.
+    						} else {
+    							currentDescriptor = currentDescriptor + c;
+    						}
+
+    						// After descriptor
+    					} else if (state === "after descriptor") {
+
+    						// Do the following, depending on the value of c:
+    						// Space character: Stay in this state.
+    						if (isSpace(c)) ; else if (c === "") {
+    							parseDescriptors();
+    							return;
+
+    							// Anything else
+    							// Set state to in descriptor. Set position to the previous character in input.
+    						} else {
+    							state = "in descriptor";
+    							pos -= 1;
+
+    						}
+    					}
+
+    					// Advance position to the next character in input.
+    					pos += 1;
+
+    					// Repeat this step.
+    				} // (close while true loop)
+    			}
+
+    			/**
+    			 * Adds descriptor properties to a candidate, pushes to the candidates array
+    			 * @return undefined
+    			 */
+    			// Declared outside of the while loop so that it's only created once.
+    			function parseDescriptors() {
+
+    				// 9. Descriptor parser: Let error be no.
+    				var pError = false,
+
+    					// 10. Let width be absent.
+    					// 11. Let density be absent.
+    					// 12. Let future-compat-h be absent. (We're implementing it now as h)
+    					w, d, h, i,
+    					candidate = {},
+    					desc, lastChar, value, intVal, floatVal;
+
+    				// 13. For each descriptor in descriptors, run the appropriate set of steps
+    				// from the following list:
+    				for (i = 0 ; i < descriptors.length; i++) {
+    					desc = descriptors[ i ];
+
+    					lastChar = desc[ desc.length - 1 ];
+    					value = desc.substring(0, desc.length - 1);
+    					intVal = parseInt(value, 10);
+    					floatVal = parseFloat(value);
+
+    					// If the descriptor consists of a valid non-negative integer followed by
+    					// a U+0077 LATIN SMALL LETTER W character
+    					if (regexNonNegativeInteger.test(value) && (lastChar === "w")) {
+
+    						// If width and density are not both absent, then let error be yes.
+    						if (w || d) {pError = true;}
+
+    						// Apply the rules for parsing non-negative integers to the descriptor.
+    						// If the result is zero, let error be yes.
+    						// Otherwise, let width be the result.
+    						if (intVal === 0) {pError = true;} else {w = intVal;}
+
+    						// If the descriptor consists of a valid floating-point number followed by
+    						// a U+0078 LATIN SMALL LETTER X character
+    					} else if (regexFloatingPoint.test(value) && (lastChar === "x")) {
+
+    						// If width, density and future-compat-h are not all absent, then let error
+    						// be yes.
+    						if (w || d || h) {pError = true;}
+
+    						// Apply the rules for parsing floating-point number values to the descriptor.
+    						// If the result is less than zero, let error be yes. Otherwise, let density
+    						// be the result.
+    						if (floatVal < 0) {pError = true;} else {d = floatVal;}
+
+    						// If the descriptor consists of a valid non-negative integer followed by
+    						// a U+0068 LATIN SMALL LETTER H character
+    					} else if (regexNonNegativeInteger.test(value) && (lastChar === "h")) {
+
+    						// If height and density are not both absent, then let error be yes.
+    						if (h || d) {pError = true;}
+
+    						// Apply the rules for parsing non-negative integers to the descriptor.
+    						// If the result is zero, let error be yes. Otherwise, let future-compat-h
+    						// be the result.
+    						if (intVal === 0) {pError = true;} else {h = intVal;}
+
+    						// Anything else, Let error be yes.
+    					} else {pError = true;}
+    				} // (close step 13 for loop)
+
+    				// 15. If error is still no, then append a new image source to candidates whose
+    				// URL is url, associated with a width width if not absent and a pixel
+    				// density density if not absent. Otherwise, there is a parse error.
+    				if (!pError) {
+    					candidate.url = url;
+    					if (w) { candidate.w = w;}
+    					if (d) { candidate.d = d;}
+    					if (h) { candidate.h = h;}
+    					candidates.push(candidate);
+    				} else if (console && console.log) {
+    					console.log("Invalid srcset descriptor found in '" +
+    						input + "' at '" + desc + "'.");
+    				}
+    			} // (close parseDescriptors fn)
+
+    		}
+    	})); 
+    } (parseSrcset$1));
+
+    var parseSrcsetExports = parseSrcset$1.exports;
+
+    var picocolors = {exports: {}};
+
+    let p = process || {}, argv = p.argv || [], env = p.env || {};
+    let isColorSupported =
+    	!(!!env.NO_COLOR || argv.includes("--no-color")) &&
+    	(!!env.FORCE_COLOR || argv.includes("--color") || p.platform === "win32" || ((p.stdout || {}).isTTY && env.TERM !== "dumb") || !!env.CI);
+
+    let formatter = (open, close, replace = open) =>
+    	input => {
+    		let string = "" + input, index = string.indexOf(close, open.length);
+    		return ~index ? open + replaceClose(string, close, replace, index) + close : open + string + close
+    	};
+
+    let replaceClose = (string, close, replace, index) => {
+    	let result = "", cursor = 0;
+    	do {
+    		result += string.substring(cursor, index) + replace;
+    		cursor = index + close.length;
+    		index = string.indexOf(close, cursor);
+    	} while (~index)
+    	return result + string.substring(cursor)
+    };
+
+    let createColors = (enabled = isColorSupported) => {
+    	let f = enabled ? formatter : () => String;
+    	return {
+    		isColorSupported: enabled,
+    		reset: f("\x1b[0m", "\x1b[0m"),
+    		bold: f("\x1b[1m", "\x1b[22m", "\x1b[22m\x1b[1m"),
+    		dim: f("\x1b[2m", "\x1b[22m", "\x1b[22m\x1b[2m"),
+    		italic: f("\x1b[3m", "\x1b[23m"),
+    		underline: f("\x1b[4m", "\x1b[24m"),
+    		inverse: f("\x1b[7m", "\x1b[27m"),
+    		hidden: f("\x1b[8m", "\x1b[28m"),
+    		strikethrough: f("\x1b[9m", "\x1b[29m"),
+
+    		black: f("\x1b[30m", "\x1b[39m"),
+    		red: f("\x1b[31m", "\x1b[39m"),
+    		green: f("\x1b[32m", "\x1b[39m"),
+    		yellow: f("\x1b[33m", "\x1b[39m"),
+    		blue: f("\x1b[34m", "\x1b[39m"),
+    		magenta: f("\x1b[35m", "\x1b[39m"),
+    		cyan: f("\x1b[36m", "\x1b[39m"),
+    		white: f("\x1b[37m", "\x1b[39m"),
+    		gray: f("\x1b[90m", "\x1b[39m"),
+
+    		bgBlack: f("\x1b[40m", "\x1b[49m"),
+    		bgRed: f("\x1b[41m", "\x1b[49m"),
+    		bgGreen: f("\x1b[42m", "\x1b[49m"),
+    		bgYellow: f("\x1b[43m", "\x1b[49m"),
+    		bgBlue: f("\x1b[44m", "\x1b[49m"),
+    		bgMagenta: f("\x1b[45m", "\x1b[49m"),
+    		bgCyan: f("\x1b[46m", "\x1b[49m"),
+    		bgWhite: f("\x1b[47m", "\x1b[49m"),
+
+    		blackBright: f("\x1b[90m", "\x1b[39m"),
+    		redBright: f("\x1b[91m", "\x1b[39m"),
+    		greenBright: f("\x1b[92m", "\x1b[39m"),
+    		yellowBright: f("\x1b[93m", "\x1b[39m"),
+    		blueBright: f("\x1b[94m", "\x1b[39m"),
+    		magentaBright: f("\x1b[95m", "\x1b[39m"),
+    		cyanBright: f("\x1b[96m", "\x1b[39m"),
+    		whiteBright: f("\x1b[97m", "\x1b[39m"),
+
+    		bgBlackBright: f("\x1b[100m", "\x1b[49m"),
+    		bgRedBright: f("\x1b[101m", "\x1b[49m"),
+    		bgGreenBright: f("\x1b[102m", "\x1b[49m"),
+    		bgYellowBright: f("\x1b[103m", "\x1b[49m"),
+    		bgBlueBright: f("\x1b[104m", "\x1b[49m"),
+    		bgMagentaBright: f("\x1b[105m", "\x1b[49m"),
+    		bgCyanBright: f("\x1b[106m", "\x1b[49m"),
+    		bgWhiteBright: f("\x1b[107m", "\x1b[49m"),
+    	}
+    };
+
+    picocolors.exports = createColors();
+    picocolors.exports.createColors = createColors;
+
+    var picocolorsExports = picocolors.exports;
+
+    const SINGLE_QUOTE = "'".charCodeAt(0);
+    const DOUBLE_QUOTE = '"'.charCodeAt(0);
+    const BACKSLASH = '\\'.charCodeAt(0);
+    const SLASH = '/'.charCodeAt(0);
+    const NEWLINE = '\n'.charCodeAt(0);
+    const SPACE = ' '.charCodeAt(0);
+    const FEED = '\f'.charCodeAt(0);
+    const TAB = '\t'.charCodeAt(0);
+    const CR = '\r'.charCodeAt(0);
+    const OPEN_SQUARE = '['.charCodeAt(0);
+    const CLOSE_SQUARE = ']'.charCodeAt(0);
+    const OPEN_PARENTHESES = '('.charCodeAt(0);
+    const CLOSE_PARENTHESES = ')'.charCodeAt(0);
+    const OPEN_CURLY = '{'.charCodeAt(0);
+    const CLOSE_CURLY = '}'.charCodeAt(0);
+    const SEMICOLON = ';'.charCodeAt(0);
+    const ASTERISK = '*'.charCodeAt(0);
+    const COLON = ':'.charCodeAt(0);
+    const AT = '@'.charCodeAt(0);
+
+    const RE_AT_END = /[\t\n\f\r "#'()/;[\\\]{}]/g;
+    const RE_WORD_END = /[\t\n\f\r !"#'():;@[\\\]{}]|\/(?=\*)/g;
+    const RE_BAD_BRACKET = /.[\r\n"'(/\\]/;
+    const RE_HEX_ESCAPE = /[\da-f]/i;
+
+    var tokenize = function tokenizer(input, options = {}) {
+      let css = input.css.valueOf();
+      let ignore = options.ignoreErrors;
+
+      let code, content, escape, next, quote;
+      let currentToken, escaped, escapePos, n, prev;
+
+      let length = css.length;
+      let pos = 0;
+      let buffer = [];
+      let returned = [];
+      let lastBadParen = -1;
+
+      function position() {
+        return pos
+      }
+
+      function unclosed(what) {
+        throw input.error('Unclosed ' + what, pos)
+      }
+
+      function endOfFile() {
+        return returned.length === 0 && pos >= length
+      }
+
+      function nextToken(opts) {
+        if (returned.length) return returned.pop()
+        if (pos >= length) return
+
+        let ignoreUnclosed = opts ? opts.ignoreUnclosed : false;
+
+        code = css.charCodeAt(pos);
+
+        switch (code) {
+          case NEWLINE:
+          case SPACE:
+          case TAB:
+          case CR:
+          case FEED: {
+            next = pos;
+            do {
+              next += 1;
+              code = css.charCodeAt(next);
+            } while (
+              code === SPACE ||
+              code === NEWLINE ||
+              code === TAB ||
+              code === CR ||
+              code === FEED
+            )
+
+            currentToken = ['space', css.slice(pos, next)];
+            pos = next - 1;
+            break
+          }
+
+          case OPEN_SQUARE:
+          case CLOSE_SQUARE:
+          case OPEN_CURLY:
+          case CLOSE_CURLY:
+          case COLON:
+          case SEMICOLON:
+          case CLOSE_PARENTHESES: {
+            let controlChar = String.fromCharCode(code);
+            currentToken = [controlChar, controlChar, pos];
+            break
+          }
+
+          case OPEN_PARENTHESES: {
+            prev = buffer.length ? buffer.pop()[1] : '';
+            n = css.charCodeAt(pos + 1);
+            if (
+              prev === 'url' &&
+              n !== SINGLE_QUOTE &&
+              n !== DOUBLE_QUOTE &&
+              n !== SPACE &&
+              n !== NEWLINE &&
+              n !== TAB &&
+              n !== FEED &&
+              n !== CR
+            ) {
+              next = pos;
+              do {
+                escaped = false;
+                next = css.indexOf(')', next + 1);
+                if (next === -1) {
+                  if (ignore || ignoreUnclosed) {
+                    next = pos;
+                    break
+                  } else {
+                    unclosed('bracket');
+                  }
+                }
+                escapePos = next;
+                while (css.charCodeAt(escapePos - 1) === BACKSLASH) {
+                  escapePos -= 1;
+                  escaped = !escaped;
+                }
+              } while (escaped)
+
+              currentToken = ['brackets', css.slice(pos, next + 1), pos, next];
+
+              pos = next;
+            } else if (pos <= lastBadParen) {
+              currentToken = ['(', '(', pos];
+            } else {
+              next = css.indexOf(')', pos + 1);
+              content = css.slice(pos, next + 1);
+
+              if (next === -1 || RE_BAD_BRACKET.test(content)) {
+                lastBadParen = next === -1 ? length : next;
+                currentToken = ['(', '(', pos];
+              } else {
+                currentToken = ['brackets', content, pos, next];
+                pos = next;
+              }
+            }
+
+            break
+          }
+
+          case SINGLE_QUOTE:
+          case DOUBLE_QUOTE: {
+            quote = code === SINGLE_QUOTE ? "'" : '"';
+            next = pos;
+            do {
+              escaped = false;
+              next = css.indexOf(quote, next + 1);
+              if (next === -1) {
+                if (ignore || ignoreUnclosed) {
+                  next = pos + 1;
+                  break
+                } else {
+                  unclosed('string');
+                }
+              }
+              escapePos = next;
+              while (css.charCodeAt(escapePos - 1) === BACKSLASH) {
+                escapePos -= 1;
+                escaped = !escaped;
+              }
+            } while (escaped)
+
+            currentToken = ['string', css.slice(pos, next + 1), pos, next];
+            pos = next;
+            break
+          }
+
+          case AT: {
+            RE_AT_END.lastIndex = pos + 1;
+            RE_AT_END.test(css);
+            if (RE_AT_END.lastIndex === 0) {
+              next = css.length - 1;
+            } else {
+              next = RE_AT_END.lastIndex - 2;
+            }
+
+            currentToken = ['at-word', css.slice(pos, next + 1), pos, next];
+
+            pos = next;
+            break
+          }
+
+          case BACKSLASH: {
+            next = pos;
+            escape = true;
+            while (css.charCodeAt(next + 1) === BACKSLASH) {
+              next += 1;
+              escape = !escape;
+            }
+            code = css.charCodeAt(next + 1);
+            if (
+              escape &&
+              code !== SLASH &&
+              code !== SPACE &&
+              code !== NEWLINE &&
+              code !== TAB &&
+              code !== CR &&
+              code !== FEED
+            ) {
+              next += 1;
+              if (RE_HEX_ESCAPE.test(css.charAt(next))) {
+                while (RE_HEX_ESCAPE.test(css.charAt(next + 1))) {
+                  next += 1;
+                }
+                if (css.charCodeAt(next + 1) === SPACE) {
+                  next += 1;
+                }
+              }
+            }
+
+            currentToken = ['word', css.slice(pos, next + 1), pos, next];
+
+            pos = next;
+            break
+          }
+
+          default: {
+            if (code === SLASH && css.charCodeAt(pos + 1) === ASTERISK) {
+              next = css.indexOf('*/', pos + 2) + 1;
+              if (next === 0) {
+                if (ignore || ignoreUnclosed) {
+                  next = css.length;
+                } else {
+                  unclosed('comment');
+                }
+              }
+
+              currentToken = ['comment', css.slice(pos, next + 1), pos, next];
+              pos = next;
+            } else {
+              RE_WORD_END.lastIndex = pos + 1;
+              RE_WORD_END.test(css);
+              if (RE_WORD_END.lastIndex === 0) {
+                next = css.length - 1;
+              } else {
+                next = RE_WORD_END.lastIndex - 2;
+              }
+
+              currentToken = ['word', css.slice(pos, next + 1), pos, next];
+              buffer.push(currentToken);
+              pos = next;
+            }
+
+            break
+          }
+        }
+
+        pos++;
+        return currentToken
+      }
+
+      function back(token) {
+        returned.push(token);
+      }
+
+      return {
+        back,
+        endOfFile,
+        nextToken,
+        position
+      }
+    };
+
+    let pico$1 = picocolorsExports;
+
+    let tokenizer$1 = tokenize;
+
+    let Input$5;
+
+    function registerInput(dependant) {
+      Input$5 = dependant;
+    }
+
+    const HIGHLIGHT_THEME = {
+      ';': pico$1.yellow,
+      ':': pico$1.yellow,
+      '(': pico$1.cyan,
+      ')': pico$1.cyan,
+      '[': pico$1.yellow,
+      ']': pico$1.yellow,
+      '{': pico$1.yellow,
+      '}': pico$1.yellow,
+      'at-word': pico$1.cyan,
+      'brackets': pico$1.cyan,
+      'call': pico$1.cyan,
+      'class': pico$1.yellow,
+      'comment': pico$1.gray,
+      'hash': pico$1.magenta,
+      'string': pico$1.green
+    };
+
+    function getTokenType([type, value], processor) {
+      if (type === 'word') {
+        if (value[0] === '.') {
+          return 'class'
+        }
+        if (value[0] === '#') {
+          return 'hash'
+        }
+      }
+
+      if (!processor.endOfFile()) {
+        let next = processor.nextToken();
+        processor.back(next);
+        if (next[0] === 'brackets' || next[0] === '(') return 'call'
+      }
+
+      return type
+    }
+
+    function terminalHighlight$2(css) {
+      let processor = tokenizer$1(new Input$5(css), { ignoreErrors: true });
+      let result = '';
+      while (!processor.endOfFile()) {
+        let token = processor.nextToken();
+        let color = HIGHLIGHT_THEME[getTokenType(token, processor)];
+        if (color) {
+          result += token[1]
+            .split(/\r?\n/)
+            .map(i => color(i))
+            .join('\n');
+        } else {
+          result += token[1];
+        }
+      }
+      return result
+    }
+
+    terminalHighlight$2.registerInput = registerInput;
+
+    var terminalHighlight_1 = terminalHighlight$2;
+
+    let pico = picocolorsExports;
+
+    let terminalHighlight$1 = terminalHighlight_1;
+
+    let CssSyntaxError$3 = class CssSyntaxError extends Error {
+      constructor(message, line, column, source, file, plugin) {
+        super(message);
+        this.name = 'CssSyntaxError';
+        this.reason = message;
+
+        if (file) {
+          this.file = file;
+        }
+        if (source) {
+          this.source = source;
+        }
+        if (plugin) {
+          this.plugin = plugin;
+        }
+        if (typeof line !== 'undefined' && typeof column !== 'undefined') {
+          if (typeof line === 'number') {
+            this.line = line;
+            this.column = column;
+          } else {
+            this.line = line.line;
+            this.column = line.column;
+            this.endLine = column.line;
+            this.endColumn = column.column;
+          }
+        }
+
+        this.setMessage();
+
+        if (Error.captureStackTrace) {
+          Error.captureStackTrace(this, CssSyntaxError);
+        }
+      }
+
+      setMessage() {
+        this.message = this.plugin ? this.plugin + ': ' : '';
+        this.message += this.file ? this.file : '<css input>';
+        if (typeof this.line !== 'undefined') {
+          this.message += ':' + this.line + ':' + this.column;
+        }
+        this.message += ': ' + this.reason;
+      }
+
+      showSourceCode(color) {
+        if (!this.source) return ''
+
+        let css = this.source;
+        if (color == null) color = pico.isColorSupported;
+
+        let aside = text => text;
+        let mark = text => text;
+        let highlight = text => text;
+        if (color) {
+          let { bold, gray, red } = pico.createColors(true);
+          mark = text => bold(red(text));
+          aside = text => gray(text);
+          if (terminalHighlight$1) {
+            highlight = text => terminalHighlight$1(text);
+          }
+        }
+
+        let lines = css.split(/\r?\n/);
+        let start = Math.max(this.line - 3, 0);
+        let end = Math.min(this.line + 2, lines.length);
+        let maxWidth = String(end).length;
+
+        return lines
+          .slice(start, end)
+          .map((line, index) => {
+            let number = start + 1 + index;
+            let gutter = ' ' + (' ' + number).slice(-maxWidth) + ' | ';
+            if (number === this.line) {
+              if (line.length > 160) {
+                let padding = 20;
+                let subLineStart = Math.max(0, this.column - padding);
+                let subLineEnd = Math.max(
+                  this.column + padding,
+                  this.endColumn + padding
+                );
+                let subLine = line.slice(subLineStart, subLineEnd);
+
+                let spacing =
+                  aside(gutter.replace(/\d/g, ' ')) +
+                  line
+                    .slice(0, Math.min(this.column - 1, padding - 1))
+                    .replace(/[^\t]/g, ' ');
+
+                return (
+                  mark('>') +
+                  aside(gutter) +
+                  highlight(subLine) +
+                  '\n ' +
+                  spacing +
+                  mark('^')
+                )
+              }
+
+              let spacing =
+                aside(gutter.replace(/\d/g, ' ')) +
+                line.slice(0, this.column - 1).replace(/[^\t]/g, ' ');
+
+              return (
+                mark('>') +
+                aside(gutter) +
+                highlight(line) +
+                '\n ' +
+                spacing +
+                mark('^')
+              )
+            }
+
+            return ' ' + aside(gutter) + highlight(line)
+          })
+          .join('\n')
+      }
+
+      toString() {
+        let code = this.showSourceCode();
+        if (code) {
+          code = '\n\n' + code + '\n';
+        }
+        return this.name + ': ' + this.message + code
+      }
+    };
+
+    var cssSyntaxError = CssSyntaxError$3;
+    CssSyntaxError$3.default = CssSyntaxError$3;
+
+    // Escapes sequences that could break out of an HTML <style> context.
+    // Uses CSS unicode escaping (\3c = '<') which is valid CSS and parsed
+    // correctly by all compliant CSS consumers.
+    const STYLE_TAG = /(<)(\/?style\b)/gi;
+    const COMMENT_OPEN = /(<)(!--)/g;
+
+    function escapeHTMLInCSS(str) {
+      if (typeof str !== 'string') return str
+      if (!str.includes('<')) return str
+      return str.replace(STYLE_TAG, '\\3c $2').replace(COMMENT_OPEN, '\\3c $2')
+    }
+
+    const DEFAULT_RAW = {
+      after: '\n',
+      beforeClose: '\n',
+      beforeComment: '\n',
+      beforeDecl: '\n',
+      beforeOpen: ' ',
+      beforeRule: '\n',
+      colon: ': ',
+      commentLeft: ' ',
+      commentRight: ' ',
+      emptyBody: '',
+      indent: '    ',
+      semicolon: false
+    };
+
+    function capitalize(str) {
+      return str[0].toUpperCase() + str.slice(1)
+    }
+
+    let Stringifier$2 = class Stringifier {
+      constructor(builder) {
+        this.builder = builder;
+      }
+
+      atrule(node, semicolon) {
+        let raws = node.raws;
+        let name = '@' + node.name;
+        let params = node.params ? this.rawValue(node, 'params') : '';
+
+        if (typeof raws.afterName !== 'undefined') {
+          name += raws.afterName;
+        } else if (params) {
+          name += ' ';
+        }
+
+        if (node.nodes) {
+          this.block(node, name + params);
+        } else {
+          let end = (raws.between || '') + (semicolon ? ';' : '');
+          this.builder(escapeHTMLInCSS(name + params + end), node);
+        }
+      }
+
+      beforeAfter(node, detect) {
+        let value;
+        if (node.type === 'decl') {
+          value = this.raw(node, null, 'beforeDecl');
+        } else if (node.type === 'comment') {
+          value = this.raw(node, null, 'beforeComment');
+        } else if (detect === 'before') {
+          value = this.raw(node, null, 'beforeRule');
+        } else {
+          value = this.raw(node, null, 'beforeClose');
+        }
+
+        let buf = node.parent;
+        let depth = 0;
+        while (buf && buf.type !== 'root') {
+          depth += 1;
+          buf = buf.parent;
+        }
+
+        if (value.includes('\n')) {
+          let indent = this.raw(node, null, 'indent');
+          if (indent.length) {
+            for (let step = 0; step < depth; step++) value += indent;
+          }
+        }
+
+        return value
+      }
+
+      block(node, start) {
+        let raws = node.raws;
+        let between = typeof raws.between !== 'undefined'
+          ? raws.between
+          : this.raw(node, 'between', 'beforeOpen');
+        this.builder(escapeHTMLInCSS(start + between) + '{', node, 'start');
+
+        let after;
+        if (node.nodes && node.nodes.length) {
+          this.body(node);
+          after = typeof raws.after !== 'undefined'
+            ? raws.after
+            : this.raw(node, 'after');
+        } else {
+          after = typeof raws.after !== 'undefined'
+            ? raws.after
+            : this.raw(node, 'after', 'emptyBody');
+        }
+
+        if (after) this.builder(escapeHTMLInCSS(after));
+        this.builder('}', node, 'end');
+      }
+
+      body(node) {
+        let nodes = node.nodes;
+        let last = nodes.length - 1;
+        while (last > 0) {
+          if (nodes[last].type !== 'comment') break
+          last -= 1;
+        }
+
+        let semicolon = this.raw(node, 'semicolon');
+        let isDocument = node.type === 'document';
+        for (let i = 0; i < nodes.length; i++) {
+          let child = nodes[i];
+          let before = child.raws.before;
+          if (typeof before === 'undefined') {
+            before = this.raw(child, 'before');
+          }
+          if (before) this.builder(isDocument ? before : escapeHTMLInCSS(before));
+          this.stringify(child, last !== i || semicolon);
+        }
+      }
+
+      comment(node) {
+        let raws = node.raws;
+        let left = typeof raws.left !== 'undefined'
+          ? raws.left
+          : this.raw(node, 'left', 'commentLeft');
+        let right = typeof raws.right !== 'undefined'
+          ? raws.right
+          : this.raw(node, 'right', 'commentRight');
+        this.builder(escapeHTMLInCSS('/*' + left + node.text + right + '*/'), node);
+      }
+
+      decl(node, semicolon) {
+        let raws = node.raws;
+        let between = typeof raws.between !== 'undefined'
+          ? raws.between
+          : this.raw(node, 'between', 'colon');
+
+        let rawVal = raws.value;
+        let value = rawVal && rawVal.value === node.value ? rawVal.raw : node.value;
+
+        let string = node.prop + between + value;
+
+        if (node.important) {
+          string += raws.important || ' !important';
+        }
+
+        if (semicolon) string += ';';
+        this.builder(escapeHTMLInCSS(string), node);
+      }
+
+      document(node) {
+        this.body(node);
+      }
+
+      raw(node, own, detect) {
+        let value;
+        if (!detect) detect = own;
+
+        // Already had
+        if (own) {
+          value = node.raws[own];
+          if (typeof value !== 'undefined') return value
+        }
+
+        let parent = node.parent;
+
+        if (detect === 'before') {
+          // Hack for first rule in CSS
+          if (!parent || (parent.type === 'root' && parent.first === node)) {
+            return ''
+          }
+
+          // `root` nodes in `document` should use only their own raws
+          if (parent && parent.type === 'document') {
+            return ''
+          }
+        }
+
+        // Floating child without parent
+        if (!parent) return DEFAULT_RAW[detect]
+
+        // Detect style by other nodes
+        let root = node.root();
+        let cache = root.rawCache || (root.rawCache = {});
+        if (typeof cache[detect] !== 'undefined') {
+          return cache[detect]
+        }
+
+        if (detect === 'before' || detect === 'after') {
+          return this.beforeAfter(node, detect)
+        } else {
+          let method = 'raw' + capitalize(detect);
+          if (this[method]) {
+            value = this[method](root, node);
+          } else {
+            root.walk(i => {
+              value = i.raws[own];
+              if (typeof value !== 'undefined') return false
+            });
+          }
+        }
+
+        if (typeof value === 'undefined') value = DEFAULT_RAW[detect];
+
+        cache[detect] = value;
+        return value
+      }
+
+      rawBeforeClose(root) {
+        let value;
+        root.walk(i => {
+          if (i.nodes && i.nodes.length > 0) {
+            if (typeof i.raws.after !== 'undefined') {
+              value = i.raws.after;
+              if (value.includes('\n')) {
+                value = value.replace(/[^\n]+$/, '');
+              }
+              return false
+            }
+          }
+        });
+        if (value) value = value.replace(/\S/g, '');
+        return value
+      }
+
+      rawBeforeComment(root, node) {
+        let value;
+        root.walkComments(i => {
+          if (typeof i.raws.before !== 'undefined') {
+            value = i.raws.before;
+            if (value.includes('\n')) {
+              value = value.replace(/[^\n]+$/, '');
+            }
+            return false
+          }
+        });
+        if (typeof value === 'undefined') {
+          value = this.raw(node, null, 'beforeDecl');
+        } else if (value) {
+          value = value.replace(/\S/g, '');
+        }
+        return value
+      }
+
+      rawBeforeDecl(root, node) {
+        let value;
+        root.walkDecls(i => {
+          if (typeof i.raws.before !== 'undefined') {
+            value = i.raws.before;
+            if (value.includes('\n')) {
+              value = value.replace(/[^\n]+$/, '');
+            }
+            return false
+          }
+        });
+        if (typeof value === 'undefined') {
+          value = this.raw(node, null, 'beforeRule');
+        } else if (value) {
+          value = value.replace(/\S/g, '');
+        }
+        return value
+      }
+
+      rawBeforeOpen(root) {
+        let value;
+        root.walk(i => {
+          if (i.type !== 'decl') {
+            value = i.raws.between;
+            if (typeof value !== 'undefined') return false
+          }
+        });
+        return value
+      }
+
+      rawBeforeRule(root) {
+        let value;
+        root.walk(i => {
+          if (i.nodes && (i.parent !== root || root.first !== i)) {
+            if (typeof i.raws.before !== 'undefined') {
+              value = i.raws.before;
+              if (value.includes('\n')) {
+                value = value.replace(/[^\n]+$/, '');
+              }
+              return false
+            }
+          }
+        });
+        if (value) value = value.replace(/\S/g, '');
+        return value
+      }
+
+      rawColon(root) {
+        let value;
+        root.walkDecls(i => {
+          if (typeof i.raws.between !== 'undefined') {
+            value = i.raws.between.replace(/[^\s:]/g, '');
+            return false
+          }
+        });
+        return value
+      }
+
+      rawEmptyBody(root) {
+        let value;
+        root.walk(i => {
+          if (i.nodes && i.nodes.length === 0) {
+            value = i.raws.after;
+            if (typeof value !== 'undefined') return false
+          }
+        });
+        return value
+      }
+
+      rawIndent(root) {
+        if (root.raws.indent) return root.raws.indent
+        let value;
+        root.walk(i => {
+          let p = i.parent;
+          if (p && p !== root && p.parent && p.parent === root) {
+            if (typeof i.raws.before !== 'undefined') {
+              let parts = i.raws.before.split('\n');
+              value = parts[parts.length - 1];
+              value = value.replace(/\S/g, '');
+              return false
+            }
+          }
+        });
+        return value
+      }
+
+      rawSemicolon(root) {
+        let value;
+        root.walk(i => {
+          if (i.nodes && i.nodes.length && i.last.type === 'decl') {
+            value = i.raws.semicolon;
+            if (typeof value !== 'undefined') return false
+          }
+        });
+        return value
+      }
+
+      rawValue(node, prop) {
+        let value = node[prop];
+        let raw = node.raws[prop];
+        if (raw && raw.value === value) {
+          return raw.raw
+        }
+
+        return value
+      }
+
+      root(node) {
+        this.body(node);
+        if (node.raws.after) {
+          let after = node.raws.after;
+          let isDocument = node.parent && node.parent.type === 'document';
+          this.builder(isDocument ? after : escapeHTMLInCSS(after));
+        }
+      }
+
+      rule(node) {
+        this.block(node, this.rawValue(node, 'selector'));
+        if (node.raws.ownSemicolon) {
+          this.builder(escapeHTMLInCSS(node.raws.ownSemicolon), node, 'end');
+        }
+      }
+
+      stringify(node, semicolon) {
+        /* c8 ignore start */
+        if (!this[node.type]) {
+          throw new Error(
+            'Unknown AST node type ' +
+              node.type +
+              '. ' +
+              'Maybe you need to change PostCSS stringifier.'
+          )
+        }
+        /* c8 ignore stop */
+        this[node.type](node, semicolon);
+      }
+    };
+
+    var stringifier = Stringifier$2;
+    Stringifier$2.default = Stringifier$2;
+
+    let Stringifier$1 = stringifier;
+
+    function stringify$4(node, builder) {
+      let str = new Stringifier$1(builder);
+      str.stringify(node);
+    }
+
+    var stringify_1 = stringify$4;
+    stringify$4.default = stringify$4;
+
+    var symbols = {};
+
+    symbols.isClean = Symbol('isClean');
+
+    symbols.my = Symbol('my');
+
+    let CssSyntaxError$2 = cssSyntaxError;
+    let Stringifier = stringifier;
+    let stringify$3 = stringify_1;
+    let { isClean: isClean$2, my: my$2 } = symbols;
+
+    function cloneNode(obj, parent) {
+      let cloned = new obj.constructor();
+
+      for (let i in obj) {
+        if (!Object.prototype.hasOwnProperty.call(obj, i)) {
+          /* c8 ignore next 2 */
+          continue
+        }
+        if (i === 'proxyCache') continue
+        let value = obj[i];
+        let type = typeof value;
+
+        if (i === 'parent' && type === 'object') {
+          if (parent) cloned[i] = parent;
+        } else if (i === 'source') {
+          cloned[i] = value;
+        } else if (Array.isArray(value)) {
+          cloned[i] = value.map(j => cloneNode(j, cloned));
+        } else {
+          if (type === 'object' && value !== null) value = cloneNode(value);
+          cloned[i] = value;
+        }
+      }
+
+      return cloned
+    }
+
+    function sourceOffset(inputCSS, position) {
+      // Not all custom syntaxes support `offset` in `source.start` and `source.end`
+      if (position && typeof position.offset !== 'undefined') {
+        return position.offset
+      }
+
+      let column = 1;
+      let line = 1;
+      let offset = 0;
+
+      for (let i = 0; i < inputCSS.length; i++) {
+        if (line === position.line && column === position.column) {
+          offset = i;
+          break
+        }
+
+        if (inputCSS[i] === '\n') {
+          column = 1;
+          line += 1;
+        } else {
+          column += 1;
+        }
+      }
+
+      return offset
+    }
+
+    let Node$4 = class Node {
+      get proxyOf() {
+        return this
+      }
+
+      constructor(defaults = {}) {
+        this.raws = {};
+        this[isClean$2] = false;
+        this[my$2] = true;
+
+        for (let name in defaults) {
+          if (name === 'nodes') {
+            this.nodes = [];
+            for (let node of defaults[name]) {
+              if (typeof node.clone === 'function') {
+                this.append(node.clone());
+              } else {
+                this.append(node);
+              }
+            }
+          } else {
+            this[name] = defaults[name];
+          }
+        }
+      }
+
+      addToError(error) {
+        error.postcssNode = this;
+        if (error.stack && this.source && /\n\s{4}at /.test(error.stack)) {
+          let s = this.source;
+          error.stack = error.stack.replace(
+            /\n\s{4}at /,
+            `$&${s.input.from}:${s.start.line}:${s.start.column}$&`
+          );
+        }
+        return error
+      }
+
+      after(add) {
+        this.parent.insertAfter(this, add);
+        return this
+      }
+
+      assign(overrides = {}) {
+        for (let name in overrides) {
+          this[name] = overrides[name];
+        }
+        return this
+      }
+
+      before(add) {
+        this.parent.insertBefore(this, add);
+        return this
+      }
+
+      cleanRaws(keepBetween) {
+        delete this.raws.before;
+        delete this.raws.after;
+        if (!keepBetween) delete this.raws.between;
+      }
+
+      clone(overrides = {}) {
+        let cloned = cloneNode(this);
+        for (let name in overrides) {
+          cloned[name] = overrides[name];
+        }
+        return cloned
+      }
+
+      cloneAfter(overrides = {}) {
+        let cloned = this.clone(overrides);
+        this.parent.insertAfter(this, cloned);
+        return cloned
+      }
+
+      cloneBefore(overrides = {}) {
+        let cloned = this.clone(overrides);
+        this.parent.insertBefore(this, cloned);
+        return cloned
+      }
+
+      error(message, opts = {}) {
+        if (this.source) {
+          let { end, start } = this.rangeBy(opts);
+          return this.source.input.error(
+            message,
+            { column: start.column, line: start.line },
+            { column: end.column, line: end.line },
+            opts
+          )
+        }
+        return new CssSyntaxError$2(message)
+      }
+
+      getProxyProcessor() {
+        return {
+          get(node, prop) {
+            if (prop === 'proxyOf') {
+              return node
+            } else if (prop === 'root') {
+              return () => node.root().toProxy()
+            } else {
+              return node[prop]
+            }
+          },
+
+          set(node, prop, value) {
+            if (node[prop] === value) return true
+            node[prop] = value;
+            if (
+              prop === 'prop' ||
+              prop === 'value' ||
+              prop === 'name' ||
+              prop === 'params' ||
+              prop === 'important' ||
+              /* c8 ignore next */
+              prop === 'text'
+            ) {
+              node.markDirty();
+            }
+            return true
+          }
+        }
+      }
+
+      /* c8 ignore next 3 */
+      markClean() {
+        this[isClean$2] = true;
+      }
+
+      markDirty() {
+        if (this[isClean$2]) {
+          this[isClean$2] = false;
+          let next = this;
+          while ((next = next.parent)) {
+            next[isClean$2] = false;
+          }
+        }
+      }
+
+      next() {
+        if (!this.parent) return undefined
+        let index = this.parent.index(this);
+        return this.parent.nodes[index + 1]
+      }
+
+      positionBy(opts = {}) {
+        let pos = this.source.start;
+        if (opts.index) {
+          pos = this.positionInside(opts.index);
+        } else if (opts.word) {
+          let inputString =
+            'document' in this.source.input
+              ? this.source.input.document
+              : this.source.input.css;
+          let stringRepresentation = inputString.slice(
+            sourceOffset(inputString, this.source.start),
+            sourceOffset(inputString, this.source.end)
+          );
+          let index = stringRepresentation.indexOf(opts.word);
+          if (index !== -1) pos = this.positionInside(index);
+        }
+        return pos
+      }
+
+      positionInside(index) {
+        let column = this.source.start.column;
+        let line = this.source.start.line;
+        let inputString =
+          'document' in this.source.input
+            ? this.source.input.document
+            : this.source.input.css;
+        let offset = sourceOffset(inputString, this.source.start);
+        let end = offset + index;
+
+        for (let i = offset; i < end; i++) {
+          if (inputString[i] === '\n') {
+            column = 1;
+            line += 1;
+          } else {
+            column += 1;
+          }
+        }
+
+        return { column, line, offset: end }
+      }
+
+      prev() {
+        if (!this.parent) return undefined
+        let index = this.parent.index(this);
+        return this.parent.nodes[index - 1]
+      }
+
+      rangeBy(opts = {}) {
+        let inputString =
+          'document' in this.source.input
+            ? this.source.input.document
+            : this.source.input.css;
+        let start = {
+          column: this.source.start.column,
+          line: this.source.start.line,
+          offset: sourceOffset(inputString, this.source.start)
+        };
+        let end = this.source.end
+          ? {
+              column: this.source.end.column + 1,
+              line: this.source.end.line,
+              offset:
+                typeof this.source.end.offset === 'number'
+                  ? // `source.end.offset` is exclusive, so we don't need to add 1
+                    this.source.end.offset
+                  : // Since line/column in this.source.end is inclusive,
+                    // the `sourceOffset(... , this.source.end)` returns an inclusive offset.
+                    // So, we add 1 to convert it to exclusive.
+                    sourceOffset(inputString, this.source.end) + 1
+            }
+          : {
+              column: start.column + 1,
+              line: start.line,
+              offset: start.offset + 1
+            };
+
+        if (opts.word) {
+          let stringRepresentation = inputString.slice(
+            sourceOffset(inputString, this.source.start),
+            sourceOffset(inputString, this.source.end)
+          );
+          let index = stringRepresentation.indexOf(opts.word);
+          if (index !== -1) {
+            start = this.positionInside(index);
+            end = this.positionInside(index + opts.word.length);
+          }
+        } else {
+          if (opts.start) {
+            start = {
+              column: opts.start.column,
+              line: opts.start.line,
+              offset: sourceOffset(inputString, opts.start)
+            };
+          } else if (opts.index) {
+            start = this.positionInside(opts.index);
+          }
+
+          if (opts.end) {
+            end = {
+              column: opts.end.column,
+              line: opts.end.line,
+              offset: sourceOffset(inputString, opts.end)
+            };
+          } else if (typeof opts.endIndex === 'number') {
+            end = this.positionInside(opts.endIndex);
+          } else if (opts.index) {
+            end = this.positionInside(opts.index + 1);
+          }
+        }
+
+        if (
+          end.line < start.line ||
+          (end.line === start.line && end.column <= start.column)
+        ) {
+          end = {
+            column: start.column + 1,
+            line: start.line,
+            offset: start.offset + 1
+          };
+        }
+
+        return { end, start }
+      }
+
+      raw(prop, defaultType) {
+        let str = new Stringifier();
+        return str.raw(this, prop, defaultType)
+      }
+
+      remove() {
+        if (this.parent) {
+          this.parent.removeChild(this);
+        }
+        this.parent = undefined;
+        return this
+      }
+
+      replaceWith(...nodes) {
+        if (this.parent) {
+          let bookmark = this;
+          let foundSelf = false;
+          for (let node of nodes) {
+            if (node === this) {
+              foundSelf = true;
+            } else if (foundSelf) {
+              this.parent.insertAfter(bookmark, node);
+              bookmark = node;
+            } else {
+              this.parent.insertBefore(bookmark, node);
+            }
+          }
+
+          if (!foundSelf) {
+            this.remove();
+          }
+        }
+
+        return this
+      }
+
+      root() {
+        let result = this;
+        while (result.parent && result.parent.type !== 'document') {
+          result = result.parent;
+        }
+        return result
+      }
+
+      toJSON(_, inputs) {
+        let fixed = {};
+        let emitInputs = inputs == null;
+        inputs = inputs || new Map();
+        let inputsNextIndex = 0;
+
+        for (let name in this) {
+          if (!Object.prototype.hasOwnProperty.call(this, name)) {
+            /* c8 ignore next 2 */
+            continue
+          }
+          if (name === 'parent' || name === 'proxyCache') continue
+          let value = this[name];
+
+          if (Array.isArray(value)) {
+            fixed[name] = value.map(i => {
+              if (typeof i === 'object' && i.toJSON) {
+                return i.toJSON(null, inputs)
+              } else {
+                return i
+              }
+            });
+          } else if (typeof value === 'object' && value.toJSON) {
+            fixed[name] = value.toJSON(null, inputs);
+          } else if (name === 'source') {
+            if (value == null) continue
+            let inputId = inputs.get(value.input);
+            if (inputId == null) {
+              inputId = inputsNextIndex;
+              inputs.set(value.input, inputsNextIndex);
+              inputsNextIndex++;
+            }
+            fixed[name] = {
+              end: value.end,
+              inputId,
+              start: value.start
+            };
+          } else {
+            fixed[name] = value;
+          }
+        }
+
+        if (emitInputs) {
+          fixed.inputs = [...inputs.keys()].map(input => input.toJSON());
+        }
+
+        return fixed
+      }
+
+      toProxy() {
+        if (!this.proxyCache) {
+          this.proxyCache = new Proxy(this, this.getProxyProcessor());
+        }
+        return this.proxyCache
+      }
+
+      toString(stringifier = stringify$3) {
+        if (stringifier.stringify) stringifier = stringifier.stringify;
+        let result = '';
+        stringifier(this, i => {
+          result += i;
+        });
+        return result
+      }
+
+      warn(result, text, opts = {}) {
+        let data = { node: this };
+        for (let i in opts) data[i] = opts[i];
+        return result.warn(text, data)
+      }
+    };
+
+    var node = Node$4;
+    Node$4.default = Node$4;
+
+    let Node$3 = node;
+
+    let Comment$4 = class Comment extends Node$3 {
+      constructor(defaults) {
+        super(defaults);
+        this.type = 'comment';
+      }
+    };
+
+    var comment = Comment$4;
+    Comment$4.default = Comment$4;
+
+    let Node$2 = node;
+
+    let Declaration$4 = class Declaration extends Node$2 {
+      get variable() {
+        return this.prop.startsWith('--') || this.prop[0] === '$'
+      }
+
+      constructor(defaults) {
+        if (
+          defaults &&
+          typeof defaults.value !== 'undefined' &&
+          typeof defaults.value !== 'string'
+        ) {
+          defaults = { ...defaults, value: String(defaults.value) };
+        }
+        super(defaults);
+        this.type = 'decl';
+      }
+    };
+
+    var declaration = Declaration$4;
+    Declaration$4.default = Declaration$4;
+
+    let Comment$3 = comment;
+    let Declaration$3 = declaration;
+    let Node$1 = node;
+    let { isClean: isClean$1, my: my$1 } = symbols;
+
+    let AtRule$4, parse$4, Root$6, Rule$4;
+
+    function cleanSource(nodes) {
+      return nodes.map(i => {
+        if (i.nodes) i.nodes = cleanSource(i.nodes);
+        delete i.source;
+        return i
+      })
+    }
+
+    function markTreeDirty(node) {
+      node[isClean$1] = false;
+      if (node.proxyOf.nodes) {
+        for (let i of node.proxyOf.nodes) {
+          markTreeDirty(i);
+        }
+      }
+    }
+
+    let Container$7 = class Container extends Node$1 {
+      get first() {
+        if (!this.proxyOf.nodes) return undefined
+        return this.proxyOf.nodes[0]
+      }
+
+      get last() {
+        if (!this.proxyOf.nodes) return undefined
+        return this.proxyOf.nodes[this.proxyOf.nodes.length - 1]
+      }
+
+      append(...children) {
+        for (let child of children) {
+          let nodes = this.normalize(child, this.last);
+          for (let node of nodes) this.proxyOf.nodes.push(node);
+        }
+
+        this.markDirty();
+
+        return this
+      }
+
+      cleanRaws(keepBetween) {
+        super.cleanRaws(keepBetween);
+        if (this.nodes) {
+          for (let node of this.nodes) node.cleanRaws(keepBetween);
+        }
+      }
+
+      each(callback) {
+        if (!this.proxyOf.nodes) return undefined
+        let iterator = this.getIterator();
+
+        let index, result;
+        while (this.indexes[iterator] < this.proxyOf.nodes.length) {
+          index = this.indexes[iterator];
+          result = callback(this.proxyOf.nodes[index], index);
+          if (result === false) break
+
+          this.indexes[iterator] += 1;
+        }
+
+        delete this.indexes[iterator];
+        return result
+      }
+
+      every(condition) {
+        return this.nodes.every(condition)
+      }
+
+      getIterator() {
+        if (!this.lastEach) this.lastEach = 0;
+        if (!this.indexes) this.indexes = {};
+
+        this.lastEach += 1;
+        let iterator = this.lastEach;
+        this.indexes[iterator] = 0;
+
+        return iterator
+      }
+
+      getProxyProcessor() {
+        return {
+          get(node, prop) {
+            if (prop === 'proxyOf') {
+              return node
+            } else if (!node[prop]) {
+              return node[prop]
+            } else if (
+              prop === 'each' ||
+              (typeof prop === 'string' && prop.startsWith('walk'))
+            ) {
+              return (...args) => {
+                return node[prop](
+                  ...args.map(i => {
+                    if (typeof i === 'function') {
+                      return (child, index) => i(child.toProxy(), index)
+                    } else {
+                      return i
+                    }
+                  })
+                )
+              }
+            } else if (prop === 'every' || prop === 'some') {
+              return cb => {
+                return node[prop]((child, ...other) =>
+                  cb(child.toProxy(), ...other)
+                )
+              }
+            } else if (prop === 'root') {
+              return () => node.root().toProxy()
+            } else if (prop === 'nodes') {
+              return node.nodes.map(i => i.toProxy())
+            } else if (prop === 'first' || prop === 'last') {
+              return node[prop].toProxy()
+            } else {
+              return node[prop]
+            }
+          },
+
+          set(node, prop, value) {
+            if (node[prop] === value) return true
+            node[prop] = value;
+            if (prop === 'name' || prop === 'params' || prop === 'selector') {
+              node.markDirty();
+            }
+            return true
+          }
+        }
+      }
+
+      index(child) {
+        if (typeof child === 'number') return child
+        if (child.proxyOf) child = child.proxyOf;
+        return this.proxyOf.nodes.indexOf(child)
+      }
+
+      insertAfter(exist, add) {
+        let existIndex = this.index(exist);
+        let nodes = this.normalize(add, this.proxyOf.nodes[existIndex]).reverse();
+        existIndex = this.index(exist);
+        for (let node of nodes) this.proxyOf.nodes.splice(existIndex + 1, 0, node);
+
+        let index;
+        for (let id in this.indexes) {
+          index = this.indexes[id];
+          if (existIndex < index) {
+            this.indexes[id] = index + nodes.length;
+          }
+        }
+
+        this.markDirty();
+
+        return this
+      }
+
+      insertBefore(exist, add) {
+        let existIndex = this.index(exist);
+        let type = existIndex === 0 ? 'prepend' : false;
+        let nodes = this.normalize(
+          add,
+          this.proxyOf.nodes[existIndex],
+          type
+        ).reverse();
+        existIndex = this.index(exist);
+        for (let node of nodes) this.proxyOf.nodes.splice(existIndex, 0, node);
+
+        let index;
+        for (let id in this.indexes) {
+          index = this.indexes[id];
+          if (existIndex <= index) {
+            this.indexes[id] = index + nodes.length;
+          }
+        }
+
+        this.markDirty();
+
+        return this
+      }
+
+      normalize(nodes, sample) {
+        if (typeof nodes === 'string') {
+          nodes = cleanSource(parse$4(nodes).nodes);
+        } else if (typeof nodes === 'undefined') {
+          nodes = [];
+        } else if (Array.isArray(nodes)) {
+          nodes = nodes.slice(0);
+          for (let i of nodes) {
+            if (i.parent) i.parent.removeChild(i, 'ignore');
+          }
+        } else if (nodes.type === 'root' && this.type !== 'document') {
+          nodes = nodes.nodes.slice(0);
+          for (let i of nodes) {
+            if (i.parent) i.parent.removeChild(i, 'ignore');
+          }
+        } else if (nodes.type) {
+          nodes = [nodes];
+        } else if (nodes.prop) {
+          if (typeof nodes.value === 'undefined') {
+            throw new Error('Value field is missed in node creation')
+          } else if (typeof nodes.value !== 'string') {
+            nodes.value = String(nodes.value);
+          }
+          nodes = [new Declaration$3(nodes)];
+        } else if (nodes.selector || nodes.selectors) {
+          nodes = [new Rule$4(nodes)];
+        } else if (nodes.name) {
+          nodes = [new AtRule$4(nodes)];
+        } else if (nodes.text) {
+          nodes = [new Comment$3(nodes)];
+        } else {
+          throw new Error('Unknown node type in node creation')
+        }
+
+        let processed = nodes.map(i => {
+          /* c8 ignore next */
+          if (!i[my$1]) Container.rebuild(i);
+          i = i.proxyOf;
+          if (i.parent) i.parent.removeChild(i);
+          if (i[isClean$1]) markTreeDirty(i);
+
+          if (!i.raws) i.raws = {};
+          if (typeof i.raws.before === 'undefined') {
+            if (sample && typeof sample.raws.before !== 'undefined') {
+              i.raws.before = sample.raws.before.replace(/\S/g, '');
+            }
+          }
+          i.parent = this.proxyOf;
+          return i
+        });
+
+        return processed
+      }
+
+      prepend(...children) {
+        children = children.reverse();
+        for (let child of children) {
+          let nodes = this.normalize(child, this.first, 'prepend').reverse();
+          for (let node of nodes) this.proxyOf.nodes.unshift(node);
+          for (let id in this.indexes) {
+            this.indexes[id] = this.indexes[id] + nodes.length;
+          }
+        }
+
+        this.markDirty();
+
+        return this
+      }
+
+      push(child) {
+        child.parent = this;
+        this.proxyOf.nodes.push(child);
+        return this
+      }
+
+      removeAll() {
+        for (let node of this.proxyOf.nodes) node.parent = undefined;
+        this.proxyOf.nodes = [];
+
+        this.markDirty();
+
+        return this
+      }
+
+      removeChild(child) {
+        child = this.index(child);
+        this.proxyOf.nodes[child].parent = undefined;
+        this.proxyOf.nodes.splice(child, 1);
+
+        let index;
+        for (let id in this.indexes) {
+          index = this.indexes[id];
+          if (index >= child) {
+            this.indexes[id] = index - 1;
+          }
+        }
+
+        this.markDirty();
+
+        return this
+      }
+
+      replaceValues(pattern, opts, callback) {
+        if (!callback) {
+          callback = opts;
+          opts = {};
+        }
+
+        this.walkDecls(decl => {
+          if (opts.props && !opts.props.includes(decl.prop)) return
+          if (opts.fast && !decl.value.includes(opts.fast)) return
+
+          decl.value = decl.value.replace(pattern, callback);
+        });
+
+        this.markDirty();
+
+        return this
+      }
+
+      some(condition) {
+        return this.nodes.some(condition)
+      }
+
+      walk(callback) {
+        return this.each((child, i) => {
+          let result;
+          try {
+            result = callback(child, i);
+          } catch (e) {
+            throw child.addToError(e)
+          }
+          if (result !== false && child.walk) {
+            result = child.walk(callback);
+          }
+
+          return result
+        })
+      }
+
+      walkAtRules(name, callback) {
+        if (!callback) {
+          callback = name;
+          return this.walk((child, i) => {
+            if (child.type === 'atrule') {
+              return callback(child, i)
+            }
+          })
+        }
+        if (name instanceof RegExp) {
+          return this.walk((child, i) => {
+            if (child.type === 'atrule' && name.test(child.name)) {
+              return callback(child, i)
+            }
+          })
+        }
+        return this.walk((child, i) => {
+          if (child.type === 'atrule' && child.name === name) {
+            return callback(child, i)
+          }
+        })
+      }
+
+      walkComments(callback) {
+        return this.walk((child, i) => {
+          if (child.type === 'comment') {
+            return callback(child, i)
+          }
+        })
+      }
+
+      walkDecls(prop, callback) {
+        if (!callback) {
+          callback = prop;
+          return this.walk((child, i) => {
+            if (child.type === 'decl') {
+              return callback(child, i)
+            }
+          })
+        }
+        if (prop instanceof RegExp) {
+          return this.walk((child, i) => {
+            if (child.type === 'decl' && prop.test(child.prop)) {
+              return callback(child, i)
+            }
+          })
+        }
+        return this.walk((child, i) => {
+          if (child.type === 'decl' && child.prop === prop) {
+            return callback(child, i)
+          }
+        })
+      }
+
+      walkRules(selector, callback) {
+        if (!callback) {
+          callback = selector;
+
+          return this.walk((child, i) => {
+            if (child.type === 'rule') {
+              return callback(child, i)
+            }
+          })
+        }
+        if (selector instanceof RegExp) {
+          return this.walk((child, i) => {
+            if (child.type === 'rule' && selector.test(child.selector)) {
+              return callback(child, i)
+            }
+          })
+        }
+        return this.walk((child, i) => {
+          if (child.type === 'rule' && child.selector === selector) {
+            return callback(child, i)
+          }
+        })
+      }
+    };
+
+    Container$7.registerParse = dependant => {
+      parse$4 = dependant;
+    };
+
+    Container$7.registerRule = dependant => {
+      Rule$4 = dependant;
+    };
+
+    Container$7.registerAtRule = dependant => {
+      AtRule$4 = dependant;
+    };
+
+    Container$7.registerRoot = dependant => {
+      Root$6 = dependant;
+    };
+
+    var container = Container$7;
+    Container$7.default = Container$7;
+
+    /* c8 ignore start */
+    Container$7.rebuild = node => {
+      if (node.type === 'atrule') {
+        Object.setPrototypeOf(node, AtRule$4.prototype);
+      } else if (node.type === 'rule') {
+        Object.setPrototypeOf(node, Rule$4.prototype);
+      } else if (node.type === 'decl') {
+        Object.setPrototypeOf(node, Declaration$3.prototype);
+      } else if (node.type === 'comment') {
+        Object.setPrototypeOf(node, Comment$3.prototype);
+      } else if (node.type === 'root') {
+        Object.setPrototypeOf(node, Root$6.prototype);
+      }
+
+      node[my$1] = true;
+
+      if (node.nodes) {
+        node.nodes.forEach(child => {
+          Container$7.rebuild(child);
+        });
+      }
+    };
+
+    let Container$6 = container;
+
+    let AtRule$3 = class AtRule extends Container$6 {
+      constructor(defaults) {
+        super(defaults);
+        this.type = 'atrule';
+      }
+
+      append(...children) {
+        if (!this.proxyOf.nodes) this.nodes = [];
+        return super.append(...children)
+      }
+
+      prepend(...children) {
+        if (!this.proxyOf.nodes) this.nodes = [];
+        return super.prepend(...children)
+      }
+    };
+
+    var atRule = AtRule$3;
+    AtRule$3.default = AtRule$3;
+
+    Container$6.registerAtRule(AtRule$3);
+
+    let Container$5 = container;
+
+    let LazyResult$4, Processor$3;
+
+    let Document$3 = class Document extends Container$5 {
+      constructor(defaults) {
+        // type needs to be passed to super, otherwise child roots won't be normalized correctly
+        super({ type: 'document', ...defaults });
+
+        if (!this.nodes) {
+          this.nodes = [];
+        }
+      }
+
+      toResult(opts = {}) {
+        let lazy = new LazyResult$4(new Processor$3(), this, opts);
+
+        return lazy.stringify()
+      }
+    };
+
+    Document$3.registerLazyResult = dependant => {
+      LazyResult$4 = dependant;
+    };
+
+    Document$3.registerProcessor = dependant => {
+      Processor$3 = dependant;
+    };
+
+    var document$1 = Document$3;
+    Document$3.default = Document$3;
+
+    // This alphabet uses `A-Za-z0-9_-` symbols.
+    // The order of characters is optimized for better gzip and brotli compression.
+    // References to the same file (works both for gzip and brotli):
+    // `'use`, `andom`, and `rict'`
+    // References to the brotli default dictionary:
+    // `-26T`, `1983`, `40px`, `75px`, `bush`, `jack`, `mind`, `very`, and `wolf`
+    let urlAlphabet =
+      'useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict';
+
+    let customAlphabet = (alphabet, defaultSize = 21) => {
+      return (size = defaultSize) => {
+        let id = '';
+        // A compact alternative for `for (var i = 0; i < step; i++)`.
+        let i = size | 0;
+        while (i--) {
+          // `| 0` is more compact and faster than `Math.floor()`.
+          id += alphabet[(Math.random() * alphabet.length) | 0];
+        }
+        return id
+      }
+    };
+
+    let nanoid$1 = (size = 21) => {
+      let id = '';
+      // A compact alternative for `for (var i = 0; i < step; i++)`.
+      let i = size | 0;
+      while (i--) {
+        // `| 0` is more compact and faster than `Math.floor()`.
+        id += urlAlphabet[(Math.random() * 64) | 0];
+      }
+      return id
+    };
+
+    var nonSecure = { nanoid: nanoid$1, customAlphabet };
+
+    var sourceMap = {};
+
+    var sourceMapGenerator = {};
+
+    var base64Vlq = {};
+
+    var base64$1 = {};
+
+    /* -*- Mode: js; js-indent-level: 2; -*- */
+
+    /*
+     * Copyright 2011 Mozilla Foundation and contributors
+     * Licensed under the New BSD license. See LICENSE or:
+     * http://opensource.org/licenses/BSD-3-Clause
+     */
+
+    var intToCharMap = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'.split('');
+
+    /**
+     * Encode an integer in the range of 0 to 63 to a single base 64 digit.
+     */
+    base64$1.encode = function (number) {
+      if (0 <= number && number < intToCharMap.length) {
+        return intToCharMap[number];
+      }
+      throw new TypeError("Must be between 0 and 63: " + number);
+    };
+
+    /**
+     * Decode a single base 64 character code digit to an integer. Returns -1 on
+     * failure.
+     */
+    base64$1.decode = function (charCode) {
+      var bigA = 65;     // 'A'
+      var bigZ = 90;     // 'Z'
+
+      var littleA = 97;  // 'a'
+      var littleZ = 122; // 'z'
+
+      var zero = 48;     // '0'
+      var nine = 57;     // '9'
+
+      var plus = 43;     // '+'
+      var slash = 47;    // '/'
+
+      var littleOffset = 26;
+      var numberOffset = 52;
+
+      // 0 - 25: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+      if (bigA <= charCode && charCode <= bigZ) {
+        return (charCode - bigA);
+      }
+
+      // 26 - 51: abcdefghijklmnopqrstuvwxyz
+      if (littleA <= charCode && charCode <= littleZ) {
+        return (charCode - littleA + littleOffset);
+      }
+
+      // 52 - 61: 0123456789
+      if (zero <= charCode && charCode <= nine) {
+        return (charCode - zero + numberOffset);
+      }
+
+      // 62: +
+      if (charCode == plus) {
+        return 62;
+      }
+
+      // 63: /
+      if (charCode == slash) {
+        return 63;
+      }
+
+      // Invalid base64 digit.
+      return -1;
+    };
+
+    /* -*- Mode: js; js-indent-level: 2; -*- */
+
+    /*
+     * Copyright 2011 Mozilla Foundation and contributors
+     * Licensed under the New BSD license. See LICENSE or:
+     * http://opensource.org/licenses/BSD-3-Clause
+     *
+     * Based on the Base 64 VLQ implementation in Closure Compiler:
+     * https://code.google.com/p/closure-compiler/source/browse/trunk/src/com/google/debugging/sourcemap/Base64VLQ.java
+     *
+     * Copyright 2011 The Closure Compiler Authors. All rights reserved.
+     * Redistribution and use in source and binary forms, with or without
+     * modification, are permitted provided that the following conditions are
+     * met:
+     *
+     *  * Redistributions of source code must retain the above copyright
+     *    notice, this list of conditions and the following disclaimer.
+     *  * Redistributions in binary form must reproduce the above
+     *    copyright notice, this list of conditions and the following
+     *    disclaimer in the documentation and/or other materials provided
+     *    with the distribution.
+     *  * Neither the name of Google Inc. nor the names of its
+     *    contributors may be used to endorse or promote products derived
+     *    from this software without specific prior written permission.
+     *
+     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+     * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+     * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+     * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+     * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+     * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+     * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+     * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+     * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+     * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+     * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     */
+
+    var base64 = base64$1;
+
+    // A single base 64 digit can contain 6 bits of data. For the base 64 variable
+    // length quantities we use in the source map spec, the first bit is the sign,
+    // the next four bits are the actual value, and the 6th bit is the
+    // continuation bit. The continuation bit tells us whether there are more
+    // digits in this value following this digit.
+    //
+    //   Continuation
+    //   |    Sign
+    //   |    |
+    //   V    V
+    //   101011
+
+    var VLQ_BASE_SHIFT = 5;
+
+    // binary: 100000
+    var VLQ_BASE = 1 << VLQ_BASE_SHIFT;
+
+    // binary: 011111
+    var VLQ_BASE_MASK = VLQ_BASE - 1;
+
+    // binary: 100000
+    var VLQ_CONTINUATION_BIT = VLQ_BASE;
+
+    /**
+     * Converts from a two-complement value to a value where the sign bit is
+     * placed in the least significant bit.  For example, as decimals:
+     *   1 becomes 2 (10 binary), -1 becomes 3 (11 binary)
+     *   2 becomes 4 (100 binary), -2 becomes 5 (101 binary)
+     */
+    function toVLQSigned(aValue) {
+      return aValue < 0
+        ? ((-aValue) << 1) + 1
+        : (aValue << 1) + 0;
+    }
+
+    /**
+     * Converts to a two-complement value from a value where the sign bit is
+     * placed in the least significant bit.  For example, as decimals:
+     *   2 (10 binary) becomes 1, 3 (11 binary) becomes -1
+     *   4 (100 binary) becomes 2, 5 (101 binary) becomes -2
+     */
+    function fromVLQSigned(aValue) {
+      var isNegative = (aValue & 1) === 1;
+      var shifted = aValue >> 1;
+      return isNegative
+        ? -shifted
+        : shifted;
+    }
+
+    /**
+     * Returns the base 64 VLQ encoded value.
+     */
+    base64Vlq.encode = function base64VLQ_encode(aValue) {
+      var encoded = "";
+      var digit;
+
+      var vlq = toVLQSigned(aValue);
+
+      do {
+        digit = vlq & VLQ_BASE_MASK;
+        vlq >>>= VLQ_BASE_SHIFT;
+        if (vlq > 0) {
+          // There are still more digits in this value, so we must make sure the
+          // continuation bit is marked.
+          digit |= VLQ_CONTINUATION_BIT;
+        }
+        encoded += base64.encode(digit);
+      } while (vlq > 0);
+
+      return encoded;
+    };
+
+    /**
+     * Decodes the next base 64 VLQ value from the given string and returns the
+     * value and the rest of the string via the out parameter.
+     */
+    base64Vlq.decode = function base64VLQ_decode(aStr, aIndex, aOutParam) {
+      var strLen = aStr.length;
+      var result = 0;
+      var shift = 0;
+      var continuation, digit;
+
+      do {
+        if (aIndex >= strLen) {
+          throw new Error("Expected more digits in base 64 VLQ value.");
+        }
+
+        digit = base64.decode(aStr.charCodeAt(aIndex++));
+        if (digit === -1) {
+          throw new Error("Invalid base64 digit: " + aStr.charAt(aIndex - 1));
+        }
+
+        continuation = !!(digit & VLQ_CONTINUATION_BIT);
+        digit &= VLQ_BASE_MASK;
+        result = result + (digit << shift);
+        shift += VLQ_BASE_SHIFT;
+      } while (continuation);
+
+      aOutParam.value = fromVLQSigned(result);
+      aOutParam.rest = aIndex;
+    };
+
+    var util$5 = {};
+
+    /* -*- Mode: js; js-indent-level: 2; -*- */
+
+    (function (exports) {
+    	/*
+    	 * Copyright 2011 Mozilla Foundation and contributors
+    	 * Licensed under the New BSD license. See LICENSE or:
+    	 * http://opensource.org/licenses/BSD-3-Clause
+    	 */
+
+    	/**
+    	 * This is a helper function for getting values from parameter/options
+    	 * objects.
+    	 *
+    	 * @param args The object we are extracting values from
+    	 * @param name The name of the property we are getting.
+    	 * @param defaultValue An optional value to return if the property is missing
+    	 * from the object. If this is not specified and the property is missing, an
+    	 * error will be thrown.
+    	 */
+    	function getArg(aArgs, aName, aDefaultValue) {
+    	  if (aName in aArgs) {
+    	    return aArgs[aName];
+    	  } else if (arguments.length === 3) {
+    	    return aDefaultValue;
+    	  } else {
+    	    throw new Error('"' + aName + '" is a required argument.');
+    	  }
+    	}
+    	exports.getArg = getArg;
+
+    	var urlRegexp = /^(?:([\w+\-.]+):)?\/\/(?:(\w+:\w+)@)?([\w.-]*)(?::(\d+))?(.*)$/;
+    	var dataUrlRegexp = /^data:.+\,.+$/;
+
+    	function urlParse(aUrl) {
+    	  var match = aUrl.match(urlRegexp);
+    	  if (!match) {
+    	    return null;
+    	  }
+    	  return {
+    	    scheme: match[1],
+    	    auth: match[2],
+    	    host: match[3],
+    	    port: match[4],
+    	    path: match[5]
+    	  };
+    	}
+    	exports.urlParse = urlParse;
+
+    	function urlGenerate(aParsedUrl) {
+    	  var url = '';
+    	  if (aParsedUrl.scheme) {
+    	    url += aParsedUrl.scheme + ':';
+    	  }
+    	  url += '//';
+    	  if (aParsedUrl.auth) {
+    	    url += aParsedUrl.auth + '@';
+    	  }
+    	  if (aParsedUrl.host) {
+    	    url += aParsedUrl.host;
+    	  }
+    	  if (aParsedUrl.port) {
+    	    url += ":" + aParsedUrl.port;
+    	  }
+    	  if (aParsedUrl.path) {
+    	    url += aParsedUrl.path;
+    	  }
+    	  return url;
+    	}
+    	exports.urlGenerate = urlGenerate;
+
+    	var MAX_CACHED_INPUTS = 32;
+
+    	/**
+    	 * Takes some function `f(input) -> result` and returns a memoized version of
+    	 * `f`.
+    	 *
+    	 * We keep at most `MAX_CACHED_INPUTS` memoized results of `f` alive. The
+    	 * memoization is a dumb-simple, linear least-recently-used cache.
+    	 */
+    	function lruMemoize(f) {
+    	  var cache = [];
+
+    	  return function(input) {
+    	    for (var i = 0; i < cache.length; i++) {
+    	      if (cache[i].input === input) {
+    	        var temp = cache[0];
+    	        cache[0] = cache[i];
+    	        cache[i] = temp;
+    	        return cache[0].result;
+    	      }
+    	    }
+
+    	    var result = f(input);
+
+    	    cache.unshift({
+    	      input,
+    	      result,
+    	    });
+
+    	    if (cache.length > MAX_CACHED_INPUTS) {
+    	      cache.pop();
+    	    }
+
+    	    return result;
+    	  };
+    	}
+
+    	/**
+    	 * Normalizes a path, or the path portion of a URL:
+    	 *
+    	 * - Replaces consecutive slashes with one slash.
+    	 * - Removes unnecessary '.' parts.
+    	 * - Removes unnecessary '<dir>/..' parts.
+    	 *
+    	 * Based on code in the Node.js 'path' core module.
+    	 *
+    	 * @param aPath The path or url to normalize.
+    	 */
+    	var normalize = lruMemoize(function normalize(aPath) {
+    	  var path = aPath;
+    	  var url = urlParse(aPath);
+    	  if (url) {
+    	    if (!url.path) {
+    	      return aPath;
+    	    }
+    	    path = url.path;
+    	  }
+    	  var isAbsolute = exports.isAbsolute(path);
+    	  // Split the path into parts between `/` characters. This is much faster than
+    	  // using `.split(/\/+/g)`.
+    	  var parts = [];
+    	  var start = 0;
+    	  var i = 0;
+    	  while (true) {
+    	    start = i;
+    	    i = path.indexOf("/", start);
+    	    if (i === -1) {
+    	      parts.push(path.slice(start));
+    	      break;
+    	    } else {
+    	      parts.push(path.slice(start, i));
+    	      while (i < path.length && path[i] === "/") {
+    	        i++;
+    	      }
+    	    }
+    	  }
+
+    	  for (var part, up = 0, i = parts.length - 1; i >= 0; i--) {
+    	    part = parts[i];
+    	    if (part === '.') {
+    	      parts.splice(i, 1);
+    	    } else if (part === '..') {
+    	      up++;
+    	    } else if (up > 0) {
+    	      if (part === '') {
+    	        // The first part is blank if the path is absolute. Trying to go
+    	        // above the root is a no-op. Therefore we can remove all '..' parts
+    	        // directly after the root.
+    	        parts.splice(i + 1, up);
+    	        up = 0;
+    	      } else {
+    	        parts.splice(i, 2);
+    	        up--;
+    	      }
+    	    }
+    	  }
+    	  path = parts.join('/');
+
+    	  if (path === '') {
+    	    path = isAbsolute ? '/' : '.';
+    	  }
+
+    	  if (url) {
+    	    url.path = path;
+    	    return urlGenerate(url);
+    	  }
+    	  return path;
+    	});
+    	exports.normalize = normalize;
+
+    	/**
+    	 * Joins two paths/URLs.
+    	 *
+    	 * @param aRoot The root path or URL.
+    	 * @param aPath The path or URL to be joined with the root.
+    	 *
+    	 * - If aPath is a URL or a data URI, aPath is returned, unless aPath is a
+    	 *   scheme-relative URL: Then the scheme of aRoot, if any, is prepended
+    	 *   first.
+    	 * - Otherwise aPath is a path. If aRoot is a URL, then its path portion
+    	 *   is updated with the result and aRoot is returned. Otherwise the result
+    	 *   is returned.
+    	 *   - If aPath is absolute, the result is aPath.
+    	 *   - Otherwise the two paths are joined with a slash.
+    	 * - Joining for example 'http://' and 'www.example.com' is also supported.
+    	 */
+    	function join(aRoot, aPath) {
+    	  if (aRoot === "") {
+    	    aRoot = ".";
+    	  }
+    	  if (aPath === "") {
+    	    aPath = ".";
+    	  }
+    	  var aPathUrl = urlParse(aPath);
+    	  var aRootUrl = urlParse(aRoot);
+    	  if (aRootUrl) {
+    	    aRoot = aRootUrl.path || '/';
+    	  }
+
+    	  // `join(foo, '//www.example.org')`
+    	  if (aPathUrl && !aPathUrl.scheme) {
+    	    if (aRootUrl) {
+    	      aPathUrl.scheme = aRootUrl.scheme;
+    	    }
+    	    return urlGenerate(aPathUrl);
+    	  }
+
+    	  if (aPathUrl || aPath.match(dataUrlRegexp)) {
+    	    return aPath;
+    	  }
+
+    	  // `join('http://', 'www.example.com')`
+    	  if (aRootUrl && !aRootUrl.host && !aRootUrl.path) {
+    	    aRootUrl.host = aPath;
+    	    return urlGenerate(aRootUrl);
+    	  }
+
+    	  var joined = aPath.charAt(0) === '/'
+    	    ? aPath
+    	    : normalize(aRoot.replace(/\/+$/, '') + '/' + aPath);
+
+    	  if (aRootUrl) {
+    	    aRootUrl.path = joined;
+    	    return urlGenerate(aRootUrl);
+    	  }
+    	  return joined;
+    	}
+    	exports.join = join;
+
+    	exports.isAbsolute = function (aPath) {
+    	  return aPath.charAt(0) === '/' || urlRegexp.test(aPath);
+    	};
+
+    	/**
+    	 * Make a path relative to a URL or another path.
+    	 *
+    	 * @param aRoot The root path or URL.
+    	 * @param aPath The path or URL to be made relative to aRoot.
+    	 */
+    	function relative(aRoot, aPath) {
+    	  if (aRoot === "") {
+    	    aRoot = ".";
+    	  }
+
+    	  aRoot = aRoot.replace(/\/$/, '');
+
+    	  // It is possible for the path to be above the root. In this case, simply
+    	  // checking whether the root is a prefix of the path won't work. Instead, we
+    	  // need to remove components from the root one by one, until either we find
+    	  // a prefix that fits, or we run out of components to remove.
+    	  var level = 0;
+    	  while (aPath.indexOf(aRoot + '/') !== 0) {
+    	    var index = aRoot.lastIndexOf("/");
+    	    if (index < 0) {
+    	      return aPath;
+    	    }
+
+    	    // If the only part of the root that is left is the scheme (i.e. http://,
+    	    // file:///, etc.), one or more slashes (/), or simply nothing at all, we
+    	    // have exhausted all components, so the path is not relative to the root.
+    	    aRoot = aRoot.slice(0, index);
+    	    if (aRoot.match(/^([^\/]+:\/)?\/*$/)) {
+    	      return aPath;
+    	    }
+
+    	    ++level;
+    	  }
+
+    	  // Make sure we add a "../" for each component we removed from the root.
+    	  return Array(level + 1).join("../") + aPath.substr(aRoot.length + 1);
+    	}
+    	exports.relative = relative;
+
+    	var supportsNullProto = (function () {
+    	  var obj = Object.create(null);
+    	  return !('__proto__' in obj);
+    	}());
+
+    	function identity (s) {
+    	  return s;
+    	}
+
+    	/**
+    	 * Because behavior goes wacky when you set `__proto__` on objects, we
+    	 * have to prefix all the strings in our set with an arbitrary character.
+    	 *
+    	 * See https://github.com/mozilla/source-map/pull/31 and
+    	 * https://github.com/mozilla/source-map/issues/30
+    	 *
+    	 * @param String aStr
+    	 */
+    	function toSetString(aStr) {
+    	  if (isProtoString(aStr)) {
+    	    return '$' + aStr;
+    	  }
+
+    	  return aStr;
+    	}
+    	exports.toSetString = supportsNullProto ? identity : toSetString;
+
+    	function fromSetString(aStr) {
+    	  if (isProtoString(aStr)) {
+    	    return aStr.slice(1);
+    	  }
+
+    	  return aStr;
+    	}
+    	exports.fromSetString = supportsNullProto ? identity : fromSetString;
+
+    	function isProtoString(s) {
+    	  if (!s) {
+    	    return false;
+    	  }
+
+    	  var length = s.length;
+
+    	  if (length < 9 /* "__proto__".length */) {
+    	    return false;
+    	  }
+
+    	  if (s.charCodeAt(length - 1) !== 95  /* '_' */ ||
+    	      s.charCodeAt(length - 2) !== 95  /* '_' */ ||
+    	      s.charCodeAt(length - 3) !== 111 /* 'o' */ ||
+    	      s.charCodeAt(length - 4) !== 116 /* 't' */ ||
+    	      s.charCodeAt(length - 5) !== 111 /* 'o' */ ||
+    	      s.charCodeAt(length - 6) !== 114 /* 'r' */ ||
+    	      s.charCodeAt(length - 7) !== 112 /* 'p' */ ||
+    	      s.charCodeAt(length - 8) !== 95  /* '_' */ ||
+    	      s.charCodeAt(length - 9) !== 95  /* '_' */) {
+    	    return false;
+    	  }
+
+    	  for (var i = length - 10; i >= 0; i--) {
+    	    if (s.charCodeAt(i) !== 36 /* '$' */) {
+    	      return false;
+    	    }
+    	  }
+
+    	  return true;
+    	}
+
+    	/**
+    	 * Comparator between two mappings where the original positions are compared.
+    	 *
+    	 * Optionally pass in `true` as `onlyCompareGenerated` to consider two
+    	 * mappings with the same original source/line/column, but different generated
+    	 * line and column the same. Useful when searching for a mapping with a
+    	 * stubbed out mapping.
+    	 */
+    	function compareByOriginalPositions(mappingA, mappingB, onlyCompareOriginal) {
+    	  var cmp = strcmp(mappingA.source, mappingB.source);
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  cmp = mappingA.originalLine - mappingB.originalLine;
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  cmp = mappingA.originalColumn - mappingB.originalColumn;
+    	  if (cmp !== 0 || onlyCompareOriginal) {
+    	    return cmp;
+    	  }
+
+    	  cmp = mappingA.generatedColumn - mappingB.generatedColumn;
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  cmp = mappingA.generatedLine - mappingB.generatedLine;
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  return strcmp(mappingA.name, mappingB.name);
+    	}
+    	exports.compareByOriginalPositions = compareByOriginalPositions;
+
+    	function compareByOriginalPositionsNoSource(mappingA, mappingB, onlyCompareOriginal) {
+    	  var cmp;
+
+    	  cmp = mappingA.originalLine - mappingB.originalLine;
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  cmp = mappingA.originalColumn - mappingB.originalColumn;
+    	  if (cmp !== 0 || onlyCompareOriginal) {
+    	    return cmp;
+    	  }
+
+    	  cmp = mappingA.generatedColumn - mappingB.generatedColumn;
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  cmp = mappingA.generatedLine - mappingB.generatedLine;
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  return strcmp(mappingA.name, mappingB.name);
+    	}
+    	exports.compareByOriginalPositionsNoSource = compareByOriginalPositionsNoSource;
+
+    	/**
+    	 * Comparator between two mappings with deflated source and name indices where
+    	 * the generated positions are compared.
+    	 *
+    	 * Optionally pass in `true` as `onlyCompareGenerated` to consider two
+    	 * mappings with the same generated line and column, but different
+    	 * source/name/original line and column the same. Useful when searching for a
+    	 * mapping with a stubbed out mapping.
+    	 */
+    	function compareByGeneratedPositionsDeflated(mappingA, mappingB, onlyCompareGenerated) {
+    	  var cmp = mappingA.generatedLine - mappingB.generatedLine;
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  cmp = mappingA.generatedColumn - mappingB.generatedColumn;
+    	  if (cmp !== 0 || onlyCompareGenerated) {
+    	    return cmp;
+    	  }
+
+    	  cmp = strcmp(mappingA.source, mappingB.source);
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  cmp = mappingA.originalLine - mappingB.originalLine;
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  cmp = mappingA.originalColumn - mappingB.originalColumn;
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  return strcmp(mappingA.name, mappingB.name);
+    	}
+    	exports.compareByGeneratedPositionsDeflated = compareByGeneratedPositionsDeflated;
+
+    	function compareByGeneratedPositionsDeflatedNoLine(mappingA, mappingB, onlyCompareGenerated) {
+    	  var cmp = mappingA.generatedColumn - mappingB.generatedColumn;
+    	  if (cmp !== 0 || onlyCompareGenerated) {
+    	    return cmp;
+    	  }
+
+    	  cmp = strcmp(mappingA.source, mappingB.source);
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  cmp = mappingA.originalLine - mappingB.originalLine;
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  cmp = mappingA.originalColumn - mappingB.originalColumn;
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  return strcmp(mappingA.name, mappingB.name);
+    	}
+    	exports.compareByGeneratedPositionsDeflatedNoLine = compareByGeneratedPositionsDeflatedNoLine;
+
+    	function strcmp(aStr1, aStr2) {
+    	  if (aStr1 === aStr2) {
+    	    return 0;
+    	  }
+
+    	  if (aStr1 === null) {
+    	    return 1; // aStr2 !== null
+    	  }
+
+    	  if (aStr2 === null) {
+    	    return -1; // aStr1 !== null
+    	  }
+
+    	  if (aStr1 > aStr2) {
+    	    return 1;
+    	  }
+
+    	  return -1;
+    	}
+
+    	/**
+    	 * Comparator between two mappings with inflated source and name strings where
+    	 * the generated positions are compared.
+    	 */
+    	function compareByGeneratedPositionsInflated(mappingA, mappingB) {
+    	  var cmp = mappingA.generatedLine - mappingB.generatedLine;
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  cmp = mappingA.generatedColumn - mappingB.generatedColumn;
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  cmp = strcmp(mappingA.source, mappingB.source);
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  cmp = mappingA.originalLine - mappingB.originalLine;
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  cmp = mappingA.originalColumn - mappingB.originalColumn;
+    	  if (cmp !== 0) {
+    	    return cmp;
+    	  }
+
+    	  return strcmp(mappingA.name, mappingB.name);
+    	}
+    	exports.compareByGeneratedPositionsInflated = compareByGeneratedPositionsInflated;
+
+    	/**
+    	 * Strip any JSON XSSI avoidance prefix from the string (as documented
+    	 * in the source maps specification), and then parse the string as
+    	 * JSON.
+    	 */
+    	function parseSourceMapInput(str) {
+    	  return JSON.parse(str.replace(/^\)]}'[^\n]*\n/, ''));
+    	}
+    	exports.parseSourceMapInput = parseSourceMapInput;
+
+    	/**
+    	 * Compute the URL of a source given the the source root, the source's
+    	 * URL, and the source map's URL.
+    	 */
+    	function computeSourceURL(sourceRoot, sourceURL, sourceMapURL) {
+    	  sourceURL = sourceURL || '';
+
+    	  if (sourceRoot) {
+    	    // This follows what Chrome does.
+    	    if (sourceRoot[sourceRoot.length - 1] !== '/' && sourceURL[0] !== '/') {
+    	      sourceRoot += '/';
+    	    }
+    	    // The spec says:
+    	    //   Line 4: An optional source root, useful for relocating source
+    	    //   files on a server or removing repeated values in the
+    	    //   “sources” entry.  This value is prepended to the individual
+    	    //   entries in the “source” field.
+    	    sourceURL = sourceRoot + sourceURL;
+    	  }
+
+    	  // Historically, SourceMapConsumer did not take the sourceMapURL as
+    	  // a parameter.  This mode is still somewhat supported, which is why
+    	  // this code block is conditional.  However, it's preferable to pass
+    	  // the source map URL to SourceMapConsumer, so that this function
+    	  // can implement the source URL resolution algorithm as outlined in
+    	  // the spec.  This block is basically the equivalent of:
+    	  //    new URL(sourceURL, sourceMapURL).toString()
+    	  // ... except it avoids using URL, which wasn't available in the
+    	  // older releases of node still supported by this library.
+    	  //
+    	  // The spec says:
+    	  //   If the sources are not absolute URLs after prepending of the
+    	  //   “sourceRoot”, the sources are resolved relative to the
+    	  //   SourceMap (like resolving script src in a html document).
+    	  if (sourceMapURL) {
+    	    var parsed = urlParse(sourceMapURL);
+    	    if (!parsed) {
+    	      throw new Error("sourceMapURL could not be parsed");
+    	    }
+    	    if (parsed.path) {
+    	      // Strip the last path component, but keep the "/".
+    	      var index = parsed.path.lastIndexOf('/');
+    	      if (index >= 0) {
+    	        parsed.path = parsed.path.substring(0, index + 1);
+    	      }
+    	    }
+    	    sourceURL = join(urlGenerate(parsed), sourceURL);
+    	  }
+
+    	  return normalize(sourceURL);
+    	}
+    	exports.computeSourceURL = computeSourceURL; 
+    } (util$5));
+
+    var arraySet = {};
+
+    /* -*- Mode: js; js-indent-level: 2; -*- */
+
+    /*
+     * Copyright 2011 Mozilla Foundation and contributors
+     * Licensed under the New BSD license. See LICENSE or:
+     * http://opensource.org/licenses/BSD-3-Clause
+     */
+
+    var util$4 = util$5;
+    var has$1 = Object.prototype.hasOwnProperty;
+    var hasNativeMap = typeof Map !== "undefined";
+
+    /**
+     * A data structure which is a combination of an array and a set. Adding a new
+     * member is O(1), testing for membership is O(1), and finding the index of an
+     * element is O(1). Removing elements from the set is not supported. Only
+     * strings are supported for membership.
+     */
+    function ArraySet$2() {
+      this._array = [];
+      this._set = hasNativeMap ? new Map() : Object.create(null);
+    }
+
+    /**
+     * Static method for creating ArraySet instances from an existing array.
+     */
+    ArraySet$2.fromArray = function ArraySet_fromArray(aArray, aAllowDuplicates) {
+      var set = new ArraySet$2();
+      for (var i = 0, len = aArray.length; i < len; i++) {
+        set.add(aArray[i], aAllowDuplicates);
+      }
+      return set;
+    };
+
+    /**
+     * Return how many unique items are in this ArraySet. If duplicates have been
+     * added, than those do not count towards the size.
+     *
+     * @returns Number
+     */
+    ArraySet$2.prototype.size = function ArraySet_size() {
+      return hasNativeMap ? this._set.size : Object.getOwnPropertyNames(this._set).length;
+    };
+
+    /**
+     * Add the given string to this set.
+     *
+     * @param String aStr
+     */
+    ArraySet$2.prototype.add = function ArraySet_add(aStr, aAllowDuplicates) {
+      var sStr = hasNativeMap ? aStr : util$4.toSetString(aStr);
+      var isDuplicate = hasNativeMap ? this.has(aStr) : has$1.call(this._set, sStr);
+      var idx = this._array.length;
+      if (!isDuplicate || aAllowDuplicates) {
+        this._array.push(aStr);
+      }
+      if (!isDuplicate) {
+        if (hasNativeMap) {
+          this._set.set(aStr, idx);
+        } else {
+          this._set[sStr] = idx;
+        }
+      }
+    };
+
+    /**
+     * Is the given string a member of this set?
+     *
+     * @param String aStr
+     */
+    ArraySet$2.prototype.has = function ArraySet_has(aStr) {
+      if (hasNativeMap) {
+        return this._set.has(aStr);
+      } else {
+        var sStr = util$4.toSetString(aStr);
+        return has$1.call(this._set, sStr);
+      }
+    };
+
+    /**
+     * What is the index of the given string in the array?
+     *
+     * @param String aStr
+     */
+    ArraySet$2.prototype.indexOf = function ArraySet_indexOf(aStr) {
+      if (hasNativeMap) {
+        var idx = this._set.get(aStr);
+        if (idx >= 0) {
+            return idx;
+        }
+      } else {
+        var sStr = util$4.toSetString(aStr);
+        if (has$1.call(this._set, sStr)) {
+          return this._set[sStr];
+        }
+      }
+
+      throw new Error('"' + aStr + '" is not in the set.');
+    };
+
+    /**
+     * What is the element at the given index?
+     *
+     * @param Number aIdx
+     */
+    ArraySet$2.prototype.at = function ArraySet_at(aIdx) {
+      if (aIdx >= 0 && aIdx < this._array.length) {
+        return this._array[aIdx];
+      }
+      throw new Error('No element indexed by ' + aIdx);
+    };
+
+    /**
+     * Returns the array representation of this set (which has the proper indices
+     * indicated by indexOf). Note that this is a copy of the internal array used
+     * for storing the members so that no one can mess with internal state.
+     */
+    ArraySet$2.prototype.toArray = function ArraySet_toArray() {
+      return this._array.slice();
+    };
+
+    arraySet.ArraySet = ArraySet$2;
+
+    var mappingList = {};
+
+    /* -*- Mode: js; js-indent-level: 2; -*- */
+
+    /*
+     * Copyright 2014 Mozilla Foundation and contributors
+     * Licensed under the New BSD license. See LICENSE or:
+     * http://opensource.org/licenses/BSD-3-Clause
+     */
+
+    var util$3 = util$5;
+
+    /**
+     * Determine whether mappingB is after mappingA with respect to generated
+     * position.
+     */
+    function generatedPositionAfter(mappingA, mappingB) {
+      // Optimized for most common case
+      var lineA = mappingA.generatedLine;
+      var lineB = mappingB.generatedLine;
+      var columnA = mappingA.generatedColumn;
+      var columnB = mappingB.generatedColumn;
+      return lineB > lineA || lineB == lineA && columnB >= columnA ||
+             util$3.compareByGeneratedPositionsInflated(mappingA, mappingB) <= 0;
+    }
+
+    /**
+     * A data structure to provide a sorted view of accumulated mappings in a
+     * performance conscious manner. It trades a neglibable overhead in general
+     * case for a large speedup in case of mappings being added in order.
+     */
+    function MappingList$1() {
+      this._array = [];
+      this._sorted = true;
+      // Serves as infimum
+      this._last = {generatedLine: -1, generatedColumn: 0};
+    }
+
+    /**
+     * Iterate through internal items. This method takes the same arguments that
+     * `Array.prototype.forEach` takes.
+     *
+     * NOTE: The order of the mappings is NOT guaranteed.
+     */
+    MappingList$1.prototype.unsortedForEach =
+      function MappingList_forEach(aCallback, aThisArg) {
+        this._array.forEach(aCallback, aThisArg);
+      };
+
+    /**
+     * Add the given source mapping.
+     *
+     * @param Object aMapping
+     */
+    MappingList$1.prototype.add = function MappingList_add(aMapping) {
+      if (generatedPositionAfter(this._last, aMapping)) {
+        this._last = aMapping;
+        this._array.push(aMapping);
+      } else {
+        this._sorted = false;
+        this._array.push(aMapping);
+      }
+    };
+
+    /**
+     * Returns the flat, sorted array of mappings. The mappings are sorted by
+     * generated position.
+     *
+     * WARNING: This method returns internal data without copying, for
+     * performance. The return value must NOT be mutated, and should be treated as
+     * an immutable borrow. If you want to take ownership, you must make your own
+     * copy.
+     */
+    MappingList$1.prototype.toArray = function MappingList_toArray() {
+      if (!this._sorted) {
+        this._array.sort(util$3.compareByGeneratedPositionsInflated);
+        this._sorted = true;
+      }
+      return this._array;
+    };
+
+    mappingList.MappingList = MappingList$1;
+
+    /* -*- Mode: js; js-indent-level: 2; -*- */
+
+    /*
+     * Copyright 2011 Mozilla Foundation and contributors
+     * Licensed under the New BSD license. See LICENSE or:
+     * http://opensource.org/licenses/BSD-3-Clause
+     */
+
+    var base64VLQ$1 = base64Vlq;
+    var util$2 = util$5;
+    var ArraySet$1 = arraySet.ArraySet;
+    var MappingList = mappingList.MappingList;
+
+    /**
+     * An instance of the SourceMapGenerator represents a source map which is
+     * being built incrementally. You may pass an object with the following
+     * properties:
+     *
+     *   - file: The filename of the generated source.
+     *   - sourceRoot: A root for all relative URLs in this source map.
+     */
+    function SourceMapGenerator$4(aArgs) {
+      if (!aArgs) {
+        aArgs = {};
+      }
+      this._file = util$2.getArg(aArgs, 'file', null);
+      this._sourceRoot = util$2.getArg(aArgs, 'sourceRoot', null);
+      this._skipValidation = util$2.getArg(aArgs, 'skipValidation', false);
+      this._ignoreInvalidMapping = util$2.getArg(aArgs, 'ignoreInvalidMapping', false);
+      this._sources = new ArraySet$1();
+      this._names = new ArraySet$1();
+      this._mappings = new MappingList();
+      this._sourcesContents = null;
+    }
+
+    SourceMapGenerator$4.prototype._version = 3;
+
+    /**
+     * Creates a new SourceMapGenerator based on a SourceMapConsumer
+     *
+     * @param aSourceMapConsumer The SourceMap.
+     */
+    SourceMapGenerator$4.fromSourceMap =
+      function SourceMapGenerator_fromSourceMap(aSourceMapConsumer, generatorOps) {
+        var sourceRoot = aSourceMapConsumer.sourceRoot;
+        var generator = new SourceMapGenerator$4(Object.assign(generatorOps || {}, {
+          file: aSourceMapConsumer.file,
+          sourceRoot: sourceRoot
+        }));
+        aSourceMapConsumer.eachMapping(function (mapping) {
+          var newMapping = {
+            generated: {
+              line: mapping.generatedLine,
+              column: mapping.generatedColumn
+            }
+          };
+
+          if (mapping.source != null) {
+            newMapping.source = mapping.source;
+            if (sourceRoot != null) {
+              newMapping.source = util$2.relative(sourceRoot, newMapping.source);
+            }
+
+            newMapping.original = {
+              line: mapping.originalLine,
+              column: mapping.originalColumn
+            };
+
+            if (mapping.name != null) {
+              newMapping.name = mapping.name;
+            }
+          }
+
+          generator.addMapping(newMapping);
+        });
+        aSourceMapConsumer.sources.forEach(function (sourceFile) {
+          var sourceRelative = sourceFile;
+          if (sourceRoot !== null) {
+            sourceRelative = util$2.relative(sourceRoot, sourceFile);
+          }
+
+          if (!generator._sources.has(sourceRelative)) {
+            generator._sources.add(sourceRelative);
+          }
+
+          var content = aSourceMapConsumer.sourceContentFor(sourceFile);
+          if (content != null) {
+            generator.setSourceContent(sourceFile, content);
+          }
+        });
+        return generator;
+      };
+
+    /**
+     * Add a single mapping from original source line and column to the generated
+     * source's line and column for this source map being created. The mapping
+     * object should have the following properties:
+     *
+     *   - generated: An object with the generated line and column positions.
+     *   - original: An object with the original line and column positions.
+     *   - source: The original source file (relative to the sourceRoot).
+     *   - name: An optional original token name for this mapping.
+     */
+    SourceMapGenerator$4.prototype.addMapping =
+      function SourceMapGenerator_addMapping(aArgs) {
+        var generated = util$2.getArg(aArgs, 'generated');
+        var original = util$2.getArg(aArgs, 'original', null);
+        var source = util$2.getArg(aArgs, 'source', null);
+        var name = util$2.getArg(aArgs, 'name', null);
+
+        if (!this._skipValidation) {
+          if (this._validateMapping(generated, original, source, name) === false) {
+            return;
+          }
+        }
+
+        if (source != null) {
+          source = String(source);
+          if (!this._sources.has(source)) {
+            this._sources.add(source);
+          }
+        }
+
+        if (name != null) {
+          name = String(name);
+          if (!this._names.has(name)) {
+            this._names.add(name);
+          }
+        }
+
+        this._mappings.add({
+          generatedLine: generated.line,
+          generatedColumn: generated.column,
+          originalLine: original != null && original.line,
+          originalColumn: original != null && original.column,
+          source: source,
+          name: name
+        });
+      };
+
+    /**
+     * Set the source content for a source file.
+     */
+    SourceMapGenerator$4.prototype.setSourceContent =
+      function SourceMapGenerator_setSourceContent(aSourceFile, aSourceContent) {
+        var source = aSourceFile;
+        if (this._sourceRoot != null) {
+          source = util$2.relative(this._sourceRoot, source);
+        }
+
+        if (aSourceContent != null) {
+          // Add the source content to the _sourcesContents map.
+          // Create a new _sourcesContents map if the property is null.
+          if (!this._sourcesContents) {
+            this._sourcesContents = Object.create(null);
+          }
+          this._sourcesContents[util$2.toSetString(source)] = aSourceContent;
+        } else if (this._sourcesContents) {
+          // Remove the source file from the _sourcesContents map.
+          // If the _sourcesContents map is empty, set the property to null.
+          delete this._sourcesContents[util$2.toSetString(source)];
+          if (Object.keys(this._sourcesContents).length === 0) {
+            this._sourcesContents = null;
+          }
+        }
+      };
+
+    /**
+     * Applies the mappings of a sub-source-map for a specific source file to the
+     * source map being generated. Each mapping to the supplied source file is
+     * rewritten using the supplied source map. Note: The resolution for the
+     * resulting mappings is the minimium of this map and the supplied map.
+     *
+     * @param aSourceMapConsumer The source map to be applied.
+     * @param aSourceFile Optional. The filename of the source file.
+     *        If omitted, SourceMapConsumer's file property will be used.
+     * @param aSourceMapPath Optional. The dirname of the path to the source map
+     *        to be applied. If relative, it is relative to the SourceMapConsumer.
+     *        This parameter is needed when the two source maps aren't in the same
+     *        directory, and the source map to be applied contains relative source
+     *        paths. If so, those relative source paths need to be rewritten
+     *        relative to the SourceMapGenerator.
+     */
+    SourceMapGenerator$4.prototype.applySourceMap =
+      function SourceMapGenerator_applySourceMap(aSourceMapConsumer, aSourceFile, aSourceMapPath) {
+        var sourceFile = aSourceFile;
+        // If aSourceFile is omitted, we will use the file property of the SourceMap
+        if (aSourceFile == null) {
+          if (aSourceMapConsumer.file == null) {
+            throw new Error(
+              'SourceMapGenerator.prototype.applySourceMap requires either an explicit source file, ' +
+              'or the source map\'s "file" property. Both were omitted.'
+            );
+          }
+          sourceFile = aSourceMapConsumer.file;
+        }
+        var sourceRoot = this._sourceRoot;
+        // Make "sourceFile" relative if an absolute Url is passed.
+        if (sourceRoot != null) {
+          sourceFile = util$2.relative(sourceRoot, sourceFile);
+        }
+        // Applying the SourceMap can add and remove items from the sources and
+        // the names array.
+        var newSources = new ArraySet$1();
+        var newNames = new ArraySet$1();
+
+        // Find mappings for the "sourceFile"
+        this._mappings.unsortedForEach(function (mapping) {
+          if (mapping.source === sourceFile && mapping.originalLine != null) {
+            // Check if it can be mapped by the source map, then update the mapping.
+            var original = aSourceMapConsumer.originalPositionFor({
+              line: mapping.originalLine,
+              column: mapping.originalColumn
+            });
+            if (original.source != null) {
+              // Copy mapping
+              mapping.source = original.source;
+              if (aSourceMapPath != null) {
+                mapping.source = util$2.join(aSourceMapPath, mapping.source);
+              }
+              if (sourceRoot != null) {
+                mapping.source = util$2.relative(sourceRoot, mapping.source);
+              }
+              mapping.originalLine = original.line;
+              mapping.originalColumn = original.column;
+              if (original.name != null) {
+                mapping.name = original.name;
+              }
+            }
+          }
+
+          var source = mapping.source;
+          if (source != null && !newSources.has(source)) {
+            newSources.add(source);
+          }
+
+          var name = mapping.name;
+          if (name != null && !newNames.has(name)) {
+            newNames.add(name);
+          }
+
+        }, this);
+        this._sources = newSources;
+        this._names = newNames;
+
+        // Copy sourcesContents of applied map.
+        aSourceMapConsumer.sources.forEach(function (sourceFile) {
+          var content = aSourceMapConsumer.sourceContentFor(sourceFile);
+          if (content != null) {
+            if (aSourceMapPath != null) {
+              sourceFile = util$2.join(aSourceMapPath, sourceFile);
+            }
+            if (sourceRoot != null) {
+              sourceFile = util$2.relative(sourceRoot, sourceFile);
+            }
+            this.setSourceContent(sourceFile, content);
+          }
+        }, this);
+      };
+
+    /**
+     * A mapping can have one of the three levels of data:
+     *
+     *   1. Just the generated position.
+     *   2. The Generated position, original position, and original source.
+     *   3. Generated and original position, original source, as well as a name
+     *      token.
+     *
+     * To maintain consistency, we validate that any new mapping being added falls
+     * in to one of these categories.
+     */
+    SourceMapGenerator$4.prototype._validateMapping =
+      function SourceMapGenerator_validateMapping(aGenerated, aOriginal, aSource,
+                                                  aName) {
+        // When aOriginal is truthy but has empty values for .line and .column,
+        // it is most likely a programmer error. In this case we throw a very
+        // specific error message to try to guide them the right way.
+        // For example: https://github.com/Polymer/polymer-bundler/pull/519
+        if (aOriginal && typeof aOriginal.line !== 'number' && typeof aOriginal.column !== 'number') {
+          var message = 'original.line and original.column are not numbers -- you probably meant to omit ' +
+          'the original mapping entirely and only map the generated position. If so, pass ' +
+          'null for the original mapping instead of an object with empty or null values.';
+
+          if (this._ignoreInvalidMapping) {
+            if (typeof console !== 'undefined' && console.warn) {
+              console.warn(message);
+            }
+            return false;
+          } else {
+            throw new Error(message);
+          }
+        }
+
+        if (aGenerated && 'line' in aGenerated && 'column' in aGenerated
+            && aGenerated.line > 0 && aGenerated.column >= 0
+            && !aOriginal && !aSource && !aName) {
+          // Case 1.
+          return;
+        }
+        else if (aGenerated && 'line' in aGenerated && 'column' in aGenerated
+                 && aOriginal && 'line' in aOriginal && 'column' in aOriginal
+                 && aGenerated.line > 0 && aGenerated.column >= 0
+                 && aOriginal.line > 0 && aOriginal.column >= 0
+                 && aSource) {
+          // Cases 2 and 3.
+          return;
+        }
+        else {
+          var message = 'Invalid mapping: ' + JSON.stringify({
+            generated: aGenerated,
+            source: aSource,
+            original: aOriginal,
+            name: aName
+          });
+
+          if (this._ignoreInvalidMapping) {
+            if (typeof console !== 'undefined' && console.warn) {
+              console.warn(message);
+            }
+            return false;
+          } else {
+            throw new Error(message)
+          }
+        }
+      };
+
+    /**
+     * Serialize the accumulated mappings in to the stream of base 64 VLQs
+     * specified by the source map format.
+     */
+    SourceMapGenerator$4.prototype._serializeMappings =
+      function SourceMapGenerator_serializeMappings() {
+        var previousGeneratedColumn = 0;
+        var previousGeneratedLine = 1;
+        var previousOriginalColumn = 0;
+        var previousOriginalLine = 0;
+        var previousName = 0;
+        var previousSource = 0;
+        var result = '';
+        var next;
+        var mapping;
+        var nameIdx;
+        var sourceIdx;
+
+        var mappings = this._mappings.toArray();
+        for (var i = 0, len = mappings.length; i < len; i++) {
+          mapping = mappings[i];
+          next = '';
+
+          if (mapping.generatedLine !== previousGeneratedLine) {
+            previousGeneratedColumn = 0;
+            while (mapping.generatedLine !== previousGeneratedLine) {
+              next += ';';
+              previousGeneratedLine++;
+            }
+          }
+          else {
+            if (i > 0) {
+              if (!util$2.compareByGeneratedPositionsInflated(mapping, mappings[i - 1])) {
+                continue;
+              }
+              next += ',';
+            }
+          }
+
+          next += base64VLQ$1.encode(mapping.generatedColumn
+                                     - previousGeneratedColumn);
+          previousGeneratedColumn = mapping.generatedColumn;
+
+          if (mapping.source != null) {
+            sourceIdx = this._sources.indexOf(mapping.source);
+            next += base64VLQ$1.encode(sourceIdx - previousSource);
+            previousSource = sourceIdx;
+
+            // lines are stored 0-based in SourceMap spec version 3
+            next += base64VLQ$1.encode(mapping.originalLine - 1
+                                       - previousOriginalLine);
+            previousOriginalLine = mapping.originalLine - 1;
+
+            next += base64VLQ$1.encode(mapping.originalColumn
+                                       - previousOriginalColumn);
+            previousOriginalColumn = mapping.originalColumn;
+
+            if (mapping.name != null) {
+              nameIdx = this._names.indexOf(mapping.name);
+              next += base64VLQ$1.encode(nameIdx - previousName);
+              previousName = nameIdx;
+            }
+          }
+
+          result += next;
+        }
+
+        return result;
+      };
+
+    SourceMapGenerator$4.prototype._generateSourcesContent =
+      function SourceMapGenerator_generateSourcesContent(aSources, aSourceRoot) {
+        return aSources.map(function (source) {
+          if (!this._sourcesContents) {
+            return null;
+          }
+          if (aSourceRoot != null) {
+            source = util$2.relative(aSourceRoot, source);
+          }
+          var key = util$2.toSetString(source);
+          return Object.prototype.hasOwnProperty.call(this._sourcesContents, key)
+            ? this._sourcesContents[key]
+            : null;
+        }, this);
+      };
+
+    /**
+     * Externalize the source map.
+     */
+    SourceMapGenerator$4.prototype.toJSON =
+      function SourceMapGenerator_toJSON() {
+        var map = {
+          version: this._version,
+          sources: this._sources.toArray(),
+          names: this._names.toArray(),
+          mappings: this._serializeMappings()
+        };
+        if (this._file != null) {
+          map.file = this._file;
+        }
+        if (this._sourceRoot != null) {
+          map.sourceRoot = this._sourceRoot;
+        }
+        if (this._sourcesContents) {
+          map.sourcesContent = this._generateSourcesContent(map.sources, map.sourceRoot);
+        }
+
+        return map;
+      };
+
+    /**
+     * Render the source map being generated to a string.
+     */
+    SourceMapGenerator$4.prototype.toString =
+      function SourceMapGenerator_toString() {
+        return JSON.stringify(this.toJSON());
+      };
+
+    sourceMapGenerator.SourceMapGenerator = SourceMapGenerator$4;
+
+    var sourceMapConsumer = {};
+
+    var binarySearch$1 = {};
+
+    /* -*- Mode: js; js-indent-level: 2; -*- */
+
+    (function (exports) {
+    	/*
+    	 * Copyright 2011 Mozilla Foundation and contributors
+    	 * Licensed under the New BSD license. See LICENSE or:
+    	 * http://opensource.org/licenses/BSD-3-Clause
+    	 */
+
+    	exports.GREATEST_LOWER_BOUND = 1;
+    	exports.LEAST_UPPER_BOUND = 2;
+
+    	/**
+    	 * Recursive implementation of binary search.
+    	 *
+    	 * @param aLow Indices here and lower do not contain the needle.
+    	 * @param aHigh Indices here and higher do not contain the needle.
+    	 * @param aNeedle The element being searched for.
+    	 * @param aHaystack The non-empty array being searched.
+    	 * @param aCompare Function which takes two elements and returns -1, 0, or 1.
+    	 * @param aBias Either 'binarySearch.GREATEST_LOWER_BOUND' or
+    	 *     'binarySearch.LEAST_UPPER_BOUND'. Specifies whether to return the
+    	 *     closest element that is smaller than or greater than the one we are
+    	 *     searching for, respectively, if the exact element cannot be found.
+    	 */
+    	function recursiveSearch(aLow, aHigh, aNeedle, aHaystack, aCompare, aBias) {
+    	  // This function terminates when one of the following is true:
+    	  //
+    	  //   1. We find the exact element we are looking for.
+    	  //
+    	  //   2. We did not find the exact element, but we can return the index of
+    	  //      the next-closest element.
+    	  //
+    	  //   3. We did not find the exact element, and there is no next-closest
+    	  //      element than the one we are searching for, so we return -1.
+    	  var mid = Math.floor((aHigh - aLow) / 2) + aLow;
+    	  var cmp = aCompare(aNeedle, aHaystack[mid], true);
+    	  if (cmp === 0) {
+    	    // Found the element we are looking for.
+    	    return mid;
+    	  }
+    	  else if (cmp > 0) {
+    	    // Our needle is greater than aHaystack[mid].
+    	    if (aHigh - mid > 1) {
+    	      // The element is in the upper half.
+    	      return recursiveSearch(mid, aHigh, aNeedle, aHaystack, aCompare, aBias);
+    	    }
+
+    	    // The exact needle element was not found in this haystack. Determine if
+    	    // we are in termination case (3) or (2) and return the appropriate thing.
+    	    if (aBias == exports.LEAST_UPPER_BOUND) {
+    	      return aHigh < aHaystack.length ? aHigh : -1;
+    	    } else {
+    	      return mid;
+    	    }
+    	  }
+    	  else {
+    	    // Our needle is less than aHaystack[mid].
+    	    if (mid - aLow > 1) {
+    	      // The element is in the lower half.
+    	      return recursiveSearch(aLow, mid, aNeedle, aHaystack, aCompare, aBias);
+    	    }
+
+    	    // we are in termination case (3) or (2) and return the appropriate thing.
+    	    if (aBias == exports.LEAST_UPPER_BOUND) {
+    	      return mid;
+    	    } else {
+    	      return aLow < 0 ? -1 : aLow;
+    	    }
+    	  }
+    	}
+
+    	/**
+    	 * This is an implementation of binary search which will always try and return
+    	 * the index of the closest element if there is no exact hit. This is because
+    	 * mappings between original and generated line/col pairs are single points,
+    	 * and there is an implicit region between each of them, so a miss just means
+    	 * that you aren't on the very start of a region.
+    	 *
+    	 * @param aNeedle The element you are looking for.
+    	 * @param aHaystack The array that is being searched.
+    	 * @param aCompare A function which takes the needle and an element in the
+    	 *     array and returns -1, 0, or 1 depending on whether the needle is less
+    	 *     than, equal to, or greater than the element, respectively.
+    	 * @param aBias Either 'binarySearch.GREATEST_LOWER_BOUND' or
+    	 *     'binarySearch.LEAST_UPPER_BOUND'. Specifies whether to return the
+    	 *     closest element that is smaller than or greater than the one we are
+    	 *     searching for, respectively, if the exact element cannot be found.
+    	 *     Defaults to 'binarySearch.GREATEST_LOWER_BOUND'.
+    	 */
+    	exports.search = function search(aNeedle, aHaystack, aCompare, aBias) {
+    	  if (aHaystack.length === 0) {
+    	    return -1;
+    	  }
+
+    	  var index = recursiveSearch(-1, aHaystack.length, aNeedle, aHaystack,
+    	                              aCompare, aBias || exports.GREATEST_LOWER_BOUND);
+    	  if (index < 0) {
+    	    return -1;
+    	  }
+
+    	  // We have found either the exact element, or the next-closest element than
+    	  // the one we are searching for. However, there may be more than one such
+    	  // element. Make sure we always return the smallest of these.
+    	  while (index - 1 >= 0) {
+    	    if (aCompare(aHaystack[index], aHaystack[index - 1], true) !== 0) {
+    	      break;
+    	    }
+    	    --index;
+    	  }
+
+    	  return index;
+    	}; 
+    } (binarySearch$1));
+
+    var quickSort$1 = {};
+
+    /* -*- Mode: js; js-indent-level: 2; -*- */
+
+    /*
+     * Copyright 2011 Mozilla Foundation and contributors
+     * Licensed under the New BSD license. See LICENSE or:
+     * http://opensource.org/licenses/BSD-3-Clause
+     */
+
+    // It turns out that some (most?) JavaScript engines don't self-host
+    // `Array.prototype.sort`. This makes sense because C++ will likely remain
+    // faster than JS when doing raw CPU-intensive sorting. However, when using a
+    // custom comparator function, calling back and forth between the VM's C++ and
+    // JIT'd JS is rather slow *and* loses JIT type information, resulting in
+    // worse generated code for the comparator function than would be optimal. In
+    // fact, when sorting with a comparator, these costs outweigh the benefits of
+    // sorting in C++. By using our own JS-implemented Quick Sort (below), we get
+    // a ~3500ms mean speed-up in `bench/bench.html`.
+
+    function SortTemplate(comparator) {
+
+    /**
+     * Swap the elements indexed by `x` and `y` in the array `ary`.
+     *
+     * @param {Array} ary
+     *        The array.
+     * @param {Number} x
+     *        The index of the first item.
+     * @param {Number} y
+     *        The index of the second item.
+     */
+    function swap(ary, x, y) {
+      var temp = ary[x];
+      ary[x] = ary[y];
+      ary[y] = temp;
+    }
+
+    /**
+     * Returns a random integer within the range `low .. high` inclusive.
+     *
+     * @param {Number} low
+     *        The lower bound on the range.
+     * @param {Number} high
+     *        The upper bound on the range.
+     */
+    function randomIntInRange(low, high) {
+      return Math.round(low + (Math.random() * (high - low)));
+    }
+
+    /**
+     * The Quick Sort algorithm.
+     *
+     * @param {Array} ary
+     *        An array to sort.
+     * @param {function} comparator
+     *        Function to use to compare two items.
+     * @param {Number} p
+     *        Start index of the array
+     * @param {Number} r
+     *        End index of the array
+     */
+    function doQuickSort(ary, comparator, p, r) {
+      // If our lower bound is less than our upper bound, we (1) partition the
+      // array into two pieces and (2) recurse on each half. If it is not, this is
+      // the empty array and our base case.
+
+      if (p < r) {
+        // (1) Partitioning.
+        //
+        // The partitioning chooses a pivot between `p` and `r` and moves all
+        // elements that are less than or equal to the pivot to the before it, and
+        // all the elements that are greater than it after it. The effect is that
+        // once partition is done, the pivot is in the exact place it will be when
+        // the array is put in sorted order, and it will not need to be moved
+        // again. This runs in O(n) time.
+
+        // Always choose a random pivot so that an input array which is reverse
+        // sorted does not cause O(n^2) running time.
+        var pivotIndex = randomIntInRange(p, r);
+        var i = p - 1;
+
+        swap(ary, pivotIndex, r);
+        var pivot = ary[r];
+
+        // Immediately after `j` is incremented in this loop, the following hold
+        // true:
+        //
+        //   * Every element in `ary[p .. i]` is less than or equal to the pivot.
+        //
+        //   * Every element in `ary[i+1 .. j-1]` is greater than the pivot.
+        for (var j = p; j < r; j++) {
+          if (comparator(ary[j], pivot, false) <= 0) {
+            i += 1;
+            swap(ary, i, j);
+          }
+        }
+
+        swap(ary, i + 1, j);
+        var q = i + 1;
+
+        // (2) Recurse on each half.
+
+        doQuickSort(ary, comparator, p, q - 1);
+        doQuickSort(ary, comparator, q + 1, r);
+      }
+    }
+
+      return doQuickSort;
+    }
+
+    function cloneSort(comparator) {
+      let template = SortTemplate.toString();
+      let templateFn = new Function(`return ${template}`)();
+      return templateFn(comparator);
+    }
+
+    /**
+     * Sort the given array in-place with the given comparator function.
+     *
+     * @param {Array} ary
+     *        An array to sort.
+     * @param {function} comparator
+     *        Function to use to compare two items.
+     */
+
+    let sortCache = new WeakMap();
+    quickSort$1.quickSort = function (ary, comparator, start = 0) {
+      let doQuickSort = sortCache.get(comparator);
+      if (doQuickSort === void 0) {
+        doQuickSort = cloneSort(comparator);
+        sortCache.set(comparator, doQuickSort);
+      }
+      doQuickSort(ary, comparator, start, ary.length - 1);
+    };
+
+    /* -*- Mode: js; js-indent-level: 2; -*- */
+
+    /*
+     * Copyright 2011 Mozilla Foundation and contributors
+     * Licensed under the New BSD license. See LICENSE or:
+     * http://opensource.org/licenses/BSD-3-Clause
+     */
+
+    var util$1 = util$5;
+    var binarySearch = binarySearch$1;
+    var ArraySet = arraySet.ArraySet;
+    var base64VLQ = base64Vlq;
+    var quickSort = quickSort$1.quickSort;
+
+    function SourceMapConsumer$3(aSourceMap, aSourceMapURL) {
+      var sourceMap = aSourceMap;
+      if (typeof aSourceMap === 'string') {
+        sourceMap = util$1.parseSourceMapInput(aSourceMap);
+      }
+
+      return sourceMap.sections != null
+        ? new IndexedSourceMapConsumer(sourceMap, aSourceMapURL)
+        : new BasicSourceMapConsumer(sourceMap, aSourceMapURL);
+    }
+
+    SourceMapConsumer$3.fromSourceMap = function(aSourceMap, aSourceMapURL) {
+      return BasicSourceMapConsumer.fromSourceMap(aSourceMap, aSourceMapURL);
+    };
+
+    /**
+     * The version of the source mapping spec that we are consuming.
+     */
+    SourceMapConsumer$3.prototype._version = 3;
+
+    // `__generatedMappings` and `__originalMappings` are arrays that hold the
+    // parsed mapping coordinates from the source map's "mappings" attribute. They
+    // are lazily instantiated, accessed via the `_generatedMappings` and
+    // `_originalMappings` getters respectively, and we only parse the mappings
+    // and create these arrays once queried for a source location. We jump through
+    // these hoops because there can be many thousands of mappings, and parsing
+    // them is expensive, so we only want to do it if we must.
+    //
+    // Each object in the arrays is of the form:
+    //
+    //     {
+    //       generatedLine: The line number in the generated code,
+    //       generatedColumn: The column number in the generated code,
+    //       source: The path to the original source file that generated this
+    //               chunk of code,
+    //       originalLine: The line number in the original source that
+    //                     corresponds to this chunk of generated code,
+    //       originalColumn: The column number in the original source that
+    //                       corresponds to this chunk of generated code,
+    //       name: The name of the original symbol which generated this chunk of
+    //             code.
+    //     }
+    //
+    // All properties except for `generatedLine` and `generatedColumn` can be
+    // `null`.
+    //
+    // `_generatedMappings` is ordered by the generated positions.
+    //
+    // `_originalMappings` is ordered by the original positions.
+
+    SourceMapConsumer$3.prototype.__generatedMappings = null;
+    Object.defineProperty(SourceMapConsumer$3.prototype, '_generatedMappings', {
+      configurable: true,
+      enumerable: true,
+      get: function () {
+        if (!this.__generatedMappings) {
+          this._parseMappings(this._mappings, this.sourceRoot);
+        }
+
+        return this.__generatedMappings;
+      }
+    });
+
+    SourceMapConsumer$3.prototype.__originalMappings = null;
+    Object.defineProperty(SourceMapConsumer$3.prototype, '_originalMappings', {
+      configurable: true,
+      enumerable: true,
+      get: function () {
+        if (!this.__originalMappings) {
+          this._parseMappings(this._mappings, this.sourceRoot);
+        }
+
+        return this.__originalMappings;
+      }
+    });
+
+    SourceMapConsumer$3.prototype._charIsMappingSeparator =
+      function SourceMapConsumer_charIsMappingSeparator(aStr, index) {
+        var c = aStr.charAt(index);
+        return c === ";" || c === ",";
+      };
+
+    /**
+     * Parse the mappings in a string in to a data structure which we can easily
+     * query (the ordered arrays in the `this.__generatedMappings` and
+     * `this.__originalMappings` properties).
+     */
+    SourceMapConsumer$3.prototype._parseMappings =
+      function SourceMapConsumer_parseMappings(aStr, aSourceRoot) {
+        throw new Error("Subclasses must implement _parseMappings");
+      };
+
+    SourceMapConsumer$3.GENERATED_ORDER = 1;
+    SourceMapConsumer$3.ORIGINAL_ORDER = 2;
+
+    SourceMapConsumer$3.GREATEST_LOWER_BOUND = 1;
+    SourceMapConsumer$3.LEAST_UPPER_BOUND = 2;
+
+    /**
+     * Iterate over each mapping between an original source/line/column and a
+     * generated line/column in this source map.
+     *
+     * @param Function aCallback
+     *        The function that is called with each mapping.
+     * @param Object aContext
+     *        Optional. If specified, this object will be the value of `this` every
+     *        time that `aCallback` is called.
+     * @param aOrder
+     *        Either `SourceMapConsumer.GENERATED_ORDER` or
+     *        `SourceMapConsumer.ORIGINAL_ORDER`. Specifies whether you want to
+     *        iterate over the mappings sorted by the generated file's line/column
+     *        order or the original's source/line/column order, respectively. Defaults to
+     *        `SourceMapConsumer.GENERATED_ORDER`.
+     */
+    SourceMapConsumer$3.prototype.eachMapping =
+      function SourceMapConsumer_eachMapping(aCallback, aContext, aOrder) {
+        var context = aContext || null;
+        var order = aOrder || SourceMapConsumer$3.GENERATED_ORDER;
+
+        var mappings;
+        switch (order) {
+        case SourceMapConsumer$3.GENERATED_ORDER:
+          mappings = this._generatedMappings;
+          break;
+        case SourceMapConsumer$3.ORIGINAL_ORDER:
+          mappings = this._originalMappings;
+          break;
+        default:
+          throw new Error("Unknown order of iteration.");
+        }
+
+        var sourceRoot = this.sourceRoot;
+        var boundCallback = aCallback.bind(context);
+        var names = this._names;
+        var sources = this._sources;
+        var sourceMapURL = this._sourceMapURL;
+
+        for (var i = 0, n = mappings.length; i < n; i++) {
+          var mapping = mappings[i];
+          var source = mapping.source === null ? null : sources.at(mapping.source);
+          if(source !== null) {
+            source = util$1.computeSourceURL(sourceRoot, source, sourceMapURL);
+          }
+          boundCallback({
+            source: source,
+            generatedLine: mapping.generatedLine,
+            generatedColumn: mapping.generatedColumn,
+            originalLine: mapping.originalLine,
+            originalColumn: mapping.originalColumn,
+            name: mapping.name === null ? null : names.at(mapping.name)
+          });
+        }
+      };
+
+    /**
+     * Returns all generated line and column information for the original source,
+     * line, and column provided. If no column is provided, returns all mappings
+     * corresponding to a either the line we are searching for or the next
+     * closest line that has any mappings. Otherwise, returns all mappings
+     * corresponding to the given line and either the column we are searching for
+     * or the next closest column that has any offsets.
+     *
+     * The only argument is an object with the following properties:
+     *
+     *   - source: The filename of the original source.
+     *   - line: The line number in the original source.  The line number is 1-based.
+     *   - column: Optional. the column number in the original source.
+     *    The column number is 0-based.
+     *
+     * and an array of objects is returned, each with the following properties:
+     *
+     *   - line: The line number in the generated source, or null.  The
+     *    line number is 1-based.
+     *   - column: The column number in the generated source, or null.
+     *    The column number is 0-based.
+     */
+    SourceMapConsumer$3.prototype.allGeneratedPositionsFor =
+      function SourceMapConsumer_allGeneratedPositionsFor(aArgs) {
+        var line = util$1.getArg(aArgs, 'line');
+
+        // When there is no exact match, BasicSourceMapConsumer.prototype._findMapping
+        // returns the index of the closest mapping less than the needle. By
+        // setting needle.originalColumn to 0, we thus find the last mapping for
+        // the given line, provided such a mapping exists.
+        var needle = {
+          source: util$1.getArg(aArgs, 'source'),
+          originalLine: line,
+          originalColumn: util$1.getArg(aArgs, 'column', 0)
+        };
+
+        needle.source = this._findSourceIndex(needle.source);
+        if (needle.source < 0) {
+          return [];
+        }
+
+        var mappings = [];
+
+        var index = this._findMapping(needle,
+                                      this._originalMappings,
+                                      "originalLine",
+                                      "originalColumn",
+                                      util$1.compareByOriginalPositions,
+                                      binarySearch.LEAST_UPPER_BOUND);
+        if (index >= 0) {
+          var mapping = this._originalMappings[index];
+
+          if (aArgs.column === undefined) {
+            var originalLine = mapping.originalLine;
+
+            // Iterate until either we run out of mappings, or we run into
+            // a mapping for a different line than the one we found. Since
+            // mappings are sorted, this is guaranteed to find all mappings for
+            // the line we found.
+            while (mapping && mapping.originalLine === originalLine) {
+              mappings.push({
+                line: util$1.getArg(mapping, 'generatedLine', null),
+                column: util$1.getArg(mapping, 'generatedColumn', null),
+                lastColumn: util$1.getArg(mapping, 'lastGeneratedColumn', null)
+              });
+
+              mapping = this._originalMappings[++index];
+            }
+          } else {
+            var originalColumn = mapping.originalColumn;
+
+            // Iterate until either we run out of mappings, or we run into
+            // a mapping for a different line than the one we were searching for.
+            // Since mappings are sorted, this is guaranteed to find all mappings for
+            // the line we are searching for.
+            while (mapping &&
+                   mapping.originalLine === line &&
+                   mapping.originalColumn == originalColumn) {
+              mappings.push({
+                line: util$1.getArg(mapping, 'generatedLine', null),
+                column: util$1.getArg(mapping, 'generatedColumn', null),
+                lastColumn: util$1.getArg(mapping, 'lastGeneratedColumn', null)
+              });
+
+              mapping = this._originalMappings[++index];
+            }
+          }
+        }
+
+        return mappings;
+      };
+
+    sourceMapConsumer.SourceMapConsumer = SourceMapConsumer$3;
+
+    /**
+     * A BasicSourceMapConsumer instance represents a parsed source map which we can
+     * query for information about the original file positions by giving it a file
+     * position in the generated source.
+     *
+     * The first parameter is the raw source map (either as a JSON string, or
+     * already parsed to an object). According to the spec, source maps have the
+     * following attributes:
+     *
+     *   - version: Which version of the source map spec this map is following.
+     *   - sources: An array of URLs to the original source files.
+     *   - names: An array of identifiers which can be referrenced by individual mappings.
+     *   - sourceRoot: Optional. The URL root from which all sources are relative.
+     *   - sourcesContent: Optional. An array of contents of the original source files.
+     *   - mappings: A string of base64 VLQs which contain the actual mappings.
+     *   - file: Optional. The generated file this source map is associated with.
+     *
+     * Here is an example source map, taken from the source map spec[0]:
+     *
+     *     {
+     *       version : 3,
+     *       file: "out.js",
+     *       sourceRoot : "",
+     *       sources: ["foo.js", "bar.js"],
+     *       names: ["src", "maps", "are", "fun"],
+     *       mappings: "AA,AB;;ABCDE;"
+     *     }
+     *
+     * The second parameter, if given, is a string whose value is the URL
+     * at which the source map was found.  This URL is used to compute the
+     * sources array.
+     *
+     * [0]: https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit?pli=1#
+     */
+    function BasicSourceMapConsumer(aSourceMap, aSourceMapURL) {
+      var sourceMap = aSourceMap;
+      if (typeof aSourceMap === 'string') {
+        sourceMap = util$1.parseSourceMapInput(aSourceMap);
+      }
+
+      var version = util$1.getArg(sourceMap, 'version');
+      var sources = util$1.getArg(sourceMap, 'sources');
+      // Sass 3.3 leaves out the 'names' array, so we deviate from the spec (which
+      // requires the array) to play nice here.
+      var names = util$1.getArg(sourceMap, 'names', []);
+      var sourceRoot = util$1.getArg(sourceMap, 'sourceRoot', null);
+      var sourcesContent = util$1.getArg(sourceMap, 'sourcesContent', null);
+      var mappings = util$1.getArg(sourceMap, 'mappings');
+      var file = util$1.getArg(sourceMap, 'file', null);
+
+      // Once again, Sass deviates from the spec and supplies the version as a
+      // string rather than a number, so we use loose equality checking here.
+      if (version != this._version) {
+        throw new Error('Unsupported version: ' + version);
+      }
+
+      if (sourceRoot) {
+        sourceRoot = util$1.normalize(sourceRoot);
+      }
+
+      sources = sources
+        .map(String)
+        // Some source maps produce relative source paths like "./foo.js" instead of
+        // "foo.js".  Normalize these first so that future comparisons will succeed.
+        // See bugzil.la/1090768.
+        .map(util$1.normalize)
+        // Always ensure that absolute sources are internally stored relative to
+        // the source root, if the source root is absolute. Not doing this would
+        // be particularly problematic when the source root is a prefix of the
+        // source (valid, but why??). See github issue #199 and bugzil.la/1188982.
+        .map(function (source) {
+          return sourceRoot && util$1.isAbsolute(sourceRoot) && util$1.isAbsolute(source)
+            ? util$1.relative(sourceRoot, source)
+            : source;
+        });
+
+      // Pass `true` below to allow duplicate names and sources. While source maps
+      // are intended to be compressed and deduplicated, the TypeScript compiler
+      // sometimes generates source maps with duplicates in them. See Github issue
+      // #72 and bugzil.la/889492.
+      this._names = ArraySet.fromArray(names.map(String), true);
+      this._sources = ArraySet.fromArray(sources, true);
+
+      this._absoluteSources = this._sources.toArray().map(function (s) {
+        return util$1.computeSourceURL(sourceRoot, s, aSourceMapURL);
+      });
+
+      this.sourceRoot = sourceRoot;
+      this.sourcesContent = sourcesContent;
+      this._mappings = mappings;
+      this._sourceMapURL = aSourceMapURL;
+      this.file = file;
+    }
+
+    BasicSourceMapConsumer.prototype = Object.create(SourceMapConsumer$3.prototype);
+    BasicSourceMapConsumer.prototype.consumer = SourceMapConsumer$3;
+
+    /**
+     * Utility function to find the index of a source.  Returns -1 if not
+     * found.
+     */
+    BasicSourceMapConsumer.prototype._findSourceIndex = function(aSource) {
+      var relativeSource = aSource;
+      if (this.sourceRoot != null) {
+        relativeSource = util$1.relative(this.sourceRoot, relativeSource);
+      }
+
+      if (this._sources.has(relativeSource)) {
+        return this._sources.indexOf(relativeSource);
+      }
+
+      // Maybe aSource is an absolute URL as returned by |sources|.  In
+      // this case we can't simply undo the transform.
+      var i;
+      for (i = 0; i < this._absoluteSources.length; ++i) {
+        if (this._absoluteSources[i] == aSource) {
+          return i;
+        }
+      }
+
+      return -1;
+    };
+
+    /**
+     * Create a BasicSourceMapConsumer from a SourceMapGenerator.
+     *
+     * @param SourceMapGenerator aSourceMap
+     *        The source map that will be consumed.
+     * @param String aSourceMapURL
+     *        The URL at which the source map can be found (optional)
+     * @returns BasicSourceMapConsumer
+     */
+    BasicSourceMapConsumer.fromSourceMap =
+      function SourceMapConsumer_fromSourceMap(aSourceMap, aSourceMapURL) {
+        var smc = Object.create(BasicSourceMapConsumer.prototype);
+
+        var names = smc._names = ArraySet.fromArray(aSourceMap._names.toArray(), true);
+        var sources = smc._sources = ArraySet.fromArray(aSourceMap._sources.toArray(), true);
+        smc.sourceRoot = aSourceMap._sourceRoot;
+        smc.sourcesContent = aSourceMap._generateSourcesContent(smc._sources.toArray(),
+                                                                smc.sourceRoot);
+        smc.file = aSourceMap._file;
+        smc._sourceMapURL = aSourceMapURL;
+        smc._absoluteSources = smc._sources.toArray().map(function (s) {
+          return util$1.computeSourceURL(smc.sourceRoot, s, aSourceMapURL);
+        });
+
+        // Because we are modifying the entries (by converting string sources and
+        // names to indices into the sources and names ArraySets), we have to make
+        // a copy of the entry or else bad things happen. Shared mutable state
+        // strikes again! See github issue #191.
+
+        var generatedMappings = aSourceMap._mappings.toArray().slice();
+        var destGeneratedMappings = smc.__generatedMappings = [];
+        var destOriginalMappings = smc.__originalMappings = [];
+
+        for (var i = 0, length = generatedMappings.length; i < length; i++) {
+          var srcMapping = generatedMappings[i];
+          var destMapping = new Mapping;
+          destMapping.generatedLine = srcMapping.generatedLine;
+          destMapping.generatedColumn = srcMapping.generatedColumn;
+
+          if (srcMapping.source) {
+            destMapping.source = sources.indexOf(srcMapping.source);
+            destMapping.originalLine = srcMapping.originalLine;
+            destMapping.originalColumn = srcMapping.originalColumn;
+
+            if (srcMapping.name) {
+              destMapping.name = names.indexOf(srcMapping.name);
+            }
+
+            destOriginalMappings.push(destMapping);
+          }
+
+          destGeneratedMappings.push(destMapping);
+        }
+
+        quickSort(smc.__originalMappings, util$1.compareByOriginalPositions);
+
+        return smc;
+      };
+
+    /**
+     * The version of the source mapping spec that we are consuming.
+     */
+    BasicSourceMapConsumer.prototype._version = 3;
+
+    /**
+     * The list of original sources.
+     */
+    Object.defineProperty(BasicSourceMapConsumer.prototype, 'sources', {
+      get: function () {
+        return this._absoluteSources.slice();
+      }
+    });
+
+    /**
+     * Provide the JIT with a nice shape / hidden class.
+     */
+    function Mapping() {
+      this.generatedLine = 0;
+      this.generatedColumn = 0;
+      this.source = null;
+      this.originalLine = null;
+      this.originalColumn = null;
+      this.name = null;
+    }
+
+    /**
+     * Parse the mappings in a string in to a data structure which we can easily
+     * query (the ordered arrays in the `this.__generatedMappings` and
+     * `this.__originalMappings` properties).
+     */
+
+    const compareGenerated = util$1.compareByGeneratedPositionsDeflatedNoLine;
+    function sortGenerated(array, start) {
+      let l = array.length;
+      let n = array.length - start;
+      if (n <= 1) {
+        return;
+      } else if (n == 2) {
+        let a = array[start];
+        let b = array[start + 1];
+        if (compareGenerated(a, b) > 0) {
+          array[start] = b;
+          array[start + 1] = a;
+        }
+      } else if (n < 20) {
+        for (let i = start; i < l; i++) {
+          for (let j = i; j > start; j--) {
+            let a = array[j - 1];
+            let b = array[j];
+            if (compareGenerated(a, b) <= 0) {
+              break;
+            }
+            array[j - 1] = b;
+            array[j] = a;
+          }
+        }
+      } else {
+        quickSort(array, compareGenerated, start);
+      }
+    }
+    BasicSourceMapConsumer.prototype._parseMappings =
+      function SourceMapConsumer_parseMappings(aStr, aSourceRoot) {
+        var generatedLine = 1;
+        var previousGeneratedColumn = 0;
+        var previousOriginalLine = 0;
+        var previousOriginalColumn = 0;
+        var previousSource = 0;
+        var previousName = 0;
+        var length = aStr.length;
+        var index = 0;
+        var temp = {};
+        var originalMappings = [];
+        var generatedMappings = [];
+        var mapping, segment, end, value;
+
+        let subarrayStart = 0;
+        while (index < length) {
+          if (aStr.charAt(index) === ';') {
+            generatedLine++;
+            index++;
+            previousGeneratedColumn = 0;
+
+            sortGenerated(generatedMappings, subarrayStart);
+            subarrayStart = generatedMappings.length;
+          }
+          else if (aStr.charAt(index) === ',') {
+            index++;
+          }
+          else {
+            mapping = new Mapping();
+            mapping.generatedLine = generatedLine;
+
+            for (end = index; end < length; end++) {
+              if (this._charIsMappingSeparator(aStr, end)) {
+                break;
+              }
+            }
+            aStr.slice(index, end);
+
+            segment = [];
+            while (index < end) {
+              base64VLQ.decode(aStr, index, temp);
+              value = temp.value;
+              index = temp.rest;
+              segment.push(value);
+            }
+
+            if (segment.length === 2) {
+              throw new Error('Found a source, but no line and column');
+            }
+
+            if (segment.length === 3) {
+              throw new Error('Found a source and line, but no column');
+            }
+
+            // Generated column.
+            mapping.generatedColumn = previousGeneratedColumn + segment[0];
+            previousGeneratedColumn = mapping.generatedColumn;
+
+            if (segment.length > 1) {
+              // Original source.
+              mapping.source = previousSource + segment[1];
+              previousSource += segment[1];
+
+              // Original line.
+              mapping.originalLine = previousOriginalLine + segment[2];
+              previousOriginalLine = mapping.originalLine;
+              // Lines are stored 0-based
+              mapping.originalLine += 1;
+
+              // Original column.
+              mapping.originalColumn = previousOriginalColumn + segment[3];
+              previousOriginalColumn = mapping.originalColumn;
+
+              if (segment.length > 4) {
+                // Original name.
+                mapping.name = previousName + segment[4];
+                previousName += segment[4];
+              }
+            }
+
+            generatedMappings.push(mapping);
+            if (typeof mapping.originalLine === 'number') {
+              let currentSource = mapping.source;
+              while (originalMappings.length <= currentSource) {
+                originalMappings.push(null);
+              }
+              if (originalMappings[currentSource] === null) {
+                originalMappings[currentSource] = [];
+              }
+              originalMappings[currentSource].push(mapping);
+            }
+          }
+        }
+
+        sortGenerated(generatedMappings, subarrayStart);
+        this.__generatedMappings = generatedMappings;
+
+        for (var i = 0; i < originalMappings.length; i++) {
+          if (originalMappings[i] != null) {
+            quickSort(originalMappings[i], util$1.compareByOriginalPositionsNoSource);
+          }
+        }
+        this.__originalMappings = [].concat(...originalMappings);
+      };
+
+    /**
+     * Find the mapping that best matches the hypothetical "needle" mapping that
+     * we are searching for in the given "haystack" of mappings.
+     */
+    BasicSourceMapConsumer.prototype._findMapping =
+      function SourceMapConsumer_findMapping(aNeedle, aMappings, aLineName,
+                                             aColumnName, aComparator, aBias) {
+        // To return the position we are searching for, we must first find the
+        // mapping for the given position and then return the opposite position it
+        // points to. Because the mappings are sorted, we can use binary search to
+        // find the best mapping.
+
+        if (aNeedle[aLineName] <= 0) {
+          throw new TypeError('Line must be greater than or equal to 1, got '
+                              + aNeedle[aLineName]);
+        }
+        if (aNeedle[aColumnName] < 0) {
+          throw new TypeError('Column must be greater than or equal to 0, got '
+                              + aNeedle[aColumnName]);
+        }
+
+        return binarySearch.search(aNeedle, aMappings, aComparator, aBias);
+      };
+
+    /**
+     * Compute the last column for each generated mapping. The last column is
+     * inclusive.
+     */
+    BasicSourceMapConsumer.prototype.computeColumnSpans =
+      function SourceMapConsumer_computeColumnSpans() {
+        for (var index = 0; index < this._generatedMappings.length; ++index) {
+          var mapping = this._generatedMappings[index];
+
+          // Mappings do not contain a field for the last generated columnt. We
+          // can come up with an optimistic estimate, however, by assuming that
+          // mappings are contiguous (i.e. given two consecutive mappings, the
+          // first mapping ends where the second one starts).
+          if (index + 1 < this._generatedMappings.length) {
+            var nextMapping = this._generatedMappings[index + 1];
+
+            if (mapping.generatedLine === nextMapping.generatedLine) {
+              mapping.lastGeneratedColumn = nextMapping.generatedColumn - 1;
+              continue;
+            }
+          }
+
+          // The last mapping for each line spans the entire line.
+          mapping.lastGeneratedColumn = Infinity;
+        }
+      };
+
+    /**
+     * Returns the original source, line, and column information for the generated
+     * source's line and column positions provided. The only argument is an object
+     * with the following properties:
+     *
+     *   - line: The line number in the generated source.  The line number
+     *     is 1-based.
+     *   - column: The column number in the generated source.  The column
+     *     number is 0-based.
+     *   - bias: Either 'SourceMapConsumer.GREATEST_LOWER_BOUND' or
+     *     'SourceMapConsumer.LEAST_UPPER_BOUND'. Specifies whether to return the
+     *     closest element that is smaller than or greater than the one we are
+     *     searching for, respectively, if the exact element cannot be found.
+     *     Defaults to 'SourceMapConsumer.GREATEST_LOWER_BOUND'.
+     *
+     * and an object is returned with the following properties:
+     *
+     *   - source: The original source file, or null.
+     *   - line: The line number in the original source, or null.  The
+     *     line number is 1-based.
+     *   - column: The column number in the original source, or null.  The
+     *     column number is 0-based.
+     *   - name: The original identifier, or null.
+     */
+    BasicSourceMapConsumer.prototype.originalPositionFor =
+      function SourceMapConsumer_originalPositionFor(aArgs) {
+        var needle = {
+          generatedLine: util$1.getArg(aArgs, 'line'),
+          generatedColumn: util$1.getArg(aArgs, 'column')
+        };
+
+        var index = this._findMapping(
+          needle,
+          this._generatedMappings,
+          "generatedLine",
+          "generatedColumn",
+          util$1.compareByGeneratedPositionsDeflated,
+          util$1.getArg(aArgs, 'bias', SourceMapConsumer$3.GREATEST_LOWER_BOUND)
+        );
+
+        if (index >= 0) {
+          var mapping = this._generatedMappings[index];
+
+          if (mapping.generatedLine === needle.generatedLine) {
+            var source = util$1.getArg(mapping, 'source', null);
+            if (source !== null) {
+              source = this._sources.at(source);
+              source = util$1.computeSourceURL(this.sourceRoot, source, this._sourceMapURL);
+            }
+            var name = util$1.getArg(mapping, 'name', null);
+            if (name !== null) {
+              name = this._names.at(name);
+            }
+            return {
+              source: source,
+              line: util$1.getArg(mapping, 'originalLine', null),
+              column: util$1.getArg(mapping, 'originalColumn', null),
+              name: name
+            };
+          }
+        }
+
+        return {
+          source: null,
+          line: null,
+          column: null,
+          name: null
+        };
+      };
+
+    /**
+     * Return true if we have the source content for every source in the source
+     * map, false otherwise.
+     */
+    BasicSourceMapConsumer.prototype.hasContentsOfAllSources =
+      function BasicSourceMapConsumer_hasContentsOfAllSources() {
+        if (!this.sourcesContent) {
+          return false;
+        }
+        return this.sourcesContent.length >= this._sources.size() &&
+          !this.sourcesContent.some(function (sc) { return sc == null; });
+      };
+
+    /**
+     * Returns the original source content. The only argument is the url of the
+     * original source file. Returns null if no original source content is
+     * available.
+     */
+    BasicSourceMapConsumer.prototype.sourceContentFor =
+      function SourceMapConsumer_sourceContentFor(aSource, nullOnMissing) {
+        if (!this.sourcesContent) {
+          return null;
+        }
+
+        var index = this._findSourceIndex(aSource);
+        if (index >= 0) {
+          return this.sourcesContent[index];
+        }
+
+        var relativeSource = aSource;
+        if (this.sourceRoot != null) {
+          relativeSource = util$1.relative(this.sourceRoot, relativeSource);
+        }
+
+        var url;
+        if (this.sourceRoot != null
+            && (url = util$1.urlParse(this.sourceRoot))) {
+          // XXX: file:// URIs and absolute paths lead to unexpected behavior for
+          // many users. We can help them out when they expect file:// URIs to
+          // behave like it would if they were running a local HTTP server. See
+          // https://bugzilla.mozilla.org/show_bug.cgi?id=885597.
+          var fileUriAbsPath = relativeSource.replace(/^file:\/\//, "");
+          if (url.scheme == "file"
+              && this._sources.has(fileUriAbsPath)) {
+            return this.sourcesContent[this._sources.indexOf(fileUriAbsPath)]
+          }
+
+          if ((!url.path || url.path == "/")
+              && this._sources.has("/" + relativeSource)) {
+            return this.sourcesContent[this._sources.indexOf("/" + relativeSource)];
+          }
+        }
+
+        // This function is used recursively from
+        // IndexedSourceMapConsumer.prototype.sourceContentFor. In that case, we
+        // don't want to throw if we can't find the source - we just want to
+        // return null, so we provide a flag to exit gracefully.
+        if (nullOnMissing) {
+          return null;
+        }
+        else {
+          throw new Error('"' + relativeSource + '" is not in the SourceMap.');
+        }
+      };
+
+    /**
+     * Returns the generated line and column information for the original source,
+     * line, and column positions provided. The only argument is an object with
+     * the following properties:
+     *
+     *   - source: The filename of the original source.
+     *   - line: The line number in the original source.  The line number
+     *     is 1-based.
+     *   - column: The column number in the original source.  The column
+     *     number is 0-based.
+     *   - bias: Either 'SourceMapConsumer.GREATEST_LOWER_BOUND' or
+     *     'SourceMapConsumer.LEAST_UPPER_BOUND'. Specifies whether to return the
+     *     closest element that is smaller than or greater than the one we are
+     *     searching for, respectively, if the exact element cannot be found.
+     *     Defaults to 'SourceMapConsumer.GREATEST_LOWER_BOUND'.
+     *
+     * and an object is returned with the following properties:
+     *
+     *   - line: The line number in the generated source, or null.  The
+     *     line number is 1-based.
+     *   - column: The column number in the generated source, or null.
+     *     The column number is 0-based.
+     */
+    BasicSourceMapConsumer.prototype.generatedPositionFor =
+      function SourceMapConsumer_generatedPositionFor(aArgs) {
+        var source = util$1.getArg(aArgs, 'source');
+        source = this._findSourceIndex(source);
+        if (source < 0) {
+          return {
+            line: null,
+            column: null,
+            lastColumn: null
+          };
+        }
+
+        var needle = {
+          source: source,
+          originalLine: util$1.getArg(aArgs, 'line'),
+          originalColumn: util$1.getArg(aArgs, 'column')
+        };
+
+        var index = this._findMapping(
+          needle,
+          this._originalMappings,
+          "originalLine",
+          "originalColumn",
+          util$1.compareByOriginalPositions,
+          util$1.getArg(aArgs, 'bias', SourceMapConsumer$3.GREATEST_LOWER_BOUND)
+        );
+
+        if (index >= 0) {
+          var mapping = this._originalMappings[index];
+
+          if (mapping.source === needle.source) {
+            return {
+              line: util$1.getArg(mapping, 'generatedLine', null),
+              column: util$1.getArg(mapping, 'generatedColumn', null),
+              lastColumn: util$1.getArg(mapping, 'lastGeneratedColumn', null)
+            };
+          }
+        }
+
+        return {
+          line: null,
+          column: null,
+          lastColumn: null
+        };
+      };
+
+    sourceMapConsumer.BasicSourceMapConsumer = BasicSourceMapConsumer;
+
+    /**
+     * An IndexedSourceMapConsumer instance represents a parsed source map which
+     * we can query for information. It differs from BasicSourceMapConsumer in
+     * that it takes "indexed" source maps (i.e. ones with a "sections" field) as
+     * input.
+     *
+     * The first parameter is a raw source map (either as a JSON string, or already
+     * parsed to an object). According to the spec for indexed source maps, they
+     * have the following attributes:
+     *
+     *   - version: Which version of the source map spec this map is following.
+     *   - file: Optional. The generated file this source map is associated with.
+     *   - sections: A list of section definitions.
+     *
+     * Each value under the "sections" field has two fields:
+     *   - offset: The offset into the original specified at which this section
+     *       begins to apply, defined as an object with a "line" and "column"
+     *       field.
+     *   - map: A source map definition. This source map could also be indexed,
+     *       but doesn't have to be.
+     *
+     * Instead of the "map" field, it's also possible to have a "url" field
+     * specifying a URL to retrieve a source map from, but that's currently
+     * unsupported.
+     *
+     * Here's an example source map, taken from the source map spec[0], but
+     * modified to omit a section which uses the "url" field.
+     *
+     *  {
+     *    version : 3,
+     *    file: "app.js",
+     *    sections: [{
+     *      offset: {line:100, column:10},
+     *      map: {
+     *        version : 3,
+     *        file: "section.js",
+     *        sources: ["foo.js", "bar.js"],
+     *        names: ["src", "maps", "are", "fun"],
+     *        mappings: "AAAA,E;;ABCDE;"
+     *      }
+     *    }],
+     *  }
+     *
+     * The second parameter, if given, is a string whose value is the URL
+     * at which the source map was found.  This URL is used to compute the
+     * sources array.
+     *
+     * [0]: https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit#heading=h.535es3xeprgt
+     */
+    function IndexedSourceMapConsumer(aSourceMap, aSourceMapURL) {
+      var sourceMap = aSourceMap;
+      if (typeof aSourceMap === 'string') {
+        sourceMap = util$1.parseSourceMapInput(aSourceMap);
+      }
+
+      var version = util$1.getArg(sourceMap, 'version');
+      var sections = util$1.getArg(sourceMap, 'sections');
+
+      if (version != this._version) {
+        throw new Error('Unsupported version: ' + version);
+      }
+
+      this._sources = new ArraySet();
+      this._names = new ArraySet();
+
+      var lastOffset = {
+        line: -1,
+        column: 0
+      };
+      this._sections = sections.map(function (s) {
+        if (s.url) {
+          // The url field will require support for asynchronicity.
+          // See https://github.com/mozilla/source-map/issues/16
+          throw new Error('Support for url field in sections not implemented.');
+        }
+        var offset = util$1.getArg(s, 'offset');
+        var offsetLine = util$1.getArg(offset, 'line');
+        var offsetColumn = util$1.getArg(offset, 'column');
+
+        if (offsetLine < lastOffset.line ||
+            (offsetLine === lastOffset.line && offsetColumn < lastOffset.column)) {
+          throw new Error('Section offsets must be ordered and non-overlapping.');
+        }
+        lastOffset = offset;
+
+        return {
+          generatedOffset: {
+            // The offset fields are 0-based, but we use 1-based indices when
+            // encoding/decoding from VLQ.
+            generatedLine: offsetLine + 1,
+            generatedColumn: offsetColumn + 1
+          },
+          consumer: new SourceMapConsumer$3(util$1.getArg(s, 'map'), aSourceMapURL)
+        }
+      });
+    }
+
+    IndexedSourceMapConsumer.prototype = Object.create(SourceMapConsumer$3.prototype);
+    IndexedSourceMapConsumer.prototype.constructor = SourceMapConsumer$3;
+
+    /**
+     * The version of the source mapping spec that we are consuming.
+     */
+    IndexedSourceMapConsumer.prototype._version = 3;
+
+    /**
+     * The list of original sources.
+     */
+    Object.defineProperty(IndexedSourceMapConsumer.prototype, 'sources', {
+      get: function () {
+        var sources = [];
+        for (var i = 0; i < this._sections.length; i++) {
+          for (var j = 0; j < this._sections[i].consumer.sources.length; j++) {
+            sources.push(this._sections[i].consumer.sources[j]);
+          }
+        }
+        return sources;
+      }
+    });
+
+    /**
+     * Returns the original source, line, and column information for the generated
+     * source's line and column positions provided. The only argument is an object
+     * with the following properties:
+     *
+     *   - line: The line number in the generated source.  The line number
+     *     is 1-based.
+     *   - column: The column number in the generated source.  The column
+     *     number is 0-based.
+     *
+     * and an object is returned with the following properties:
+     *
+     *   - source: The original source file, or null.
+     *   - line: The line number in the original source, or null.  The
+     *     line number is 1-based.
+     *   - column: The column number in the original source, or null.  The
+     *     column number is 0-based.
+     *   - name: The original identifier, or null.
+     */
+    IndexedSourceMapConsumer.prototype.originalPositionFor =
+      function IndexedSourceMapConsumer_originalPositionFor(aArgs) {
+        var needle = {
+          generatedLine: util$1.getArg(aArgs, 'line'),
+          generatedColumn: util$1.getArg(aArgs, 'column')
+        };
+
+        // Find the section containing the generated position we're trying to map
+        // to an original position.
+        var sectionIndex = binarySearch.search(needle, this._sections,
+          function(needle, section) {
+            var cmp = needle.generatedLine - section.generatedOffset.generatedLine;
+            if (cmp) {
+              return cmp;
+            }
+
+            return (needle.generatedColumn -
+                    section.generatedOffset.generatedColumn);
+          });
+        var section = this._sections[sectionIndex];
+
+        if (!section) {
+          return {
+            source: null,
+            line: null,
+            column: null,
+            name: null
+          };
+        }
+
+        return section.consumer.originalPositionFor({
+          line: needle.generatedLine -
+            (section.generatedOffset.generatedLine - 1),
+          column: needle.generatedColumn -
+            (section.generatedOffset.generatedLine === needle.generatedLine
+             ? section.generatedOffset.generatedColumn - 1
+             : 0),
+          bias: aArgs.bias
+        });
+      };
+
+    /**
+     * Return true if we have the source content for every source in the source
+     * map, false otherwise.
+     */
+    IndexedSourceMapConsumer.prototype.hasContentsOfAllSources =
+      function IndexedSourceMapConsumer_hasContentsOfAllSources() {
+        return this._sections.every(function (s) {
+          return s.consumer.hasContentsOfAllSources();
+        });
+      };
+
+    /**
+     * Returns the original source content. The only argument is the url of the
+     * original source file. Returns null if no original source content is
+     * available.
+     */
+    IndexedSourceMapConsumer.prototype.sourceContentFor =
+      function IndexedSourceMapConsumer_sourceContentFor(aSource, nullOnMissing) {
+        for (var i = 0; i < this._sections.length; i++) {
+          var section = this._sections[i];
+
+          var content = section.consumer.sourceContentFor(aSource, true);
+          if (content || content === '') {
+            return content;
+          }
+        }
+        if (nullOnMissing) {
+          return null;
+        }
+        else {
+          throw new Error('"' + aSource + '" is not in the SourceMap.');
+        }
+      };
+
+    /**
+     * Returns the generated line and column information for the original source,
+     * line, and column positions provided. The only argument is an object with
+     * the following properties:
+     *
+     *   - source: The filename of the original source.
+     *   - line: The line number in the original source.  The line number
+     *     is 1-based.
+     *   - column: The column number in the original source.  The column
+     *     number is 0-based.
+     *
+     * and an object is returned with the following properties:
+     *
+     *   - line: The line number in the generated source, or null.  The
+     *     line number is 1-based. 
+     *   - column: The column number in the generated source, or null.
+     *     The column number is 0-based.
+     */
+    IndexedSourceMapConsumer.prototype.generatedPositionFor =
+      function IndexedSourceMapConsumer_generatedPositionFor(aArgs) {
+        for (var i = 0; i < this._sections.length; i++) {
+          var section = this._sections[i];
+
+          // Only consider this section if the requested source is in the list of
+          // sources of the consumer.
+          if (section.consumer._findSourceIndex(util$1.getArg(aArgs, 'source')) === -1) {
+            continue;
+          }
+          var generatedPosition = section.consumer.generatedPositionFor(aArgs);
+          if (generatedPosition) {
+            var ret = {
+              line: generatedPosition.line +
+                (section.generatedOffset.generatedLine - 1),
+              column: generatedPosition.column +
+                (section.generatedOffset.generatedLine === generatedPosition.line
+                 ? section.generatedOffset.generatedColumn - 1
+                 : 0)
+            };
+            return ret;
+          }
+        }
+
+        return {
+          line: null,
+          column: null
+        };
+      };
+
+    /**
+     * Parse the mappings in a string in to a data structure which we can easily
+     * query (the ordered arrays in the `this.__generatedMappings` and
+     * `this.__originalMappings` properties).
+     */
+    IndexedSourceMapConsumer.prototype._parseMappings =
+      function IndexedSourceMapConsumer_parseMappings(aStr, aSourceRoot) {
+        this.__generatedMappings = [];
+        this.__originalMappings = [];
+        for (var i = 0; i < this._sections.length; i++) {
+          var section = this._sections[i];
+          var sectionMappings = section.consumer._generatedMappings;
+          for (var j = 0; j < sectionMappings.length; j++) {
+            var mapping = sectionMappings[j];
+
+            var source = section.consumer._sources.at(mapping.source);
+            if(source !== null) {
+              source = util$1.computeSourceURL(section.consumer.sourceRoot, source, this._sourceMapURL);
+            }
+            this._sources.add(source);
+            source = this._sources.indexOf(source);
+
+            var name = null;
+            if (mapping.name) {
+              name = section.consumer._names.at(mapping.name);
+              this._names.add(name);
+              name = this._names.indexOf(name);
+            }
+
+            // The mappings coming from the consumer for the section have
+            // generated positions relative to the start of the section, so we
+            // need to offset them to be relative to the start of the concatenated
+            // generated file.
+            var adjustedMapping = {
+              source: source,
+              generatedLine: mapping.generatedLine +
+                (section.generatedOffset.generatedLine - 1),
+              generatedColumn: mapping.generatedColumn +
+                (section.generatedOffset.generatedLine === mapping.generatedLine
+                ? section.generatedOffset.generatedColumn - 1
+                : 0),
+              originalLine: mapping.originalLine,
+              originalColumn: mapping.originalColumn,
+              name: name
+            };
+
+            this.__generatedMappings.push(adjustedMapping);
+            if (typeof adjustedMapping.originalLine === 'number') {
+              this.__originalMappings.push(adjustedMapping);
+            }
+          }
+        }
+
+        quickSort(this.__generatedMappings, util$1.compareByGeneratedPositionsDeflated);
+        quickSort(this.__originalMappings, util$1.compareByOriginalPositions);
+      };
+
+    sourceMapConsumer.IndexedSourceMapConsumer = IndexedSourceMapConsumer;
+
+    var sourceNode = {};
+
+    /* -*- Mode: js; js-indent-level: 2; -*- */
+
+    /*
+     * Copyright 2011 Mozilla Foundation and contributors
+     * Licensed under the New BSD license. See LICENSE or:
+     * http://opensource.org/licenses/BSD-3-Clause
+     */
+
+    var SourceMapGenerator$3 = sourceMapGenerator.SourceMapGenerator;
+    var util = util$5;
+
+    // Matches a Windows-style `\r\n` newline or a `\n` newline used by all other
+    // operating systems these days (capturing the result).
+    var REGEX_NEWLINE = /(\r?\n)/;
+
+    // Newline character code for charCodeAt() comparisons
+    var NEWLINE_CODE = 10;
+
+    // Private symbol for identifying `SourceNode`s when multiple versions of
+    // the source-map library are loaded. This MUST NOT CHANGE across
+    // versions!
+    var isSourceNode = "$$$isSourceNode$$$";
+
+    /**
+     * SourceNodes provide a way to abstract over interpolating/concatenating
+     * snippets of generated JavaScript source code while maintaining the line and
+     * column information associated with the original source code.
+     *
+     * @param aLine The original line number.
+     * @param aColumn The original column number.
+     * @param aSource The original source's filename.
+     * @param aChunks Optional. An array of strings which are snippets of
+     *        generated JS, or other SourceNodes.
+     * @param aName The original identifier.
+     */
+    function SourceNode(aLine, aColumn, aSource, aChunks, aName) {
+      this.children = [];
+      this.sourceContents = {};
+      this.line = aLine == null ? null : aLine;
+      this.column = aColumn == null ? null : aColumn;
+      this.source = aSource == null ? null : aSource;
+      this.name = aName == null ? null : aName;
+      this[isSourceNode] = true;
+      if (aChunks != null) this.add(aChunks);
+    }
+
+    /**
+     * Creates a SourceNode from generated code and a SourceMapConsumer.
+     *
+     * @param aGeneratedCode The generated code
+     * @param aSourceMapConsumer The SourceMap for the generated code
+     * @param aRelativePath Optional. The path that relative sources in the
+     *        SourceMapConsumer should be relative to.
+     */
+    SourceNode.fromStringWithSourceMap =
+      function SourceNode_fromStringWithSourceMap(aGeneratedCode, aSourceMapConsumer, aRelativePath) {
+        // The SourceNode we want to fill with the generated code
+        // and the SourceMap
+        var node = new SourceNode();
+
+        // All even indices of this array are one line of the generated code,
+        // while all odd indices are the newlines between two adjacent lines
+        // (since `REGEX_NEWLINE` captures its match).
+        // Processed fragments are accessed by calling `shiftNextLine`.
+        var remainingLines = aGeneratedCode.split(REGEX_NEWLINE);
+        var remainingLinesIndex = 0;
+        var shiftNextLine = function() {
+          var lineContents = getNextLine();
+          // The last line of a file might not have a newline.
+          var newLine = getNextLine() || "";
+          return lineContents + newLine;
+
+          function getNextLine() {
+            return remainingLinesIndex < remainingLines.length ?
+                remainingLines[remainingLinesIndex++] : undefined;
+          }
+        };
+
+        // We need to remember the position of "remainingLines"
+        var lastGeneratedLine = 1, lastGeneratedColumn = 0;
+
+        // The generate SourceNodes we need a code range.
+        // To extract it current and last mapping is used.
+        // Here we store the last mapping.
+        var lastMapping = null;
+
+        aSourceMapConsumer.eachMapping(function (mapping) {
+          if (lastMapping !== null) {
+            // We add the code from "lastMapping" to "mapping":
+            // First check if there is a new line in between.
+            if (lastGeneratedLine < mapping.generatedLine) {
+              // Associate first line with "lastMapping"
+              addMappingWithCode(lastMapping, shiftNextLine());
+              lastGeneratedLine++;
+              lastGeneratedColumn = 0;
+              // The remaining code is added without mapping
+            } else {
+              // There is no new line in between.
+              // Associate the code between "lastGeneratedColumn" and
+              // "mapping.generatedColumn" with "lastMapping"
+              var nextLine = remainingLines[remainingLinesIndex] || '';
+              var code = nextLine.substr(0, mapping.generatedColumn -
+                                            lastGeneratedColumn);
+              remainingLines[remainingLinesIndex] = nextLine.substr(mapping.generatedColumn -
+                                                  lastGeneratedColumn);
+              lastGeneratedColumn = mapping.generatedColumn;
+              addMappingWithCode(lastMapping, code);
+              // No more remaining code, continue
+              lastMapping = mapping;
+              return;
+            }
+          }
+          // We add the generated code until the first mapping
+          // to the SourceNode without any mapping.
+          // Each line is added as separate string.
+          while (lastGeneratedLine < mapping.generatedLine) {
+            node.add(shiftNextLine());
+            lastGeneratedLine++;
+          }
+          if (lastGeneratedColumn < mapping.generatedColumn) {
+            var nextLine = remainingLines[remainingLinesIndex] || '';
+            node.add(nextLine.substr(0, mapping.generatedColumn));
+            remainingLines[remainingLinesIndex] = nextLine.substr(mapping.generatedColumn);
+            lastGeneratedColumn = mapping.generatedColumn;
+          }
+          lastMapping = mapping;
+        }, this);
+        // We have processed all mappings.
+        if (remainingLinesIndex < remainingLines.length) {
+          if (lastMapping) {
+            // Associate the remaining code in the current line with "lastMapping"
+            addMappingWithCode(lastMapping, shiftNextLine());
+          }
+          // and add the remaining lines without any mapping
+          node.add(remainingLines.splice(remainingLinesIndex).join(""));
+        }
+
+        // Copy sourcesContent into SourceNode
+        aSourceMapConsumer.sources.forEach(function (sourceFile) {
+          var content = aSourceMapConsumer.sourceContentFor(sourceFile);
+          if (content != null) {
+            if (aRelativePath != null) {
+              sourceFile = util.join(aRelativePath, sourceFile);
+            }
+            node.setSourceContent(sourceFile, content);
+          }
+        });
+
+        return node;
+
+        function addMappingWithCode(mapping, code) {
+          if (mapping === null || mapping.source === undefined) {
+            node.add(code);
+          } else {
+            var source = aRelativePath
+              ? util.join(aRelativePath, mapping.source)
+              : mapping.source;
+            node.add(new SourceNode(mapping.originalLine,
+                                    mapping.originalColumn,
+                                    source,
+                                    code,
+                                    mapping.name));
+          }
+        }
+      };
+
+    /**
+     * Add a chunk of generated JS to this source node.
+     *
+     * @param aChunk A string snippet of generated JS code, another instance of
+     *        SourceNode, or an array where each member is one of those things.
+     */
+    SourceNode.prototype.add = function SourceNode_add(aChunk) {
+      if (Array.isArray(aChunk)) {
+        aChunk.forEach(function (chunk) {
+          this.add(chunk);
+        }, this);
+      }
+      else if (aChunk[isSourceNode] || typeof aChunk === "string") {
+        if (aChunk) {
+          this.children.push(aChunk);
+        }
+      }
+      else {
+        throw new TypeError(
+          "Expected a SourceNode, string, or an array of SourceNodes and strings. Got " + aChunk
+        );
+      }
+      return this;
+    };
+
+    /**
+     * Add a chunk of generated JS to the beginning of this source node.
+     *
+     * @param aChunk A string snippet of generated JS code, another instance of
+     *        SourceNode, or an array where each member is one of those things.
+     */
+    SourceNode.prototype.prepend = function SourceNode_prepend(aChunk) {
+      if (Array.isArray(aChunk)) {
+        for (var i = aChunk.length-1; i >= 0; i--) {
+          this.prepend(aChunk[i]);
+        }
+      }
+      else if (aChunk[isSourceNode] || typeof aChunk === "string") {
+        this.children.unshift(aChunk);
+      }
+      else {
+        throw new TypeError(
+          "Expected a SourceNode, string, or an array of SourceNodes and strings. Got " + aChunk
+        );
+      }
+      return this;
+    };
+
+    /**
+     * Walk over the tree of JS snippets in this node and its children. The
+     * walking function is called once for each snippet of JS and is passed that
+     * snippet and the its original associated source's line/column location.
+     *
+     * @param aFn The traversal function.
+     */
+    SourceNode.prototype.walk = function SourceNode_walk(aFn) {
+      var chunk;
+      for (var i = 0, len = this.children.length; i < len; i++) {
+        chunk = this.children[i];
+        if (chunk[isSourceNode]) {
+          chunk.walk(aFn);
+        }
+        else {
+          if (chunk !== '') {
+            aFn(chunk, { source: this.source,
+                         line: this.line,
+                         column: this.column,
+                         name: this.name });
+          }
+        }
+      }
+    };
+
+    /**
+     * Like `String.prototype.join` except for SourceNodes. Inserts `aStr` between
+     * each of `this.children`.
+     *
+     * @param aSep The separator.
+     */
+    SourceNode.prototype.join = function SourceNode_join(aSep) {
+      var newChildren;
+      var i;
+      var len = this.children.length;
+      if (len > 0) {
+        newChildren = [];
+        for (i = 0; i < len-1; i++) {
+          newChildren.push(this.children[i]);
+          newChildren.push(aSep);
+        }
+        newChildren.push(this.children[i]);
+        this.children = newChildren;
+      }
+      return this;
+    };
+
+    /**
+     * Call String.prototype.replace on the very right-most source snippet. Useful
+     * for trimming whitespace from the end of a source node, etc.
+     *
+     * @param aPattern The pattern to replace.
+     * @param aReplacement The thing to replace the pattern with.
+     */
+    SourceNode.prototype.replaceRight = function SourceNode_replaceRight(aPattern, aReplacement) {
+      var lastChild = this.children[this.children.length - 1];
+      if (lastChild[isSourceNode]) {
+        lastChild.replaceRight(aPattern, aReplacement);
+      }
+      else if (typeof lastChild === 'string') {
+        this.children[this.children.length - 1] = lastChild.replace(aPattern, aReplacement);
+      }
+      else {
+        this.children.push(''.replace(aPattern, aReplacement));
+      }
+      return this;
+    };
+
+    /**
+     * Set the source content for a source file. This will be added to the SourceMapGenerator
+     * in the sourcesContent field.
+     *
+     * @param aSourceFile The filename of the source file
+     * @param aSourceContent The content of the source file
+     */
+    SourceNode.prototype.setSourceContent =
+      function SourceNode_setSourceContent(aSourceFile, aSourceContent) {
+        this.sourceContents[util.toSetString(aSourceFile)] = aSourceContent;
+      };
+
+    /**
+     * Walk over the tree of SourceNodes. The walking function is called for each
+     * source file content and is passed the filename and source content.
+     *
+     * @param aFn The traversal function.
+     */
+    SourceNode.prototype.walkSourceContents =
+      function SourceNode_walkSourceContents(aFn) {
+        for (var i = 0, len = this.children.length; i < len; i++) {
+          if (this.children[i][isSourceNode]) {
+            this.children[i].walkSourceContents(aFn);
+          }
+        }
+
+        var sources = Object.keys(this.sourceContents);
+        for (var i = 0, len = sources.length; i < len; i++) {
+          aFn(util.fromSetString(sources[i]), this.sourceContents[sources[i]]);
+        }
+      };
+
+    /**
+     * Return the string representation of this source node. Walks over the tree
+     * and concatenates all the various snippets together to one string.
+     */
+    SourceNode.prototype.toString = function SourceNode_toString() {
+      var str = "";
+      this.walk(function (chunk) {
+        str += chunk;
+      });
+      return str;
+    };
+
+    /**
+     * Returns the string representation of this source node along with a source
+     * map.
+     */
+    SourceNode.prototype.toStringWithSourceMap = function SourceNode_toStringWithSourceMap(aArgs) {
+      var generated = {
+        code: "",
+        line: 1,
+        column: 0
+      };
+      var map = new SourceMapGenerator$3(aArgs);
+      var sourceMappingActive = false;
+      var lastOriginalSource = null;
+      var lastOriginalLine = null;
+      var lastOriginalColumn = null;
+      var lastOriginalName = null;
+      this.walk(function (chunk, original) {
+        generated.code += chunk;
+        if (original.source !== null
+            && original.line !== null
+            && original.column !== null) {
+          if(lastOriginalSource !== original.source
+             || lastOriginalLine !== original.line
+             || lastOriginalColumn !== original.column
+             || lastOriginalName !== original.name) {
+            map.addMapping({
+              source: original.source,
+              original: {
+                line: original.line,
+                column: original.column
+              },
+              generated: {
+                line: generated.line,
+                column: generated.column
+              },
+              name: original.name
+            });
+          }
+          lastOriginalSource = original.source;
+          lastOriginalLine = original.line;
+          lastOriginalColumn = original.column;
+          lastOriginalName = original.name;
+          sourceMappingActive = true;
+        } else if (sourceMappingActive) {
+          map.addMapping({
+            generated: {
+              line: generated.line,
+              column: generated.column
+            }
+          });
+          lastOriginalSource = null;
+          sourceMappingActive = false;
+        }
+        for (var idx = 0, length = chunk.length; idx < length; idx++) {
+          if (chunk.charCodeAt(idx) === NEWLINE_CODE) {
+            generated.line++;
+            generated.column = 0;
+            // Mappings end at eol
+            if (idx + 1 === length) {
+              lastOriginalSource = null;
+              sourceMappingActive = false;
+            } else if (sourceMappingActive) {
+              map.addMapping({
+                source: original.source,
+                original: {
+                  line: original.line,
+                  column: original.column
+                },
+                generated: {
+                  line: generated.line,
+                  column: generated.column
+                },
+                name: original.name
+              });
+            }
+          } else {
+            generated.column++;
+          }
+        }
+      });
+      this.walkSourceContents(function (sourceFile, sourceContent) {
+        map.setSourceContent(sourceFile, sourceContent);
+      });
+
+      return { code: generated.code, map: map };
+    };
+
+    sourceNode.SourceNode = SourceNode;
+
+    /*
+     * Copyright 2009-2011 Mozilla Foundation and contributors
+     * Licensed under the New BSD license. See LICENSE.txt or:
+     * http://opensource.org/licenses/BSD-3-Clause
+     */
+
+    sourceMap.SourceMapGenerator = sourceMapGenerator.SourceMapGenerator;
+    sourceMap.SourceMapConsumer = sourceMapConsumer.SourceMapConsumer;
+    sourceMap.SourceNode = sourceNode.SourceNode;
+
+    let { existsSync, readFileSync } = require$$0$1;
+    let { dirname: dirname$1, join } = require$$1;
+    let { SourceMapConsumer: SourceMapConsumer$2, SourceMapGenerator: SourceMapGenerator$2 } = sourceMap;
+
+    function fromBase64(str) {
+      if (Buffer) {
+        return Buffer.from(str, 'base64').toString()
+      } else {
+        /* c8 ignore next 2 */
+        return window.atob(str)
+      }
+    }
+
+    let PreviousMap$2 = class PreviousMap {
+      constructor(css, opts) {
+        if (opts.map === false) return
+        if (opts.unsafeMap) this.unsafeMap = true;
+        this.loadAnnotation(css);
+        this.inline = this.startWith(this.annotation, 'data:');
+
+        let prev = opts.map ? opts.map.prev : undefined;
+        let text = this.loadMap(opts.from, prev);
+        if (!this.mapFile && opts.from) {
+          this.mapFile = opts.from;
+        }
+        if (this.mapFile) this.root = dirname$1(this.mapFile);
+        if (text) this.text = text;
+      }
+
+      consumer() {
+        if (!this.consumerCache) {
+          this.consumerCache = new SourceMapConsumer$2(this.json || this.text);
+        }
+        return this.consumerCache
+      }
+
+      decodeInline(text) {
+        let baseCharsetUri = /^data:application\/json;charset=utf-?8;base64,/;
+        let baseUri = /^data:application\/json;base64,/;
+        let charsetUri = /^data:application\/json;charset=utf-?8,/;
+        let uri = /^data:application\/json,/;
+
+        let uriMatch = text.match(charsetUri) || text.match(uri);
+        if (uriMatch) {
+          return decodeURIComponent(text.substr(uriMatch[0].length))
+        }
+
+        let baseUriMatch = text.match(baseCharsetUri) || text.match(baseUri);
+        if (baseUriMatch) {
+          return fromBase64(text.substr(baseUriMatch[0].length))
+        }
+
+        let encoding = text.slice('data:application/json;'.length);
+        encoding = encoding.slice(0, encoding.indexOf(','));
+        throw new Error('Unsupported source map encoding ' + encoding)
+      }
+
+      getAnnotationURL(sourceMapString) {
+        return sourceMapString.replace(/^\/\*\s*# sourceMappingURL=/, '').trim()
+      }
+
+      isMap(map) {
+        if (typeof map !== 'object') return false
+        return (
+          typeof map.mappings === 'string' ||
+          typeof map._mappings === 'string' ||
+          Array.isArray(map.sections)
+        )
+      }
+
+      loadAnnotation(css) {
+        let comments = css.match(/\/\*\s*# sourceMappingURL=/g);
+        if (!comments) return
+
+        // sourceMappingURLs from comments, strings, etc.
+        let start = css.lastIndexOf(comments.pop());
+        let end = css.indexOf('*/', start);
+
+        if (start > -1 && end > -1) {
+          // Locate the last sourceMappingURL to avoid pickin
+          this.annotation = this.getAnnotationURL(css.substring(start, end));
+        }
+      }
+
+      loadFile(path, cssFile, trusted) {
+        /* c8 ignore next 5 */
+        if (!trusted && !this.unsafeMap) {
+          if (!/\.map$/i.test(path)) {
+            return undefined
+          }
+        }
+        this.root = dirname$1(path);
+        if (existsSync(path)) {
+          this.mapFile = path;
+          return readFileSync(path, 'utf-8').toString().trim()
+        }
+      }
+
+      loadMap(file, prev) {
+        if (prev === false) return false
+
+        if (prev) {
+          if (typeof prev === 'string') {
+            return prev
+          } else if (typeof prev === 'function') {
+            let prevPath = prev(file);
+            if (prevPath) {
+              let map = this.loadFile(prevPath, file, true);
+              if (!map) {
+                throw new Error(
+                  'Unable to load previous source map: ' + prevPath.toString()
+                )
+              }
+              return map
+            }
+          } else if (prev instanceof SourceMapConsumer$2) {
+            return SourceMapGenerator$2.fromSourceMap(prev).toString()
+          } else if (prev instanceof SourceMapGenerator$2) {
+            return prev.toString()
+          } else if (this.isMap(prev)) {
+            return JSON.stringify(prev)
+          } else {
+            throw new Error(
+              'Unsupported previous source map format: ' + prev.toString()
+            )
+          }
+        } else if (this.inline) {
+          return this.decodeInline(this.annotation)
+        } else if (this.annotation) {
+          let map = this.annotation;
+          if (file) map = join(dirname$1(file), map);
+          let unknown = this.loadFile(map, file, false);
+          if (unknown) {
+            try {
+              /* c8 ignore next 4 */
+              this.json = JSON.parse(unknown.replace(/^\)]}'[^\n]*\n/, ''));
+            } catch {
+              return undefined
+            }
+          }
+          return unknown
+        }
+      }
+
+      startWith(string, start) {
+        if (!string) return false
+        return string.substr(0, start.length) === start
+      }
+
+      withContent() {
+        return !!(
+          this.consumer().sourcesContent &&
+          this.consumer().sourcesContent.length > 0
+        )
+      }
+    };
+
+    var previousMap = PreviousMap$2;
+    PreviousMap$2.default = PreviousMap$2;
+
+    let { nanoid } = nonSecure;
+    let { isAbsolute, resolve: resolve$1 } = require$$1;
+    let { SourceMapConsumer: SourceMapConsumer$1, SourceMapGenerator: SourceMapGenerator$1 } = sourceMap;
+    let { fileURLToPath, pathToFileURL: pathToFileURL$1 } = require$$3;
+
+    let CssSyntaxError$1 = cssSyntaxError;
+    let PreviousMap$1 = previousMap;
+    let terminalHighlight = terminalHighlight_1;
+
+    let lineToIndexCache = Symbol('lineToIndexCache');
+
+    let sourceMapAvailable$1 = Boolean(SourceMapConsumer$1 && SourceMapGenerator$1);
+    let pathAvailable$1 = Boolean(resolve$1 && isAbsolute);
+
+    function getLineToIndex(input) {
+      if (input[lineToIndexCache]) return input[lineToIndexCache]
+      let lines = input.css.split('\n');
+      let lineToIndex = new Array(lines.length);
+      let prevIndex = 0;
+
+      for (let i = 0, l = lines.length; i < l; i++) {
+        lineToIndex[i] = prevIndex;
+        prevIndex += lines[i].length + 1;
+      }
+
+      input[lineToIndexCache] = lineToIndex;
+      return lineToIndex
+    }
+
+    let Input$4 = class Input {
+      get from() {
+        return this.file || this.id
+      }
+
+      constructor(css, opts = {}) {
+        if (
+          css === null ||
+          typeof css === 'undefined' ||
+          (typeof css === 'object' && !css.toString)
+        ) {
+          throw new Error(`PostCSS received ${css} instead of CSS string`)
+        }
+
+        this.css = css.toString();
+
+        if (this.css[0] === '\uFEFF' || this.css[0] === '\uFFFE') {
+          this.hasBOM = true;
+          this.css = this.css.slice(1);
+        } else {
+          this.hasBOM = false;
+        }
+
+        this.document = this.css;
+        if (opts.document) this.document = opts.document.toString();
+
+        if (opts.from) {
+          if (
+            !pathAvailable$1 ||
+            /^\w+:\/\//.test(opts.from) ||
+            isAbsolute(opts.from)
+          ) {
+            this.file = opts.from;
+          } else {
+            this.file = resolve$1(opts.from);
+          }
+        }
+
+        if (pathAvailable$1 && sourceMapAvailable$1) {
+          let map = new PreviousMap$1(this.css, opts);
+          if (map.text) {
+            this.map = map;
+            let file = map.consumer().file;
+            if (!this.file && file) this.file = this.mapResolve(file);
+          }
+        }
+
+        if (!this.file) {
+          this.id = '<input css ' + nanoid(6) + '>';
+        }
+        if (this.map) this.map.file = this.from;
+      }
+
+      error(message, line, column, opts = {}) {
+        let endColumn, endLine, endOffset, offset, result;
+
+        if (line && typeof line === 'object') {
+          let start = line;
+          let end = column;
+          if (typeof start.offset === 'number') {
+            offset = start.offset;
+            let pos = this.fromOffset(offset);
+            line = pos.line;
+            column = pos.col;
+          } else {
+            line = start.line;
+            column = start.column;
+            offset = this.fromLineAndColumn(line, column);
+          }
+          if (typeof end.offset === 'number') {
+            endOffset = end.offset;
+            let pos = this.fromOffset(endOffset);
+            endLine = pos.line;
+            endColumn = pos.col;
+          } else {
+            endLine = end.line;
+            endColumn = end.column;
+            endOffset = this.fromLineAndColumn(end.line, end.column);
+          }
+        } else if (!column) {
+          offset = line;
+          let pos = this.fromOffset(offset);
+          line = pos.line;
+          column = pos.col;
+        } else {
+          offset = this.fromLineAndColumn(line, column);
+        }
+
+        let origin = this.origin(line, column, endLine, endColumn);
+        if (origin) {
+          result = new CssSyntaxError$1(
+            message,
+            origin.endLine === undefined
+              ? origin.line
+              : { column: origin.column, line: origin.line },
+            origin.endLine === undefined
+              ? origin.column
+              : { column: origin.endColumn, line: origin.endLine },
+            origin.source,
+            origin.file,
+            opts.plugin
+          );
+        } else {
+          result = new CssSyntaxError$1(
+            message,
+            endLine === undefined ? line : { column, line },
+            endLine === undefined ? column : { column: endColumn, line: endLine },
+            this.css,
+            this.file,
+            opts.plugin
+          );
+        }
+
+        result.input = {
+          column,
+          endColumn,
+          endLine,
+          endOffset,
+          line,
+          offset,
+          source: this.css
+        };
+        if (this.file) {
+          if (pathToFileURL$1) {
+            result.input.url = pathToFileURL$1(this.file).toString();
+          }
+          result.input.file = this.file;
+        }
+
+        return result
+      }
+
+      fromLineAndColumn(line, column) {
+        let lineToIndex = getLineToIndex(this);
+        let index = lineToIndex[line - 1];
+        return index + column - 1
+      }
+
+      fromOffset(offset) {
+        let lineToIndex = getLineToIndex(this);
+        let lastLine = lineToIndex[lineToIndex.length - 1];
+
+        let min = 0;
+        if (offset >= lastLine) {
+          min = lineToIndex.length - 1;
+        } else {
+          let max = lineToIndex.length - 2;
+          let mid;
+          while (min < max) {
+            mid = min + ((max - min) >> 1);
+            if (offset < lineToIndex[mid]) {
+              max = mid - 1;
+            } else if (offset >= lineToIndex[mid + 1]) {
+              min = mid + 1;
+            } else {
+              min = mid;
+              break
+            }
+          }
+        }
+        return {
+          col: offset - lineToIndex[min] + 1,
+          line: min + 1
+        }
+      }
+
+      mapResolve(file) {
+        if (/^\w+:\/\//.test(file)) {
+          return file
+        }
+        return resolve$1(this.map.consumer().sourceRoot || this.map.root || '.', file)
+      }
+
+      origin(line, column, endLine, endColumn) {
+        if (!this.map) return false
+        let consumer = this.map.consumer();
+
+        let from = consumer.originalPositionFor({ column, line });
+        if (!from.source) return false
+
+        let to;
+        if (typeof endLine === 'number') {
+          to = consumer.originalPositionFor({ column: endColumn, line: endLine });
+        }
+
+        let fromUrl;
+
+        if (isAbsolute(from.source)) {
+          fromUrl = pathToFileURL$1(from.source);
+        } else {
+          fromUrl = new URL(
+            from.source,
+            this.map.consumer().sourceRoot || pathToFileURL$1(this.map.mapFile)
+          );
+        }
+
+        let result = {
+          column: from.column,
+          endColumn: to && to.column,
+          endLine: to && to.line,
+          line: from.line,
+          url: fromUrl.toString()
+        };
+
+        if (fromUrl.protocol === 'file:') {
+          if (fileURLToPath) {
+            result.file = fileURLToPath(fromUrl);
+          } else {
+            /* c8 ignore next 2 */
+            throw new Error(`file: protocol is not available in this PostCSS build`)
+          }
+        }
+
+        let source = consumer.sourceContentFor(from.source);
+        if (source) result.source = source;
+
+        return result
+      }
+
+      toJSON() {
+        let json = {};
+        for (let name of ['hasBOM', 'css', 'file', 'id']) {
+          if (this[name] != null) {
+            json[name] = this[name];
+          }
+        }
+        if (this.map) {
+          json.map = { ...this.map };
+          if (json.map.consumerCache) {
+            json.map.consumerCache = undefined;
+          }
+        }
+        return json
+      }
+    };
+
+    var input = Input$4;
+    Input$4.default = Input$4;
+
+    if (terminalHighlight && terminalHighlight.registerInput) {
+      terminalHighlight.registerInput(Input$4);
+    }
+
+    let Container$4 = container;
+
+    let LazyResult$3, Processor$2;
+
+    let Root$5 = class Root extends Container$4 {
+      constructor(defaults) {
+        super(defaults);
+        this.type = 'root';
+        if (!this.nodes) this.nodes = [];
+      }
+
+      normalize(child, sample, type) {
+        let nodes = super.normalize(child);
+
+        if (sample) {
+          if (type === 'prepend') {
+            if (this.nodes.length > 1) {
+              sample.raws.before = this.nodes[1].raws.before;
+            } else {
+              delete sample.raws.before;
+            }
+          } else if (this.first !== sample) {
+            for (let node of nodes) {
+              node.raws.before = sample.raws.before;
+            }
+          }
+        }
+
+        return nodes
+      }
+
+      removeChild(child, ignore) {
+        let index = this.index(child);
+
+        if (!ignore && index === 0 && this.nodes.length > 1) {
+          this.nodes[1].raws.before = this.nodes[index].raws.before;
+        }
+
+        return super.removeChild(child)
+      }
+
+      toResult(opts = {}) {
+        let lazy = new LazyResult$3(new Processor$2(), this, opts);
+        return lazy.stringify()
+      }
+    };
+
+    Root$5.registerLazyResult = dependant => {
+      LazyResult$3 = dependant;
+    };
+
+    Root$5.registerProcessor = dependant => {
+      Processor$2 = dependant;
+    };
+
+    var root = Root$5;
+    Root$5.default = Root$5;
+
+    Container$4.registerRoot(Root$5);
+
+    let list$2 = {
+      comma(string) {
+        return list$2.split(string, [','], true)
+      },
+
+      space(string) {
+        let spaces = [' ', '\n', '\t'];
+        return list$2.split(string, spaces)
+      },
+
+      split(string, separators, last) {
+        let array = [];
+        let current = '';
+        let split = false;
+
+        let func = 0;
+        let inQuote = false;
+        let prevQuote = '';
+        let escape = false;
+
+        for (let letter of string) {
+          if (escape) {
+            escape = false;
+          } else if (letter === '\\') {
+            escape = true;
+          } else if (inQuote) {
+            if (letter === prevQuote) {
+              inQuote = false;
+            }
+          } else if (letter === '"' || letter === "'") {
+            inQuote = true;
+            prevQuote = letter;
+          } else if (letter === '(') {
+            func += 1;
+          } else if (letter === ')') {
+            if (func > 0) func -= 1;
+          } else if (func === 0) {
+            if (separators.includes(letter)) split = true;
+          }
+
+          if (split) {
+            if (current !== '') array.push(current.trim());
+            current = '';
+            split = false;
+          } else {
+            current += letter;
+          }
+        }
+
+        if (last || current !== '') array.push(current.trim());
+        return array
+      }
+    };
+
+    var list_1 = list$2;
+    list$2.default = list$2;
+
+    let Container$3 = container;
+    let list$1 = list_1;
+
+    let Rule$3 = class Rule extends Container$3 {
+      get selectors() {
+        return list$1.comma(this.selector)
+      }
+
+      set selectors(values) {
+        let match = this.selector ? this.selector.match(/,\s*/) : null;
+        let sep = match ? match[0] : ',' + this.raw('between', 'beforeOpen');
+        this.selector = values.join(sep);
+      }
+
+      constructor(defaults) {
+        super(defaults);
+        this.type = 'rule';
+        if (!this.nodes) this.nodes = [];
+      }
+    };
+
+    var rule = Rule$3;
+    Rule$3.default = Rule$3;
+
+    Container$3.registerRule(Rule$3);
+
+    let AtRule$2 = atRule;
+    let Comment$2 = comment;
+    let Declaration$2 = declaration;
+    let Input$3 = input;
+    let PreviousMap = previousMap;
+    let Root$4 = root;
+    let Rule$2 = rule;
+
+    function fromJSON$1(json, inputs) {
+      if (Array.isArray(json)) return json.map(n => fromJSON$1(n))
+
+      let { inputs: ownInputs, ...defaults } = json;
+      if (ownInputs) {
+        inputs = [];
+        for (let input of ownInputs) {
+          let inputHydrated = { ...input, __proto__: Input$3.prototype };
+          if (inputHydrated.map) {
+            inputHydrated.map = {
+              ...inputHydrated.map,
+              __proto__: PreviousMap.prototype
+            };
+          }
+          inputs.push(inputHydrated);
+        }
+      }
+      if (defaults.nodes) {
+        defaults.nodes = json.nodes.map(n => fromJSON$1(n, inputs));
+      }
+      if (defaults.source) {
+        let { inputId, ...source } = defaults.source;
+        defaults.source = source;
+        if (inputId != null) {
+          defaults.source.input = inputs[inputId];
+        }
+      }
+      if (defaults.type === 'root') {
+        return new Root$4(defaults)
+      } else if (defaults.type === 'decl') {
+        return new Declaration$2(defaults)
+      } else if (defaults.type === 'rule') {
+        return new Rule$2(defaults)
+      } else if (defaults.type === 'comment') {
+        return new Comment$2(defaults)
+      } else if (defaults.type === 'atrule') {
+        return new AtRule$2(defaults)
+      } else {
+        throw new Error('Unknown node type: ' + json.type)
+      }
+    }
+
+    var fromJSON_1 = fromJSON$1;
+    fromJSON$1.default = fromJSON$1;
+
+    let { dirname, relative, resolve, sep } = require$$1;
+    let { SourceMapConsumer, SourceMapGenerator } = sourceMap;
+    let { pathToFileURL } = require$$3;
+
+    let Input$2 = input;
+
+    let sourceMapAvailable = Boolean(SourceMapConsumer && SourceMapGenerator);
+    let pathAvailable = Boolean(dirname && resolve && relative && sep);
+
+    let MapGenerator$2 = class MapGenerator {
+      constructor(stringify, root, opts, cssString) {
+        this.stringify = stringify;
+        this.mapOpts = opts.map || {};
+        this.root = root;
+        this.opts = opts;
+        this.css = cssString;
+        this.originalCSS = cssString;
+        this.usesFileUrls = !this.mapOpts.from && this.mapOpts.absolute;
+
+        this.memoizedFileURLs = new Map();
+        this.memoizedPaths = new Map();
+        this.memoizedURLs = new Map();
+      }
+
+      addAnnotation() {
+        let content;
+
+        if (this.isInline()) {
+          content =
+            'data:application/json;base64,' + this.toBase64(this.map.toString());
+        } else if (typeof this.mapOpts.annotation === 'string') {
+          content = this.mapOpts.annotation;
+        } else if (typeof this.mapOpts.annotation === 'function') {
+          content = this.mapOpts.annotation(this.opts.to, this.root);
+        } else {
+          content = this.outputFile() + '.map';
+        }
+        let eol = '\n';
+        if (this.css.includes('\r\n')) eol = '\r\n';
+
+        this.css += eol + '/*# sourceMappingURL=' + content + ' */';
+      }
+
+      applyPrevMaps() {
+        for (let prev of this.previous()) {
+          let from = this.toUrl(this.path(prev.file));
+          let root = prev.root || dirname(prev.file);
+          let map;
+
+          if (this.mapOpts.sourcesContent === false) {
+            map = new SourceMapConsumer(prev.text);
+            if (map.sourcesContent) {
+              map.sourcesContent = null;
+            }
+          } else {
+            map = prev.consumer();
+          }
+
+          this.map.applySourceMap(map, from, this.toUrl(this.path(root)));
+        }
+      }
+
+      clearAnnotation() {
+        if (this.mapOpts.annotation === false) return
+
+        if (this.root) {
+          let node;
+          for (let i = this.root.nodes.length - 1; i >= 0; i--) {
+            node = this.root.nodes[i];
+            if (node.type !== 'comment') continue
+            if (node.text.startsWith('# sourceMappingURL=')) {
+              this.root.removeChild(i);
+            }
+          }
+        } else if (this.css) {
+          let startIndex;
+          while ((startIndex = this.css.lastIndexOf('/*#')) !== -1) {
+            let endIndex = this.css.indexOf('*/', startIndex + 3);
+            if (endIndex === -1) break
+            while (startIndex > 0 && this.css[startIndex - 1] === '\n') {
+              startIndex--;
+            }
+            this.css = this.css.slice(0, startIndex) + this.css.slice(endIndex + 2);
+          }
+        }
+      }
+
+      generate() {
+        this.clearAnnotation();
+        if (pathAvailable && sourceMapAvailable && this.isMap()) {
+          return this.generateMap()
+        } else {
+          let result = '';
+          this.stringify(this.root, i => {
+            result += i;
+          });
+          return [result]
+        }
+      }
+
+      generateMap() {
+        if (this.root) {
+          this.generateString();
+        } else if (this.previous().length === 1) {
+          let prev = this.previous()[0].consumer();
+          prev.file = this.outputFile();
+          this.map = SourceMapGenerator.fromSourceMap(prev, {
+            ignoreInvalidMapping: true
+          });
+        } else {
+          this.map = new SourceMapGenerator({
+            file: this.outputFile(),
+            ignoreInvalidMapping: true
+          });
+          this.map.addMapping({
+            generated: { column: 0, line: 1 },
+            original: { column: 0, line: 1 },
+            source: this.opts.from
+              ? this.toUrl(this.path(this.opts.from))
+              : '<no source>'
+          });
+        }
+
+        if (this.isSourcesContent()) this.setSourcesContent();
+        if (this.root && this.previous().length > 0) this.applyPrevMaps();
+        if (this.isAnnotation()) this.addAnnotation();
+
+        if (this.isInline()) {
+          return [this.css]
+        } else {
+          return [this.css, this.map]
+        }
+      }
+
+      generateString() {
+        this.css = '';
+        this.map = new SourceMapGenerator({
+          file: this.outputFile(),
+          ignoreInvalidMapping: true
+        });
+
+        let line = 1;
+        let column = 1;
+
+        let noSource = '<no source>';
+        let mapping = {
+          generated: { column: 0, line: 0 },
+          original: { column: 0, line: 0 },
+          source: ''
+        };
+
+        let last, lines;
+        this.stringify(this.root, (str, node, type) => {
+          this.css += str;
+
+          if (node && type !== 'end') {
+            mapping.generated.line = line;
+            mapping.generated.column = column - 1;
+            if (node.source && node.source.start) {
+              mapping.source = this.sourcePath(node);
+              mapping.original.line = node.source.start.line;
+              mapping.original.column = node.source.start.column - 1;
+              this.map.addMapping(mapping);
+            } else {
+              mapping.source = noSource;
+              mapping.original.line = 1;
+              mapping.original.column = 0;
+              this.map.addMapping(mapping);
+            }
+          }
+
+          lines = str.match(/\n/g);
+          if (lines) {
+            line += lines.length;
+            last = str.lastIndexOf('\n');
+            column = str.length - last;
+          } else {
+            column += str.length;
+          }
+
+          if (node && type !== 'start') {
+            let p = node.parent || { raws: {} };
+            let childless =
+              node.type === 'decl' || (node.type === 'atrule' && !node.nodes);
+            if (!childless || node !== p.last || p.raws.semicolon) {
+              if (node.source && node.source.end) {
+                mapping.source = this.sourcePath(node);
+                mapping.original.line = node.source.end.line;
+                mapping.original.column = node.source.end.column - 1;
+                mapping.generated.line = line;
+                mapping.generated.column = column - 2;
+                this.map.addMapping(mapping);
+              } else {
+                mapping.source = noSource;
+                mapping.original.line = 1;
+                mapping.original.column = 0;
+                mapping.generated.line = line;
+                mapping.generated.column = column - 1;
+                this.map.addMapping(mapping);
+              }
+            }
+          }
+        });
+      }
+
+      isAnnotation() {
+        if (this.isInline()) {
+          return true
+        }
+        if (typeof this.mapOpts.annotation !== 'undefined') {
+          return this.mapOpts.annotation
+        }
+        if (this.previous().length) {
+          return this.previous().some(i => i.annotation)
+        }
+        return true
+      }
+
+      isInline() {
+        if (typeof this.mapOpts.inline !== 'undefined') {
+          return this.mapOpts.inline
+        }
+
+        let annotation = this.mapOpts.annotation;
+        if (typeof annotation !== 'undefined' && annotation !== true) {
+          return false
+        }
+
+        if (this.previous().length) {
+          return this.previous().some(i => i.inline)
+        }
+        return true
+      }
+
+      isMap() {
+        if (typeof this.opts.map !== 'undefined') {
+          return !!this.opts.map
+        }
+        return this.previous().length > 0
+      }
+
+      isSourcesContent() {
+        if (typeof this.mapOpts.sourcesContent !== 'undefined') {
+          return this.mapOpts.sourcesContent
+        }
+        if (this.previous().length) {
+          return this.previous().some(i => i.withContent())
+        }
+        return true
+      }
+
+      outputFile() {
+        if (this.opts.to) {
+          return this.path(this.opts.to)
+        } else if (this.opts.from) {
+          return this.path(this.opts.from)
+        } else {
+          return 'to.css'
+        }
+      }
+
+      path(file) {
+        if (this.mapOpts.absolute) return file
+        if (file.charCodeAt(0) === 60 /* `<` */) return file
+        if (/^\w+:\/\//.test(file)) return file
+        let cached = this.memoizedPaths.get(file);
+        if (cached) return cached
+
+        let from = this.opts.to ? dirname(this.opts.to) : '.';
+
+        if (typeof this.mapOpts.annotation === 'string') {
+          from = dirname(resolve(from, this.mapOpts.annotation));
+        }
+
+        let path = relative(from, file);
+        this.memoizedPaths.set(file, path);
+
+        return path
+      }
+
+      previous() {
+        if (!this.previousMaps) {
+          this.previousMaps = [];
+          if (this.root) {
+            this.root.walk(node => {
+              if (node.source && node.source.input.map) {
+                let map = node.source.input.map;
+                if (!this.previousMaps.includes(map)) {
+                  this.previousMaps.push(map);
+                }
+              }
+            });
+          } else {
+            let input = new Input$2(this.originalCSS, this.opts);
+            if (input.map) this.previousMaps.push(input.map);
+          }
+        }
+
+        return this.previousMaps
+      }
+
+      setSourcesContent() {
+        let already = {};
+        if (this.root) {
+          this.root.walk(node => {
+            if (node.source) {
+              let from = node.source.input.from;
+              if (from && !already[from]) {
+                already[from] = true;
+                let fromUrl = this.usesFileUrls
+                  ? this.toFileUrl(from)
+                  : this.toUrl(this.path(from));
+                this.map.setSourceContent(fromUrl, node.source.input.css);
+              }
+            }
+          });
+        } else if (this.css) {
+          let from = this.opts.from
+            ? this.toUrl(this.path(this.opts.from))
+            : '<no source>';
+          this.map.setSourceContent(from, this.css);
+        }
+      }
+
+      sourcePath(node) {
+        if (this.mapOpts.from) {
+          return this.toUrl(this.mapOpts.from)
+        } else if (this.usesFileUrls) {
+          return this.toFileUrl(node.source.input.from)
+        } else {
+          return this.toUrl(this.path(node.source.input.from))
+        }
+      }
+
+      toBase64(str) {
+        if (Buffer) {
+          return Buffer.from(str).toString('base64')
+        } else {
+          return window.btoa(unescape(encodeURIComponent(str)))
+        }
+      }
+
+      toFileUrl(path) {
+        let cached = this.memoizedFileURLs.get(path);
+        if (cached) return cached
+
+        if (pathToFileURL) {
+          let fileURL = pathToFileURL(path).toString();
+          this.memoizedFileURLs.set(path, fileURL);
+
+          return fileURL
+        } else {
+          throw new Error(
+            '`map.absolute` option is not available in this PostCSS build'
+          )
+        }
+      }
+
+      toUrl(path) {
+        let cached = this.memoizedURLs.get(path);
+        if (cached) return cached
+
+        if (sep === '\\') {
+          path = path.replace(/\\/g, '/');
+        }
+
+        let url = encodeURI(path).replace(/[#?]/g, encodeURIComponent);
+        this.memoizedURLs.set(path, url);
+
+        return url
+      }
+    };
+
+    var mapGenerator = MapGenerator$2;
+
+    let AtRule$1 = atRule;
+    let Comment$1 = comment;
+    let Declaration$1 = declaration;
+    let Root$3 = root;
+    let Rule$1 = rule;
+    let tokenizer = tokenize;
+
+    const SAFE_COMMENT_NEIGHBOR = {
+      empty: true,
+      space: true
+    };
+
+    function findLastWithPosition(tokens) {
+      for (let i = tokens.length - 1; i >= 0; i--) {
+        let token = tokens[i];
+        let pos = token[3] || token[2];
+        if (pos) return pos
+      }
+    }
+
+    let Parser$1 = class Parser {
+      constructor(input) {
+        this.input = input;
+
+        this.root = new Root$3();
+        this.current = this.root;
+        this.spaces = '';
+        this.semicolon = false;
+
+        this.createTokenizer();
+        this.root.source = { input, start: { column: 1, line: 1, offset: 0 } };
+      }
+
+      atrule(token) {
+        let node = new AtRule$1();
+        node.name = token[1].slice(1);
+        if (node.name === '') {
+          this.unnamedAtrule(node, token);
+        }
+        this.init(node, token[2]);
+
+        let type;
+        let prev;
+        let shift;
+        let last = false;
+        let open = false;
+        let params = [];
+        let brackets = [];
+
+        while (!this.tokenizer.endOfFile()) {
+          token = this.tokenizer.nextToken();
+          type = token[0];
+
+          if (type === '(' || type === '[') {
+            brackets.push(type === '(' ? ')' : ']');
+          } else if (type === '{' && brackets.length > 0) {
+            brackets.push('}');
+          } else if (type === brackets[brackets.length - 1]) {
+            brackets.pop();
+          }
+
+          if (brackets.length === 0) {
+            if (type === ';') {
+              node.source.end = this.getPosition(token[2]);
+              node.source.end.offset++;
+              this.semicolon = true;
+              break
+            } else if (type === '{') {
+              open = true;
+              break
+            } else if (type === '}') {
+              if (params.length > 0) {
+                shift = params.length - 1;
+                prev = params[shift];
+                while (prev && prev[0] === 'space') {
+                  prev = params[--shift];
+                }
+                if (prev) {
+                  node.source.end = this.getPosition(prev[3] || prev[2]);
+                  node.source.end.offset++;
+                }
+              }
+              this.end(token);
+              break
+            } else {
+              params.push(token);
+            }
+          } else {
+            params.push(token);
+          }
+
+          if (this.tokenizer.endOfFile()) {
+            last = true;
+            break
+          }
+        }
+
+        node.raws.between = this.spacesAndCommentsFromEnd(params);
+        if (params.length) {
+          node.raws.afterName = this.spacesAndCommentsFromStart(params);
+          this.raw(node, 'params', params);
+          if (last) {
+            token = params[params.length - 1];
+            node.source.end = this.getPosition(token[3] || token[2]);
+            node.source.end.offset++;
+            this.spaces = node.raws.between;
+            node.raws.between = '';
+          }
+        } else {
+          node.raws.afterName = '';
+          node.params = '';
+        }
+
+        if (open) {
+          node.nodes = [];
+          this.current = node;
+        }
+      }
+
+      checkMissedSemicolon(tokens) {
+        let colon = this.colon(tokens);
+        if (colon === false) return
+
+        let founded = 0;
+        let token;
+        for (let j = colon - 1; j >= 0; j--) {
+          token = tokens[j];
+          if (token[0] !== 'space') {
+            founded += 1;
+            if (founded === 2) break
+          }
+        }
+        // If the token is a word, e.g. `!important`, `red` or any other valid property's value.
+        // Then we need to return the colon after that word token. [3] is the "end" colon of that word.
+        // And because we need it after that one we do +1 to get the next one.
+        throw this.input.error(
+          'Missed semicolon',
+          token[0] === 'word' ? token[3] + 1 : token[2]
+        )
+      }
+
+      colon(tokens) {
+        let brackets = 0;
+        let prev, token, type;
+        for (let [i, element] of tokens.entries()) {
+          token = element;
+          type = token[0];
+
+          if (type === '(') {
+            brackets += 1;
+          }
+          if (type === ')') {
+            brackets -= 1;
+          }
+          if (brackets === 0 && type === ':') {
+            if (!prev) {
+              this.doubleColon(token);
+            } else if (prev[0] === 'word' && prev[1] === 'progid') {
+              continue
+            } else {
+              return i
+            }
+          }
+
+          prev = token;
+        }
+        return false
+      }
+
+      comment(token) {
+        let node = new Comment$1();
+        this.init(node, token[2]);
+        node.source.end = this.getPosition(token[3] || token[2]);
+        node.source.end.offset++;
+
+        let text = token[1].slice(2, -2);
+        if (!text.trim()) {
+          node.text = '';
+          node.raws.left = text;
+          node.raws.right = '';
+        } else {
+          let match = text.match(/^(\s*)([^]*\S)(\s*)$/);
+          node.text = match[2];
+          node.raws.left = match[1];
+          node.raws.right = match[3];
+        }
+      }
+
+      createTokenizer() {
+        this.tokenizer = tokenizer(this.input);
+      }
+
+      decl(tokens, customProperty) {
+        let node = new Declaration$1();
+        this.init(node, tokens[0][2]);
+
+        let last = tokens[tokens.length - 1];
+        if (last[0] === ';') {
+          this.semicolon = true;
+          tokens.pop();
+        }
+
+        node.source.end = this.getPosition(
+          last[3] || last[2] || findLastWithPosition(tokens)
+        );
+        node.source.end.offset++;
+
+        while (tokens[0][0] !== 'word') {
+          if (tokens.length === 1) this.unknownWord(tokens);
+          node.raws.before += tokens.shift()[1];
+        }
+        node.source.start = this.getPosition(tokens[0][2]);
+
+        node.prop = '';
+        while (tokens.length) {
+          let type = tokens[0][0];
+          if (type === ':' || type === 'space' || type === 'comment') {
+            break
+          }
+          node.prop += tokens.shift()[1];
+        }
+
+        node.raws.between = '';
+
+        let token;
+        while (tokens.length) {
+          token = tokens.shift();
+
+          if (token[0] === ':') {
+            node.raws.between += token[1];
+            break
+          } else {
+            if (token[0] === 'word' && /\w/.test(token[1])) {
+              this.unknownWord([token]);
+            }
+            node.raws.between += token[1];
+          }
+        }
+
+        if (node.prop[0] === '_' || node.prop[0] === '*') {
+          node.raws.before += node.prop[0];
+          node.prop = node.prop.slice(1);
+        }
+
+        let firstSpaces = [];
+        let next;
+        while (tokens.length) {
+          next = tokens[0][0];
+          if (next !== 'space' && next !== 'comment') break
+          firstSpaces.push(tokens.shift());
+        }
+
+        this.precheckMissedSemicolon(tokens);
+
+        for (let i = tokens.length - 1; i >= 0; i--) {
+          token = tokens[i];
+          if (token[1].toLowerCase() === '!important') {
+            node.important = true;
+            let string = this.stringFrom(tokens, i);
+            string = this.spacesFromEnd(tokens) + string;
+            if (string !== ' !important') node.raws.important = string;
+            break
+          } else if (token[1].toLowerCase() === 'important') {
+            let cache = tokens.slice(0);
+            let str = '';
+            for (let j = i; j > 0; j--) {
+              let type = cache[j][0];
+              if (str.trim().startsWith('!') && type !== 'space') {
+                break
+              }
+              str = cache.pop()[1] + str;
+            }
+            if (str.trim().startsWith('!')) {
+              node.important = true;
+              node.raws.important = str;
+              tokens = cache;
+            }
+          }
+
+          if (token[0] !== 'space' && token[0] !== 'comment') {
+            break
+          }
+        }
+
+        let hasWord = tokens.some(i => i[0] !== 'space' && i[0] !== 'comment');
+
+        if (hasWord) {
+          node.raws.between += firstSpaces.map(i => i[1]).join('');
+          firstSpaces = [];
+        }
+        this.raw(node, 'value', firstSpaces.concat(tokens), customProperty);
+
+        if (node.value.includes(':') && !customProperty) {
+          this.checkMissedSemicolon(tokens);
+        }
+      }
+
+      doubleColon(token) {
+        throw this.input.error(
+          'Double colon',
+          { offset: token[2] },
+          { offset: token[2] + token[1].length }
+        )
+      }
+
+      emptyRule(token) {
+        let node = new Rule$1();
+        this.init(node, token[2]);
+        node.selector = '';
+        node.raws.between = '';
+        this.current = node;
+      }
+
+      end(token) {
+        if (this.current.nodes && this.current.nodes.length) {
+          this.current.raws.semicolon = this.semicolon;
+        }
+        this.semicolon = false;
+
+        this.current.raws.after = (this.current.raws.after || '') + this.spaces;
+        this.spaces = '';
+
+        if (this.current.parent) {
+          this.current.source.end = this.getPosition(token[2]);
+          this.current.source.end.offset++;
+          this.current = this.current.parent;
+        } else {
+          this.unexpectedClose(token);
+        }
+      }
+
+      endFile() {
+        if (this.current.parent) this.unclosedBlock();
+        if (this.current.nodes && this.current.nodes.length) {
+          this.current.raws.semicolon = this.semicolon;
+        }
+        this.current.raws.after = (this.current.raws.after || '') + this.spaces;
+        this.root.source.end = this.getPosition(this.tokenizer.position());
+      }
+
+      freeSemicolon(token) {
+        this.spaces += token[1];
+        if (this.current.nodes) {
+          let prev = this.current.nodes[this.current.nodes.length - 1];
+          if (prev && prev.type === 'rule' && !prev.raws.ownSemicolon) {
+            prev.raws.ownSemicolon = this.spaces;
+            this.spaces = '';
+            prev.source.end = this.getPosition(token[2]);
+            prev.source.end.offset += prev.raws.ownSemicolon.length;
+          }
+        }
+      }
+
+      // Helpers
+
+      getPosition(offset) {
+        let pos = this.input.fromOffset(offset);
+        return {
+          column: pos.col,
+          line: pos.line,
+          offset
+        }
+      }
+
+      init(node, offset) {
+        this.current.push(node);
+        node.source = {
+          input: this.input,
+          start: this.getPosition(offset)
+        };
+        node.raws.before = this.spaces;
+        this.spaces = '';
+        if (node.type !== 'comment') this.semicolon = false;
+      }
+
+      other(start) {
+        let end = false;
+        let type = null;
+        let colon = false;
+        let bracket = null;
+        let brackets = [];
+        let customProperty = start[1].startsWith('--');
+
+        let tokens = [];
+        let token = start;
+        while (token) {
+          type = token[0];
+          tokens.push(token);
+
+          if (type === '(' || type === '[') {
+            if (!bracket) bracket = token;
+            brackets.push(type === '(' ? ')' : ']');
+          } else if (customProperty && colon && type === '{') {
+            if (!bracket) bracket = token;
+            brackets.push('}');
+          } else if (brackets.length === 0) {
+            if (type === ';') {
+              if (colon) {
+                this.decl(tokens, customProperty);
+                return
+              } else {
+                break
+              }
+            } else if (type === '{') {
+              this.rule(tokens);
+              return
+            } else if (type === '}') {
+              this.tokenizer.back(tokens.pop());
+              end = true;
+              break
+            } else if (type === ':') {
+              colon = true;
+            }
+          } else if (type === brackets[brackets.length - 1]) {
+            brackets.pop();
+            if (brackets.length === 0) bracket = null;
+          }
+
+          token = this.tokenizer.nextToken();
+        }
+
+        if (this.tokenizer.endOfFile()) end = true;
+        if (brackets.length > 0) this.unclosedBracket(bracket);
+
+        if (end && colon) {
+          if (!customProperty) {
+            while (tokens.length) {
+              token = tokens[tokens.length - 1][0];
+              if (token !== 'space' && token !== 'comment') break
+              this.tokenizer.back(tokens.pop());
+            }
+          }
+          this.decl(tokens, customProperty);
+        } else {
+          this.unknownWord(tokens);
+        }
+      }
+
+      parse() {
+        let token;
+        while (!this.tokenizer.endOfFile()) {
+          token = this.tokenizer.nextToken();
+
+          switch (token[0]) {
+            case 'space':
+              this.spaces += token[1];
+              break
+
+            case ';':
+              this.freeSemicolon(token);
+              break
+
+            case '}':
+              this.end(token);
+              break
+
+            case 'comment':
+              this.comment(token);
+              break
+
+            case 'at-word':
+              this.atrule(token);
+              break
+
+            case '{':
+              this.emptyRule(token);
+              break
+
+            default:
+              this.other(token);
+              break
+          }
+        }
+        this.endFile();
+      }
+
+      precheckMissedSemicolon(/* tokens */) {
+        // Hook for Safe Parser
+      }
+
+      raw(node, prop, tokens, customProperty) {
+        let token, type;
+        let length = tokens.length;
+        let value = '';
+        let clean = true;
+        let next, prev;
+
+        for (let i = 0; i < length; i += 1) {
+          token = tokens[i];
+          type = token[0];
+          if (type === 'space' && i === length - 1 && !customProperty) {
+            clean = false;
+          } else if (type === 'comment') {
+            prev = tokens[i - 1] ? tokens[i - 1][0] : 'empty';
+            next = tokens[i + 1] ? tokens[i + 1][0] : 'empty';
+            if (!SAFE_COMMENT_NEIGHBOR[prev] && !SAFE_COMMENT_NEIGHBOR[next]) {
+              if (value.slice(-1) === ',') {
+                clean = false;
+              } else {
+                value += token[1];
+              }
+            } else {
+              clean = false;
+            }
+          } else {
+            value += token[1];
+          }
+        }
+        if (!clean) {
+          let raw = tokens.reduce((all, i) => all + i[1], '');
+          node.raws[prop] = { raw, value };
+        }
+        node[prop] = value;
+      }
+
+      rule(tokens) {
+        tokens.pop();
+
+        let node = new Rule$1();
+        this.init(node, tokens[0][2]);
+
+        node.raws.between = this.spacesAndCommentsFromEnd(tokens);
+        this.raw(node, 'selector', tokens);
+        this.current = node;
+      }
+
+      spacesAndCommentsFromEnd(tokens) {
+        let lastTokenType;
+        let spaces = '';
+        while (tokens.length) {
+          lastTokenType = tokens[tokens.length - 1][0];
+          if (lastTokenType !== 'space' && lastTokenType !== 'comment') break
+          spaces = tokens.pop()[1] + spaces;
+        }
+        return spaces
+      }
+
+      // Errors
+
+      spacesAndCommentsFromStart(tokens) {
+        let next;
+        let spaces = '';
+        while (tokens.length) {
+          next = tokens[0][0];
+          if (next !== 'space' && next !== 'comment') break
+          spaces += tokens.shift()[1];
+        }
+        return spaces
+      }
+
+      spacesFromEnd(tokens) {
+        let lastTokenType;
+        let spaces = '';
+        while (tokens.length) {
+          lastTokenType = tokens[tokens.length - 1][0];
+          if (lastTokenType !== 'space') break
+          spaces = tokens.pop()[1] + spaces;
+        }
+        return spaces
+      }
+
+      stringFrom(tokens, from) {
+        let result = '';
+        for (let i = from; i < tokens.length; i++) {
+          result += tokens[i][1];
+        }
+        tokens.splice(from, tokens.length - from);
+        return result
+      }
+
+      unclosedBlock() {
+        let pos = this.current.source.start;
+        throw this.input.error('Unclosed block', pos.line, pos.column)
+      }
+
+      unclosedBracket(bracket) {
+        throw this.input.error(
+          'Unclosed bracket',
+          { offset: bracket[2] },
+          { offset: bracket[2] + 1 }
+        )
+      }
+
+      unexpectedClose(token) {
+        throw this.input.error(
+          'Unexpected }',
+          { offset: token[2] },
+          { offset: token[2] + 1 }
+        )
+      }
+
+      unknownWord(tokens) {
+        throw this.input.error(
+          'Unknown word ' + tokens[0][1],
+          { offset: tokens[0][2] },
+          { offset: tokens[0][2] + tokens[0][1].length }
+        )
+      }
+
+      unnamedAtrule(node, token) {
+        throw this.input.error(
+          'At-rule without name',
+          { offset: token[2] },
+          { offset: token[2] + token[1].length }
+        )
+      }
+    };
+
+    var parser = Parser$1;
+
+    let Container$2 = container;
+    let Input$1 = input;
+    let Parser = parser;
+
+    function parse$3(css, opts) {
+      let input = new Input$1(css, opts);
+      let parser = new Parser(input);
+      try {
+        parser.parse();
+      } catch (e) {
+        if (process.env.NODE_ENV !== 'production') {
+          if (e.name === 'CssSyntaxError' && opts && opts.from) {
+            if (/\.scss$/i.test(opts.from)) {
+              e.message +=
+                '\nYou tried to parse SCSS with ' +
+                'the standard CSS parser; ' +
+                'try again with the postcss-scss parser';
+            } else if (/\.sass/i.test(opts.from)) {
+              e.message +=
+                '\nYou tried to parse Sass with ' +
+                'the standard CSS parser; ' +
+                'try again with the postcss-sass parser';
+            } else if (/\.less$/i.test(opts.from)) {
+              e.message +=
+                '\nYou tried to parse Less with ' +
+                'the standard CSS parser; ' +
+                'try again with the postcss-less parser';
+            }
+          }
+        }
+        throw e
+      }
+
+      return parser.root
+    }
+
+    var parse_1 = parse$3;
+    parse$3.default = parse$3;
+
+    Container$2.registerParse(parse$3);
+
+    let Warning$2 = class Warning {
+      constructor(text, opts = {}) {
+        this.type = 'warning';
+        this.text = text;
+
+        if (opts.node && opts.node.source) {
+          let range = opts.node.rangeBy(opts);
+          this.line = range.start.line;
+          this.column = range.start.column;
+          this.endLine = range.end.line;
+          this.endColumn = range.end.column;
+        }
+
+        for (let opt in opts) this[opt] = opts[opt];
+      }
+
+      toString() {
+        if (this.node) {
+          return this.node.error(this.text, {
+            index: this.index,
+            plugin: this.plugin,
+            word: this.word
+          }).message
+        }
+
+        if (this.plugin) {
+          return this.plugin + ': ' + this.text
+        }
+
+        return this.text
+      }
+    };
+
+    var warning = Warning$2;
+    Warning$2.default = Warning$2;
+
+    let Warning$1 = warning;
+
+    let Result$3 = class Result {
+      get content() {
+        return this.css
+      }
+
+      constructor(processor, root, opts) {
+        this.processor = processor;
+        this.messages = [];
+        this.root = root;
+        this.opts = opts;
+        this.css = '';
+        this.map = undefined;
+      }
+
+      toString() {
+        return this.css
+      }
+
+      warn(text, opts = {}) {
+        if (!opts.plugin) {
+          if (this.lastPlugin && this.lastPlugin.postcssPlugin) {
+            opts.plugin = this.lastPlugin.postcssPlugin;
+          }
+        }
+
+        let warning = new Warning$1(text, opts);
+        this.messages.push(warning);
+
+        return warning
+      }
+
+      warnings() {
+        return this.messages.filter(i => i.type === 'warning')
+      }
+    };
+
+    var result = Result$3;
+    Result$3.default = Result$3;
+
+    /* eslint-disable no-console */
+
+    let printed = {};
+
+    var warnOnce$2 = function warnOnce(message) {
+      if (printed[message]) return
+      printed[message] = true;
+
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn(message);
+      }
+    };
+
+    let Container$1 = container;
+    let Document$2 = document$1;
+    let MapGenerator$1 = mapGenerator;
+    let parse$2 = parse_1;
+    let Result$2 = result;
+    let Root$2 = root;
+    let stringify$2 = stringify_1;
+    let { isClean, my } = symbols;
+    let warnOnce$1 = warnOnce$2;
+
+    const TYPE_TO_CLASS_NAME = {
+      atrule: 'AtRule',
+      comment: 'Comment',
+      decl: 'Declaration',
+      document: 'Document',
+      root: 'Root',
+      rule: 'Rule'
+    };
+
+    const PLUGIN_PROPS = {
+      AtRule: true,
+      AtRuleExit: true,
+      Comment: true,
+      CommentExit: true,
+      Declaration: true,
+      DeclarationExit: true,
+      Document: true,
+      DocumentExit: true,
+      Once: true,
+      OnceExit: true,
+      postcssPlugin: true,
+      prepare: true,
+      Root: true,
+      RootExit: true,
+      Rule: true,
+      RuleExit: true
+    };
+
+    const NOT_VISITORS = {
+      Once: true,
+      postcssPlugin: true,
+      prepare: true
+    };
+
+    const CHILDREN = 0;
+
+    function isPromise(obj) {
+      return typeof obj === 'object' && typeof obj.then === 'function'
+    }
+
+    function getEvents(node) {
+      let key = false;
+      let type = TYPE_TO_CLASS_NAME[node.type];
+      if (node.type === 'decl') {
+        key = node.prop.toLowerCase();
+      } else if (node.type === 'atrule') {
+        key = node.name.toLowerCase();
+      }
+
+      if (key && node.append) {
+        return [
+          type,
+          type + '-' + key,
+          CHILDREN,
+          type + 'Exit',
+          type + 'Exit-' + key
+        ]
+      } else if (key) {
+        return [type, type + '-' + key, type + 'Exit', type + 'Exit-' + key]
+      } else if (node.append) {
+        return [type, CHILDREN, type + 'Exit']
+      } else {
+        return [type, type + 'Exit']
+      }
+    }
+
+    function toStack(node) {
+      let events;
+      if (node.type === 'document') {
+        events = ['Document', CHILDREN, 'DocumentExit'];
+      } else if (node.type === 'root') {
+        events = ['Root', CHILDREN, 'RootExit'];
+      } else {
+        events = getEvents(node);
+      }
+
+      return {
+        eventIndex: 0,
+        events,
+        iterator: 0,
+        node,
+        visitorIndex: 0,
+        visitors: []
+      }
+    }
+
+    function cleanMarks(node) {
+      node[isClean] = false;
+      if (node.nodes) node.nodes.forEach(i => cleanMarks(i));
+      return node
+    }
+
+    let postcss$1 = {};
+
+    let LazyResult$2 = class LazyResult {
+      get content() {
+        return this.stringify().content
+      }
+
+      get css() {
+        return this.stringify().css
+      }
+
+      get map() {
+        return this.stringify().map
+      }
+
+      get messages() {
+        return this.sync().messages
+      }
+
+      get opts() {
+        return this.result.opts
+      }
+
+      get processor() {
+        return this.result.processor
+      }
+
+      get root() {
+        return this.sync().root
+      }
+
+      get [Symbol.toStringTag]() {
+        return 'LazyResult'
+      }
+
+      constructor(processor, css, opts) {
+        this.stringified = false;
+        this.processed = false;
+
+        let root;
+        if (
+          typeof css === 'object' &&
+          css !== null &&
+          (css.type === 'root' || css.type === 'document')
+        ) {
+          root = cleanMarks(css);
+        } else if (css instanceof LazyResult || css instanceof Result$2) {
+          root = cleanMarks(css.root);
+          if (css.map) {
+            if (typeof opts.map === 'undefined') opts.map = {};
+            if (!opts.map.inline) opts.map.inline = false;
+            opts.map.prev = css.map;
+          }
+        } else {
+          let parser = parse$2;
+          if (opts.syntax) parser = opts.syntax.parse;
+          if (opts.parser) parser = opts.parser;
+          if (parser.parse) parser = parser.parse;
+
+          try {
+            root = parser(css, opts);
+          } catch (error) {
+            this.processed = true;
+            this.error = error;
+          }
+
+          if (root && !root[my]) {
+            /* c8 ignore next 2 */
+            Container$1.rebuild(root);
+          }
+        }
+
+        this.result = new Result$2(processor, root, opts);
+        this.helpers = { ...postcss$1, postcss: postcss$1, result: this.result };
+        this.plugins = this.processor.plugins.map(plugin => {
+          if (typeof plugin === 'object' && plugin.prepare) {
+            return { ...plugin, ...plugin.prepare(this.result) }
+          } else {
+            return plugin
+          }
+        });
+      }
+
+      async() {
+        if (this.error) return Promise.reject(this.error)
+        if (this.processed) return Promise.resolve(this.result)
+        if (!this.processing) {
+          this.processing = this.runAsync();
+        }
+        return this.processing
+      }
+
+      catch(onRejected) {
+        return this.async().catch(onRejected)
+      }
+
+      finally(onFinally) {
+        return this.async().then(onFinally, onFinally)
+      }
+
+      getAsyncError() {
+        throw new Error('Use process(css).then(cb) to work with async plugins')
+      }
+
+      handleError(error, node) {
+        let plugin = this.result.lastPlugin;
+        try {
+          if (node) node.addToError(error);
+          this.error = error;
+          if (error.name === 'CssSyntaxError' && !error.plugin) {
+            error.plugin = plugin.postcssPlugin;
+            error.setMessage();
+          } else if (plugin.postcssVersion) {
+            if (process.env.NODE_ENV !== 'production') {
+              let pluginName = plugin.postcssPlugin;
+              let pluginVer = plugin.postcssVersion;
+              let runtimeVer = this.result.processor.version;
+              let a = pluginVer.split('.');
+              let b = runtimeVer.split('.');
+
+              if (a[0] !== b[0] || parseInt(a[1]) > parseInt(b[1])) {
+                // eslint-disable-next-line no-console
+                console.error(
+                  'Unknown error from PostCSS plugin. Your current PostCSS ' +
+                    'version is ' +
+                    runtimeVer +
+                    ', but ' +
+                    pluginName +
+                    ' uses ' +
+                    pluginVer +
+                    '. Perhaps this is the source of the error below.'
+                );
+              }
+            }
+          }
+        } catch (err) {
+          /* c8 ignore next 3 */
+          // eslint-disable-next-line no-console
+          if (console && console.error) console.error(err);
+        }
+        return error
+      }
+
+      prepareVisitors() {
+        this.listeners = {};
+        let add = (plugin, type, cb) => {
+          if (!this.listeners[type]) this.listeners[type] = [];
+          this.listeners[type].push([plugin, cb]);
+        };
+        for (let plugin of this.plugins) {
+          if (typeof plugin === 'object') {
+            for (let event in plugin) {
+              if (!PLUGIN_PROPS[event] && /^[A-Z]/.test(event)) {
+                throw new Error(
+                  `Unknown event ${event} in ${plugin.postcssPlugin}. ` +
+                    `Try to update PostCSS (${this.processor.version} now).`
+                )
+              }
+              if (!NOT_VISITORS[event]) {
+                if (typeof plugin[event] === 'object') {
+                  for (let filter in plugin[event]) {
+                    if (filter === '*') {
+                      add(plugin, event, plugin[event][filter]);
+                    } else {
+                      add(
+                        plugin,
+                        event + '-' + filter.toLowerCase(),
+                        plugin[event][filter]
+                      );
+                    }
+                  }
+                } else if (typeof plugin[event] === 'function') {
+                  add(plugin, event, plugin[event]);
+                }
+              }
+            }
+          }
+        }
+        this.hasListener = Object.keys(this.listeners).length > 0;
+      }
+
+      async runAsync() {
+        this.plugin = 0;
+        for (let i = 0; i < this.plugins.length; i++) {
+          let plugin = this.plugins[i];
+          let promise = this.runOnRoot(plugin);
+          if (isPromise(promise)) {
+            try {
+              await promise;
+            } catch (error) {
+              throw this.handleError(error)
+            }
+          }
+        }
+
+        this.prepareVisitors();
+        if (this.hasListener) {
+          let root = this.result.root;
+          while (!root[isClean]) {
+            root[isClean] = true;
+            let stack = [toStack(root)];
+            while (stack.length > 0) {
+              let promise = this.visitTick(stack);
+              if (isPromise(promise)) {
+                try {
+                  await promise;
+                } catch (e) {
+                  let node = stack[stack.length - 1].node;
+                  throw this.handleError(e, node)
+                }
+              }
+            }
+          }
+
+          if (this.listeners.OnceExit) {
+            for (let [plugin, visitor] of this.listeners.OnceExit) {
+              this.result.lastPlugin = plugin;
+              try {
+                if (root.type === 'document') {
+                  let roots = root.nodes.map(subRoot =>
+                    visitor(subRoot, this.helpers)
+                  );
+
+                  await Promise.all(roots);
+                } else {
+                  await visitor(root, this.helpers);
+                }
+              } catch (e) {
+                throw this.handleError(e)
+              }
+            }
+          }
+        }
+
+        this.processed = true;
+        return this.stringify()
+      }
+
+      runOnRoot(plugin) {
+        this.result.lastPlugin = plugin;
+        try {
+          if (typeof plugin === 'object' && plugin.Once) {
+            if (this.result.root.type === 'document') {
+              let roots = this.result.root.nodes.map(root =>
+                plugin.Once(root, this.helpers)
+              );
+
+              if (isPromise(roots[0])) {
+                return Promise.all(roots)
+              }
+
+              return roots
+            }
+
+            return plugin.Once(this.result.root, this.helpers)
+          } else if (typeof plugin === 'function') {
+            return plugin(this.result.root, this.result)
+          }
+        } catch (error) {
+          throw this.handleError(error)
+        }
+      }
+
+      stringify() {
+        if (this.error) throw this.error
+        if (this.stringified) return this.result
+        this.stringified = true;
+
+        this.sync();
+
+        let opts = this.result.opts;
+        let str = stringify$2;
+        if (opts.syntax) str = opts.syntax.stringify;
+        if (opts.stringifier) str = opts.stringifier;
+        if (str.stringify) str = str.stringify;
+
+        let rootSource = this.result.root.source;
+        if (opts.map === undefined && !(rootSource && rootSource.input && rootSource.input.map)) {
+          let result = '';
+          str(this.result.root, i => {
+            result += i;
+          });
+          this.result.css = result;
+          return this.result
+        }
+
+        let map = new MapGenerator$1(str, this.result.root, this.result.opts);
+        let data = map.generate();
+        this.result.css = data[0];
+        this.result.map = data[1];
+
+        return this.result
+      }
+
+      sync() {
+        if (this.error) throw this.error
+        if (this.processed) return this.result
+        this.processed = true;
+
+        if (this.processing) {
+          throw this.getAsyncError()
+        }
+
+        for (let plugin of this.plugins) {
+          let promise = this.runOnRoot(plugin);
+          if (isPromise(promise)) {
+            throw this.getAsyncError()
+          }
+        }
+
+        this.prepareVisitors();
+        if (this.hasListener) {
+          let root = this.result.root;
+          while (!root[isClean]) {
+            root[isClean] = true;
+            this.walkSync(root);
+          }
+          if (this.listeners.OnceExit) {
+            if (root.type === 'document') {
+              for (let subRoot of root.nodes) {
+                this.visitSync(this.listeners.OnceExit, subRoot);
+              }
+            } else {
+              this.visitSync(this.listeners.OnceExit, root);
+            }
+          }
+        }
+
+        return this.result
+      }
+
+      then(onFulfilled, onRejected) {
+        if (process.env.NODE_ENV !== 'production') {
+          if (!('from' in this.opts)) {
+            warnOnce$1(
+              'Without `from` option PostCSS could generate wrong source map ' +
+                'and will not find Browserslist config. Set it to CSS file path ' +
+                'or to `undefined` to prevent this warning.'
+            );
+          }
+        }
+        return this.async().then(onFulfilled, onRejected)
+      }
+
+      toString() {
+        return this.css
+      }
+
+      visitSync(visitors, node) {
+        for (let [plugin, visitor] of visitors) {
+          this.result.lastPlugin = plugin;
+          let promise;
+          try {
+            promise = visitor(node, this.helpers);
+          } catch (e) {
+            throw this.handleError(e, node.proxyOf)
+          }
+          if (node.type !== 'root' && node.type !== 'document' && !node.parent) {
+            return true
+          }
+          if (isPromise(promise)) {
+            throw this.getAsyncError()
+          }
+        }
+      }
+
+      visitTick(stack) {
+        let visit = stack[stack.length - 1];
+        let { node, visitors } = visit;
+
+        if (node.type !== 'root' && node.type !== 'document' && !node.parent) {
+          stack.pop();
+          return
+        }
+
+        if (visitors.length > 0 && visit.visitorIndex < visitors.length) {
+          let [plugin, visitor] = visitors[visit.visitorIndex];
+          visit.visitorIndex += 1;
+          if (visit.visitorIndex === visitors.length) {
+            visit.visitors = [];
+            visit.visitorIndex = 0;
+          }
+          this.result.lastPlugin = plugin;
+          try {
+            return visitor(node.toProxy(), this.helpers)
+          } catch (e) {
+            throw this.handleError(e, node)
+          }
+        }
+
+        if (visit.iterator !== 0) {
+          let iterator = visit.iterator;
+          let child;
+          while ((child = node.nodes[node.indexes[iterator]])) {
+            node.indexes[iterator] += 1;
+            if (!child[isClean]) {
+              child[isClean] = true;
+              stack.push(toStack(child));
+              return
+            }
+          }
+          visit.iterator = 0;
+          delete node.indexes[iterator];
+        }
+
+        let events = visit.events;
+        while (visit.eventIndex < events.length) {
+          let event = events[visit.eventIndex];
+          visit.eventIndex += 1;
+          if (event === CHILDREN) {
+            if (node.nodes && node.nodes.length) {
+              node[isClean] = true;
+              visit.iterator = node.getIterator();
+            }
+            return
+          } else if (this.listeners[event]) {
+            visit.visitors = this.listeners[event];
+            return
+          }
+        }
+        stack.pop();
+      }
+
+      walkSync(node) {
+        node[isClean] = true;
+        let events = getEvents(node);
+        for (let event of events) {
+          if (event === CHILDREN) {
+            if (node.nodes) {
+              node.each(child => {
+                if (!child[isClean]) this.walkSync(child);
+              });
+            }
+          } else {
+            let visitors = this.listeners[event];
+            if (visitors) {
+              if (this.visitSync(visitors, node.toProxy())) return
+            }
+          }
+        }
+      }
+
+      warnings() {
+        return this.sync().warnings()
+      }
+    };
+
+    LazyResult$2.registerPostcss = dependant => {
+      postcss$1 = dependant;
+    };
+
+    var lazyResult = LazyResult$2;
+    LazyResult$2.default = LazyResult$2;
+
+    Root$2.registerLazyResult(LazyResult$2);
+    Document$2.registerLazyResult(LazyResult$2);
+
+    let MapGenerator = mapGenerator;
+    let parse$1 = parse_1;
+    let Result$1 = result;
+    let stringify$1 = stringify_1;
+    let warnOnce = warnOnce$2;
+
+    let NoWorkResult$1 = class NoWorkResult {
+      get content() {
+        return this.result.css
+      }
+
+      get css() {
+        return this.result.css
+      }
+
+      get map() {
+        return this.result.map
+      }
+
+      get messages() {
+        return []
+      }
+
+      get opts() {
+        return this.result.opts
+      }
+
+      get processor() {
+        return this.result.processor
+      }
+
+      get root() {
+        if (this._root) {
+          return this._root
+        }
+
+        let root;
+        let parser = parse$1;
+
+        try {
+          root = parser(this._css, this._opts);
+        } catch (error) {
+          this.error = error;
+        }
+
+        if (this.error) {
+          throw this.error
+        } else {
+          this._root = root;
+          return root
+        }
+      }
+
+      get [Symbol.toStringTag]() {
+        return 'NoWorkResult'
+      }
+
+      constructor(processor, css, opts) {
+        css = css.toString();
+        this.stringified = false;
+
+        this._processor = processor;
+        this._css = css;
+        this._opts = opts;
+        this._map = undefined;
+
+        let str = stringify$1;
+        this.result = new Result$1(this._processor, undefined, this._opts);
+        this.result.css = css;
+
+        let self = this;
+        Object.defineProperty(this.result, 'root', {
+          get() {
+            return self.root
+          }
+        });
+
+        let map = new MapGenerator(str, undefined, this._opts, css);
+        if (map.isMap()) {
+          let [generatedCSS, generatedMap] = map.generate();
+          if (generatedCSS) {
+            this.result.css = generatedCSS;
+          }
+          if (generatedMap) {
+            this.result.map = generatedMap;
+          }
+        } else {
+          map.clearAnnotation();
+          this.result.css = map.css;
+        }
+      }
+
+      async() {
+        if (this.error) return Promise.reject(this.error)
+        return Promise.resolve(this.result)
+      }
+
+      catch(onRejected) {
+        return this.async().catch(onRejected)
+      }
+
+      finally(onFinally) {
+        return this.async().then(onFinally, onFinally)
+      }
+
+      sync() {
+        if (this.error) throw this.error
+        return this.result
+      }
+
+      then(onFulfilled, onRejected) {
+        if (process.env.NODE_ENV !== 'production') {
+          if (!('from' in this._opts)) {
+            warnOnce(
+              'Without `from` option PostCSS could generate wrong source map ' +
+                'and will not find Browserslist config. Set it to CSS file path ' +
+                'or to `undefined` to prevent this warning.'
+            );
+          }
+        }
+
+        return this.async().then(onFulfilled, onRejected)
+      }
+
+      toString() {
+        return this._css
+      }
+
+      warnings() {
+        return []
+      }
+    };
+
+    var noWorkResult = NoWorkResult$1;
+    NoWorkResult$1.default = NoWorkResult$1;
+
+    let Document$1 = document$1;
+    let LazyResult$1 = lazyResult;
+    let NoWorkResult = noWorkResult;
+    let Root$1 = root;
+
+    let Processor$1 = class Processor {
+      constructor(plugins = []) {
+        this.version = '8.5.12';
+        this.plugins = this.normalize(plugins);
+      }
+
+      normalize(plugins) {
+        let normalized = [];
+        for (let i of plugins) {
+          if (i.postcss === true) {
+            i = i();
+          } else if (i.postcss) {
+            i = i.postcss;
+          }
+
+          if (typeof i === 'object' && Array.isArray(i.plugins)) {
+            normalized = normalized.concat(i.plugins);
+          } else if (typeof i === 'object' && i.postcssPlugin) {
+            normalized.push(i);
+          } else if (typeof i === 'function') {
+            normalized.push(i);
+          } else if (typeof i === 'object' && (i.parse || i.stringify)) {
+            if (process.env.NODE_ENV !== 'production') {
+              throw new Error(
+                'PostCSS syntaxes cannot be used as plugins. Instead, please use ' +
+                  'one of the syntax/parser/stringifier options as outlined ' +
+                  'in your PostCSS runner documentation.'
+              )
+            }
+          } else {
+            throw new Error(i + ' is not a PostCSS plugin')
+          }
+        }
+        return normalized
+      }
+
+      process(css, opts = {}) {
+        if (
+          !this.plugins.length &&
+          !opts.parser &&
+          !opts.stringifier &&
+          !opts.syntax
+        ) {
+          return new NoWorkResult(this, css, opts)
+        } else {
+          return new LazyResult$1(this, css, opts)
+        }
+      }
+
+      use(plugin) {
+        this.plugins = this.plugins.concat(this.normalize([plugin]));
+        return this
+      }
+    };
+
+    var processor = Processor$1;
+    Processor$1.default = Processor$1;
+
+    Root$1.registerProcessor(Processor$1);
+    Document$1.registerProcessor(Processor$1);
+
+    let AtRule = atRule;
+    let Comment = comment;
+    let Container = container;
+    let CssSyntaxError = cssSyntaxError;
+    let Declaration = declaration;
+    let Document = document$1;
+    let fromJSON = fromJSON_1;
+    let Input = input;
+    let LazyResult = lazyResult;
+    let list = list_1;
+    let Node = node;
+    let parse = parse_1;
+    let Processor = processor;
+    let Result = result;
+    let Root = root;
+    let Rule = rule;
+    let stringify = stringify_1;
+    let Warning = warning;
+
+    function postcss(...plugins) {
+      if (plugins.length === 1 && Array.isArray(plugins[0])) {
+        plugins = plugins[0];
+      }
+      return new Processor(plugins)
+    }
+
+    postcss.plugin = function plugin(name, initializer) {
+      let warningPrinted = false;
+      function creator(...args) {
+        // eslint-disable-next-line no-console
+        if (console && console.warn && !warningPrinted) {
+          warningPrinted = true;
+          // eslint-disable-next-line no-console
+          console.warn(
+            name +
+              ': postcss.plugin was deprecated. Migration guide:\n' +
+              'https://evilmartians.com/chronicles/postcss-8-plugin-migration'
+          );
+          if (process.env.LANG && process.env.LANG.startsWith('cn')) {
+            /* c8 ignore next 7 */
+            // eslint-disable-next-line no-console
+            console.warn(
+              name +
+                ': 里面 postcss.plugin 被弃用. 迁移指南:\n' +
+                'https://www.w3ctech.com/topic/2226'
+            );
+          }
+        }
+        let transformer = initializer(...args);
+        transformer.postcssPlugin = name;
+        transformer.postcssVersion = new Processor().version;
+        return transformer
+      }
+
+      let cache;
+      Object.defineProperty(creator, 'postcss', {
+        get() {
+          if (!cache) cache = creator();
+          return cache
+        }
+      });
+
+      creator.process = function (css, processOpts, pluginOpts) {
+        return postcss([creator(pluginOpts)]).process(css, processOpts)
+      };
+
+      return creator
+    };
+
+    postcss.stringify = stringify;
+    postcss.parse = parse;
+    postcss.fromJSON = fromJSON;
+    postcss.list = list;
+
+    postcss.comment = defaults => new Comment(defaults);
+    postcss.atRule = defaults => new AtRule(defaults);
+    postcss.decl = defaults => new Declaration(defaults);
+    postcss.rule = defaults => new Rule(defaults);
+    postcss.root = defaults => new Root(defaults);
+    postcss.document = defaults => new Document(defaults);
+
+    postcss.CssSyntaxError = CssSyntaxError;
+    postcss.Declaration = Declaration;
+    postcss.Container = Container;
+    postcss.Processor = Processor;
+    postcss.Document = Document;
+    postcss.Comment = Comment;
+    postcss.Warning = Warning;
+    postcss.AtRule = AtRule;
+    postcss.Result = Result;
+    postcss.Input = Input;
+    postcss.Rule = Rule;
+    postcss.Root = Root;
+    postcss.Node = Node;
+
+    LazyResult.registerPostcss(postcss);
+
+    var postcss_1 = postcss;
+    postcss.default = postcss;
+
+    const htmlparser = commonjs;
+    const escapeStringRegexp = escapeStringRegexp$1;
+    const { isPlainObject } = isPlainObject$2;
+    const deepmerge = cjs;
+    const parseSrcset = parseSrcsetExports;
+    const { parse: postcssParse } = postcss_1;
+    // Tags that can conceivably represent stand-alone media.
+    const mediaTags = [
+      'img', 'audio', 'video', 'picture', 'svg',
+      'object', 'map', 'iframe', 'embed'
+    ];
+    // Tags that are inherently vulnerable to being used in XSS attacks.
+    const vulnerableTags = [ 'script', 'style' ];
+
+    function each(obj, cb) {
+      if (obj) {
+        Object.keys(obj).forEach(function (key) {
+          cb(obj[key], key);
+        });
+      }
+    }
+
+    // Avoid false positives with .__proto__, .hasOwnProperty, etc.
+    function has(obj, key) {
+      return ({}).hasOwnProperty.call(obj, key);
+    }
+
+    // Returns those elements of `a` for which `cb(a)` returns truthy
+    function filter(a, cb) {
+      const n = [];
+      each(a, function(v) {
+        if (cb(v)) {
+          n.push(v);
+        }
+      });
+      return n;
+    }
+
+    function isEmptyObject(obj) {
+      for (const key in obj) {
+        if (has(obj, key)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function stringifySrcset(parsedSrcset) {
+      return parsedSrcset.map(function(part) {
+        if (!part.url) {
+          throw new Error('URL missing');
+        }
+
+        return (
+          part.url +
+          (part.w ? ` ${part.w}w` : '') +
+          (part.h ? ` ${part.h}h` : '') +
+          (part.d ? ` ${part.d}x` : '')
+        );
+      }).join(', ');
+    }
+
+    var sanitizeHtml_1 = sanitizeHtml;
+
+    // A valid attribute name.
+    // We use a tolerant definition based on the set of strings defined by
+    // html.spec.whatwg.org/multipage/parsing.html#before-attribute-name-state
+    // and html.spec.whatwg.org/multipage/parsing.html#attribute-name-state .
+    // The characters accepted are ones which can be appended to the attribute
+    // name buffer without triggering a parse error:
+    //   * unexpected-equals-sign-before-attribute-name
+    //   * unexpected-null-character
+    //   * unexpected-character-in-attribute-name
+    // We exclude the empty string because it's impossible to get to the after
+    // attribute name state with an empty attribute name buffer.
+    const VALID_HTML_ATTRIBUTE_NAME = /^[^\0\t\n\f\r /<=>]+$/;
+
+    // Ignore the _recursing flag; it's there for recursive
+    // invocation as a guard against this exploit:
+    // https://github.com/fb55/htmlparser2/issues/105
+
+    function sanitizeHtml(html, options, _recursing) {
+      if (html == null) {
+        return '';
+      }
+      if (typeof html === 'number') {
+        html = html.toString();
+      }
+
+      let result = '';
+      // Used for hot swapping the result variable with an empty string
+      // in order to "capture" the text written to it.
+      let tempResult = '';
+
+      function Frame(tag, attribs) {
+        const that = this;
+        this.tag = tag;
+        this.attribs = attribs || {};
+        this.tagPosition = result.length;
+        this.text = ''; // Node inner text
+        this.openingTagLength = 0;
+        this.mediaChildren = [];
+
+        this.updateParentNodeText = function() {
+          if (stack.length) {
+            const parentFrame = stack[stack.length - 1];
+            parentFrame.text += that.text;
+          }
+        };
+
+        this.updateParentNodeMediaChildren = function() {
+          if (stack.length && mediaTags.includes(this.tag)) {
+            const parentFrame = stack[stack.length - 1];
+            parentFrame.mediaChildren.push(this.tag);
+          }
+        };
+      }
+
+      options = Object.assign({}, sanitizeHtml.defaults, options);
+      options.parser = Object.assign({}, htmlParserDefaults, options.parser);
+
+      const tagAllowed = function (name) {
+        return options.allowedTags === false ||
+          (options.allowedTags || []).indexOf(name) > -1;
+      };
+
+      // vulnerableTags
+      vulnerableTags.forEach(function (tag) {
+        if (tagAllowed(tag) && !options.allowVulnerableTags) {
+          console.warn(`\n\n⚠️ Your \`allowedTags\` option includes, \`${tag}\`, which is inherently\nvulnerable to XSS attacks. Please remove it from \`allowedTags\`.\nOr, to disable this warning, add the \`allowVulnerableTags\` option\nand ensure you are accounting for this risk.\n\n`);
+        }
+      });
+
+      // Tags that contain something other than HTML, or where discarding
+      // the text when the tag is disallowed makes sense for other reasons.
+      // If we are not allowing these tags, we should drop their content too.
+      // For other tags you would drop the tag but keep its content.
+      const nonTextTagsArray = options.nonTextTags || [
+        'script',
+        'style',
+        'textarea',
+        'option'
+      ];
+      let allowedAttributesMap;
+      let allowedAttributesGlobMap;
+      if (options.allowedAttributes) {
+        allowedAttributesMap = {};
+        allowedAttributesGlobMap = {};
+        each(options.allowedAttributes, function(attributes, tag) {
+          allowedAttributesMap[tag] = [];
+          const globRegex = [];
+          attributes.forEach(function(obj) {
+            if (typeof obj === 'string' && obj.indexOf('*') >= 0) {
+              globRegex.push(escapeStringRegexp(obj).replace(/\\\*/g, '.*'));
+            } else {
+              allowedAttributesMap[tag].push(obj);
+            }
+          });
+          if (globRegex.length) {
+            allowedAttributesGlobMap[tag] = new RegExp('^(' + globRegex.join('|') + ')$');
+          }
+        });
+      }
+      const allowedClassesMap = {};
+      const allowedClassesGlobMap = {};
+      const allowedClassesRegexMap = {};
+      each(options.allowedClasses, function(classes, tag) {
+        // Implicitly allows the class attribute
+        if (allowedAttributesMap) {
+          if (!has(allowedAttributesMap, tag)) {
+            allowedAttributesMap[tag] = [];
+          }
+          allowedAttributesMap[tag].push('class');
+        }
+
+        allowedClassesMap[tag] = classes;
+
+        if (Array.isArray(classes)) {
+          const globRegex = [];
+          allowedClassesMap[tag] = [];
+          allowedClassesRegexMap[tag] = [];
+          classes.forEach(function(obj) {
+            if (typeof obj === 'string' && obj.indexOf('*') >= 0) {
+              globRegex.push(escapeStringRegexp(obj).replace(/\\\*/g, '.*'));
+            } else if (obj instanceof RegExp) {
+              allowedClassesRegexMap[tag].push(obj);
+            } else {
+              allowedClassesMap[tag].push(obj);
+            }
+          });
+          if (globRegex.length) {
+            allowedClassesGlobMap[tag] = new RegExp('^(' + globRegex.join('|') + ')$');
+          }
+        }
+      });
+
+      const transformTagsMap = {};
+      let transformTagsAll;
+      each(options.transformTags, function(transform, tag) {
+        let transFun;
+        if (typeof transform === 'function') {
+          transFun = transform;
+        } else if (typeof transform === 'string') {
+          transFun = sanitizeHtml.simpleTransform(transform);
+        }
+        if (tag === '*') {
+          transformTagsAll = transFun;
+        } else {
+          transformTagsMap[tag] = transFun;
+        }
+      });
+
+      let depth;
+      let stack;
+      let skipMap;
+      let transformMap;
+      let skipText;
+      let skipTextDepth;
+      let addedText = false;
+
+      initializeState();
+
+      const parser = new htmlparser.Parser({
+        onopentag: function(name, attribs) {
+          if (options.onOpenTag) {
+            options.onOpenTag(name, attribs);
+          }
+
+          // If `enforceHtmlBoundary` is `true` and this has found the opening
+          // `html` tag, reset the state.
+          if (options.enforceHtmlBoundary && name === 'html') {
+            initializeState();
+          }
+
+          if (skipText) {
+            skipTextDepth++;
+            return;
+          }
+          const frame = new Frame(name, attribs);
+          stack.push(frame);
+
+          let skip = false;
+          const hasText = !!frame.text;
+          let transformedTag;
+          if (has(transformTagsMap, name)) {
+            transformedTag = transformTagsMap[name](name, attribs);
+
+            frame.attribs = attribs = transformedTag.attribs;
+
+            if (transformedTag.text !== undefined) {
+              frame.innerText = transformedTag.text;
+            }
+
+            if (name !== transformedTag.tagName) {
+              frame.name = name = transformedTag.tagName;
+              transformMap[depth] = transformedTag.tagName;
+            }
+          }
+          if (transformTagsAll) {
+            transformedTag = transformTagsAll(name, attribs);
+
+            frame.attribs = attribs = transformedTag.attribs;
+            if (name !== transformedTag.tagName) {
+              frame.name = name = transformedTag.tagName;
+              transformMap[depth] = transformedTag.tagName;
+            }
+          }
+
+          if (!tagAllowed(name) || (options.disallowedTagsMode === 'recursiveEscape' && !isEmptyObject(skipMap)) || (options.nestingLimit != null && depth >= options.nestingLimit)) {
+            skip = true;
+            skipMap[depth] = true;
+            if (options.disallowedTagsMode === 'discard' || options.disallowedTagsMode === 'completelyDiscard') {
+              if (nonTextTagsArray.indexOf(name) !== -1) {
+                skipText = true;
+                skipTextDepth = 1;
+              }
+            }
+          }
+          depth++;
+          if (skip) {
+            if (options.disallowedTagsMode === 'discard' || options.disallowedTagsMode === 'completelyDiscard') {
+              // We want the contents but not this tag
+              if (frame.innerText && !hasText) {
+                const escaped = escapeHtml(frame.innerText);
+                if (options.textFilter) {
+                  result += options.textFilter(escaped, name);
+                } else {
+                  result += escaped;
+                }
+                addedText = true;
+              }
+              return;
+            }
+            tempResult = result;
+            result = '';
+          }
+          result += '<' + name;
+
+          if (name === 'script') {
+            if (options.allowedScriptHostnames || options.allowedScriptDomains) {
+              frame.innerText = '';
+            }
+          }
+
+          const isBeingEscaped = skip && (options.disallowedTagsMode === 'escape' || options.disallowedTagsMode === 'recursiveEscape');
+          const shouldPreserveEscapedAttributes = isBeingEscaped &&
+            options.preserveEscapedAttributes;
+
+          if (shouldPreserveEscapedAttributes) {
+            each(attribs, function(value, a) {
+              result += ' ' + a + '="' + escapeHtml((value || ''), true) + '"';
+            });
+          } else if (!allowedAttributesMap || has(allowedAttributesMap, name) || allowedAttributesMap['*']) {
+            each(attribs, function(value, a) {
+              if (!VALID_HTML_ATTRIBUTE_NAME.test(a)) {
+                // This prevents part of an attribute name in the output from being
+                // interpreted as the end of an attribute, or end of a tag.
+                delete frame.attribs[a];
+                return;
+              }
+              // If the value is empty, check if the attribute is
+              // in the allowedEmptyAttributes array.
+              // If it is not in the allowedEmptyAttributes array,
+              // and it is a known non-boolean attribute, delete it
+              // List taken from https://html.spec.whatwg.org/multipage/indices.html#attributes-3
+              if (value === '' && (!options.allowedEmptyAttributes.includes(a)) &&
+                (options.nonBooleanAttributes.includes(a) || options.nonBooleanAttributes.includes('*'))) {
+                delete frame.attribs[a];
+                return;
+              }
+              // check allowedAttributesMap for the element and attribute and modify the value
+              // as necessary if there are specific values defined.
+              let passedAllowedAttributesMapCheck = false;
+              if (!allowedAttributesMap ||
+                (has(allowedAttributesMap, name) &&
+                  allowedAttributesMap[name].indexOf(a) !== -1) ||
+                (allowedAttributesMap['*'] && allowedAttributesMap['*'].indexOf(a) !== -1) ||
+                (has(allowedAttributesGlobMap, name) &&
+                  allowedAttributesGlobMap[name].test(a)) ||
+                (allowedAttributesGlobMap['*'] && allowedAttributesGlobMap['*'].test(a))) {
+                passedAllowedAttributesMapCheck = true;
+              } else if (allowedAttributesMap && allowedAttributesMap[name]) {
+                for (const o of allowedAttributesMap[name]) {
+                  if (isPlainObject(o) && o.name && (o.name === a)) {
+                    passedAllowedAttributesMapCheck = true;
+                    let newValue = '';
+                    if (o.multiple === true) {
+                      // verify the values that are allowed
+                      const splitStrArray = value.split(' ');
+                      for (const s of splitStrArray) {
+                        if (o.values.indexOf(s) !== -1) {
+                          if (newValue === '') {
+                            newValue = s;
+                          } else {
+                            newValue += ' ' + s;
+                          }
+                        }
+                      }
+                    } else if (o.values.indexOf(value) >= 0) {
+                      // verified an allowed value matches the entire attribute value
+                      newValue = value;
+                    }
+                    value = newValue;
+                  }
+                }
+              }
+              if (passedAllowedAttributesMapCheck) {
+                if (options.allowedSchemesAppliedToAttributes.indexOf(a) !== -1) {
+                  if (naughtyHref(name, value)) {
+                    delete frame.attribs[a];
+                    return;
+                  }
+                }
+
+                if (name === 'script' && a === 'src') {
+
+                  let allowed = true;
+
+                  try {
+                    const parsed = parseUrl(value);
+
+                    if (options.allowedScriptHostnames || options.allowedScriptDomains) {
+                      const allowedHostname = (options.allowedScriptHostnames || [])
+                        .find(function (hostname) {
+                          return hostname === parsed.url.hostname;
+                        });
+                      const allowedDomain = (options.allowedScriptDomains || [])
+                        .find(function(domain) {
+                          return parsed.url.hostname === domain || parsed.url.hostname.endsWith(`.${domain}`);
+                        });
+                      allowed = allowedHostname || allowedDomain;
+                    }
+                  } catch (e) {
+                    allowed = false;
+                  }
+
+                  if (!allowed) {
+                    delete frame.attribs[a];
+                    return;
+                  }
+                }
+
+                if (name === 'iframe' && a === 'src') {
+                  let allowed = true;
+                  try {
+                    const parsed = parseUrl(value);
+
+                    if (parsed.isRelativeUrl) {
+                      // default value of allowIframeRelativeUrls is true
+                      // unless allowedIframeHostnames or allowedIframeDomains specified
+                      allowed = has(options, 'allowIframeRelativeUrls')
+                        ? options.allowIframeRelativeUrls
+                        : (!options.allowedIframeHostnames && !options.allowedIframeDomains);
+                    } else if (
+                      options.allowedIframeHostnames ||
+                      options.allowedIframeDomains
+                    ) {
+                      const allowedHostname = (options.allowedIframeHostnames || [])
+                        .find(function (hostname) {
+                          return hostname === parsed.url.hostname;
+                        });
+                      const allowedDomain = (options.allowedIframeDomains || [])
+                        .find(function(domain) {
+                          return parsed.url.hostname === domain || parsed.url.hostname.endsWith(`.${domain}`);
+                        });
+                      allowed = allowedHostname || allowedDomain;
+                    }
+                  } catch (e) {
+                    // Unparseable iframe src
+                    allowed = false;
+                  }
+                  if (!allowed) {
+                    delete frame.attribs[a];
+                    return;
+                  }
+                }
+                if (a === 'srcset') {
+                  try {
+                    let parsed = parseSrcset(value);
+                    parsed.forEach(function(value) {
+                      if (naughtyHref('srcset', value.url)) {
+                        value.evil = true;
+                      }
+                    });
+                    parsed = filter(parsed, function(v) {
+                      return !v.evil;
+                    });
+                    if (!parsed.length) {
+                      delete frame.attribs[a];
+                      return;
+                    } else {
+                      value = stringifySrcset(filter(parsed, function(v) {
+                        return !v.evil;
+                      }));
+                      frame.attribs[a] = value;
+                    }
+                  } catch (e) {
+                    // Unparseable srcset
+                    delete frame.attribs[a];
+                    return;
+                  }
+                }
+                if (a === 'class') {
+                  const allowedSpecificClasses = allowedClassesMap[name];
+                  const allowedWildcardClasses = allowedClassesMap['*'];
+                  const allowedSpecificClassesGlob = allowedClassesGlobMap[name];
+                  const allowedSpecificClassesRegex = allowedClassesRegexMap[name];
+                  const allowedWildcardClassesRegex = allowedClassesRegexMap['*'];
+                  const allowedWildcardClassesGlob = allowedClassesGlobMap['*'];
+                  const allowedClassesGlobs = [
+                    allowedSpecificClassesGlob,
+                    allowedWildcardClassesGlob
+                  ]
+                    .concat(allowedSpecificClassesRegex, allowedWildcardClassesRegex)
+                    .filter(function (t) {
+                      return t;
+                    });
+                  if (allowedSpecificClasses && allowedWildcardClasses) {
+                    value = filterClasses(
+                      value,
+                      deepmerge(allowedSpecificClasses, allowedWildcardClasses),
+                      allowedClassesGlobs
+                    );
+                  } else {
+                    value = filterClasses(
+                      value,
+                      allowedSpecificClasses || allowedWildcardClasses,
+                      allowedClassesGlobs
+                    );
+                  }
+                  if (!value.length) {
+                    delete frame.attribs[a];
+                    return;
+                  }
+                }
+                if (a === 'style') {
+                  if (options.parseStyleAttributes) {
+                    try {
+                      const abstractSyntaxTree = postcssParse(name + ' {' + value + '}', { map: false });
+                      const filteredAST = filterCss(
+                        abstractSyntaxTree,
+                        options.allowedStyles
+                      );
+
+                      value = stringifyStyleAttributes(filteredAST);
+
+                      if (value.length === 0) {
+                        delete frame.attribs[a];
+                        return;
+                      }
+                    } catch (e) {
+                      if (typeof window !== 'undefined') {
+                        console.warn('Failed to parse "' + name + ' {' + value + '}' + '", If you\'re running this in a browser, we recommend to disable style parsing: options.parseStyleAttributes: false, since this only works in a node environment due to a postcss dependency, More info: https://github.com/apostrophecms/sanitize-html/issues/547');
+                      }
+                      delete frame.attribs[a];
+                      return;
+                    }
+                  } else if (options.allowedStyles) {
+                    throw new Error('allowedStyles option cannot be used together with parseStyleAttributes: false.');
+                  }
+                }
+                result += ' ' + a;
+                if (value && value.length) {
+                  result += '="' + escapeHtml(value, true) + '"';
+                } else if (options.allowedEmptyAttributes.includes(a)) {
+                  result += '=""';
+                }
+              } else {
+                delete frame.attribs[a];
+              }
+            });
+          }
+          if (options.selfClosing.indexOf(name) !== -1) {
+            result += ' />';
+          } else {
+            result += '>';
+            if (frame.innerText && !hasText && !options.textFilter) {
+              result += escapeHtml(frame.innerText);
+              addedText = true;
+            }
+          }
+          if (skip) {
+            result = tempResult + escapeHtml(result);
+            tempResult = '';
+          }
+          frame.openingTagLength = result.length - frame.tagPosition;
+        },
+        ontext: function(text) {
+          if (skipText) {
+            return;
+          }
+          const lastFrame = stack[stack.length - 1];
+          let tag;
+
+          if (lastFrame) {
+            tag = lastFrame.tag;
+            // If inner text was set by transform function then let's use it
+            text = lastFrame.innerText !== undefined ? lastFrame.innerText : text;
+          }
+
+          if (options.disallowedTagsMode === 'completelyDiscard' && !tagAllowed(tag)) {
+            text = '';
+          } else if ((options.disallowedTagsMode === 'discard' || options.disallowedTagsMode === 'completelyDiscard') && ((tag === 'script') || (tag === 'style'))) {
+            // htmlparser2 gives us these as-is. Escaping them ruins the content. Allowing
+            // script tags is, by definition, game over for XSS protection, so if that's
+            // your concern, don't allow them. The same is essentially true for style tags
+            // which have their own collection of XSS vectors.
+            result += text;
+          } else if ((options.disallowedTagsMode === 'discard' || options.disallowedTagsMode === 'completelyDiscard') && (tag === 'textarea' || tag === 'xmp')) {
+            // htmlparser2 treats <textarea> and <xmp> as raw text elements and
+            // does NOT decode entities inside them. The text is already properly
+            // encoded, so pass it through without additional escaping to avoid
+            // double-encoding. Other "nonTextTags" like <option> are not raw text
+            // elements in htmlparser2, so their contents are decoded and must be
+            // escaped below like any other text (important to prevent XSS via
+            // entity-encoded payloads such as <option>&lt;script&gt;...&lt;/script&gt;</option>).
+            result += text;
+          } else if (!addedText) {
+            const escaped = escapeHtml(text, false);
+            if (options.textFilter) {
+              result += options.textFilter(escaped, tag);
+            } else {
+              result += escaped;
+            }
+          }
+          if (stack.length) {
+            const frame = stack[stack.length - 1];
+            frame.text += text;
+          }
+        },
+        onclosetag: function(name, isImplied) {
+          if (options.onCloseTag) {
+            options.onCloseTag(name, isImplied);
+          }
+
+          if (skipText) {
+            skipTextDepth--;
+            if (!skipTextDepth) {
+              skipText = false;
+            } else {
+              return;
+            }
+          }
+
+          const frame = stack.pop();
+          if (!frame) {
+            // Do not crash on bad markup
+            return;
+          }
+
+          if (frame.tag !== name) {
+            // Another case of bad markup.
+            // Push to stack, so that it will be used in future closing tags.
+            stack.push(frame);
+            return;
+          }
+
+          skipText = options.enforceHtmlBoundary ? name === 'html' : false;
+          depth--;
+          const skip = skipMap[depth];
+          if (skip) {
+            delete skipMap[depth];
+            if (options.disallowedTagsMode === 'discard' || options.disallowedTagsMode === 'completelyDiscard') {
+              frame.updateParentNodeText();
+              return;
+            }
+            tempResult = result;
+            result = '';
+          }
+
+          if (transformMap[depth]) {
+            name = transformMap[depth];
+            delete transformMap[depth];
+          }
+
+          if (options.exclusiveFilter) {
+            const filterResult = options.exclusiveFilter(frame);
+            if (filterResult === 'excludeTag') {
+              if (skip) {
+                // no longer escaping the tag since it's not added at all
+                result = tempResult;
+                tempResult = '';
+              }
+              // remove the opening tag from the result
+              result = result.substring(0, frame.tagPosition) +
+                result.substring(frame.tagPosition + frame.openingTagLength);
+              return;
+            } else if (filterResult) {
+              result = result.substring(0, frame.tagPosition);
+              return;
+            }
+          }
+
+          frame.updateParentNodeMediaChildren();
+          frame.updateParentNodeText();
+
+          if (
+            // Already output />
+            options.selfClosing.indexOf(name) !== -1 ||
+            // Escaped tag, closing tag is implied
+            (isImplied && !tagAllowed(name) && [ 'escape', 'recursiveEscape' ].indexOf(options.disallowedTagsMode) >= 0)
+          ) {
+            if (skip) {
+              result = tempResult;
+              tempResult = '';
+            }
+            return;
+          }
+
+          result += '</' + name + '>';
+          if (skip) {
+            result = tempResult + escapeHtml(result);
+            tempResult = '';
+          }
+          addedText = false;
+        }
+      }, options.parser);
+      parser.write(html);
+      parser.end();
+
+      if (options.disallowedTagsMode === 'escape' || options.disallowedTagsMode === 'recursiveEscape') {
+        const lastParsedIndex = parser.endIndex;
+        if (lastParsedIndex != null && lastParsedIndex >= 0 &&
+            lastParsedIndex < html.length) {
+          const unparsed = html.substring(lastParsedIndex);
+          result += escapeHtml(unparsed);
+        } else if ((lastParsedIndex == null || lastParsedIndex < 0) && html.length > 0 && result === '') {
+          result = escapeHtml(html);
+        }
+      }
+
+      return result;
+
+      function initializeState() {
+        result = '';
+        depth = 0;
+        stack = [];
+        skipMap = {};
+        transformMap = {};
+        skipText = false;
+        skipTextDepth = 0;
+      }
+
+      function escapeHtml(s, quote) {
+        if (typeof (s) !== 'string') {
+          s = s + '';
+        }
+        if (options.parser.decodeEntities) {
+          s = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          if (quote) {
+            s = s.replace(/"/g, '&quot;');
+          }
+        }
+        // TODO: this is inadequate because it will pass `&0;`. This approach
+        // will not work, each & must be considered with regard to whether it
+        // is followed by a 100% syntactically valid entity or not, and escaped
+        // if it is not. If this bothers you, don't set parser.decodeEntities
+        // to false. (The default is true.)
+        s = s.replace(/&(?![a-zA-Z0-9#]{1,20};)/g, '&amp;') // Match ampersands not part of existing HTML entity
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+        if (quote) {
+          s = s.replace(/"/g, '&quot;');
+        }
+        return s;
+      }
+
+      function naughtyHref(name, href) {
+        // Browsers ignore character codes of 32 (space) and below in a surprising
+        // number of situations. Start reading here:
+        // https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet#Embedded_tab
+        // eslint-disable-next-line no-control-regex
+        href = href.replace(/[\x00-\x20]+/g, '');
+        // Clobber any comments in URLs, which the browser might
+        // interpret inside an XML data island, allowing
+        // a javascript: URL to be snuck through
+        while (true) {
+          const firstIndex = href.indexOf('<!--');
+          if (firstIndex === -1) {
+            break;
+          }
+          const lastIndex = href.indexOf('-->', firstIndex + 4);
+          if (lastIndex === -1) {
+            break;
+          }
+          href = href.substring(0, firstIndex) + href.substring(lastIndex + 3);
+        }
+        // Case insensitive so we don't get faked out by JAVASCRIPT #1
+        // Allow more characters after the first so we don't get faked
+        // out by certain schemes browsers accept
+        const matches = href.match(/^([a-zA-Z][a-zA-Z0-9.\-+]*):/);
+        if (!matches) {
+          // Protocol-relative URL starting with any combination of '/' and '\'
+          if (href.match(/^[/\\]{2}/)) {
+            return !options.allowProtocolRelative;
+          }
+
+          // No scheme
+          return false;
+        }
+        const scheme = matches[1].toLowerCase();
+
+        if (has(options.allowedSchemesByTag, name)) {
+          return options.allowedSchemesByTag[name].indexOf(scheme) === -1;
+        }
+
+        return !options.allowedSchemes || options.allowedSchemes.indexOf(scheme) === -1;
+      }
+
+      function parseUrl(value) {
+        value = value.replace(/^(\w+:)?\s*[\\/]\s*[\\/]/, '$1//');
+        if (value.startsWith('relative:')) {
+          // An attempt to exploit our workaround for base URLs being
+          // mandatory for relative URL validation in the WHATWG
+          // URL parser, reject it
+          throw new Error('relative: exploit attempt');
+        }
+        // naughtyHref is in charge of whether protocol relative URLs
+        // are cool. Here we are concerned just with allowed hostnames and
+        // whether to allow relative URLs.
+        //
+        // Build a placeholder "base URL" against which any reasonable
+        // relative URL may be parsed successfully
+        let base = 'relative://relative-site';
+        for (let i = 0; (i < 100); i++) {
+          base += `/${i}`;
+        }
+
+        const parsed = new URL(value, base);
+
+        const isRelativeUrl = parsed && parsed.hostname === 'relative-site' && parsed.protocol === 'relative:';
+        return {
+          isRelativeUrl,
+          url: parsed
+        };
+      }
+      /**
+       * Filters user input css properties by allowlisted regex attributes.
+       * Modifies the abstractSyntaxTree object.
+       *
+       * @param {object} abstractSyntaxTree  - Object representation of CSS attributes.
+       * @property {array[Declaration]} abstractSyntaxTree.nodes[0] -
+       * Each object contains prop and value key, i.e { prop: 'color', value: 'red' }.
+       * @param {object} allowedStyles       - Keys are properties (i.e color),
+       * value is list of permitted regex rules (i.e /green/i).
+       * @return {object}                    - The modified tree.
+       */
+      function filterCss(abstractSyntaxTree, allowedStyles) {
+        if (!allowedStyles) {
+          return abstractSyntaxTree;
+        }
+
+        const astRules = abstractSyntaxTree.nodes[0];
+        let selectedRule;
+
+        // Merge global and tag-specific styles into new AST.
+        if (allowedStyles[astRules.selector] && allowedStyles['*']) {
+          selectedRule = deepmerge(
+            allowedStyles[astRules.selector],
+            allowedStyles['*']
+          );
+        } else {
+          selectedRule = allowedStyles[astRules.selector] || allowedStyles['*'];
+        }
+
+        if (selectedRule) {
+          abstractSyntaxTree.nodes[0].nodes = astRules.nodes
+            .reduce(filterDeclarations(selectedRule), []);
+        }
+
+        return abstractSyntaxTree;
+      }
+
+      /**
+       * Extracts the style attributes from an AbstractSyntaxTree and formats those
+       * values in the inline style attribute format.
+       *
+       * @param  {AbstractSyntaxTree} filteredAST
+       * @return {string}             - Example:
+       * "color:yellow;text-align:center !important;font-family:helvetica;"
+       */
+      function stringifyStyleAttributes(filteredAST) {
+        return filteredAST.nodes[0].nodes
+          .reduce(function(extractedAttributes, attrObject) {
+            extractedAttributes.push(
+              `${attrObject.prop}:${attrObject.value}${attrObject.important ? ' !important' : ''}`
+            );
+            return extractedAttributes;
+          }, [])
+          .join(';');
+      }
+
+      /**
+        * Filters the existing attributes for the given property. Discards any attributes
+        * which don't match the allowlist.
+        *
+        * @param  {object} selectedRule - Example: { color: red, font-family: helvetica }
+        * @param  {array} allowedDeclarationsList - List of declarations
+        * which pass the allowlist.
+        * @param  {object} attributeObject - Object representing the current css property.
+        * @property {string} attributeObject.type - Typically 'declaration'.
+        * @property {string} attributeObject.prop - The CSS property, i.e 'color'.
+        * @property {string} attributeObject.value - The corresponding value to
+        * the css property, i.e 'red'.
+        * @return {function} - When used in Array.reduce,
+        * will return an array of Declaration objects
+        */
+      function filterDeclarations(selectedRule) {
+        return function (allowedDeclarationsList, attributeObject) {
+          // If this property is allowlisted...
+          if (has(selectedRule, attributeObject.prop)) {
+            const matchesRegex = selectedRule[attributeObject.prop]
+              .some(function(regularExpression) {
+                return regularExpression.test(attributeObject.value);
+              });
+
+            if (matchesRegex) {
+              allowedDeclarationsList.push(attributeObject);
+            }
+          }
+          return allowedDeclarationsList;
+        };
+      }
+
+      function filterClasses(classes, allowed, allowedGlobs) {
+        if (!allowed) {
+          // The class attribute is allowed without filtering on this tag
+          return classes;
+        }
+        classes = classes.split(/\s+/);
+        return classes.filter(function(clss) {
+          return allowed.indexOf(clss) !== -1 || allowedGlobs.some(function(glob) {
+            return glob.test(clss);
+          });
+        }).join(' ');
+      }
+    }
+
+    // Defaults are accessible to you so that you can use them as a starting point
+    // programmatically if you wish
+
+    const htmlParserDefaults = {
+      decodeEntities: true
+    };
+    sanitizeHtml.defaults = {
+      allowedTags: [
+        // Sections derived from MDN element categories and limited to the more
+        // benign categories.
+        // https://developer.mozilla.org/en-US/docs/Web/HTML/Element
+        // Content sectioning
+        'address', 'article', 'aside', 'footer', 'header',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hgroup',
+        'main', 'nav', 'section',
+        // Text content
+        'blockquote', 'dd', 'div', 'dl', 'dt', 'figcaption', 'figure',
+        'hr', 'li', 'menu', 'ol', 'p', 'pre', 'ul',
+        // Inline text semantics
+        'a', 'abbr', 'b', 'bdi', 'bdo', 'br', 'cite', 'code', 'data', 'dfn',
+        'em', 'i', 'kbd', 'mark', 'q',
+        'rb', 'rp', 'rt', 'rtc', 'ruby',
+        's', 'samp', 'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var', 'wbr',
+        // Table content
+        'caption', 'col', 'colgroup', 'table', 'tbody', 'td', 'tfoot', 'th',
+        'thead', 'tr'
+      ],
+      // Tags that cannot be boolean
+      nonBooleanAttributes: [
+        'abbr', 'accept', 'accept-charset', 'accesskey', 'action',
+        'allow', 'alt', 'as', 'autocapitalize', 'autocomplete',
+        'blocking', 'charset', 'cite', 'class', 'color', 'cols',
+        'colspan', 'content', 'contenteditable', 'coords', 'crossorigin',
+        'data', 'datetime', 'decoding', 'dir', 'dirname', 'download',
+        'draggable', 'enctype', 'enterkeyhint', 'fetchpriority', 'for',
+        'form', 'formaction', 'formenctype', 'formmethod', 'formtarget',
+        'headers', 'height', 'hidden', 'high', 'href', 'hreflang',
+        'http-equiv', 'id', 'imagesizes', 'imagesrcset', 'inputmode',
+        'integrity', 'is', 'itemid', 'itemprop', 'itemref', 'itemtype',
+        'kind', 'label', 'lang', 'list', 'loading', 'low', 'max',
+        'maxlength', 'media', 'method', 'min', 'minlength', 'name',
+        'nonce', 'optimum', 'pattern', 'ping', 'placeholder', 'popover',
+        'popovertarget', 'popovertargetaction', 'poster', 'preload',
+        'referrerpolicy', 'rel', 'rows', 'rowspan', 'sandbox', 'scope',
+        'shape', 'size', 'sizes', 'slot', 'span', 'spellcheck', 'src',
+        'srcdoc', 'srclang', 'srcset', 'start', 'step', 'style',
+        'tabindex', 'target', 'title', 'translate', 'type', 'usemap',
+        'value', 'width', 'wrap',
+        // Event handlers
+        'onauxclick', 'onafterprint', 'onbeforematch', 'onbeforeprint',
+        'onbeforeunload', 'onbeforetoggle', 'onblur', 'oncancel',
+        'oncanplay', 'oncanplaythrough', 'onchange', 'onclick', 'onclose',
+        'oncontextlost', 'oncontextmenu', 'oncontextrestored', 'oncopy',
+        'oncuechange', 'oncut', 'ondblclick', 'ondrag', 'ondragend',
+        'ondragenter', 'ondragleave', 'ondragover', 'ondragstart',
+        'ondrop', 'ondurationchange', 'onemptied', 'onended',
+        'onerror', 'onfocus', 'onformdata', 'onhashchange', 'oninput',
+        'oninvalid', 'onkeydown', 'onkeypress', 'onkeyup',
+        'onlanguagechange', 'onload', 'onloadeddata', 'onloadedmetadata',
+        'onloadstart', 'onmessage', 'onmessageerror', 'onmousedown',
+        'onmouseenter', 'onmouseleave', 'onmousemove', 'onmouseout',
+        'onmouseover', 'onmouseup', 'onoffline', 'ononline', 'onpagehide',
+        'onpageshow', 'onpaste', 'onpause', 'onplay', 'onplaying',
+        'onpopstate', 'onprogress', 'onratechange', 'onreset', 'onresize',
+        'onrejectionhandled', 'onscroll', 'onscrollend',
+        'onsecuritypolicyviolation', 'onseeked', 'onseeking', 'onselect',
+        'onslotchange', 'onstalled', 'onstorage', 'onsubmit', 'onsuspend',
+        'ontimeupdate', 'ontoggle', 'onunhandledrejection', 'onunload',
+        'onvolumechange', 'onwaiting', 'onwheel'
+      ],
+      disallowedTagsMode: 'discard',
+      allowedAttributes: {
+        a: [ 'href', 'name', 'target' ],
+        // We don't currently allow img itself by default, but
+        // these attributes would make sense if we did.
+        img: [ 'src', 'srcset', 'alt', 'title', 'width', 'height', 'loading' ]
+      },
+      allowedEmptyAttributes: [
+        'alt'
+      ],
+      // Lots of these won't come up by default because we don't allow them
+      selfClosing: [ 'img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta' ],
+      // URL schemes we permit
+      allowedSchemes: [ 'http', 'https', 'ftp', 'mailto', 'tel' ],
+      allowedSchemesByTag: {},
+      allowedSchemesAppliedToAttributes: [ 'href', 'src', 'cite' ],
+      allowProtocolRelative: true,
+      enforceHtmlBoundary: false,
+      parseStyleAttributes: true,
+      preserveEscapedAttributes: false
+    };
+
+    sanitizeHtml.simpleTransform = function(newTagName, newAttribs, merge) {
+      merge = (merge === undefined) ? true : merge;
+      newAttribs = newAttribs || {};
+
+      return function(tagName, attribs) {
+        let attrib;
+        if (merge) {
+          for (attrib in newAttribs) {
+            attribs[attrib] = newAttribs[attrib];
+          }
+        } else {
+          attribs = newAttribs;
+        }
+
+        return {
+          tagName: newTagName,
+          attribs
+        };
+      };
+    };
+
+    var index$1 = /*@__PURE__*/getDefaultExportFromCjs(sanitizeHtml_1);
+
+    var index$2 = /*#__PURE__*/_mergeNamespaces({
+        __proto__: null,
+        default: index$1
+    }, [sanitizeHtml_1]);
+
+    function detectLang() {
+        const lang = (navigator.languages?.[0] ?? navigator.language).toLowerCase();
+        return lang === "ja" || lang === "ja-jp" ? "ja" : "en";
+    }
+    function detectMacOS() {
+        // biome-ignore lint/complexity/useLiteralKeys: userAgentData is not in TS lib types
+        const uad = navigator["userAgentData"];
+        if (uad?.platform) {
+            return uad.platform === "macOS";
+        }
+        return /mac/i.test(navigator.platform);
+    }
+    const KEY_LABELS = {
+        altKey: { en: "alt", ja: "Alt" },
+        ctrlKey: { en: "Ctrl", ja: "Ctrl" },
+        metaKey: { en: "⌘", ja: "⌘" },
+    };
+    const MESSAGES = {
+        en: (key) => ({
+            wheel: `Use ${KEY_LABELS[key].en} + scroll to zoom the map.`,
+            touch: "Use two fingers to move the map.",
+        }),
+        ja: (key) => ({
+            wheel: `${KEY_LABELS[key].ja} キーを押しながらスクロールしてください。`,
+            touch: "2本指を使って操作してください。",
+        }),
+    };
+    function resolveModifierKey(option) {
+        switch (option) {
+            case "alt":
+                return "altKey";
+            case "ctrl":
+                return "ctrlKey";
+            case "meta":
+                return "metaKey";
+            default:
+                // "auto" or undefined
+                return detectMacOS() ? "metaKey" : "ctrlKey";
+        }
+    }
+    function resolveSettings(options) {
+        const modifierKey = resolveModifierKey(options.modifierKey);
+        const lang = options.lang === "auto" || !options.lang ? detectLang() : options.lang;
+        const messages = MESSAGES[lang](modifierKey);
+        return {
+            backgroundColor: options.backgroundColor ?? "rgba(0, 0, 0, 0.8)",
+            textColor: options.textColor ?? "#ffffff",
+            textMessage: options.textMessage ?? messages.wheel,
+            textMessageMobile: options.textMessageMobile ?? messages.touch,
+            timeout: options.timeout ?? 2000,
+            modifierKey,
+        };
+    }
+    class GestureHandling {
+        constructor(options = {}) {
+            this.fullscreen = false;
+            this.timer = null;
+            this.settings = resolveSettings(options);
+            this.handleWheel = this.onWheel.bind(this);
+            this.handleHelpWheel = this.onHelpWheel.bind(this);
+            this.handleHelpTouchStart = this.onHelpTouchStart.bind(this);
+            this.handleMoveStart = this.onMoveStart.bind(this);
+            this.handleFullscreenChange = this.onFullscreenChange.bind(this);
+        }
+        onAdd(map) {
+            this.map = map;
+            // ヘルプオーバーレイの作成
+            const helpElement = document.createElement("div");
+            helpElement.className = "gesture-handling-help-overlay";
+            helpElement.style.backgroundColor = this.settings.backgroundColor;
+            helpElement.style.position = "absolute";
+            helpElement.style.display = "none";
+            helpElement.style.zIndex = "9999";
+            helpElement.style.justifyContent = "center";
+            helpElement.style.alignItems = "center";
+            const textBox = document.createElement("div");
+            textBox.style.textAlign = "center";
+            textBox.style.color = this.settings.textColor;
+            helpElement.appendChild(textBox);
+            this.helpElement = helpElement;
+            // scroll zoom を無効化
+            map.scrollZoom.disable();
+            // イベントリスナーの登録
+            helpElement.addEventListener("wheel", this.handleHelpWheel);
+            helpElement.addEventListener("touchstart", this.handleHelpTouchStart, {
+                passive: false,
+            });
+            map.getContainer().addEventListener("wheel", this.handleWheel);
+            map.on("movestart", this.handleMoveStart);
+            document.addEventListener("fullscreenchange", this.handleFullscreenChange);
+            // IControl の要件として空の container を返す
+            const container = document.createElement("div");
+            container.className = "maplibregl-ctrl";
+            container.style.display = "none";
+            return container;
+        }
+        onRemove() {
+            this.clearTimer();
+            if (this.helpElement) {
+                this.helpElement.removeEventListener("wheel", this.handleHelpWheel);
+                this.helpElement.removeEventListener("touchstart", this.handleHelpTouchStart);
+                this.hideHelp();
+                this.helpElement = undefined;
+            }
+            if (this.map) {
+                this.map.getContainer().removeEventListener("wheel", this.handleWheel);
+                this.map.off("movestart", this.handleMoveStart);
+                this.map.scrollZoom.enable();
+                this.map = undefined;
+            }
+            document.removeEventListener("fullscreenchange", this.handleFullscreenChange);
+        }
+        getDefaultPosition() {
+            return "top-left";
+        }
+        // --- internal ---
+        showHelp(message) {
+            const map = this.map;
+            const help = this.helpElement;
+            if (!map || !help)
+                return;
+            help.style.top = "0";
+            help.style.left = "0";
+            help.style.width = "100%";
+            help.style.height = "100%";
+            help.style.display = "flex";
+            const textBox = help.firstElementChild;
+            if (textBox) {
+                textBox.innerText = message;
+            }
+            map.getContainer().appendChild(help);
+        }
+        hideHelp() {
+            const help = this.helpElement;
+            if (!help)
+                return;
+            help.style.display = "none";
+            help.remove();
+        }
+        clearTimer() {
+            if (this.timer !== null) {
+                clearTimeout(this.timer);
+                this.timer = null;
+            }
+        }
+        onWheel(event) {
+            const map = this.map;
+            if (!map)
+                return;
+            if (event[this.settings.modifierKey] || this.fullscreen) {
+                event.preventDefault();
+                if (!map.scrollZoom.isEnabled()) {
+                    map.scrollZoom.reset();
+                    map.scrollZoom.enable();
+                }
+            }
+            else {
+                map.scrollZoom.disable();
+                this.showHelp(this.settings.textMessage);
+                this.clearTimer();
+                this.timer = setTimeout(() => {
+                    this.hideHelp();
+                }, this.settings.timeout);
+            }
+        }
+        onHelpWheel(event) {
+            if (event[this.settings.modifierKey] || this.fullscreen) {
+                event.preventDefault();
+                this.clearTimer();
+                this.hideHelp();
+            }
+            else {
+                this.clearTimer();
+                this.timer = setTimeout(() => {
+                    this.hideHelp();
+                }, this.settings.timeout);
+            }
+        }
+        onHelpTouchStart(event) {
+            const map = this.map;
+            if (!map)
+                return;
+            if (event.touches && (event.touches.length >= 2 || this.fullscreen)) {
+                this.clearTimer();
+                this.hideHelp();
+                map.dragPan.enable();
+                event.preventDefault();
+            }
+        }
+        onMoveStart(event) {
+            const map = this.map;
+            if (!map)
+                return;
+            if (event.originalEvent &&
+                "touches" in event.originalEvent &&
+                event.originalEvent.touches.length < 2 &&
+                !this.fullscreen) {
+                this.showHelp(this.settings.textMessageMobile);
+                map.dragPan.disable();
+                this.clearTimer();
+                this.timer = setTimeout(() => {
+                    map.dragPan.enable();
+                    this.hideHelp();
+                }, this.settings.timeout);
+            }
+        }
+        onFullscreenChange() {
+            this.fullscreen = !!document.fullscreenElement;
+        }
+    }
+
+    var index = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        GestureHandling: GestureHandling,
+        default: GestureHandling
+    });
 
 }));
 //# sourceMappingURL=index.js.map
