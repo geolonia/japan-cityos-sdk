@@ -4,6 +4,7 @@ import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByL
 import Papa from 'papaparse';
 import { toQueryBox } from './toQueryBox';
 import { normalize } from '@geolonia/normalize-japanese-addresses';
+import { resolveLatLng } from './utils/resolveLatLng';
 import { addOsmLayer, addOsmSource, addOsmSprite, getJapaneseOsmLayerNames, removeOsmLayer, toOsmLayerNameType, updateSpriteSheet } from './utils/osmPoiUtils';
 import { getOSMLayerConfig } from './utils/osmStyles';
 import { existsSpriteIcon, getSpriteIconNames, getSpriteIconStyles } from './utils/spriteUtils';
@@ -165,12 +166,14 @@ class GeoloniaMap extends maplibregl.Map {
    * 都道府県の中心座標を取得する
    */
   static async getLatLngByPrefecture(prefName: string): Promise<[number, number] | null> {
-    const result = await normalize(prefName);
-    const point = result?.point;
-    if (point) {
-      return [point.lng, point.lat];
-    }
-    return null;
+    return resolveLatLng(prefName);
+  }
+
+  /**
+   * 都道府県+市区町村の中心座標を取得する
+   */
+  static async getLatLngByCity(prefName: string, cityName: string): Promise<[number, number] | null> {
+    return resolveLatLng(prefName + cityName);
   }
 
   /* ****************
@@ -286,15 +289,37 @@ class GeoloniaMap extends maplibregl.Map {
    * @param styleUrlOrObject スタイルのURLまたはオブジェクト
    ****************/
   setBaseMapStyle(styleUrlOrObject: string | maplibregl.StyleSpecification) {
+    // 3D地形の状態を保持
+    const terrainState = this.getTerrain();
+    const hadTerrain = !!terrainState;
+
     this.setStyle(styleUrlOrObject, {
       transformStyle: (previousStyle, nextStyle) => {
         const newSources = mergeSourcesByLoadedIds(previousStyle.sources, nextStyle.sources, this.loadedSourceIds);
         const newLayers = mergeLayersByLoadedIds(previousStyle.layers, nextStyle.layers, this.loadedSourceIds);
+
+        // terrain用のソースとレイヤーを保持
+        const terrainSourceId = terrainState?.source ?? this.TERRAIN_SOURCE_ID;
+        if (terrainSourceId && hadTerrain) {
+          if (previousStyle.sources[terrainSourceId]) {
+            newSources[terrainSourceId] = previousStyle.sources[terrainSourceId];
+          }
+          const hillshadeLayerId = GeoloniaMap.HILLSHADE_LAYER_ID;
+          if (!newLayers.some(l => l.id === hillshadeLayerId)) {
+            const hillshadeLayer = previousStyle.layers.find(l => l.id === hillshadeLayerId);
+            if (hillshadeLayer) {
+              newLayers.push(hillshadeLayer);
+            }
+          }
+        }
+
+        const canRestoreTerrain = hadTerrain && !!terrainSourceId && !!newSources[terrainSourceId];
         return {
           ...previousStyle,
           ...nextStyle,
           sources: newSources,
-          layers: newLayers
+          layers: newLayers,
+          ...(canRestoreTerrain ? { terrain: { source: terrainSourceId, exaggeration: terrainState.exaggeration ?? 1 } } : {})
         };
       }
     });
