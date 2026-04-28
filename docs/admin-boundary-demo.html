@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>行政区画境界デモ - CityOS 日本</title>
+  <style type="text/css">
+    html,
+    body,
+    #map {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+
+    #sidebar {
+      position: absolute;
+      z-index: 10;
+      top: 10px;
+      left: 10px;
+      width: 300px;
+      max-height: calc(100% - 20px);
+      overflow-y: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      box-sizing: border-box;
+    }
+
+    .section {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .section:last-child {
+      border-bottom: none;
+    }
+
+    h2 {
+      margin: 0 0 15px 0;
+      font-size: 18px;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .boundary-control {
+      margin-bottom: 15px;
+    }
+
+    .boundary-control:last-child {
+      margin-bottom: 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 8px 12px;
+      margin-top: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: #f8f8f8;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #e8e8e8;
+    }
+
+    button.active {
+      background: #0080ff;
+      color: white;
+      border-color: #0080ff;
+    }
+
+    .style-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .style-input {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .style-input label {
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .style-input input {
+      padding: 4px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="sidebar">
+    <h2>行政区画境界デモ</h2>
+
+    <div class="section">
+      <label>市区町村境界の表示</label>
+
+      <div class="boundary-control">
+        <button id="btn-sapporo" data-code="01101" data-name="北海道札幌市中央区">
+          札幌市中央区
+        </button>
+      </div>
+
+      <div class="boundary-control">
+        <button id="btn-tokyo" data-code="13101" data-name="東京都千代田区">
+          東京都千代田区
+        </button>
+      </div>
+
+      <div class="boundary-control">
+        <button id="btn-osaka" data-code="27127" data-name="大阪府大阪市北区">
+          大阪府大阪市北区
+        </button>
+      </div>
+
+      <div class="boundary-control">
+        <button id="btn-fukuoka" data-code="40131" data-name="福岡県福岡市中央区">
+          福岡県福岡市中央区
+        </button>
+      </div>
+    </div>
+
+    <div class="section">
+      <label>スタイルカスタマイズ</label>
+      <div class="style-inputs">
+        <div class="style-input">
+          <label for="fill-color">塗りつぶし色</label>
+          <input type="color" id="fill-color" value="#0080ff">
+        </div>
+        <div class="style-input">
+          <label for="fill-opacity">塗りつぶし透明度</label>
+          <input type="range" id="fill-opacity" min="0" max="1" step="0.1" value="0.2">
+        </div>
+        <div class="style-input">
+          <label for="line-color">境界線色</label>
+          <input type="color" id="line-color" value="#0080ff">
+        </div>
+        <div class="style-input">
+          <label for="line-width">境界線太さ</label>
+          <input type="range" id="line-width" min="1" max="5" step="0.5" value="2">
+        </div>
+      </div>
+      <button id="btn-apply-style" style="margin-top: 15px;">スタイルを適用</button>
+    </div>
+
+    <div class="section">
+      <button id="btn-clear-all">全てクリア</button>
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+  <script type="module">
+    import { GeoloniaMap } from './index.js';
+    import { fetchAdminBoundary } from './index.js';
+    import { addAdminBoundarySource, addAdminBoundaryLayer, removeAdminBoundaryLayer } from './index.js';
+
+    // 地図を初期化
+    const map = new GeoloniaMap({
+      container: 'map',
+      center: [139.7671, 35.6812], // 東京
+      zoom: 10,
+      style: 'https://basic-v1-background-only.pages.dev/style.json',
+    });
+
+    // アクティブな境界を追跡
+    const activeBoundaries = new Set();
+
+    // 境界表示ボタンのイベントリスナーを設定
+    document.querySelectorAll('[data-code]').forEach(button => {
+      button.addEventListener('click', async () => {
+        const code = button.dataset.code;
+        const name = button.dataset.name;
+
+        if (activeBoundaries.has(code)) {
+          // 既に表示されている場合は削除
+          removeAdminBoundaryLayer(map, code);
+          activeBoundaries.delete(code);
+          button.classList.remove('active');
+        } else {
+          // 新規表示
+          const geojson = await fetchAdminBoundary(code);
+          if (geojson) {
+            // スタイルオプションを取得
+            const styleOptions = {
+              fillColor: document.getElementById('fill-color').value,
+              fillOpacity: parseFloat(document.getElementById('fill-opacity').value),
+              lineColor: document.getElementById('line-color').value,
+              lineWidth: parseFloat(document.getElementById('line-width').value),
+              lineOpacity: 1
+            };
+
+            addAdminBoundarySource(map, code, geojson);
+            addAdminBoundaryLayer(map, code, styleOptions);
+            activeBoundaries.add(code);
+            button.classList.add('active');
+
+            // 境界にフィット
+            const bounds = new maplibregl.LngLatBounds();
+            geojson.features.forEach(feature => {
+              if (feature.geometry.type === 'Polygon') {
+                feature.geometry.coordinates[0].forEach(coord => {
+                  bounds.extend(coord);
+                });
+              }
+            });
+            map.fitBounds(bounds, { padding: 50, duration: 1000 });
+          } else {
+            alert(`${name}のデータ取得に失敗しました`);
+          }
+        }
+      });
+    });
+
+    // スタイル適用ボタン
+    document.getElementById('btn-apply-style').addEventListener('click', () => {
+      // 現在表示されている全ての境界を再描画
+      const codes = Array.from(activeBoundaries);
+      codes.forEach(code => {
+        removeAdminBoundaryLayer(map, code);
+      });
+
+      setTimeout(() => {
+        codes.forEach(code => {
+          const styleOptions = {
+            fillColor: document.getElementById('fill-color').value,
+            fillOpacity: parseFloat(document.getElementById('fill-opacity').value),
+            lineColor: document.getElementById('line-color').value,
+            lineWidth: parseFloat(document.getElementById('line-width').value),
+            lineOpacity: 1
+          };
+          addAdminBoundaryLayer(map, code, styleOptions);
+        });
+      }, 100);
+    });
+
+    // 全てクリアボタン
+    document.getElementById('btn-clear-all').addEventListener('click', () => {
+      activeBoundaries.forEach(code => {
+        removeAdminBoundaryLayer(map, code);
+        const button = document.querySelector(`[data-code="${code}"]`);
+        if (button) {
+          button.classList.remove('active');
+        }
+      });
+      activeBoundaries.clear();
+    });
+  </script>
+</body>
+
+</html>

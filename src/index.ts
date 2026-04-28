@@ -735,3 +735,8 @@ window.geolonia.API_KEY = parseApiKey(currentScript || undefined) || "";
 window.geolonia.japan = maplibregl;
 window.geolonia.japan.Map = GeoloniaMap;
 window.geolonia.japan.Popup = maplibregl.Popup;
+
+// 行政区画境界関連の関数をエクスポート
+export { fetchAdminBoundary, buildJapaneseAdminsUrl, isMunicipalityCode } from './utils/japaneseAdmins';
+export { addAdminBoundarySource, addAdminBoundaryLayer, removeAdminBoundaryLayer, AdminBoundaryStyleOptions } from './utils/adminBoundaryUtils';
+export { GeoloniaMap };

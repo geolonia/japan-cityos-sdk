@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('stream')) :
-    typeof define === 'function' && define.amd ? define(['stream'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.require$$0));
-})(this, (function (require$$0) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('stream')) :
+    typeof define === 'function' && define.amd ? define(['exports', 'stream'], factory) :
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.City = {}, global.require$$0));
+})(this, (function (exports, require$$0) { 'use strict';
 
     function ___$insertStylesToHeader(css) {
       if (!css) {
@@ -4357,6 +4357,204 @@
         }
     }
 
+    /**
+     * 都道府県コードの基本URL
+     */
+    const JAPANESE_ADMINS_BASE_URL = 'https://geolonia.github.io/japanese-admins';
+    /**
+     * 市区町村コード（5桁）かどうかを判定する
+     * @param code チェックするコード
+     * @returns 有効な市区町村コードならtrue
+     */
+    function isMunicipalityCode(code) {
+        if (!code || code.length !== 5) {
+            return false;
+        }
+        // 数字のみで構成されているかチェック
+        const isNumeric = /^\d{5}$/.test(code);
+        if (!isNumeric) {
+            return false;
+        }
+        // 都道府県コード部分（最初の2桁）が01〜47の範囲内かチェック
+        const prefCode = parseInt(code.substring(0, 2), 10);
+        return prefCode >= 1 && prefCode <= 47;
+    }
+    /**
+     * 市区町村コードから japanese-admins の GeoJSON URL を生成する
+     * @param municipalityCode 市区町村コード（5桁）
+     * @returns GeoJSON URL、無効なコードの場合は null
+     *
+     * @example
+     * buildJapaneseAdminsUrl('01101') // => 'https://geolonia.github.io/japanese-admins/01/01101.json'
+     */
+    function buildJapaneseAdminsUrl(municipalityCode) {
+        if (!isMunicipalityCode(municipalityCode)) {
+            return null;
+        }
+        const prefCode = municipalityCode.substring(0, 2);
+        return `${JAPANESE_ADMINS_BASE_URL}/${prefCode}/${municipalityCode}.json`;
+    }
+    /**
+     * japanese-admins から行政区画境界の GeoJSON を取得する
+     * @param municipalityCode 市区町村コード（5桁）
+     * @returns GeoJSON FeatureCollection、取得失敗時は null
+     *
+     * @example
+     * // 北海道札幌市中央区の境界データを取得
+     * const geojson = await fetchAdminBoundary('01101');
+     *
+     * @example
+     * // 東京都千代田区の境界データを取得
+     * const geojson = await fetchAdminBoundary('13101');
+     */
+    function fetchAdminBoundary(municipalityCode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const url = buildJapaneseAdminsUrl(municipalityCode);
+            if (!url) {
+                return null;
+            }
+            try {
+                const data = yield fetchJson(url);
+                if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+                    return data;
+                }
+                return null;
+            }
+            catch (_a) {
+                return null;
+            }
+        });
+    }
+
+    /**
+     * デフォルトのスタイルオプション
+     */
+    const DEFAULT_STYLE = {
+        fillColor: '#0080ff',
+        fillOpacity: 0.2,
+        lineColor: '#0080ff',
+        lineWidth: 2,
+        lineOpacity: 1
+    };
+    /**
+     * ソースIDを生成する
+     * @param id ベースとなるID
+     * @returns ソースID
+     */
+    function getSourceId(id) {
+        return `admin-boundary-${id}`;
+    }
+    /**
+     * FillレイヤーIDを生成する
+     * @param id ベースとなるID
+     * @returns FillレイヤーID
+     */
+    function getFillLayerId(id) {
+        return `${getSourceId(id)}-fill`;
+    }
+    /**
+     * LineレイヤーIDを生成する
+     * @param id ベースとなるID
+     * @returns LineレイヤーID
+     */
+    function getLineLayerId(id) {
+        return `${getSourceId(id)}-line`;
+    }
+    /**
+     * 行政区画境界のGeoJSONソースを地図に追加する
+     * @param map MapLibre Mapインスタンス
+     * @param id ソースを識別するためのID
+     * @param geojson 行政区画境界のGeoJSONデータ
+     * @returns 追加されたソースのID、既に存在する場合はundefined
+     *
+     * @example
+     * const geojson = await fetchAdminBoundary('01101');
+     * if (geojson) {
+     *   addAdminBoundarySource(map, 'sapporo-chuo', geojson);
+     * }
+     */
+    function addAdminBoundarySource(map, id, geojson) {
+        const sourceId = getSourceId(id);
+        if (map.getSource(sourceId)) {
+            return undefined;
+        }
+        map.addSource(sourceId, {
+            type: 'geojson',
+            data: geojson,
+            attribution: '国土交通省国土数値情報（行政区域データ）'
+        });
+        return sourceId;
+    }
+    /**
+     * 行政区画境界のレイヤー（Fill + Line）を地図に追加する
+     * @param map MapLibre Mapインスタンス
+     * @param id レイヤーを識別するためのID（ソースIDと同じ）
+     * @param styleOptions スタイルオプション（オプション）
+     *
+     * @example
+     * // デフォルトスタイルで追加
+     * addAdminBoundaryLayer(map, 'sapporo-chuo');
+     *
+     * @example
+     * // カスタムスタイルで追加
+     * addAdminBoundaryLayer(map, 'sapporo-chuo', {
+     *   fillColor: '#ff0000',
+     *   fillOpacity: 0.3,
+     *   lineColor: '#ff0000',
+     *   lineWidth: 3
+     * });
+     */
+    function addAdminBoundaryLayer(map, id, styleOptions) {
+        const sourceId = getSourceId(id);
+        const fillLayerId = getFillLayerId(id);
+        const lineLayerId = getLineLayerId(id);
+        // スタイルオプションをデフォルト値とマージ
+        const style = Object.assign(Object.assign({}, DEFAULT_STYLE), styleOptions);
+        // Fillレイヤー（塗りつぶし）を追加
+        if (!map.getLayer(fillLayerId)) {
+            map.addLayer({
+                id: fillLayerId,
+                type: 'fill',
+                source: sourceId,
+                paint: {
+                    'fill-color': style.fillColor,
+                    'fill-opacity': style.fillOpacity
+                }
+            });
+        }
+        // Lineレイヤー（境界線）を追加
+        if (!map.getLayer(lineLayerId)) {
+            map.addLayer({
+                id: lineLayerId,
+                type: 'line',
+                source: sourceId,
+                paint: {
+                    'line-color': style.lineColor,
+                    'line-width': style.lineWidth,
+                    'line-opacity': style.lineOpacity
+                }
+            });
+        }
+    }
+    /**
+     * 行政区画境界のレイヤーを地図から削除する
+     * @param map MapLibre Mapインスタンス
+     * @param id レイヤーを識別するためのID
+     *
+     * @example
+     * removeAdminBoundaryLayer(map, 'sapporo-chuo');
+     */
+    function removeAdminBoundaryLayer(map, id) {
+        const fillLayerId = getFillLayerId(id);
+        const lineLayerId = getLineLayerId(id);
+        if (map.getLayer(fillLayerId)) {
+            map.removeLayer(fillLayerId);
+        }
+        if (map.getLayer(lineLayerId)) {
+            map.removeLayer(lineLayerId);
+        }
+    }
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d, _e, _f, _g;
@@ -4994,6 +5192,14 @@
     window.geolonia.japan = maplibregl;
     window.geolonia.japan.Map = GeoloniaMap;
     window.geolonia.japan.Popup = maplibregl.Popup;
+
+    exports.GeoloniaMap = GeoloniaMap;
+    exports.addAdminBoundaryLayer = addAdminBoundaryLayer;
+    exports.addAdminBoundarySource = addAdminBoundarySource;
+    exports.buildJapaneseAdminsUrl = buildJapaneseAdminsUrl;
+    exports.fetchAdminBoundary = fetchAdminBoundary;
+    exports.isMunicipalityCode = isMunicipalityCode;
+    exports.removeAdminBoundaryLayer = removeAdminBoundaryLayer;
 
 }));
 //# sourceMappingURL=index.js.map
