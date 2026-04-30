@@ -595,16 +595,11 @@ class GeoloniaMap extends MapsCoreGeoloniaMap {
    * @param layerId レイヤーID
    * @returns 存在すればtrue、なければfalse
    */
-  hasLayer(layerId: string): string[] {
+  hasLayer(layerId: string): boolean {
     const layerName = toOsmLayerNameType(layerId);
-    if (!layerName) { return []; }
-    const layerIdArr: string[] = [];
-    getOSMLayerConfig(layerName, '').forEach(layerConfig => {
-      if (this.getLayer(layerConfig.id)) {
-        layerIdArr.push(layerConfig.id);
-      }
-    });
-    return layerIdArr.length > 0 ? layerIdArr : [];
+    if (!layerName) { return false; }
+    const layers = getOSMLayerConfig(layerName, '');
+    return layers.some(layerConfig => !!this.getLayer(layerConfig.id));
   }
 
    /**
@@ -776,18 +771,6 @@ class GeoloniaMap extends MapsCoreGeoloniaMap {
   }
 }
 
-const currentScript = document.currentScript as HTMLScriptElement | null;
-window.geolonia = window.geolonia || {};
-window.geolonia.API_KEY = parseApiKey(currentScript || undefined) || "";
-
-// keyring にも API キーを設定（maps-core との整合性を保つ）
-if (window.geolonia.API_KEY) {
-  keyring.setApiKey(window.geolonia.API_KEY);
-}
-
-window.geolonia.japan = maplibregl;
-window.geolonia.japan.Map = GeoloniaMap;
-window.geolonia.japan.Popup = maplibregl.Popup;
 const currentScript = document.currentScript as HTMLScriptElement | null;
 window.geolonia = window.geolonia || {};
 window.geolonia.API_KEY = parseApiKey(currentScript || undefined) || "";

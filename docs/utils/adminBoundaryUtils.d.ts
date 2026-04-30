@@ -1,3 +1,5 @@
+import type maplibregl from 'maplibre-gl';
+import type * as GeoJSON from 'geojson';
 /**
  * 行政区画境界レイヤーのスタイルオプション
  */

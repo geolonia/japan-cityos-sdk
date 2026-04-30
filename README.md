@@ -87,4 +87,4 @@ removeAdminBoundaryLayer(map, '13101');
 
 ### デモページ
 
-行政区画境界表示機能の動作例は[デモページ](./admin-boundary-demo.html)で確認できます。
+行政区画境界表示機能の動作例は[デモページ](./docs/admin-boundary-demo.html)で確認できます。

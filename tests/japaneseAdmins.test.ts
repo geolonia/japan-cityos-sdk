@@ -4,6 +4,14 @@ import {
   isMunicipalityCode
 } from '../src/utils/japaneseAdmins';
 
+// fetchJsonをモック化
+jest.mock('../src/utils/fetchJson', () => ({
+  fetchJson: jest.fn()
+}));
+
+import { fetchJson } from '../src/utils/fetchJson';
+const mockFetchJson = fetchJson as jest.MockedFunction<typeof fetchJson>;
+
 describe('buildJapaneseAdminsUrl', () => {
   it('市区町村コード（5桁）からURLを生成できる', () => {
     const url = buildJapaneseAdminsUrl('01101');
@@ -67,7 +75,25 @@ describe('isMunicipalityCode', () => {
 });
 
 describe('fetchAdminBoundary', () => {
+  afterEach(() => {
+    // 各テスト後にモックをリセット
+    mockFetchJson.mockReset();
+  });
+
   it('有効な市区町村コード（札幌市中央区）でGeoJSONを取得できる', async () => {
+    // モックの戻り値を設定
+    const mockGeojson = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] },
+          properties: {}
+        }
+      ]
+    };
+    mockFetchJson.mockResolvedValue(mockGeojson);
+
     const geojson = await fetchAdminBoundary('01101');
     expect(geojson).not.toBeNull();
     if (geojson) {
@@ -75,20 +101,27 @@ describe('fetchAdminBoundary', () => {
       expect(Array.isArray(geojson.features)).toBe(true);
       expect(geojson.features.length).toBeGreaterThan(0);
     }
-  }, 10000);
+  });
 
   it('無効なコードの場合はnullを返す', async () => {
     const geojson = await fetchAdminBoundary('invalid');
     expect(geojson).toBeNull();
+    // fetchJsonは呼ばれないはず
+    expect(mockFetchJson).not.toHaveBeenCalled();
   });
 
   it('存在しない市区町村コードの場合はnullを返す', async () => {
+    // fetchJsonがエラーを投げる
+    mockFetchJson.mockRejectedValue(new Error('Not found'));
+
     const geojson = await fetchAdminBoundary('01999');
     expect(geojson).toBeNull();
-  }, 10000);
+  });
 
   it('都道府県コード範囲外の場合はnullを返す', async () => {
     const geojson = await fetchAdminBoundary('99999');
     expect(geojson).toBeNull();
+    // fetchJsonは呼ばれないはず
+    expect(mockFetchJson).not.toHaveBeenCalled();
   });
 });

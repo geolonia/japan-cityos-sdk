@@ -69,6 +69,11 @@ describe('addAdminBoundarySource', () => {
 describe('addAdminBoundaryLayer', () => {
   it('FillレイヤーとLineレイヤーを追加できる', () => {
     const map = createMockMap();
+    const geojson: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: []
+    };
+    addAdminBoundarySource(map, 'test-boundary', geojson);
 
     addAdminBoundaryLayer(map, 'test-boundary');
 
@@ -95,6 +100,11 @@ describe('addAdminBoundaryLayer', () => {
 
   it('カスタムスタイルオプションを適用できる', () => {
     const map = createMockMap();
+    const geojson: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: []
+    };
+    addAdminBoundarySource(map, 'test-boundary', geojson);
     const styleOptions: AdminBoundaryStyleOptions = {
       fillColor: '#ff0000',
       fillOpacity: 0.5,
@@ -129,6 +139,11 @@ describe('addAdminBoundaryLayer', () => {
 
   it('デフォルトスタイルが適用される', () => {
     const map = createMockMap();
+    const geojson: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: []
+    };
+    addAdminBoundarySource(map, 'test-boundary', geojson);
 
     addAdminBoundaryLayer(map, 'test-boundary');
 
@@ -158,6 +173,11 @@ describe('addAdminBoundaryLayer', () => {
 describe('removeAdminBoundaryLayer', () => {
   it('FillレイヤーとLineレイヤーを削除できる', () => {
     const map = createMockMap();
+    const geojson: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: []
+    };
+    addAdminBoundarySource(map, 'test-boundary', geojson);
 
     // レイヤーを追加
     addAdminBoundaryLayer(map, 'test-boundary');

@@ -1,5 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { GeoloniaMap as MapsCoreGeoloniaMap } from '@geolonia/maps-core';
 import '@geolonia/maps-core/css';
 import { CircleStyleOptions } from './utils/circleStyleUtils';
 import { FillStyleOptions } from './setFillStyle';
@@ -9,7 +10,7 @@ declare global {
         geolonia: any;
     }
 }
-declare class GeoloniaMap extends maplibregl.Map {
+declare class GeoloniaMap extends MapsCoreGeoloniaMap {
     /**
      * 画像マーカー管理用配列
      */
@@ -18,9 +19,13 @@ declare class GeoloniaMap extends maplibregl.Map {
     static spriteSheetUrl: {
         [key: string]: string;
     };
+    static baseMapStyleUrl: {
+        [key: string]: string;
+    };
     private readonly TERRAIN_SOURCE_ID;
     private static readonly HILLSHADE_LAYER_ID;
-    private readonly API_KEY;
+    private apiKey;
+    private stage;
     constructor(params: any);
     /**
      * osm poiレイヤー名を取得する（日本語キーのみ）
@@ -34,6 +39,10 @@ declare class GeoloniaMap extends maplibregl.Map {
      * 国土数値情報データのキーを取得する
      */
     static getNLNIData(): string[];
+    /**
+     * 利用可能な背景地図スタイル名を取得する
+     */
+    static getBaseMapStyles(): string[];
     /**
      * 鳥取県スマートシティのデータレイヤー一覧を取得する
      */
@@ -69,6 +78,10 @@ declare class GeoloniaMap extends maplibregl.Map {
      * 都道府県の中心座標を取得する
      */
     static getLatLngByPrefecture(prefName: string): Promise<[number, number] | null>;
+    /**
+     * 都道府県+市区町村の中心座標を取得する
+     */
+    static getLatLngByCity(prefName: string, cityName: string): Promise<[number, number] | null>;
     loadData(className: string, simpleStyle: {
         [key: string]: any;
     } | undefined | null): void;
@@ -181,7 +194,7 @@ declare class GeoloniaMap extends maplibregl.Map {
      * @param layerId レイヤーID
      * @returns 存在すればtrue、なければfalse
      */
-    hasLayer(layerId: string): string[];
+    hasLayer(layerId: string): boolean;
     /**
     * 指定したPOIレイヤーのスプライトシートを切り替える
     * @param layerName レイヤー名（日本語または英語）

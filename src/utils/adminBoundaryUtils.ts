@@ -1,3 +1,6 @@
+import type maplibregl from 'maplibre-gl';
+import type * as GeoJSON from 'geojson';
+
 /**
  * 行政区画境界レイヤーのスタイルオプション
  */
@@ -112,6 +115,11 @@ export function addAdminBoundaryLayer(
   const sourceId = getSourceId(id);
   const fillLayerId = getFillLayerId(id);
   const lineLayerId = getLineLayerId(id);
+
+  // ソースの存在確認
+  if (!map.getSource(sourceId)) {
+    throw new Error(`Source "${sourceId}" not registered. Call addAdminBoundarySource first.`);
+  }
 
   // スタイルオプションをデフォルト値とマージ
   const style: Required<AdminBoundaryStyleOptions> = {
