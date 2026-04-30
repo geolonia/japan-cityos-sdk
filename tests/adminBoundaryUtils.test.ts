@@ -16,6 +16,9 @@ const createMockMap = () => {
     addSource: jest.fn((id: string, source: any) => {
       sources[id] = source;
     }),
+    removeSource: jest.fn((id: string) => {
+      delete sources[id];
+    }),
     getLayer: jest.fn((id: string) => layers[id]),
     addLayer: jest.fn((layer: any) => {
       layers[layer.id] = layer;
@@ -47,7 +50,7 @@ describe('addAdminBoundarySource', () => {
     );
   });
 
-  it('既にソースが存在する場合は追加しない', () => {
+  it('既にソースが存在する場合は既存ソース（と関連レイヤー）を削除して再追加する', () => {
     const map = createMockMap();
     const geojson: GeoJSON.FeatureCollection = {
       type: 'FeatureCollection',
@@ -56,17 +59,28 @@ describe('addAdminBoundarySource', () => {
 
     // 1回目の追加
     addAdminBoundarySource(map, 'test-boundary', geojson);
-    const callCount1 = (map.addSource as jest.Mock).mock.calls.length;
+    addAdminBoundaryLayer(map, 'test-boundary');
+    const addSourceCount1 = (map.addSource as jest.Mock).mock.calls.length;
 
-    // 2回目の追加（既に存在する）
-    addAdminBoundarySource(map, 'test-boundary', geojson);
-    const callCount2 = (map.addSource as jest.Mock).mock.calls.length;
+    // 2回目の追加（既に存在する）→ 既存ソース・レイヤーを削除して再追加する
+    const newGeojson: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
+    addAdminBoundarySource(map, 'test-boundary', newGeojson);
 
-    expect(callCount2).toBe(callCount1);
+    expect((map.addSource as jest.Mock).mock.calls.length).toBe(addSourceCount1 + 1);
+    expect(map.removeSource).toHaveBeenCalledWith('admin-boundary-test-boundary');
   });
 });
 
 describe('addAdminBoundaryLayer', () => {
+  it('ソースが存在しない場合はエラーをスローする', () => {
+    const map = createMockMap();
+
+    expect(() => {
+      addAdminBoundaryLayer(map, 'non-existent-source');
+    }).toThrow('Source "admin-boundary-non-existent-source" not registered. Call addAdminBoundarySource first.');
+    expect(map.addLayer).not.toHaveBeenCalled();
+  });
+
   it('FillレイヤーとLineレイヤーを追加できる', () => {
     const map = createMockMap();
     const geojson: GeoJSON.FeatureCollection = {

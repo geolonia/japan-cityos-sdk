@@ -429,9 +429,7 @@ class GeoloniaMap extends MapsCoreGeoloniaMap {
 
   /**
    * 画像マーカーの幅を変更する
-   * @param lat 緯度
-   * @param lon 経度
-   * @param name ラベル名（任意）
+   * @param name ラベル名（任意）。未指定または undefined の場合は全マーカーを対象にする
    * @param width 幅(px)
    */
   setImageMarkerWidth(name: string | undefined, width: number) {
@@ -590,10 +588,12 @@ class GeoloniaMap extends MapsCoreGeoloniaMap {
   }
 
   /**
-   * 指定したレイヤーIDが存在するかどうかを判定する
-   * @param map maplibregl.Mapインスタンス
-   * @param layerId レイヤーID
+   * 指定したOSM POIレイヤー名が存在するかどうかを判定する
+   * @param layerId OSM POIレイヤー名（日本語または英語）
    * @returns 存在すればtrue、なければfalse
+   *
+   * このメソッドはOSM POIレイヤー専用です。`toOsmLayerNameType` で変換できないレイヤーID
+   * （`admin-boundary-*` など）には使用できません。
    */
   hasLayer(layerId: string): boolean {
     const layerName = toOsmLayerNameType(layerId);

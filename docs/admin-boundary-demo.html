@@ -246,22 +246,17 @@
     document.getElementById('btn-apply-style').addEventListener('click', () => {
       // 現在表示されている全ての境界を再描画
       const codes = Array.from(activeBoundaries);
+      const styleOptions = {
+        fillColor: document.getElementById('fill-color').value,
+        fillOpacity: parseFloat(document.getElementById('fill-opacity').value),
+        lineColor: document.getElementById('line-color').value,
+        lineWidth: parseFloat(document.getElementById('line-width').value),
+        lineOpacity: 1
+      };
       codes.forEach(code => {
         removeAdminBoundaryLayer(map, code);
+        addAdminBoundaryLayer(map, code, styleOptions);
       });
-
-      setTimeout(() => {
-        codes.forEach(code => {
-          const styleOptions = {
-            fillColor: document.getElementById('fill-color').value,
-            fillOpacity: parseFloat(document.getElementById('fill-opacity').value),
-            lineColor: document.getElementById('line-color').value,
-            lineWidth: parseFloat(document.getElementById('line-width').value),
-            lineOpacity: 1
-          };
-          addAdminBoundaryLayer(map, code, styleOptions);
-        });
-      }, 100);
     });
 
     // 全てクリアボタン

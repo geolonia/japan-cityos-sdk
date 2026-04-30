@@ -20,7 +20,7 @@ export interface AdminBoundaryStyleOptions {
  * @param map MapLibre Mapインスタンス
  * @param id ソースを識別するためのID
  * @param geojson 行政区画境界のGeoJSONデータ
- * @returns 追加されたソースのID、既に存在する場合はundefined
+ * @returns 追加されたソースのID
  *
  * @example
  * const geojson = await fetchAdminBoundary('01101');
@@ -28,7 +28,7 @@ export interface AdminBoundaryStyleOptions {
  *   addAdminBoundarySource(map, 'sapporo-chuo', geojson);
  * }
  */
-export declare function addAdminBoundarySource(map: maplibregl.Map, id: string, geojson: GeoJSON.FeatureCollection): string | undefined;
+export declare function addAdminBoundarySource(map: maplibregl.Map, id: string, geojson: GeoJSON.FeatureCollection): string;
 /**
  * 行政区画境界のレイヤー（Fill + Line）を地図に追加する
  * @param map MapLibre Mapインスタンス
@@ -53,6 +53,9 @@ export declare function addAdminBoundaryLayer(map: maplibregl.Map, id: string, s
  * 行政区画境界のレイヤーを地図から削除する
  * @param map MapLibre Mapインスタンス
  * @param id レイヤーを識別するためのID
+ *
+ * ソース（`admin-boundary-${id}`）はこの関数では削除されません。
+ * ソースも削除する場合は `map.removeSource(...)` を別途呼び出してください。
  *
  * @example
  * removeAdminBoundaryLayer(map, 'sapporo-chuo');

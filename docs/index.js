@@ -6045,7 +6045,7 @@
      * @param map MapLibre Mapインスタンス
      * @param id ソースを識別するためのID
      * @param geojson 行政区画境界のGeoJSONデータ
-     * @returns 追加されたソースのID、既に存在する場合はundefined
+     * @returns 追加されたソースのID
      *
      * @example
      * const geojson = await fetchAdminBoundary('01101');
@@ -6056,7 +6056,16 @@
     function addAdminBoundarySource(map, id, geojson) {
         const sourceId = getSourceId(id);
         if (map.getSource(sourceId)) {
-            return undefined;
+            // 既存ソースを使うレイヤーを先に削除してからソースを再追加する
+            const fillLayerId = getFillLayerId(id);
+            const lineLayerId = getLineLayerId(id);
+            if (map.getLayer(fillLayerId)) {
+                map.removeLayer(fillLayerId);
+            }
+            if (map.getLayer(lineLayerId)) {
+                map.removeLayer(lineLayerId);
+            }
+            map.removeSource(sourceId);
         }
         map.addSource(sourceId, {
             type: 'geojson',
@@ -6124,6 +6133,9 @@
      * 行政区画境界のレイヤーを地図から削除する
      * @param map MapLibre Mapインスタンス
      * @param id レイヤーを識別するためのID
+     *
+     * ソース（`admin-boundary-${id}`）はこの関数では削除されません。
+     * ソースも削除する場合は `map.removeSource(...)` を別途呼び出してください。
      *
      * @example
      * removeAdminBoundaryLayer(map, 'sapporo-chuo');
@@ -6473,9 +6485,7 @@
         }
         /**
          * 画像マーカーの幅を変更する
-         * @param lat 緯度
-         * @param lon 経度
-         * @param name ラベル名（任意）
+         * @param name ラベル名（任意）。未指定または undefined の場合は全マーカーを対象にする
          * @param width 幅(px)
          */
         setImageMarkerWidth(name, width) {
@@ -6614,10 +6624,12 @@
             return !!before && !after;
         }
         /**
-         * 指定したレイヤーIDが存在するかどうかを判定する
-         * @param map maplibregl.Mapインスタンス
-         * @param layerId レイヤーID
+         * 指定したOSM POIレイヤー名が存在するかどうかを判定する
+         * @param layerId OSM POIレイヤー名（日本語または英語）
          * @returns 存在すればtrue、なければfalse
+         *
+         * このメソッドはOSM POIレイヤー専用です。`toOsmLayerNameType` で変換できないレイヤーID
+         * （`admin-boundary-*` など）には使用できません。
          */
         hasLayer(layerId) {
             const layerName = toOsmLayerNameType(layerId);
