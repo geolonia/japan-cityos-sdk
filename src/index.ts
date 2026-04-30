@@ -18,6 +18,9 @@ import { setCircleStyle as _setCircleStyle, CircleStyleOptions } from './utils/c
 import { setFillStyle as applyFillStyle, FillStyleOptions } from './setFillStyle';
 import { setLineStyle, LineStyleOptions } from './utils/lineStyleUtils';
 import { fetchTottoriDataIndex, addTottoriDataSource, addTottoriDataLayer, removeTottoriDataLayer, TottoriDataEntry } from './utils/tottoriDataUtils';
+import { nearestPointOnSegment, nearestPointOnLine, bearingBetweenPoints, distanceBetweenPoints, collectLineFeatures, getMovedCoordinate } from './utils/geometryUtils';
+import { extractLineCoordinates, hasLineGeometry, calculatePathDistance, interpolateAlongPath, buildVertexTimings } from './utils/pathUtils';
+import { getPrefectureAnchor, buildPrefectureLineFeature, buildPrefectureLineLayerName, buildPrefectureLine, PREFECTURE_ANCHOR_CENTER, PREFECTURE_ANCHOR_CAPITAL } from './utils/prefectureUtils';
 
 declare global {
   interface Window {
@@ -735,3 +738,26 @@ window.geolonia.API_KEY = parseApiKey(currentScript || undefined) || "";
 window.geolonia.japan = maplibregl;
 window.geolonia.japan.Map = GeoloniaMap;
 window.geolonia.japan.Popup = maplibregl.Popup;
+window.geolonia.japan.geometry = {
+  nearestPointOnSegment,
+  nearestPointOnLine,
+  bearingBetweenPoints,
+  distanceBetweenPoints,
+  collectLineFeatures,
+  getMovedCoordinate,
+};
+window.geolonia.japan.path = {
+  extractLineCoordinates,
+  hasLineGeometry,
+  calculatePathDistance,
+  interpolateAlongPath,
+  buildVertexTimings,
+};
+window.geolonia.japan.prefecture = {
+  getPrefectureAnchor,
+  buildPrefectureLineFeature,
+  buildPrefectureLineLayerName,
+  buildPrefectureLine,
+  PREFECTURE_ANCHOR_CENTER,
+  PREFECTURE_ANCHOR_CAPITAL,
+};

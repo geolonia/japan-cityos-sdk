@@ -63,3 +63,10 @@ typings/
 # include compiled output for now so you can npm install directly from git
 # dist
 node_modules
+
+# worktrees
+.worktrees/
+
+# local files
+.local/
+.lint-passed

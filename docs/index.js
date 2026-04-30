@@ -4357,6 +4357,404 @@
         }
     }
 
+    /**
+     * 地理座標に関する幾何計算ユーティリティ
+     *
+     * scratch (chizubouken-lab-scratch) の follow-line-utils.js から移植。
+     * MapLibre GL 非依存の純粋関数群。
+     */
+    /**
+     * 線分 AB 上の点 P に最も近い点を求める。
+     * 経度方向にコサイン補正を適用し、地理座標での精度を向上させる。
+     * @param p 対象点 [lng, lat]
+     * @param a 線分の始点 [lng, lat]
+     * @param b 線分の終点 [lng, lat]
+     */
+    const nearestPointOnSegment = (p, a, b) => {
+        const EPSILON = 1e-12;
+        // 経度方向の補正係数（緯度によるメルカトル近似）
+        const avgLat = (a[1] + b[1]) / 2;
+        const cosLat = Math.cos((avgLat * Math.PI) / 180);
+        const rawDx = b[0] - a[0];
+        const rawDy = b[1] - a[1];
+        // 補正済み差分（実距離に近い比率）
+        const dx = rawDx * cosLat;
+        const dy = rawDy;
+        const lenSq = dx * dx + dy * dy;
+        if (lenSq <= EPSILON) {
+            const dxP = (p[0] - a[0]) * cosLat;
+            const dyP = p[1] - a[1];
+            const dist = Math.sqrt(dxP * dxP + dyP * dyP);
+            return { point: [a[0], a[1]], distance: dist, t: 0 };
+        }
+        // 補正済み座標で t を計算
+        let t = ((p[0] - a[0]) * cosLat * dx + (p[1] - a[1]) * dy) / lenSq;
+        t = Math.max(0, Math.min(1, t));
+        // 元の lng/lat 座標で投影点を求める
+        const projX = a[0] + t * rawDx;
+        const projY = a[1] + t * rawDy;
+        // 補正済み距離
+        const dxDist = (p[0] - projX) * cosLat;
+        const dyDist = p[1] - projY;
+        const dist = Math.sqrt(dxDist * dxDist + dyDist * dyDist);
+        return { point: [projX, projY], distance: dist, t };
+    };
+    /**
+     * ポリライン上の点 P に最も近い点を求める。
+     * @param point 対象点 [lng, lat]
+     * @param lineCoords ライン座標 [[lng, lat], ...]
+     * @returns 最近点情報。座標が2点未満の場合は null
+     */
+    const nearestPointOnLine = (point, lineCoords) => {
+        if (!lineCoords || lineCoords.length < 2)
+            return null;
+        let minDist = Infinity;
+        let bestResult = null;
+        for (let i = 0; i < lineCoords.length - 1; i++) {
+            const result = nearestPointOnSegment(point, lineCoords[i], lineCoords[i + 1]);
+            if (result.distance < minDist) {
+                minDist = result.distance;
+                bestResult = {
+                    point: result.point,
+                    distance: result.distance,
+                    segmentIndex: i,
+                    t: result.t,
+                };
+            }
+        }
+        return bestResult;
+    };
+    /**
+     * 2点間の方位角を計算する（度数法、北=0, 東=90, 南=180, 西=270）。
+     * 球面三角法に基づく計算。
+     * @param from 始点 [lng, lat]
+     * @param to 終点 [lng, lat]
+     * @returns 方位角 (0–360)
+     */
+    const bearingBetweenPoints = (from, to) => {
+        const dLng = from[0] - to[0];
+        const dLat = from[1] - to[1];
+        if (dLng === 0 && dLat === 0)
+            return 0;
+        const fromLatRad = (from[1] * Math.PI) / 180;
+        const toLatRad = (to[1] * Math.PI) / 180;
+        const dLngRad = ((to[0] - from[0]) * Math.PI) / 180;
+        const x = Math.sin(dLngRad) * Math.cos(toLatRad);
+        const y = Math.cos(fromLatRad) * Math.sin(toLatRad) -
+            Math.sin(fromLatRad) * Math.cos(toLatRad) * Math.cos(dLngRad);
+        const bearing = (Math.atan2(x, y) * 180) / Math.PI;
+        return (bearing + 360) % 360;
+    };
+    /**
+     * 2点間の距離をメートルで計算する（ハバーサイン公式）。
+     * @param from 始点 [lng, lat]
+     * @param to 終点 [lng, lat]
+     * @returns 距離（メートル）
+     */
+    const distanceBetweenPoints = (from, to) => {
+        const R = 6378137; // 地球の赤道半径 (m)
+        const lat1 = (from[1] * Math.PI) / 180;
+        const lat2 = (to[1] * Math.PI) / 180;
+        const dLat = ((to[1] - from[1]) * Math.PI) / 180;
+        const dLng = ((to[0] - from[0]) * Math.PI) / 180;
+        const a = Math.pow(Math.sin(dLat / 2), 2) +
+            Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dLng / 2), 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    };
+    /**
+     * GeoJSON FeatureCollection から LineString の座標配列を抽出する。
+     * MultiLineString は個別のラインに展開する。
+     * @param geojson GeoJSON FeatureCollection
+     */
+    const collectLineFeatures = (geojson) => {
+        if (!geojson || !Array.isArray(geojson.features))
+            return [];
+        const lines = [];
+        for (const feature of geojson.features) {
+            if (!feature || !feature.geometry)
+                continue;
+            const { geometry } = feature;
+            if (geometry.type === 'LineString') {
+                if (Array.isArray(geometry.coordinates)) {
+                    lines.push({ coordinates: geometry.coordinates, feature });
+                }
+            }
+            else if (geometry.type === 'MultiLineString') {
+                for (const coords of geometry.coordinates) {
+                    if (Array.isArray(coords)) {
+                        lines.push({ coordinates: coords, feature });
+                    }
+                }
+            }
+        }
+        return lines;
+    };
+    /**
+     * 指定座標から方向（度）・距離（メートル）で移動した新座標を計算する。
+     * ハバーサイン公式の逆計算（destination point）。
+     * @param center 始点座標 [lng, lat]
+     * @param direction 方位角（度、北=0, 東=90, 南=180, 西=270）
+     * @param distance 移動距離（メートル）
+     * @returns 移動後の座標 [lng, lat]
+     */
+    const getMovedCoordinate = (center, direction, distance) => {
+        const R = 6378137; // 地球の赤道半径 (m)
+        const lat1 = (center[1] * Math.PI) / 180;
+        const lng1 = (center[0] * Math.PI) / 180;
+        const bearing = (direction * Math.PI) / 180;
+        const angularDistance = distance / R;
+        const lat2 = Math.asin(Math.sin(lat1) * Math.cos(angularDistance) +
+            Math.cos(lat1) * Math.sin(angularDistance) * Math.cos(bearing));
+        const lng2 = lng1 +
+            Math.atan2(Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(lat1), Math.cos(angularDistance) - Math.sin(lat1) * Math.sin(lat2));
+        return [(lng2 * 180) / Math.PI, (lat2 * 180) / Math.PI];
+    };
+
+    /**
+     * パス補間・距離計算ユーティリティ
+     *
+     * scratch (chizubouken-lab-scratch) の path-utils.js から移植。
+     * パス上の座標補間やアニメーション用の時間計算を提供。
+     */
+    /**
+     * GeoJSON から LineString/MultiLineString の座標配列を抽出する。
+     * @param geojson GeoJSON オブジェクト（Feature, FeatureCollection, Geometry）
+     * @returns 座標配列 [[lng, lat], ...] の配列。線が見つからない場合は空配列
+     */
+    const extractLineCoordinates = (geojson) => {
+        if (!geojson)
+            return [];
+        const lines = [];
+        // FeatureCollection の場合
+        if (geojson.type === 'FeatureCollection') {
+            for (const feature of geojson.features) {
+                if (!feature || !feature.geometry)
+                    continue;
+                lines.push(...extractLineCoordinates(feature.geometry));
+            }
+            return lines;
+        }
+        // Feature の場合
+        if (geojson.type === 'Feature') {
+            if (!geojson.geometry)
+                return [];
+            return extractLineCoordinates(geojson.geometry);
+        }
+        // Geometry の場合
+        if (geojson.type === 'LineString') {
+            if (Array.isArray(geojson.coordinates) && geojson.coordinates.length >= 2) {
+                lines.push(geojson.coordinates);
+            }
+        }
+        else if (geojson.type === 'MultiLineString') {
+            for (const coords of geojson.coordinates) {
+                if (Array.isArray(coords) && coords.length >= 2) {
+                    lines.push(coords);
+                }
+            }
+        }
+        return lines;
+    };
+    /**
+     * GeoJSON が線ジオメトリ（LineString/MultiLineString）を含むか判定する。
+     * @param geojson GeoJSON オブジェクト
+     * @returns 線ジオメトリが1つ以上含まれている場合 true
+     */
+    const hasLineGeometry = (geojson) => {
+        const lines = extractLineCoordinates(geojson);
+        return lines.length > 0;
+    };
+    /**
+     * パス全体の総距離をメートルで計算する（ハバーサイン公式）。
+     * @param coords 座標配列 [[lng, lat], ...]
+     * @returns 総距離（メートル）。座標が2点未満の場合は 0
+     */
+    const calculatePathDistance = (coords) => {
+        if (!coords || coords.length < 2)
+            return 0;
+        let totalDistance = 0;
+        for (let i = 0; i < coords.length - 1; i++) {
+            const from = [coords[i][0], coords[i][1]];
+            const to = [coords[i + 1][0], coords[i + 1][1]];
+            totalDistance += distanceBetweenPoints(from, to);
+        }
+        return totalDistance;
+    };
+    /**
+     * パス上の指定割合（0〜1）の座標を線形補間で算出する。
+     * @param coords 座標配列 [[lng, lat], ...]
+     * @param ratio パス全体に対する割合 (0 = 始点, 1 = 終点)
+     * @returns 補間された座標 [lng, lat]。座標が2点未満または ratio が範囲外の場合は null
+     */
+    const interpolateAlongPath = (coords, ratio) => {
+        if (!coords || coords.length < 2)
+            return null;
+        if (ratio < 0 || ratio > 1)
+            return null;
+        const totalDistance = calculatePathDistance(coords);
+        if (totalDistance === 0) {
+            // すべての点が同一座標の場合、最初の点を返す
+            return [coords[0][0], coords[0][1]];
+        }
+        const targetDistance = totalDistance * ratio;
+        let cumulativeDistance = 0;
+        for (let i = 0; i < coords.length - 1; i++) {
+            const from = [coords[i][0], coords[i][1]];
+            const to = [coords[i + 1][0], coords[i + 1][1]];
+            const segmentDistance = distanceBetweenPoints(from, to);
+            if (cumulativeDistance + segmentDistance >= targetDistance) {
+                // 目標距離がこのセグメント内にある
+                const segmentRatio = segmentDistance === 0
+                    ? 0
+                    : (targetDistance - cumulativeDistance) / segmentDistance;
+                const lng = from[0] + (to[0] - from[0]) * segmentRatio;
+                const lat = from[1] + (to[1] - from[1]) * segmentRatio;
+                return [lng, lat];
+            }
+            cumulativeDistance += segmentDistance;
+        }
+        // ratio = 1.0 の場合、最終点を返す
+        const lastCoord = coords[coords.length - 1];
+        return [lastCoord[0], lastCoord[1]];
+    };
+    /**
+     * 各頂点への移動時間を距離比率で計算する（アニメーション用）。
+     * @param coords 座標配列 [[lng, lat], ...]
+     * @returns 各頂点の累積距離と比率の配列。座標が2点未満の場合は空配列
+     */
+    const buildVertexTimings = (coords) => {
+        if (!coords || coords.length < 2)
+            return [];
+        const totalDistance = calculatePathDistance(coords);
+        const timings = [];
+        let cumulativeDistance = 0;
+        for (let i = 0; i < coords.length; i++) {
+            const ratio = totalDistance === 0 ? 0 : cumulativeDistance / totalDistance;
+            timings.push({
+                index: i,
+                cumulativeDistance,
+                ratio,
+            });
+            if (i < coords.length - 1) {
+                const from = [coords[i][0], coords[i][1]];
+                const to = [coords[i + 1][0], coords[i + 1][1]];
+                cumulativeDistance += distanceBetweenPoints(from, to);
+            }
+        }
+        return timings;
+    };
+
+    /**
+     * 都道府県座標ユーティリティ
+     *
+     * scratch (chizubouken-lab-scratch) の prefecture-anchor.js および
+     * draw-prefecture-line.js から移植。
+     */
+    /** アンカー種別: 中心座標 */
+    const PREFECTURE_ANCHOR_CENTER = 'center';
+    /** アンカー種別: 県庁所在地 */
+    const PREFECTURE_ANCHOR_CAPITAL = 'capital';
+    /**
+     * 都道府県名からアンカー座標（中心 or 県庁所在地）を取得する。
+     * @param prefName 都道府県名（例: "東京都", "北海道"）
+     * @param anchor アンカー種別（"center" または "capital"、デフォルト: "center"）
+     * @returns 座標 [lng, lat]、取得できない場合は null
+     */
+    const getPrefectureAnchor = (prefName, anchor = PREFECTURE_ANCHOR_CENTER) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            // @geolonia/normalize-japanese-addresses を使用して都道府県情報を取得
+            const result = yield ut(prefName);
+            if (!result || !result.pref) {
+                console.warn(`都道府県 "${prefName}" が見つかりません`);
+                return null;
+            }
+            // アンカー種別に応じて座標を取得
+            if (anchor === PREFECTURE_ANCHOR_CAPITAL) {
+                // 県庁所在地の座標を取得
+                // 都道府県名 + "県庁所在地" で住所正規化を試みる
+                const capitalName = result.pref === '東京都' ? '東京' : result.pref.replace(/[都道府県]$/, '');
+                const capitalResult = yield ut(`${result.pref}${capitalName}`);
+                if (capitalResult && capitalResult.point && capitalResult.point.lat && capitalResult.point.lng) {
+                    return [capitalResult.point.lng, capitalResult.point.lat];
+                }
+            }
+            // 中心座標（デフォルト）または県庁所在地が取得できなかった場合
+            if (result.point && result.point.lat && result.point.lng) {
+                return [result.point.lng, result.point.lat];
+            }
+            console.warn(`都道府県 "${prefName}" の座標を取得できません`);
+            return null;
+        }
+        catch (error) {
+            console.error(`都道府県座標の取得に失敗: ${prefName}`, error);
+            return null;
+        }
+    });
+    /**
+     * 2地点座標から LineString GeoJSON FeatureCollection を生成する。
+     * @param from 始点座標 [lng, lat]
+     * @param to 終点座標 [lng, lat]
+     * @param properties 追加するプロパティ（オプション）
+     * @returns LineString GeoJSON FeatureCollection
+     */
+    const buildPrefectureLineFeature = (from, to, properties = {}) => {
+        return {
+            type: 'FeatureCollection',
+            features: [
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: [from, to],
+                    },
+                    properties,
+                },
+            ],
+        };
+    };
+    /**
+     * 安定なレイヤー識別子を生成する。
+     * 再実行時に同じレイヤー名が生成されるため、上書き更新が可能。
+     * @param prefFrom 始点都道府県名
+     * @param pointFrom 始点アンカー種別
+     * @param prefTo 終点都道府県名
+     * @param pointTo 終点アンカー種別
+     * @returns レイヤー識別子（例: "line-tokyo-center-osaka-capital"）
+     */
+    const buildPrefectureLineLayerName = (prefFrom, pointFrom, prefTo, pointTo) => {
+        // 都道府県名を正規化（都道府県を除去してローマ字化は行わず、そのまま使用）
+        const normalizePrefix = (name) => {
+            return name.replace(/[都道府県]/g, '').toLowerCase();
+        };
+        const from = normalizePrefix(prefFrom);
+        const to = normalizePrefix(prefTo);
+        return `line-${from}-${pointFrom}-${to}-${pointTo}`;
+    };
+    /**
+     * 2つの都道府県間の LineString を生成する（便利関数）。
+     * @param prefFrom 始点都道府県名
+     * @param anchorFrom 始点アンカー種別（デフォルト: "center"）
+     * @param prefTo 終点都道府県名
+     * @param anchorTo 終点アンカー種別（デフォルト: "center"）
+     * @returns LineString GeoJSON FeatureCollection、座標取得失敗時は null
+     */
+    const buildPrefectureLine = (prefFrom, anchorFrom = PREFECTURE_ANCHOR_CENTER, prefTo, anchorTo = PREFECTURE_ANCHOR_CENTER) => __awaiter(void 0, void 0, void 0, function* () {
+        const from = yield getPrefectureAnchor(prefFrom, anchorFrom);
+        const to = yield getPrefectureAnchor(prefTo, anchorTo);
+        if (!from || !to) {
+            return null;
+        }
+        const geojson = buildPrefectureLineFeature(from, to, {
+            prefFrom,
+            anchorFrom,
+            prefTo,
+            anchorTo,
+        });
+        const layerName = buildPrefectureLineLayerName(prefFrom, anchorFrom, prefTo, anchorTo);
+        return { geojson, layerName };
+    });
+
     class GeoloniaMap extends maplibregl.Map {
         constructor(params) {
             var _a, _b, _c, _d, _e, _f, _g;
@@ -4994,6 +5392,29 @@
     window.geolonia.japan = maplibregl;
     window.geolonia.japan.Map = GeoloniaMap;
     window.geolonia.japan.Popup = maplibregl.Popup;
+    window.geolonia.japan.geometry = {
+        nearestPointOnSegment,
+        nearestPointOnLine,
+        bearingBetweenPoints,
+        distanceBetweenPoints,
+        collectLineFeatures,
+        getMovedCoordinate,
+    };
+    window.geolonia.japan.path = {
+        extractLineCoordinates,
+        hasLineGeometry,
+        calculatePathDistance,
+        interpolateAlongPath,
+        buildVertexTimings,
+    };
+    window.geolonia.japan.prefecture = {
+        getPrefectureAnchor,
+        buildPrefectureLineFeature,
+        buildPrefectureLineLayerName,
+        buildPrefectureLine,
+        PREFECTURE_ANCHOR_CENTER,
+        PREFECTURE_ANCHOR_CAPITAL,
+    };
 
 }));
 //# sourceMappingURL=index.js.map

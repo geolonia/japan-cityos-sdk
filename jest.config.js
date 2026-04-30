@@ -5,6 +5,9 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(@geolonia)/)',
+  ],
   testMatch: [
     '**/tests/**/*.test.ts',
   ],
