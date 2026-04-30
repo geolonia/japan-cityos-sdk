@@ -21,6 +21,7 @@ import { fetchTottoriDataIndex, addTottoriDataSource, addTottoriDataLayer, remov
 import { nearestPointOnSegment, nearestPointOnLine, bearingBetweenPoints, distanceBetweenPoints, collectLineFeatures, getMovedCoordinate } from './utils/geometryUtils';
 import { extractLineCoordinates, hasLineGeometry, calculatePathDistance, interpolateAlongPath, buildVertexTimings } from './utils/pathUtils';
 import { getPrefectureAnchor, buildPrefectureLineFeature, buildPrefectureLineLayerName, buildPrefectureLine, PREFECTURE_ANCHOR_CENTER, PREFECTURE_ANCHOR_CAPITAL } from './utils/prefectureUtils';
+import { searchPlaces, type SearchResult } from './utils/searchPlaces';
 
 declare global {
   interface Window {
@@ -761,3 +762,4 @@ window.geolonia.japan.prefecture = {
   PREFECTURE_ANCHOR_CENTER,
   PREFECTURE_ANCHOR_CAPITAL,
 };
+export { searchPlaces, type SearchResult };
