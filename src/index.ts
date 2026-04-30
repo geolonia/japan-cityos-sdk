@@ -429,9 +429,7 @@ class GeoloniaMap extends MapsCoreGeoloniaMap {
 
   /**
    * 画像マーカーの幅を変更する
-   * @param lat 緯度
-   * @param lon 経度
-   * @param name ラベル名（任意）
+   * @param name ラベル名（任意）。未指定または undefined の場合は全マーカーを対象にする
    * @param width 幅(px)
    */
   setImageMarkerWidth(name: string | undefined, width: number) {
@@ -590,21 +588,18 @@ class GeoloniaMap extends MapsCoreGeoloniaMap {
   }
 
   /**
-   * 指定したレイヤーIDが存在するかどうかを判定する
-   * @param map maplibregl.Mapインスタンス
-   * @param layerId レイヤーID
+   * 指定したOSM POIレイヤー名が存在するかどうかを判定する
+   * @param layerId OSM POIレイヤー名（日本語または英語）
    * @returns 存在すればtrue、なければfalse
+   *
+   * このメソッドはOSM POIレイヤー専用です。`toOsmLayerNameType` で変換できないレイヤーID
+   * （`admin-boundary-*` など）には使用できません。
    */
-  hasLayer(layerId: string): string[] {
+  hasLayer(layerId: string): boolean {
     const layerName = toOsmLayerNameType(layerId);
-    if (!layerName) { return []; }
-    const layerIdArr: string[] = [];
-    getOSMLayerConfig(layerName, '').forEach(layerConfig => {
-      if (this.getLayer(layerConfig.id)) {
-        layerIdArr.push(layerConfig.id);
-      }
-    });
-    return layerIdArr.length > 0 ? layerIdArr : [];
+    if (!layerName) { return false; }
+    const layers = getOSMLayerConfig(layerName, '');
+    return layers.some(layerConfig => !!this.getLayer(layerConfig.id));
   }
 
    /**
@@ -795,3 +790,9 @@ window.geolonia.japan.geometry = {
   distanceBetweenPoints,
   collectLineFeatures,
 };
+
+// 行政区画境界関連の関数をエクスポート
+export { fetchAdminBoundary, buildJapaneseAdminsUrl, isMunicipalityCode } from './utils/japaneseAdmins';
+export { addAdminBoundarySource, addAdminBoundaryLayer, removeAdminBoundaryLayer, AdminBoundaryStyleOptions } from './utils/adminBoundaryUtils';
+export { GeoloniaMap };
+
