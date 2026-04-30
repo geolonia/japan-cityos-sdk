@@ -1,5 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import '@geolonia/maps-core/css';
 import { CircleStyleOptions } from './utils/circleStyleUtils';
 import { FillStyleOptions } from './setFillStyle';
 import { LineStyleOptions } from './utils/lineStyleUtils';

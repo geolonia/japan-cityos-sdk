@@ -4,6 +4,7 @@ import typescript from '@rollup/plugin-typescript';
 import scss from 'rollup-plugin-scss';
 import copy from 'rollup-plugin-copy';
 import json from '@rollup/plugin-json';
+import replace from '@rollup/plugin-replace';
 
 import fs from 'node:fs'
 
@@ -17,10 +18,18 @@ const config = {
       format: 'umd',
       sourcemap: true,
       name: 'City',
+      inlineDynamicImports: true,  // コード分割を無効化（UMD形式のため必要）
     },
   ],
   plugins: [
-    resolve(),
+    replace({
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      preventAssignment: true,
+    }),
+    resolve({
+      browser: true,
+      preferBuiltins: false,
+    }),
     commonjs({
       requireReturnsDefault: "auto",
     }),

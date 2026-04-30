@@ -1,9 +1,12 @@
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { GeoloniaMap as MapsCoreGeoloniaMap, keyring } from '@geolonia/maps-core';
+import '@geolonia/maps-core/css';
 import { createLayer, createSourceByType, csvToGeoJSON, hasLayer, mergeLayersByLoadedIds, mergeSourcesByLoadedIds, parseApiKey, removeLayersByLoadedIds, removeSourcesByLoadedIds, setSymbolIconSize as _setSymbolIconSize, updateLayer } from './utils/mapUtils';
 import Papa from 'papaparse';
 import { toQueryBox } from './toQueryBox';
 import { normalize } from '@geolonia/normalize-japanese-addresses';
+import { resolveLatLng } from './utils/resolveLatLng';
 import { addOsmLayer, addOsmSource, addOsmSprite, getJapaneseOsmLayerNames, removeOsmLayer, toOsmLayerNameType, updateSpriteSheet } from './utils/osmPoiUtils';
 import { getOSMLayerConfig } from './utils/osmStyles';
 import { existsSpriteIcon, getSpriteIconNames, getSpriteIconStyles } from './utils/spriteUtils';
@@ -17,7 +20,9 @@ import { fetchJson } from './utils/fetchJson';
 import { setCircleStyle as _setCircleStyle, CircleStyleOptions } from './utils/circleStyleUtils';
 import { setFillStyle as applyFillStyle, FillStyleOptions } from './setFillStyle';
 import { setLineStyle, LineStyleOptions } from './utils/lineStyleUtils';
+import { baseMapStyleUrl } from './utils/baseMapStyleUtils';
 import { fetchTottoriDataIndex, addTottoriDataSource, addTottoriDataLayer, removeTottoriDataLayer, TottoriDataEntry } from './utils/tottoriDataUtils';
+import { nearestPointOnSegment, nearestPointOnLine, bearingBetweenPoints, distanceBetweenPoints, collectLineFeatures } from './utils/geometryUtils';
 
 declare global {
   interface Window {
@@ -25,7 +30,7 @@ declare global {
   }
 }
 	
-class GeoloniaMap extends maplibregl.Map {
+class GeoloniaMap extends MapsCoreGeoloniaMap {
   /**
    * 画像マーカー管理用配列
    */
@@ -45,32 +50,43 @@ class GeoloniaMap extends maplibregl.Map {
     'basic': 'https://geoloniamaps.github.io/basic-v1/basic-v1',
   };
 
+  static baseMapStyleUrl: {[key: string]: string} = { ...baseMapStyleUrl };
+
   // 3D地形用のソース・レイヤーID（クラス内共通で利用）
   private readonly TERRAIN_SOURCE_ID = "dem";
   private static readonly HILLSHADE_LAYER_ID = "hillshading";
 
-  private readonly API_KEY = window.geolonia.API_KEY || '';
+  // インスタンスごとの API キーと stage を保持
+  private apiKey: string;
+  private stage: string;
 
   constructor(params: any) {
+    // API キーと stage を一時変数に保存（super() 呼び出し前に this にアクセスできないため）
+    const apiKey = params.apiKey || window.geolonia.API_KEY || '';
+    const stage = params.stage || 'v1';
+
+    // keyring に API キーと stage を設定（maps-core との互換性のため一時的に設定）
+    if (apiKey) {
+      keyring.setApiKey(apiKey);
+    }
+    keyring.setStage(stage);
+
     const defaults = {
       container: params.container ?? 'map',
-      style: params.style ?? 'https://basic-v1-background-only.pages.dev/style.json',
+      style: params.style ?? GeoloniaMap.baseMapStyleUrl['basic'],
       center: params.lngLat ?? [139.692, 35.689],
       zoom: params.zoom ?? 12,
       hash: params.hash ?? false,
       minZoom: params.minZoom ?? 8,
       maxZoom: params.maxZoom ?? 20,
-      transformRequest: (url: string, resourceType: string) => {
-        if (!window.geolonia.API_KEY) { return { url }; }
-        if ((resourceType === 'Tile' || resourceType === 'Source') && url.startsWith('https://tileserver.geolonia.com')) {
-          const updatedUrl = url.replace('YOUR-API-KEY', window.geolonia.API_KEY);
-          return { url: updatedUrl };
-        }
-        return { url };
-      }
+      // transformRequest は maps-core が自動処理するため削除
     }
 
     super({...defaults, ...params});
+
+    // インスタンス変数に保存（super() 呼び出し後）
+    this.apiKey = apiKey;
+    this.stage = stage;
   }
 
   /**
@@ -92,6 +108,13 @@ class GeoloniaMap extends maplibregl.Map {
    */
   static getNLNIData(): string[] {
     return getNLNIKeys();
+  }
+
+  /**
+   * 利用可能な背景地図スタイル名を取得する
+   */
+  static getBaseMapStyles(): string[] {
+    return Object.keys(GeoloniaMap.baseMapStyleUrl);
   }
 
   /**
@@ -155,12 +178,14 @@ class GeoloniaMap extends maplibregl.Map {
    * 都道府県の中心座標を取得する
    */
   static async getLatLngByPrefecture(prefName: string): Promise<[number, number] | null> {
-    const result = await normalize(prefName);
-    const point = result?.point;
-    if (point) {
-      return [point.lng, point.lat];
-    }
-    return null;
+    return resolveLatLng(prefName);
+  }
+
+  /**
+   * 都道府県+市区町村の中心座標を取得する
+   */
+  static async getLatLngByCity(prefName: string, cityName: string): Promise<[number, number] | null> {
+    return resolveLatLng(prefName + cityName);
   }
 
   /* ****************
@@ -276,15 +301,37 @@ class GeoloniaMap extends maplibregl.Map {
    * @param styleUrlOrObject スタイルのURLまたはオブジェクト
    ****************/
   setBaseMapStyle(styleUrlOrObject: string | maplibregl.StyleSpecification) {
+    // 3D地形の状態を保持
+    const terrainState = this.getTerrain();
+    const hadTerrain = !!terrainState;
+
     this.setStyle(styleUrlOrObject, {
       transformStyle: (previousStyle, nextStyle) => {
         const newSources = mergeSourcesByLoadedIds(previousStyle.sources, nextStyle.sources, this.loadedSourceIds);
         const newLayers = mergeLayersByLoadedIds(previousStyle.layers, nextStyle.layers, this.loadedSourceIds);
+
+        // terrain用のソースとレイヤーを保持
+        const terrainSourceId = terrainState?.source ?? this.TERRAIN_SOURCE_ID;
+        if (terrainSourceId && hadTerrain) {
+          if (previousStyle.sources[terrainSourceId]) {
+            newSources[terrainSourceId] = previousStyle.sources[terrainSourceId];
+          }
+          const hillshadeLayerId = GeoloniaMap.HILLSHADE_LAYER_ID;
+          if (!newLayers.some(l => l.id === hillshadeLayerId)) {
+            const hillshadeLayer = previousStyle.layers.find(l => l.id === hillshadeLayerId);
+            if (hillshadeLayer) {
+              newLayers.push(hillshadeLayer);
+            }
+          }
+        }
+
+        const canRestoreTerrain = hadTerrain && !!terrainSourceId && !!newSources[terrainSourceId];
         return {
           ...previousStyle,
           ...nextStyle,
           sources: newSources,
-          layers: newLayers
+          layers: newLayers,
+          ...(canRestoreTerrain ? { terrain: { source: terrainSourceId, exaggeration: terrainState.exaggeration ?? 1 } } : {})
         };
       }
     });
@@ -296,7 +343,7 @@ class GeoloniaMap extends maplibregl.Map {
    ****************/
   async getElevation(lngLat: [number, number] = this.getCenter().toArray()): Promise<number | null> {
     if (!this.getTerrain()) {
-      addTerrainSource(this, this.API_KEY);
+      addTerrainSource(this, this.apiKey);
       this.setTerrain({ source: this.TERRAIN_SOURCE_ID, exaggeration: 1 });
       await new Promise<void>(resolve => {
         this.once('styledata', () => resolve());
@@ -700,7 +747,7 @@ class GeoloniaMap extends maplibregl.Map {
    * 3D地形表示を有効にする
    */
   show3DTerrain() {
-    addTerrainSource(this, this.API_KEY);
+    addTerrainSource(this, keyring.apiKey);
     if (this.getLayer(HILLSHADE_LAYER_ID)) {
       this.removeLayer(HILLSHADE_LAYER_ID);
     }
@@ -732,11 +779,37 @@ class GeoloniaMap extends maplibregl.Map {
 const currentScript = document.currentScript as HTMLScriptElement | null;
 window.geolonia = window.geolonia || {};
 window.geolonia.API_KEY = parseApiKey(currentScript || undefined) || "";
+
+// keyring にも API キーを設定（maps-core との整合性を保つ）
+if (window.geolonia.API_KEY) {
+  keyring.setApiKey(window.geolonia.API_KEY);
+}
+
 window.geolonia.japan = maplibregl;
 window.geolonia.japan.Map = GeoloniaMap;
 window.geolonia.japan.Popup = maplibregl.Popup;
+const currentScript = document.currentScript as HTMLScriptElement | null;
+window.geolonia = window.geolonia || {};
+window.geolonia.API_KEY = parseApiKey(currentScript || undefined) || "";
+
+// keyring にも API キーを設定（maps-core との整合性を保つ）
+if (window.geolonia.API_KEY) {
+  keyring.setApiKey(window.geolonia.API_KEY);
+}
+
+window.geolonia.japan = maplibregl;
+window.geolonia.japan.Map = GeoloniaMap;
+window.geolonia.japan.Popup = maplibregl.Popup;
+window.geolonia.japan.geometry = {
+  nearestPointOnSegment,
+  nearestPointOnLine,
+  bearingBetweenPoints,
+  distanceBetweenPoints,
+  collectLineFeatures,
+};
 
 // 行政区画境界関連の関数をエクスポート
 export { fetchAdminBoundary, buildJapaneseAdminsUrl, isMunicipalityCode } from './utils/japaneseAdmins';
 export { addAdminBoundarySource, addAdminBoundaryLayer, removeAdminBoundaryLayer, AdminBoundaryStyleOptions } from './utils/adminBoundaryUtils';
 export { GeoloniaMap };
+
