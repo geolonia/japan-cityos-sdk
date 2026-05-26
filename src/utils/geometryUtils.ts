@@ -195,3 +195,37 @@ export const collectLineFeatures = (
 
   return lines;
 };
+
+/**
+ * 指定座標から方向（度）・距離（メートル）で移動した新座標を計算する。
+ * ハバーサイン公式の逆計算（destination point）。
+ * @param center 始点座標 [lng, lat]
+ * @param direction 方位角（度、北=0, 東=90, 南=180, 西=270）
+ * @param distance 移動距離（メートル）
+ * @returns 移動後の座標 [lng, lat]
+ */
+export const getMovedCoordinate = (
+  center: [number, number],
+  direction: number,
+  distance: number,
+): [number, number] => {
+  const R = 6378137; // 地球の赤道半径 (m)
+  const lat1 = (center[1] * Math.PI) / 180;
+  const lng1 = (center[0] * Math.PI) / 180;
+  const bearing = (direction * Math.PI) / 180;
+  const angularDistance = distance / R;
+
+  const lat2 = Math.asin(
+    Math.sin(lat1) * Math.cos(angularDistance) +
+    Math.cos(lat1) * Math.sin(angularDistance) * Math.cos(bearing),
+  );
+
+  const lng2 =
+    lng1 +
+    Math.atan2(
+      Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(lat1),
+      Math.cos(angularDistance) - Math.sin(lat1) * Math.sin(lat2),
+    );
+
+  return [(lng2 * 180) / Math.PI, (lat2 * 180) / Math.PI];
+};
