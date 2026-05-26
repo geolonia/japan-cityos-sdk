@@ -23,6 +23,7 @@ import { setLineStyle, LineStyleOptions } from './utils/lineStyleUtils';
 import { baseMapStyleUrl } from './utils/baseMapStyleUtils';
 import { fetchTottoriDataIndex, addTottoriDataSource, addTottoriDataLayer, removeTottoriDataLayer, TottoriDataEntry } from './utils/tottoriDataUtils';
 import { nearestPointOnSegment, nearestPointOnLine, bearingBetweenPoints, distanceBetweenPoints, collectLineFeatures } from './utils/geometryUtils';
+import { extractLineCoordinates, hasLineGeometry, calculatePathDistance, interpolateAlongPath, buildVertexTimings } from './utils/pathUtils';
 
 declare global {
   interface Window {
@@ -794,4 +795,9 @@ window.geolonia.japan.geometry = {
   bearingBetweenPoints,
   distanceBetweenPoints,
   collectLineFeatures,
+  extractLineCoordinates,
+  hasLineGeometry,
+  calculatePathDistance,
+  interpolateAlongPath,
+  buildVertexTimings,
 };
