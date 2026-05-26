@@ -301,40 +301,50 @@ class GeoloniaMap extends MapsCoreGeoloniaMap {
    * @param styleUrlOrObject スタイルのURLまたはオブジェクト
    ****************/
   setBaseMapStyle(styleUrlOrObject: string | maplibregl.StyleSpecification) {
-    // 3D地形の状態を保持
+    // 3D地形の状態を保持（スタイル切替後に復元するため）
     const terrainState = this.getTerrain();
     const hadTerrain = !!terrainState;
+    const exaggeration = terrainState?.exaggeration ?? 1;
+
+    // DEM dimension mismatch 防止: スタイル切替前にテレインを無効化
+    // 古い DEM タイルキャッシュが新しいスタイルの DEM タイルと
+    // 次元不一致を起こすのを防ぐ (#111)
+    if (hadTerrain) {
+      this.setTerrain(null);
+    }
 
     this.setStyle(styleUrlOrObject, {
       transformStyle: (previousStyle, nextStyle) => {
         const newSources = mergeSourcesByLoadedIds(previousStyle.sources, nextStyle.sources, this.loadedSourceIds);
         const newLayers = mergeLayersByLoadedIds(previousStyle.layers, nextStyle.layers, this.loadedSourceIds);
 
-        // terrain用のソースとレイヤーを保持
-        const terrainSourceId = terrainState?.source ?? this.TERRAIN_SOURCE_ID;
-        if (terrainSourceId && hadTerrain) {
-          if (previousStyle.sources[terrainSourceId]) {
-            newSources[terrainSourceId] = previousStyle.sources[terrainSourceId];
-          }
-          const hillshadeLayerId = GeoloniaMap.HILLSHADE_LAYER_ID;
-          if (!newLayers.some(l => l.id === hillshadeLayerId)) {
-            const hillshadeLayer = previousStyle.layers.find(l => l.id === hillshadeLayerId);
-            if (hillshadeLayer) {
-              newLayers.push(hillshadeLayer);
-            }
-          }
-        }
+        // DEM ソースは保持しない（新しいスタイルのロード後に再追加する）
+        // 古い DEM タイルを引き継ぐと backfillBorder で
+        // dim mismatch エラーが発生するため (#111)
 
-        const canRestoreTerrain = hadTerrain && !!terrainSourceId && !!newSources[terrainSourceId];
         return {
           ...previousStyle,
           ...nextStyle,
           sources: newSources,
           layers: newLayers,
-          ...(canRestoreTerrain ? { terrain: { source: terrainSourceId, exaggeration: terrainState.exaggeration ?? 1 } } : {})
         };
       }
     });
+
+    // スタイルロード後にテレインを新しい DEM ソースで復元
+    if (hadTerrain) {
+      this.once('styledata', () => {
+        addTerrainSource(this, this.apiKey);
+        if (this.getLayer(HILLSHADE_LAYER_ID)) {
+          this.removeLayer(HILLSHADE_LAYER_ID);
+        }
+        addHillshadeLayer(this);
+        this.setTerrain({
+          source: this.TERRAIN_SOURCE_ID,
+          exaggeration,
+        });
+      });
+    }
   }
 
   /****************
