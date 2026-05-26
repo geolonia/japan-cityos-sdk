@@ -23,6 +23,7 @@ import { setLineStyle, LineStyleOptions } from './utils/lineStyleUtils';
 import { baseMapStyleUrl } from './utils/baseMapStyleUtils';
 import { fetchTottoriDataIndex, addTottoriDataSource, addTottoriDataLayer, removeTottoriDataLayer, TottoriDataEntry } from './utils/tottoriDataUtils';
 import { nearestPointOnSegment, nearestPointOnLine, bearingBetweenPoints, distanceBetweenPoints, collectLineFeatures } from './utils/geometryUtils';
+import { getPrefectureAnchor, buildPrefectureLineFeature, buildPrefectureLineLayerName, buildPrefectureLine, PREFECTURE_ANCHOR_CENTER, PREFECTURE_ANCHOR_CAPITAL } from './utils/prefectureUtils';
 
 declare global {
   interface Window {
@@ -794,4 +795,13 @@ window.geolonia.japan.geometry = {
   bearingBetweenPoints,
   distanceBetweenPoints,
   collectLineFeatures,
+};
+
+window.geolonia.japan.prefecture = {
+  getPrefectureAnchor,
+  buildPrefectureLineFeature,
+  buildPrefectureLineLayerName,
+  buildPrefectureLine,
+  PREFECTURE_ANCHOR_CENTER,
+  PREFECTURE_ANCHOR_CAPITAL,
 };
