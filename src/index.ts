@@ -774,6 +774,96 @@ class GeoloniaMap extends MapsCoreGeoloniaMap {
   setCircleStyle(className: string, style: CircleStyleOptions) {
     _setCircleStyle(this, className, style);
   }
+
+  /**
+   * movestart ガード付きで easeTo を実行し、アニメーション完了を Promise で返す。
+   * - movestart が発火する前の stale moveend を無視
+   * - isMoving() === true 中の moveend を無視（連続発火対策）
+   * - AbortSignal でキャンセル可能
+   * @param options easeTo のオプション
+   * @param opts.signal キャンセル用の AbortSignal
+   */
+  safeEaseTo(
+    options: maplibregl.EaseToOptions,
+    opts?: { signal?: AbortSignal },
+  ): Promise<void> {
+    return this._safeAnimate(() => this.easeTo(options), opts);
+  }
+
+  /**
+   * movestart ガード付きで flyTo を実行し、アニメーション完了を Promise で返す。
+   * @param options flyTo のオプション
+   * @param opts.signal キャンセル用の AbortSignal
+   */
+  safeFlyTo(
+    options: maplibregl.FlyToOptions,
+    opts?: { signal?: AbortSignal },
+  ): Promise<void> {
+    return this._safeAnimate(() => this.flyTo(options), opts);
+  }
+
+  /**
+   * movestart ガード付きで jumpTo を実行し、完了を Promise で返す。
+   * @param options jumpTo のオプション
+   * @param opts.signal キャンセル用の AbortSignal
+   */
+  safeJumpTo(
+    options: maplibregl.JumpToOptions,
+    opts?: { signal?: AbortSignal },
+  ): Promise<void> {
+    return this._safeAnimate(() => this.jumpTo(options), opts);
+  }
+
+  /**
+   * movestart ガード付きアニメーションの共通実装。
+   * @param animateFn easeTo/flyTo/jumpTo を呼び出す関数
+   * @param opts.signal キャンセル用の AbortSignal
+   */
+  private _safeAnimate(
+    animateFn: () => void,
+    opts?: { signal?: AbortSignal },
+  ): Promise<void> {
+    const signal = opts?.signal;
+
+    return new Promise<void>((resolve, reject) => {
+      let started = false;
+      let done = false;
+
+      const cleanup = () => {
+        done = true;
+        this.off('movestart', onMoveStart);
+        this.off('moveend', onMoveEnd);
+      };
+
+      const onMoveStart = () => {
+        started = true;
+      };
+
+      const onMoveEnd = () => {
+        if (!started || done) return; // stale moveend を無視
+        if (this.isMoving()) return;  // 連続発火を無視
+        cleanup();
+        resolve();
+      };
+
+      if (signal) {
+        if (signal.aborted) {
+          reject(signal.reason ?? new DOMException('Aborted', 'AbortError'));
+          return;
+        }
+        signal.addEventListener('abort', () => {
+          if (done) return;
+          this.stop();
+          cleanup();
+          reject(signal.reason ?? new DOMException('Aborted', 'AbortError'));
+        }, { once: true });
+      }
+
+      this.on('movestart', onMoveStart);
+      this.on('moveend', onMoveEnd);
+      animateFn(); // リスナー登録後に実行
+    });
+  }
 }
 
 const currentScript = document.currentScript as HTMLScriptElement | null;
