@@ -17,3 +17,9 @@ export type OsmLayerNameType =
     'museum' |
     'park'
     ;
+
+export const ALL_OSM_LAYER_TYPES: OsmLayerNameType[] = [
+  'restaurant', 'railway', 'mountain', 'airport', 'school',
+  'college', 'convenience', 'bank', 'hospital', 'cafe',
+  'fast-food', 'zoo', 'parking', 'castle', 'museum', 'park'
+];

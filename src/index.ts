@@ -8,6 +8,7 @@ import { toQueryBox } from './toQueryBox';
 import { normalize } from '@geolonia/normalize-japanese-addresses';
 import { resolveLatLng } from './utils/resolveLatLng';
 import { addOsmLayer, addOsmSource, addOsmSprite, getJapaneseOsmLayerNames, removeOsmLayer, toOsmLayerNameType, updateSpriteSheet } from './utils/osmPoiUtils';
+import { ALL_OSM_LAYER_TYPES } from './types';
 import { getOSMLayerConfig } from './utils/osmStyles';
 import { existsSpriteIcon, getSpriteIconNames, getSpriteIconStyles } from './utils/spriteUtils';
 import { addHazardMapLayer, addHazardMapSource, getHazardMapKeys, removeHazardMapLayer } from './utils/hazardmapUtils';
@@ -30,7 +31,7 @@ declare global {
   }
 }
 	
-class GeoloniaMap extends MapsCoreGeoloniaMap {
+export class GeoloniaMap extends MapsCoreGeoloniaMap {
   /**
    * 画像マーカー管理用配列
    */
@@ -115,6 +116,13 @@ class GeoloniaMap extends MapsCoreGeoloniaMap {
    */
   static getBaseMapStyles(): string[] {
     return Object.keys(GeoloniaMap.baseMapStyleUrl);
+  }
+
+  /**
+   * 利用可能なスプライトシート名を取得する
+   */
+  static getAvailableSpriteSheets(): string[] {
+    return Object.keys(GeoloniaMap.spriteSheetUrl);
   }
 
   /**
@@ -613,10 +621,26 @@ class GeoloniaMap extends MapsCoreGeoloniaMap {
    * @param spriteKey スプライトシート名（spriteSheetUrlのkey）
    */
   changeSpriteSheet(layerName: string, spriteKey: keyof typeof GeoloniaMap.spriteSheetUrl) {
+    // 日本語名の場合は英語名に変換
+    const resolved = toOsmLayerNameType(layerName) || layerName;
     // スプライトを追加・切り替え
     addOsmSprite(this, { [spriteKey]: GeoloniaMap.spriteSheetUrl[spriteKey] }, GeoloniaMap.spriteSheetUrl);
     // レイヤーを再描画（icon-image式にspriteKeyを渡す）
-    updateSpriteSheet(this, layerName, spriteKey as string);
+    updateSpriteSheet(this, resolved, spriteKey as string);
+  }
+
+  /**
+   * 表示中の全OSM POIレイヤーのスプライトを一括変更する
+   * @param spriteKey スプライトシート名（spriteSheetUrlのkey）
+   */
+  changeAllOsmPoiSprites(spriteKey: keyof typeof GeoloniaMap.spriteSheetUrl) {
+    addOsmSprite(this, { [spriteKey]: GeoloniaMap.spriteSheetUrl[spriteKey] }, GeoloniaMap.spriteSheetUrl);
+    ALL_OSM_LAYER_TYPES.forEach(layerType => {
+      const layerId = `osm-${layerType}`;
+      if (this.getLayer(layerId)) {
+        updateSpriteSheet(this, layerType, spriteKey as string);
+      }
+    });
   }
 
   /**
