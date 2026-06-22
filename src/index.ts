@@ -24,6 +24,7 @@ import { setLineStyle, LineStyleOptions } from './utils/lineStyleUtils';
 import { baseMapStyleUrl } from './utils/baseMapStyleUtils';
 import { fetchTottoriDataIndex, addTottoriDataSource, addTottoriDataLayer, removeTottoriDataLayer, TottoriDataEntry } from './utils/tottoriDataUtils';
 import { nearestPointOnSegment, nearestPointOnLine, bearingBetweenPoints, distanceBetweenPoints, collectLineFeatures } from './utils/geometryUtils';
+import { searchPlaces } from './utils/searchPlaces';
 
 declare global {
   interface Window {
@@ -819,3 +820,5 @@ window.geolonia.japan.geometry = {
   distanceBetweenPoints,
   collectLineFeatures,
 };
+
+window.geolonia.japan.searchPlaces = searchPlaces;
