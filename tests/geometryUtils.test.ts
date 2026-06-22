@@ -4,6 +4,7 @@ import {
   bearingBetweenPoints,
   distanceBetweenPoints,
   collectLineFeatures,
+  getMovedCoordinate,
 } from '../src/utils/geometryUtils';
 
 describe('nearestPointOnSegment', () => {
@@ -229,5 +230,58 @@ describe('collectLineFeatures', () => {
     };
     const result = collectLineFeatures(geojson as any);
     expect(result).toHaveLength(1);
+  });
+});
+
+describe('getMovedCoordinate', () => {
+  it('真北に1km移動すると緯度が増加し経度は変わらない', () => {
+    const center: [number, number] = [139.6917, 35.6895]; // 東京
+    const result = getMovedCoordinate(center, 0, 1000);
+    expect(result[0]).toBeCloseTo(139.6917, 3); // 経度はほぼ変わらない
+    expect(result[1]).toBeGreaterThan(35.6895); // 緯度が増加
+    // 1kmの移動は約0.009度
+    const latDiff = result[1] - 35.6895;
+    expect(latDiff).toBeCloseTo(0.009, 2);
+  });
+
+  it('真東に1km移動すると経度が増加し緯度はほぼ変わらない', () => {
+    const center: [number, number] = [139.6917, 35.6895];
+    const result = getMovedCoordinate(center, 90, 1000);
+    expect(result[0]).toBeGreaterThan(139.6917); // 経度が増加
+    expect(result[1]).toBeCloseTo(35.6895, 3); // 緯度はほぼ変わらない
+  });
+
+  it('真南に1km移動すると緯度が減少する', () => {
+    const center: [number, number] = [139.6917, 35.6895];
+    const result = getMovedCoordinate(center, 180, 1000);
+    expect(result[0]).toBeCloseTo(139.6917, 3);
+    expect(result[1]).toBeLessThan(35.6895);
+  });
+
+  it('真西に1km移動すると経度が減少する', () => {
+    const center: [number, number] = [139.6917, 35.6895];
+    const result = getMovedCoordinate(center, 270, 1000);
+    expect(result[0]).toBeLessThan(139.6917);
+    expect(result[1]).toBeCloseTo(35.6895, 3);
+  });
+
+  it('距離0で移動すると同じ座標を返す', () => {
+    const center: [number, number] = [139.6917, 35.6895];
+    const result = getMovedCoordinate(center, 45, 0);
+    expect(result[0]).toBeCloseTo(139.6917, 10);
+    expect(result[1]).toBeCloseTo(35.6895, 10);
+  });
+
+  it('bearingBetweenPoints と distanceBetweenPoints の逆演算として整合する', () => {
+    const from: [number, number] = [139.6917, 35.6895];
+    const direction = 45;
+    const distance = 5000; // 5km
+    const to = getMovedCoordinate(from, direction, distance);
+    // 移動後の距離を検証
+    const calcDist = distanceBetweenPoints(from, to);
+    expect(calcDist).toBeCloseTo(distance, -1); // 1m精度
+    // 移動後の方位角を検証
+    const calcBearing = bearingBetweenPoints(from, to);
+    expect(calcBearing).toBeCloseTo(direction, 0);
   });
 });

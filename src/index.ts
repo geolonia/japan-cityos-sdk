@@ -23,7 +23,7 @@ import { setFillStyle as applyFillStyle, FillStyleOptions } from './setFillStyle
 import { setLineStyle, LineStyleOptions } from './utils/lineStyleUtils';
 import { baseMapStyleUrl } from './utils/baseMapStyleUtils';
 import { fetchTottoriDataIndex, addTottoriDataSource, addTottoriDataLayer, removeTottoriDataLayer, TottoriDataEntry } from './utils/tottoriDataUtils';
-import { nearestPointOnSegment, nearestPointOnLine, bearingBetweenPoints, distanceBetweenPoints, collectLineFeatures } from './utils/geometryUtils';
+import { nearestPointOnSegment, nearestPointOnLine, bearingBetweenPoints, distanceBetweenPoints, collectLineFeatures, getMovedCoordinate } from './utils/geometryUtils';
 
 declare global {
   interface Window {
@@ -818,4 +818,5 @@ window.geolonia.japan.geometry = {
   bearingBetweenPoints,
   distanceBetweenPoints,
   collectLineFeatures,
+  getMovedCoordinate,
 };
