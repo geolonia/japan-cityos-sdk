@@ -3,6 +3,8 @@ import {
   addAdminBoundarySource,
   addAdminBoundaryLayer,
   removeAdminBoundaryLayer,
+  removeAdminBoundary,
+  removeAdminBoundarySource,
   AdminBoundaryStyleOptions
 } from '../src/utils/adminBoundaryUtils';
 
@@ -211,3 +213,47 @@ describe('removeAdminBoundaryLayer', () => {
     }).not.toThrow();
   });
 });
+
+describe('removeAdminBoundarySource', () => {
+    it('ソースを削除する', () => {
+      const map = createMockMap();
+      const geojson: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
+      addAdminBoundarySource(map, 'test-boundary', geojson);
+
+      removeAdminBoundarySource(map, 'test-boundary');
+
+      expect(map.removeSource).toHaveBeenCalledWith('admin-boundary-test-boundary');
+      expect(map.getSource('admin-boundary-test-boundary')).toBeUndefined();
+    });
+
+    it('ソースが存在しない場合はエラーにならない', () => {
+      const map = createMockMap();
+      expect(() => {
+        removeAdminBoundarySource(map, 'non-existent');
+      }).not.toThrow();
+      expect(map.removeSource).not.toHaveBeenCalled();
+    });
+  });
+
+describe('removeAdminBoundary', () => {
+    it('レイヤーとソースをまとめて削除する', () => {
+      const map = createMockMap();
+      const geojson: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
+      addAdminBoundarySource(map, 'test-boundary', geojson);
+      addAdminBoundaryLayer(map, 'test-boundary');
+
+      removeAdminBoundary(map, 'test-boundary');
+
+      expect(map.removeLayer).toHaveBeenCalledWith('admin-boundary-test-boundary-fill');
+      expect(map.removeLayer).toHaveBeenCalledWith('admin-boundary-test-boundary-line');
+      expect(map.removeSource).toHaveBeenCalledWith('admin-boundary-test-boundary');
+      expect(map.getSource('admin-boundary-test-boundary')).toBeUndefined();
+    });
+
+    it('何も追加されていない場合はエラーにならない', () => {
+      const map = createMockMap();
+      expect(() => {
+        removeAdminBoundary(map, 'non-existent');
+      }).not.toThrow();
+    });
+  });

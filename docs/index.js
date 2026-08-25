@@ -6150,6 +6150,36 @@
             map.removeLayer(lineLayerId);
         }
     }
+    /**
+     * 行政区画境界のGeoJSONソースを地図から削除する
+     * @param map MapLibre Mapインスタンス
+     * @param id ソースを識別するためのID
+     *
+     * レイヤーが残っているとソースを削除できないため、先に
+     * `removeAdminBoundaryLayer` を呼ぶか `removeAdminBoundary` を使う。
+     *
+     * @example
+     * removeAdminBoundaryLayer(map, 'sapporo-chuo');
+     * removeAdminBoundarySource(map, 'sapporo-chuo');
+     */
+    function removeAdminBoundarySource(map, id) {
+        const sourceId = getSourceId(id);
+        if (map.getSource(sourceId)) {
+            map.removeSource(sourceId);
+        }
+    }
+    /**
+     * 行政区画境界のレイヤーとソースをまとめて地図から削除する
+     * @param map MapLibre Mapインスタンス
+     * @param id 識別用のID
+     *
+     * @example
+     * removeAdminBoundary(map, 'sapporo-chuo');
+     */
+    function removeAdminBoundary(map, id) {
+        removeAdminBoundaryLayer(map, id);
+        removeAdminBoundarySource(map, id);
+    }
 
     class GeoloniaMap extends GeoloniaMap$1 {
         constructor(params) {
@@ -6831,6 +6861,8 @@
     window.geolonia.japan.addAdminBoundarySource = addAdminBoundarySource;
     window.geolonia.japan.addAdminBoundaryLayer = addAdminBoundaryLayer;
     window.geolonia.japan.removeAdminBoundaryLayer = removeAdminBoundaryLayer;
+    window.geolonia.japan.removeAdminBoundarySource = removeAdminBoundarySource;
+    window.geolonia.japan.removeAdminBoundary = removeAdminBoundary;
 
     var commonjs = {};
 
@@ -18219,7 +18251,9 @@
     exports.buildJapaneseAdminsUrl = buildJapaneseAdminsUrl;
     exports.fetchAdminBoundary = fetchAdminBoundary;
     exports.isMunicipalityCode = isMunicipalityCode;
+    exports.removeAdminBoundary = removeAdminBoundary;
     exports.removeAdminBoundaryLayer = removeAdminBoundaryLayer;
+    exports.removeAdminBoundarySource = removeAdminBoundarySource;
 
 }));
 //# sourceMappingURL=index.js.map

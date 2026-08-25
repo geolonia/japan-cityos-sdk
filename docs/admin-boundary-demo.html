@@ -171,10 +171,17 @@
   <div id="map"></div>
 
   <script type="module">
-    import { GeoloniaMap } from './index.js';
-    import { fetchAdminBoundary } from './index.js';
-    import { addAdminBoundarySource, addAdminBoundaryLayer, removeAdminBoundaryLayer } from './index.js';
-    import maplibregl from 'https://cdn.jsdelivr.net/npm/maplibre-gl@latest/dist/maplibre-gl.js';
+    // docs/index.js は UMD 出力で named import できないため ESM 出力を読み込む
+    import {
+      GeoloniaMap,
+      fetchAdminBoundary,
+      addAdminBoundarySource,
+      addAdminBoundaryLayer,
+      removeAdminBoundary,
+    } from './index.mjs';
+
+    // バンドル済みの maplibre-gl。CDN から別インスタンスを読むと二重になる。
+    const maplibregl = window.geolonia.japan;
 
     // 地図を初期化
     const map = new GeoloniaMap({
@@ -195,7 +202,7 @@
 
         if (activeBoundaries.has(code)) {
           // 既に表示されている場合は削除
-          removeAdminBoundaryLayer(map, code);
+          removeAdminBoundary(map, code);
           activeBoundaries.delete(code);
           button.classList.remove('active');
         } else {
@@ -254,7 +261,7 @@
         lineOpacity: 1
       };
       codes.forEach(code => {
-        removeAdminBoundaryLayer(map, code);
+        removeAdminBoundary(map, code);
         addAdminBoundaryLayer(map, code, styleOptions);
       });
     });
@@ -262,7 +269,7 @@
     // 全てクリアボタン
     document.getElementById('btn-clear-all').addEventListener('click', () => {
       activeBoundaries.forEach(code => {
-        removeAdminBoundaryLayer(map, code);
+        removeAdminBoundary(map, code);
         const button = document.querySelector(`[data-code="${code}"]`);
         if (button) {
           button.classList.remove('active');

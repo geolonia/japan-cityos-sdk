@@ -6,7 +6,7 @@ import { CircleStyleOptions } from './utils/circleStyleUtils';
 import { FillStyleOptions } from './setFillStyle';
 import { LineStyleOptions } from './utils/lineStyleUtils';
 import { fetchAdminBoundary, buildJapaneseAdminsUrl, isMunicipalityCode } from './utils/japaneseAdmins';
-import { addAdminBoundarySource, addAdminBoundaryLayer, removeAdminBoundaryLayer } from './utils/adminBoundaryUtils';
+import { addAdminBoundarySource, addAdminBoundaryLayer, removeAdminBoundaryLayer, removeAdminBoundarySource, removeAdminBoundary } from './utils/adminBoundaryUtils';
 declare global {
     interface Window {
         geolonia: any;
@@ -256,6 +256,6 @@ declare class GeoloniaMap extends MapsCoreGeoloniaMap {
     setCircleStyle(className: string, style: CircleStyleOptions): void;
 }
 export { fetchAdminBoundary, buildJapaneseAdminsUrl, isMunicipalityCode };
-export { addAdminBoundarySource, addAdminBoundaryLayer, removeAdminBoundaryLayer };
+export { addAdminBoundarySource, addAdminBoundaryLayer, removeAdminBoundaryLayer, removeAdminBoundarySource, removeAdminBoundary };
 export type { AdminBoundaryStyleOptions } from './utils/adminBoundaryUtils';
 export { GeoloniaMap };

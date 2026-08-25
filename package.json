@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "docs/index.js",
+  "module": "docs/index.mjs",
   "scripts": {
     "build": "rimraf ./docs && rollup -c",
     "test": "jest",

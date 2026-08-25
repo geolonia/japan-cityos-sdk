@@ -21,6 +21,13 @@ const config = {
       extend: true,  // 既存の global.City を上書きせず拡張する
       inlineDynamicImports: true,  // コード分割を無効化（UMD形式のため必要）
     },
+    {
+      // <script type="module"> から named import するデモ用の ESM 出力
+      file: packageJson.module,
+      format: 'es',
+      sourcemap: true,
+      inlineDynamicImports: true,
+    },
   ],
   plugins: [
     replace({

@@ -61,3 +61,25 @@ export declare function addAdminBoundaryLayer(map: maplibregl.Map, id: string, s
  * removeAdminBoundaryLayer(map, 'sapporo-chuo');
  */
 export declare function removeAdminBoundaryLayer(map: maplibregl.Map, id: string): void;
+/**
+ * 行政区画境界のGeoJSONソースを地図から削除する
+ * @param map MapLibre Mapインスタンス
+ * @param id ソースを識別するためのID
+ *
+ * レイヤーが残っているとソースを削除できないため、先に
+ * `removeAdminBoundaryLayer` を呼ぶか `removeAdminBoundary` を使う。
+ *
+ * @example
+ * removeAdminBoundaryLayer(map, 'sapporo-chuo');
+ * removeAdminBoundarySource(map, 'sapporo-chuo');
+ */
+export declare function removeAdminBoundarySource(map: maplibregl.Map, id: string): void;
+/**
+ * 行政区画境界のレイヤーとソースをまとめて地図から削除する
+ * @param map MapLibre Mapインスタンス
+ * @param id 識別用のID
+ *
+ * @example
+ * removeAdminBoundary(map, 'sapporo-chuo');
+ */
+export declare function removeAdminBoundary(map: maplibregl.Map, id: string): void;
