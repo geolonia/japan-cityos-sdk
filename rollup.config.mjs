@@ -18,6 +18,7 @@ const config = {
       format: 'umd',
       sourcemap: true,
       name: 'City',
+      extend: true,  // 既存の global.City を上書きせず拡張する
       inlineDynamicImports: true,  // コード分割を無効化（UMD形式のため必要）
     },
   ],
@@ -41,6 +42,7 @@ const config = {
     copy({
       targets: [
         { src: 'public/index.html', dest: 'docs' },
+        { src: 'public/admin-boundary-demo.html', dest: 'docs' },
         { src: 'src/style.json', dest: 'docs' }
       ]
     }),

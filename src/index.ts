@@ -23,6 +23,8 @@ import { setLineStyle, LineStyleOptions } from './utils/lineStyleUtils';
 import { baseMapStyleUrl } from './utils/baseMapStyleUtils';
 import { fetchTottoriDataIndex, addTottoriDataSource, addTottoriDataLayer, removeTottoriDataLayer, TottoriDataEntry } from './utils/tottoriDataUtils';
 import { nearestPointOnSegment, nearestPointOnLine, bearingBetweenPoints, distanceBetweenPoints, collectLineFeatures } from './utils/geometryUtils';
+import { fetchAdminBoundary, buildJapaneseAdminsUrl, isMunicipalityCode } from './utils/japaneseAdmins';
+import { addAdminBoundarySource, addAdminBoundaryLayer, removeAdminBoundaryLayer } from './utils/adminBoundaryUtils';
 
 declare global {
   interface Window {
@@ -790,9 +792,17 @@ window.geolonia.japan.geometry = {
   distanceBetweenPoints,
   collectLineFeatures,
 };
+// <script> 経由の利用者にも module と同じ API を見せる
+window.geolonia.japan.fetchAdminBoundary = fetchAdminBoundary;
+window.geolonia.japan.buildJapaneseAdminsUrl = buildJapaneseAdminsUrl;
+window.geolonia.japan.isMunicipalityCode = isMunicipalityCode;
+window.geolonia.japan.addAdminBoundarySource = addAdminBoundarySource;
+window.geolonia.japan.addAdminBoundaryLayer = addAdminBoundaryLayer;
+window.geolonia.japan.removeAdminBoundaryLayer = removeAdminBoundaryLayer;
 
 // 行政区画境界関連の関数をエクスポート
-export { fetchAdminBoundary, buildJapaneseAdminsUrl, isMunicipalityCode } from './utils/japaneseAdmins';
-export { addAdminBoundarySource, addAdminBoundaryLayer, removeAdminBoundaryLayer, AdminBoundaryStyleOptions } from './utils/adminBoundaryUtils';
+export { fetchAdminBoundary, buildJapaneseAdminsUrl, isMunicipalityCode };
+export { addAdminBoundarySource, addAdminBoundaryLayer, removeAdminBoundaryLayer };
+export type { AdminBoundaryStyleOptions } from './utils/adminBoundaryUtils';
 export { GeoloniaMap };
 

@@ -1,7 +1,7 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
     typeof define === 'function' && define.amd ? define(['exports'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.City = {}));
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.City = global.City || {}));
 })(this, (function (exports) { 'use strict';
 
     function ___$insertStylesToHeader(css) {
@@ -6824,6 +6824,13 @@
         distanceBetweenPoints,
         collectLineFeatures,
     };
+    // <script> 経由の利用者にも module と同じ API を見せる
+    window.geolonia.japan.fetchAdminBoundary = fetchAdminBoundary;
+    window.geolonia.japan.buildJapaneseAdminsUrl = buildJapaneseAdminsUrl;
+    window.geolonia.japan.isMunicipalityCode = isMunicipalityCode;
+    window.geolonia.japan.addAdminBoundarySource = addAdminBoundarySource;
+    window.geolonia.japan.addAdminBoundaryLayer = addAdminBoundaryLayer;
+    window.geolonia.japan.removeAdminBoundaryLayer = removeAdminBoundaryLayer;
 
     var commonjs = {};
 
