@@ -257,3 +257,71 @@ describe('buildVertexTimings', () => {
     }
   });
 });
+
+describe('GeometryCollection', () => {
+  const collection: GeoJSON.GeometryCollection = {
+    type: 'GeometryCollection',
+    geometries: [
+      { type: 'Point', coordinates: [139, 35] },
+      { type: 'LineString', coordinates: [[139, 35], [140, 36]] },
+      {
+        type: 'MultiLineString',
+        coordinates: [[[141, 37], [142, 38]], [[143, 39], [144, 40]]],
+      },
+    ],
+  };
+
+  it('GeometryCollection 内の線ジオメトリを抽出する', () => {
+    const result = extractLineCoordinates(collection);
+    expect(result).toHaveLength(3);
+    expect(result[0]).toEqual([[139, 35], [140, 36]]);
+  });
+
+  it('入れ子の GeometryCollection も再帰的に抽出する', () => {
+    const nested: GeoJSON.GeometryCollection = {
+      type: 'GeometryCollection',
+      geometries: [collection],
+    };
+    expect(extractLineCoordinates(nested)).toHaveLength(3);
+  });
+
+  it('線を含む GeometryCollection は hasLineGeometry が true', () => {
+    expect(hasLineGeometry(collection)).toBe(true);
+  });
+
+  it('線を含まない GeometryCollection は hasLineGeometry が false', () => {
+    const pointsOnly: GeoJSON.GeometryCollection = {
+      type: 'GeometryCollection',
+      geometries: [{ type: 'Point', coordinates: [139, 35] }],
+    };
+    expect(hasLineGeometry(pointsOnly)).toBe(false);
+  });
+});
+
+describe('不正な座標の扱い', () => {
+  const invalid = [[139, 35], [140]] as number[][];
+  const withNaN = [[139, 35], [NaN, 36], [141, 37]] as number[][];
+
+  it('要素が足りない座標は距離計算から除外する', () => {
+    expect(calculatePathDistance(invalid)).toBe(0);
+    expect(Number.isNaN(calculatePathDistance(withNaN))).toBe(false);
+  });
+
+  it('補間結果に NaN を返さない', () => {
+    // 有効なセグメントが1つも無い場合は、既存の「全点が同一座標」と同じく
+    // 最初の有効な点を返す。
+    expect(interpolateAlongPath(invalid, 0.5)).toEqual([139, 35]);
+    for (const point of [interpolateAlongPath(withNaN, 0.5), interpolateAlongPath(withNaN, 1)]) {
+      expect(point).not.toBeNull();
+      expect(Number.isNaN(point![0])).toBe(false);
+      expect(Number.isNaN(point![1])).toBe(false);
+    }
+  });
+
+  it('頂点タイミングに NaN を返さない', () => {
+    for (const t of buildVertexTimings(withNaN)) {
+      expect(Number.isNaN(t.ratio)).toBe(false);
+      expect(Number.isNaN(t.cumulativeDistance)).toBe(false);
+    }
+  });
+});

@@ -55,6 +55,11 @@ export const extractLineCoordinates = (
         lines.push(coords);
       }
     }
+  } else if (geojson.type === 'GeometryCollection') {
+    for (const geometry of geojson.geometries) {
+      if (!geometry) continue;
+      lines.push(...extractLineCoordinates(geometry));
+    }
   }
 
   return lines;
@@ -71,6 +76,18 @@ export const hasLineGeometry = (geojson: GeoJSON.GeoJSON): boolean => {
 };
 
 /**
+ * 座標を [lng, lat] として検証する。
+ * 距離計算に NaN を持ち込まないよう、有限な数値2つを持つものだけ通す。
+ */
+const toLngLat = (coord: unknown): [number, number] | null => {
+  if (!Array.isArray(coord) || coord.length < 2) return null;
+  const [lng, lat] = coord;
+  if (typeof lng !== 'number' || typeof lat !== 'number') return null;
+  if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
+  return [lng, lat];
+};
+
+/**
  * パス全体の総距離をメートルで計算する（ハバーサイン公式）。
  * @param coords 座標配列 [[lng, lat], ...]
  * @returns 総距離（メートル）。座標が2点未満の場合は 0
@@ -80,8 +97,9 @@ export const calculatePathDistance = (coords: number[][]): number => {
 
   let totalDistance = 0;
   for (let i = 0; i < coords.length - 1; i++) {
-    const from: [number, number] = [coords[i][0], coords[i][1]];
-    const to: [number, number] = [coords[i + 1][0], coords[i + 1][1]];
+    const from = toLngLat(coords[i]);
+    const to = toLngLat(coords[i + 1]);
+    if (!from || !to) continue;
     totalDistance += distanceBetweenPoints(from, to);
   }
 
@@ -104,15 +122,16 @@ export const interpolateAlongPath = (
   const totalDistance = calculatePathDistance(coords);
   if (totalDistance === 0) {
     // すべての点が同一座標の場合、最初の点を返す
-    return [coords[0][0], coords[0][1]];
+    return toLngLat(coords[0]);
   }
 
   const targetDistance = totalDistance * ratio;
   let cumulativeDistance = 0;
 
   for (let i = 0; i < coords.length - 1; i++) {
-    const from: [number, number] = [coords[i][0], coords[i][1]];
-    const to: [number, number] = [coords[i + 1][0], coords[i + 1][1]];
+    const from = toLngLat(coords[i]);
+    const to = toLngLat(coords[i + 1]);
+    if (!from || !to) continue;
     const segmentDistance = distanceBetweenPoints(from, to);
 
     if (cumulativeDistance + segmentDistance >= targetDistance) {
@@ -131,8 +150,11 @@ export const interpolateAlongPath = (
   }
 
   // ratio = 1.0 の場合、最終点を返す
-  const lastCoord = coords[coords.length - 1];
-  return [lastCoord[0], lastCoord[1]];
+  for (let i = coords.length - 1; i >= 0; i--) {
+    const last = toLngLat(coords[i]);
+    if (last) return last;
+  }
+  return null;
 };
 
 /**
@@ -158,9 +180,11 @@ export const buildVertexTimings = (coords: number[][]): VertexTiming[] => {
     });
 
     if (i < coords.length - 1) {
-      const from: [number, number] = [coords[i][0], coords[i][1]];
-      const to: [number, number] = [coords[i + 1][0], coords[i + 1][1]];
-      cumulativeDistance += distanceBetweenPoints(from, to);
+      const from = toLngLat(coords[i]);
+      const to = toLngLat(coords[i + 1]);
+      if (from && to) {
+        cumulativeDistance += distanceBetweenPoints(from, to);
+      }
     }
   }
 
