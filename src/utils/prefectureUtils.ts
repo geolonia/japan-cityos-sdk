@@ -17,6 +17,61 @@ export const PREFECTURE_ANCHOR_CAPITAL = 'capital';
 export type PrefectureAnchor = typeof PREFECTURE_ANCHOR_CENTER | typeof PREFECTURE_ANCHOR_CAPITAL;
 
 /**
+ * 都道府県 → 県庁所在地（東京都は都庁所在地の新宿区）。
+ * 都道府県名からの機械的な導出では「北海道→札幌市」「愛知県→名古屋市」の
+ * ように一致しない県が多いため、明示的に持つ。
+ */
+const PREFECTURE_CAPITALS: Record<string, string> = {
+  '北海道': '札幌市',
+  '青森県': '青森市',
+  '岩手県': '盛岡市',
+  '宮城県': '仙台市',
+  '秋田県': '秋田市',
+  '山形県': '山形市',
+  '福島県': '福島市',
+  '茨城県': '水戸市',
+  '栃木県': '宇都宮市',
+  '群馬県': '前橋市',
+  '埼玉県': 'さいたま市',
+  '千葉県': '千葉市',
+  '東京都': '新宿区',
+  '神奈川県': '横浜市',
+  '新潟県': '新潟市',
+  '富山県': '富山市',
+  '石川県': '金沢市',
+  '福井県': '福井市',
+  '山梨県': '甲府市',
+  '長野県': '長野市',
+  '岐阜県': '岐阜市',
+  '静岡県': '静岡市',
+  '愛知県': '名古屋市',
+  '三重県': '津市',
+  '滋賀県': '大津市',
+  '京都府': '京都市',
+  '大阪府': '大阪市',
+  '兵庫県': '神戸市',
+  '奈良県': '奈良市',
+  '和歌山県': '和歌山市',
+  '鳥取県': '鳥取市',
+  '島根県': '松江市',
+  '岡山県': '岡山市',
+  '広島県': '広島市',
+  '山口県': '山口市',
+  '徳島県': '徳島市',
+  '香川県': '高松市',
+  '愛媛県': '松山市',
+  '高知県': '高知市',
+  '福岡県': '福岡市',
+  '佐賀県': '佐賀市',
+  '長崎県': '長崎市',
+  '熊本県': '熊本市',
+  '大分県': '大分市',
+  '宮崎県': '宮崎市',
+  '鹿児島県': '鹿児島市',
+  '沖縄県': '那覇市',
+};
+
+/**
  * 都道府県名からアンカー座標（中心 or 県庁所在地）を取得する。
  * @param prefName 都道府県名（例: "東京都", "北海道"）
  * @param anchor アンカー種別（"center" または "capital"、デフォルト: "center"）
@@ -37,13 +92,15 @@ export const getPrefectureAnchor = async (
 
     // アンカー種別に応じて座標を取得
     if (anchor === PREFECTURE_ANCHOR_CAPITAL) {
-      // 県庁所在地の座標を取得
-      // 都道府県名 + "県庁所在地" で住所正規化を試みる
-      const capitalName = result.pref === '東京都' ? '東京' : result.pref.replace(/[都道府県]$/, '');
-      const capitalResult = await normalize(`${result.pref}${capitalName}`);
+      const capitalName = PREFECTURE_CAPITALS[result.pref];
+      if (capitalName) {
+        const capitalResult = await normalize(`${result.pref}${capitalName}`);
 
-      if (capitalResult && capitalResult.point && capitalResult.point.lat && capitalResult.point.lng) {
-        return [capitalResult.point.lng, capitalResult.point.lat];
+        if (capitalResult && capitalResult.point && capitalResult.point.lat && capitalResult.point.lng) {
+          return [capitalResult.point.lng, capitalResult.point.lat];
+        }
+      } else {
+        console.warn(`都道府県 "${result.pref}" の県庁所在地が不明です`);
       }
     }
 
@@ -102,9 +159,9 @@ export const buildPrefectureLineLayerName = (
   prefTo: string,
   pointTo: PrefectureAnchor,
 ): string => {
-  // 都道府県名を正規化（都道府県を除去）
+  // 末尾の「都・府・県」のみを取り除く（「北海道」は道までが名称）
   const normalizePrefix = (name: string) => {
-    return name.replace(/[都道府県]/g, '').toLowerCase();
+    return name.replace(/(都|府|県)$/u, '').toLowerCase();
   };
 
   const from = normalizePrefix(prefFrom);

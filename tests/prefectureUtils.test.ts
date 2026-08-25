@@ -96,6 +96,29 @@ describe('getPrefectureAnchor', () => {
     expect(result).toBeNull();
   });
 
+  it('県庁所在地名が都道府県名から機械的に導けない場合も正しい市名で問い合わせる', async () => {
+    for (const [pref, expected] of [
+      ['北海道', '北海道札幌市'],
+      ['神奈川県', '神奈川県横浜市'],
+      ['愛知県', '愛知県名古屋市'],
+      ['兵庫県', '兵庫県神戸市'],
+      ['沖縄県', '沖縄県那覇市'],
+    ] as const) {
+      mockNormalize.mockReset();
+      mockNormalize.mockResolvedValueOnce({
+        pref, city: '', town: '', addr: '', lat: 35, lng: 139, level: 1,
+        point: { lat: 35, lng: 139 },
+      } as any);
+      mockNormalize.mockResolvedValueOnce({
+        pref, city: '', town: '', addr: '', lat: 35, lng: 139, level: 2,
+        point: { lat: 35, lng: 139 },
+      } as any);
+
+      await getPrefectureAnchor(pref, PREFECTURE_ANCHOR_CAPITAL);
+      expect(mockNormalize).toHaveBeenLastCalledWith(expected);
+    }
+  });
+
   it('東京都の場合 capital アンカーで「東京」を使用する', async () => {
     mockNormalize.mockResolvedValueOnce({
       pref: '東京都',
@@ -120,7 +143,7 @@ describe('getPrefectureAnchor', () => {
 
     await getPrefectureAnchor('東京都', PREFECTURE_ANCHOR_CAPITAL);
     expect(mockNormalize).toHaveBeenCalledTimes(2);
-    expect(mockNormalize).toHaveBeenCalledWith('東京都東京');
+    expect(mockNormalize).toHaveBeenCalledWith('東京都新宿区');
   });
 });
 
@@ -147,6 +170,15 @@ describe('buildPrefectureLineFeature', () => {
 });
 
 describe('buildPrefectureLineLayerName', () => {
+  it('都道府県名の末尾の接尾辞だけを取り除くこと', () => {
+    expect(
+      buildPrefectureLineLayerName('京都府', PREFECTURE_ANCHOR_CENTER, '大阪府', PREFECTURE_ANCHOR_CENTER),
+    ).toBe('line-京都-center-大阪-center');
+    expect(
+      buildPrefectureLineLayerName('東京都', PREFECTURE_ANCHOR_CENTER, '北海道', PREFECTURE_ANCHOR_CENTER),
+    ).toBe('line-東京-center-北海道-center');
+  });
+
   it('安定なレイヤー名を生成する', () => {
     const name = buildPrefectureLineLayerName('東京都', PREFECTURE_ANCHOR_CENTER, '大阪府', PREFECTURE_ANCHOR_CAPITAL);
     expect(name).toBe('line-東京-center-大阪-capital');
