@@ -42,6 +42,29 @@ describe('addOsmSprite', () => {
     expect(map.setStyle).not.toHaveBeenCalled();
   });
 
+  it('spriteがオブジェクトで、同じURLが別のidで登録済みなら、渡したidで追加する', () => {
+    map.getStyle.mockReturnValue({
+      sprite: [
+        { id: "default", url: spriteSheetUrl['chizubouken-lab'] },
+        { id: "basic-v2", url: "https://geoloniamaps.github.io/basic-v2/basic-v2" }
+      ]
+    });
+    addOsmSprite(map, { 'chizubouken-lab': spriteSheetUrl['chizubouken-lab'] }, spriteSheetUrl);
+    expect(map.setStyle).toHaveBeenCalledWith({
+      sprite: [
+        { id: "default", url: spriteSheetUrl['chizubouken-lab'] },
+        { id: "basic-v2", url: "https://geoloniamaps.github.io/basic-v2/basic-v2" },
+        { id: "chizubouken-lab", url: spriteSheetUrl['chizubouken-lab'] }
+      ]
+    });
+  });
+
+  it('spriteがオブジェクトで、同じidが別のURLで登録済みなら何もしない', () => {
+    map.getStyle.mockReturnValue({ sprite: [{ id: "basic", url: "https://example.com/other" }] });
+    addOsmSprite(map, { 'basic': spriteSheetUrl['basic'] }, spriteSheetUrl);
+    expect(map.setStyle).not.toHaveBeenCalled();
+  });
+
   it('spriteがstringで、spriteSheetUrlにURLが存在する場合はspriteSheetUrlのkey名でspriteに追加', () => {
     map.getStyle.mockReturnValue({ sprite: spriteSheetUrl['mapfan'] });
     addOsmSprite(map, { 'basic': spriteSheetUrl['basic'] }, spriteSheetUrl);
