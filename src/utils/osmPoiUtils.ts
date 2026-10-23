@@ -90,10 +90,11 @@ export const addOsmSprite = (map: maplibregl.Map, spriteName: { [key: string]: s
         return;
     }
 
-    // spriteがオブジェクトで、指定したスプライトシートがなければ追加
+    // spriteがオブジェクトで、指定したidのスプライトシートがなければ追加
+    // （icon-image は "id:アイコン名" で参照するため、URL ではなく id で有無を判定する）
     if (typeof style.sprite === "object" && style.sprite !== null) {
         const sprites: any[] = Array.isArray(style.sprite) ? style.sprite : [style.sprite];
-        const hasOsm = sprites.some(s => s.url === spriteUrl);
+        const hasOsm = sprites.some(s => s.id === spriteKey);
         
         if (!hasOsm) {
             const newSprites = [...sprites, { id: spriteKey, url: spriteUrl }];
